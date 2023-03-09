@@ -42,23 +42,6 @@
 			"width": 0.2
 		}
 	},
-	"bridge" : {
-		"pos": [9.0, 3.8],
-	    "width": 14.0,
-		"density": 1.0,
-		"pin_radius": 0.1
-	},
-	"spinner" : {
-		"pos": [13.0,12.5],
-		"low_density" : 0.0,
-		"high_density": 10.0,
-		"radius": 0.1
-	},
-    "bullet": {
-    	"offset" : 0.2,
-    	"speed"  : 20.0,
-		"density": 10.0
-    },
 	"spike" : {
 		"spikes":
 		[{"pos" : [10, 1], "angle": 0, "active": true, "activatorID": "button1"},
@@ -67,21 +50,25 @@
 			{"pos" : [29, 4], "angle": 90, "active": true, "activatorID": "button2"},
 			{"pos" : [29, 3], "angle": 90, "active": true, "activatorID": "button2"},
 			{"pos" : [29, 2], "angle": 90, "active": true, "activatorID": "button2"}],
-		"sensor_height_scale": 0.02,
-		"sensor_width_scale": 0.9,
+		"sensor_height_scale": 1,
+		"sensor_width_scale": 0.5,
+		"sensor_offset": [0, 0],
+		"solid_offset":[0, -0.25],
+		"solid_height_scale": 0.5,
+		"solid_width_scale": 1,
 		"offset": [
 			0.5,
 			0.5
 		]
 	},
-	"button": {
+	"activator": {
 		"body_shape" : [-0.03125, 0.2, 0.96875, 0.2, 0.66875, 0.3, 0.26875, 0.3],
-		"sensor_shape" : [-0.3125, 0.2, 0.96875, 0.2, 0.96875, 0.6, -0.03125, 0.6],
+		"sensor_shape" : [-0.03125, 0.2, 0.96875, 0.2, 0.96875, 0.6, -0.03125, 0.6],
 		"friction" : 0.4,
 		"offset": [0.03125, -0.2],
-		"buttons": [
-			{"pos": [4, 2], "id" : "button1"},
-//			{"pos": [13, 5], "id" : "button2"}
+		"activators": [
+			{"pos": [4, 2], "type": "button","id" : "button1"},
+			{"pos": [13, 5], "type": "switch","id" : "button2"}
 		]
 
 	},
@@ -95,6 +82,11 @@
 	"flamethrower": {
 		"flamethrowers" : [
 			{"pos" :  [24, 3.8], "angle" : 0}
+		]
+	},
+	"laser": {
+		"lasers" : [
+			{"pos" :  [20, 12.5]}
 		]
 	},
 	"walls": 		[

@@ -22,6 +22,10 @@ import edu.cornell.gdiac.game.obstacle.*;
  * no other subclasses that we might loop through.
  */
 public class DeadBody extends CapsuleObstacle {
+
+    private int burnTicks;
+    private boolean burning;
+    public static final int TOTAL_BURN_TICKS = 900;
     /**
      * The initializing data (to avoid magic numbers)
      */
@@ -65,7 +69,7 @@ public class DeadBody extends CapsuleObstacle {
     /**
      * The physics shape of this object
      */
-    private PolygonShape sensorShape;
+    private CircleShape sensorShape;
 
     /**
      * Cache for internal force calculations
@@ -204,13 +208,15 @@ public class DeadBody extends CapsuleObstacle {
         damping = data.getFloat("damping", 0);
         force = data.getFloat("force", 0);
         dash_force = data.getFloat("dash_force", 0);
-        ;
         sensorName = "deadBodyGroundSensor";
         this.data = data;
 
         // Gameplay attributes
+        burnTicks = 0;
+        burning = false;
         isGrounded = false;
         faceRight = true;
+
 
         setName("deadBody");
     }
@@ -235,19 +241,19 @@ public class DeadBody extends CapsuleObstacle {
         // To determine whether or not the dead body is on the ground,
         // we create a thin sensor under the feet, which reports
         // collisions with the world but has no collision response.
-        Vector2 sensorCenter = new Vector2(0, -getHeight() / 2);
+        //TODO: put this in JSON
+        Vector2 sensorCenter = new Vector2();
         FixtureDef sensorDef = new FixtureDef();
-        sensorDef.density = data.getFloat("density", 0);
+        sensorDef.density = 0;
         sensorDef.isSensor = true;
-        sensorShape = new PolygonShape();
-        JsonValue sensorjv = data.get("ground_sensor");
-        sensorShape.setAsBox(sensorjv.getFloat("shrink", 0) * getWidth() / 2.0f,
-                sensorjv.getFloat("height", 0), sensorCenter, 0.0f);
+        sensorShape = new CircleShape();
+        sensorShape.setRadius(0.1f);
+        sensorShape.setPosition(sensorCenter);
         sensorDef.shape = sensorShape;
 
         // Ground sensor to represent our feet
         Fixture sensorFixture = body.createFixture(sensorDef);
-        sensorFixture.setUserData(getSensorName());
+        sensorFixture.setUserData(this);
 
         return true;
     }
@@ -288,6 +294,16 @@ public class DeadBody extends CapsuleObstacle {
         // Apply cooldowns
 
         super.update(dt);
+        if (burning) {
+            burnTicks++;
+            if (burnTicks >= TOTAL_BURN_TICKS){
+                markRemoved(true);
+            }
+        }
+    }
+
+    public void setBurning(boolean burning){
+        this.burning = burning;
     }
 
     /**
@@ -297,7 +313,8 @@ public class DeadBody extends CapsuleObstacle {
      */
     public void draw(GameCanvas canvas) {
         float effect = faceRight ? 1.0f : -1.0f;
-        canvas.draw(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), effect, 1.0f);
+        Color color = new Color(1, 1, 1, 1f - ((float)burnTicks)/((float)TOTAL_BURN_TICKS));
+        canvas.draw(texture, color, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), effect, 1.0f);
     }
 
     /**
@@ -309,6 +326,6 @@ public class DeadBody extends CapsuleObstacle {
      */
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
-        canvas.drawPhysics(sensorShape, Color.RED, getX(), getY(), getAngle(), drawScale.x, drawScale.y);
+        canvas.drawPhysics(sensorShape, Color.RED, getX(), getY(), drawScale.x, drawScale.y);
     }
 }

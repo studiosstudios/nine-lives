@@ -20,6 +20,9 @@
         "platform:button": "platform/button.png",
         "platform:flamethrower": "platform/flamethrower.png",
         "platform:flame": "platform/flame.png",
+        "platform:laserLeft": "platform/laser_left.png",
+        "platform:laserBeam": "platform/laserbeam.png",
+        "platform:laserRight": "platform/laser_right.png",
         "platform:background": "platform/labBkg_concept.png"
     },
     "jsons"  : {

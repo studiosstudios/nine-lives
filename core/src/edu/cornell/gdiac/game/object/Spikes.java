@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
 
@@ -14,7 +15,7 @@ public class Spikes extends BoxObstacle {
 
     private PolygonShape sensorShape;
 
-    private static final String sensorName = "spikesTop";
+    private PolygonShape solidShape;
 
     /** The initializing data (to avoid magic numbers) */
     private final JsonValue data;
@@ -26,6 +27,10 @@ public class Spikes extends BoxObstacle {
     private final boolean initialActive;
 
     private Fixture sensorFixture;
+
+    private Fixture solidFixture;
+
+    private ObjectSet<Joint> joints = new ObjectSet<Joint>();
 
     public Spikes(float x, float y, float angle, boolean active,
                   TextureRegion texture, Vector2 scale, JsonValue data){
@@ -52,7 +57,7 @@ public class Spikes extends BoxObstacle {
      * Sets the active status of the spikes.
      * @param activatorActive  whether the corresponding activators are active
      */
-    public void setActive(boolean activatorActive){
+    public void setActive(boolean activatorActive, World world){
 
         boolean next = initialActive ^ activatorActive;
         if (next && !active) {
@@ -63,16 +68,26 @@ public class Spikes extends BoxObstacle {
             //state switch from active to inactive
             active = false;
             releaseFixtures();
+            destroyJoints(world);
         }
     }
 
 
     public boolean activatePhysics(World world){
-        Vector2 sensorCenter = new Vector2(0, getHeight() / 2);
+        Vector2 sensorCenter = new Vector2(data.get("sensor_offset").getFloat(0),
+                data.get("sensor_offset").getFloat(1));
         sensorShape = new PolygonShape();
         sensorShape.setAsBox(getWidth() / 2 * data.getFloat("sensor_width_scale"),
                 getHeight() / 2 * data.getFloat("sensor_height_scale"),
                 sensorCenter, 0.0f);
+
+        Vector2 solidCenter = new Vector2(data.get("solid_offset").getFloat(0),
+                data.get("solid_offset").getFloat(1));
+        solidShape = new PolygonShape();
+        solidShape.setAsBox(getWidth() / 2 * data.getFloat("solid_width_scale"),
+                getHeight() / 2 * data.getFloat("solid_height_scale"),
+                solidCenter, 0.0f);
+
         if (!super.activatePhysics(world)) {
             return false;
         }
@@ -85,13 +100,18 @@ public class Spikes extends BoxObstacle {
     protected void createFixtures(){
         super.createFixtures();
 
+        FixtureDef solidDef = new FixtureDef();
+        solidDef.density = 0;
+        solidDef.shape = solidShape;
+        solidFixture = body.createFixture( solidDef );
+
         //create sensor
         FixtureDef sensorDef = new FixtureDef();
         sensorDef.density = 0;
         sensorDef.isSensor = true;
         sensorDef.shape = sensorShape;
         sensorFixture = body.createFixture( sensorDef );
-        sensorFixture.setUserData(getSensorName());
+        sensorFixture.setUserData(this);
     }
 
     protected void releaseFixtures(){
@@ -100,22 +120,28 @@ public class Spikes extends BoxObstacle {
             body.destroyFixture(sensorFixture);
             sensorFixture = null;
         }
+        if (solidFixture != null) {
+            body.destroyFixture(solidFixture);
+            solidFixture = null;
+        }
     }
 
-    /**
-     * Returns the name of the top sensor
-     *
-     * This is used by ContactListener
-     *
-     * @return the name of the ground sensor
-     */
-    public static String getSensorName() {
-        return sensorName;
+    /** destroy all joints connected to this spike
+     * is it weird that the spikes can access the world like this?
+     * potentially can be fixed with setActive returning a list of joints to destroy
+     * that the controller then destroys */
+    public void destroyJoints(World world){
+        for (Joint j : joints) {
+            world.destroyJoint(j);
+        }
+        joints.clear();
     }
 
+    public void addJoint(Joint joint){ joints.add(joint); }
+
 
     /**
-     * Draws the outline of the physics body.
+     * Draws the outline of the physics body.d
      *
      * This method can be helpful for understanding issues with collisions.
      *
@@ -124,6 +150,7 @@ public class Spikes extends BoxObstacle {
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
         if (active) {
+            canvas.drawPhysics(solidShape, Color.YELLOW, getX(), getY(), getAngle(), drawScale.x, drawScale.y);
             canvas.drawPhysics(sensorShape, Color.RED, getX(), getY(), getAngle(), drawScale.x, drawScale.y);
         }
     }

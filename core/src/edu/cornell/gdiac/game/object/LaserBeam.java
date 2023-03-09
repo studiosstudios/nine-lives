@@ -1,12 +1,12 @@
 package edu.cornell.gdiac.game.object;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Joint;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.JsonValue;
+import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.*;
 
 public class LaserBeam extends ComplexObstacle {
@@ -28,6 +28,11 @@ public class LaserBeam extends ComplexObstacle {
     protected float linksize = 1.0f;
     /** The spacing between each link */
     protected float spacing = 0.0f;
+    private static final String sensorName = "beamSensor";
+    private PolygonShape sensorShape;
+    private Vector2 startPos;
+
+
 
     /**
      * Creates a new rope bridge with the given physics data
@@ -41,13 +46,16 @@ public class LaserBeam extends ComplexObstacle {
      */
     public LaserBeam(JsonValue data, float x, float y, float beamlength, float lwidth, float lheight, String name) {
         super(x, y);
-        setName(name);
+//        setName(name);
         this.data = data;
 
         float x0 = x;
         float y0 = y;
+        startPos = new Vector2(x, y);
         planksize = new Vector2(lwidth,lheight);
+        setBodyType(BodyDef.BodyType.StaticBody);
         linksize = planksize.x;
+        setSensor(true);
 
         // Compute the bridge length
         dimension = new Vector2(beamlength,0f);
@@ -169,6 +177,29 @@ public class LaserBeam extends ComplexObstacle {
         return true;
     }
 
+    public static String getSensorName() {
+        return sensorName;
+    }
+
+    public boolean activatePhysics(World world) {
+        if (!super.activatePhysics(world)) {
+            return false;
+        }
+        for (Joint joint : joints) {
+            Vector2 sensorCenter = new Vector2(0,0);
+            FixtureDef sensorDef = new FixtureDef();
+            sensorDef.density = 0;
+            sensorDef.isSensor = true;
+            sensorShape = new PolygonShape();
+            sensorShape.setAsBox(dimension.x*0.2f*0.08f, dimension.y, sensorCenter, 0.0f);
+            sensorDef.shape = sensorShape;
+            Fixture sensorFixture = joint.getBodyA().createFixture(sensorDef);
+            sensorFixture.setUserData(getSensorName());
+        }
+        return true;
+    }
+
+
     /**
      * Destroys the physics Body(s) of this object if applicable,
      * removing them from the world.
@@ -206,5 +237,17 @@ public class LaserBeam extends ComplexObstacle {
             return null;
         }
         return ((SimpleObstacle)bodies.get(0)).getTexture();
+    }
+
+    /**
+     * Draws the outline of the physics body.
+     *
+     * This method can be helpful for understanding issues with collisions.
+     *
+     * @param canvas Drawing context
+     */
+    public void drawDebug(GameCanvas canvas) {
+        super.drawDebug(canvas);
+        canvas.drawPhysics(sensorShape, Color.RED,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
     }
 }

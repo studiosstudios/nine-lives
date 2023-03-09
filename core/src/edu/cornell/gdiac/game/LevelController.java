@@ -390,6 +390,7 @@ public class LevelController extends WorldController implements ContactListener 
         // Process actions in object model
         avatar.setMovement(InputController.getInstance().getHorizontal() *avatar.getForce() * (avatar.getIsClimbing() ? 0 : 1));
         avatar.setVerticalMovement(InputController.getInstance().getVertical() * avatar.getForce());
+        avatar.setHorizontalMovement(InputController.getInstance().getHorizontal() * avatar.getForce());
         avatar.setJumping(InputController.getInstance().didPrimary());
         avatar.setDashing(InputController.getInstance().didDash());
         avatar.setClimbing(InputController.getInstance().didClimb() && avatar.isWalled());

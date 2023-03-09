@@ -53,6 +53,7 @@ public class Cat extends CapsuleObstacle {
     /** The current vertical movement of the character */
     private float   verticalMovement;
     /** Current jump movement of the character */
+    private float horizontalMovement;
     private float   jumpMovement;
     /** Which direction is the character facing */
     private boolean faceRight;
@@ -113,7 +114,9 @@ public class Cat extends CapsuleObstacle {
     public float getVerticalMovement() {
         return verticalMovement;
     }
-
+    public float getHorizontalMovement() {
+        return horizontalMovement;
+    }
     /**
      * Sets up/down movement of this character.
      *
@@ -123,6 +126,9 @@ public class Cat extends CapsuleObstacle {
      */
     public void setVerticalMovement(float value) {
         verticalMovement = value;
+    }
+    public void setHorizontalMovement(float value) {
+        horizontalMovement = value;
     }
     public void setDashing(boolean value){ isDashing = value; }
 
@@ -429,21 +435,40 @@ public class Cat extends CapsuleObstacle {
             forceCache.set(0, jumpMovement);
             body.applyLinearImpulse(forceCache,getPosition(),true);
         }
+//        if (isDashing() && canDash){
+//            float jump = body.getPosition().y;
+//            if (isJumping()){
+//                jump = (dash_force)+body.getPosition().y;
+//            }
+//            if(movement > 0){
+//                forceCache.set((dash_force)+body.getPosition().x,jump);
+//            }
+//            else if(movement < 0){
+//                forceCache.set((-dash_force)+body.getPosition().x,jump);
+//            }
+//            else{
+//                forceCache.set(body.getPosition().x,jump);
+//            }
+//            body.setTransform(forceCache,0);
+//            canDash = false;
+//        }
         if (isDashing() && canDash){
-            float jump = body.getPosition().y;
+            float jump = 0;
             if (isJumping()){
-                jump = (dash_force)+body.getPosition().y;
+                jump = (dash_force);
             }
             if(movement > 0){
-                forceCache.set((dash_force)+body.getPosition().x,jump);
+                forceCache.set((dash_force),jump);
             }
             else if(movement < 0){
-                forceCache.set((-dash_force)+body.getPosition().x,jump);
+                forceCache.set((-dash_force),jump);
             }
             else{
-                forceCache.set(body.getPosition().x,jump);
+                forceCache.set(0,jump);
             }
-            body.setTransform(forceCache,0);
+            setVY(Math.signum(getVerticalMovement())*(getMaxSpeed()));
+            setVX(Math.signum(getHorizontalMovement())*(getMaxSpeed()));
+            body.applyForce(forceCache,getPosition(),true);
             canDash = false;
         }
         if (getIsClimbing()) {

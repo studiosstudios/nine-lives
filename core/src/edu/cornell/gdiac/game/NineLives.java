@@ -26,7 +26,7 @@ import edu.cornell.gdiac.assets.*;
  * plaforms. In addition, this functions as the root class all intents and purposes, 
  * and you would draw it as a root class in an architecture specification.  
  */
-public class Nove extends Game implements ScreenListener {
+public class NineLives extends Game implements ScreenListener {
 	/** AssetManager to load game assets (textures, sounds, etc.) */
 	AssetDirectory directory;
 	/** Drawing context to display graphics (VIEW CLASS) */
@@ -44,7 +44,7 @@ public class Nove extends Game implements ScreenListener {
 	 * This method configures the asset manager, but does not load any assets
 	 * or assign any screen.
 	 */
-	public Nove() { }
+	public NineLives() { }
 
 	/** 
 	 * Called when the Application is first created.

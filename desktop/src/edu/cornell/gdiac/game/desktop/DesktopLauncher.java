@@ -14,7 +14,7 @@ package edu.cornell.gdiac.game.desktop;
 
 import edu.cornell.gdiac.backend.GDXApp;
 import edu.cornell.gdiac.backend.GDXAppSettings;
-import edu.cornell.gdiac.game.Nove;
+import edu.cornell.gdiac.game.NineLives;
 
 /**
  * The main class of the game.
@@ -37,6 +37,6 @@ public class DesktopLauncher {
 		config.width  = 1024;
 		config.height = 576;
 		config.resizable = true;
-		new GDXApp(new Nove(), config);
+		new GDXApp(new NineLives(), config);
 	}
 }

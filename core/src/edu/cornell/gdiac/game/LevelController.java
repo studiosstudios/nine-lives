@@ -23,7 +23,6 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.util.PooledList;
 
-import javax.swing.*;
 import java.util.HashMap;
 
 /**
@@ -36,6 +35,10 @@ import java.util.HashMap;
  * place nicely with the static assets.
  */
 public class LevelController extends WorldController implements ContactListener {
+
+    /** JSON representing the level */
+    private JsonValue levelJV;
+
     /** Texture asset for character avatar */
     private TextureRegion avatarTexture;
     /** Texture asset for the spinning barrier */
@@ -97,16 +100,16 @@ public class LevelController extends WorldController implements ContactListener 
     public boolean isRet;
 
     /** object lists - in the future this will be one list maybe */
-    private Array<Activator> activatorList;
-    private Array<Spikes> spikesList;
-    private Array<DeadBody> deadBodyList;
+    private Array<Activator> activators;
+    private Array<Activatable> activatables;
+    private Array<DeadBody> deadBodyArray;
 
     /** queue to add joints to the world created in beginContact() */
     protected PooledList<JointDef> jointQueue = new PooledList<JointDef>();
 
     /** hashmap to represent activator-spike relationships:
      *   keys are activator ids specified in JSON*/
-    private HashMap<String, Array<Spikes>> activationRelations;
+    private HashMap<String, Array<Activatable>> activationRelations;
 
     private int numLives;
     private static final int MAX_NUM_LIVES = 4;
@@ -114,7 +117,7 @@ public class LevelController extends WorldController implements ContactListener 
     private float dheight;
     private Vector2 respawnPos;
     private boolean died;
-    private DeadBody new_dead_body;
+    private DeadBody newDeadBody;
 
     /**
      * Creates and initialize a new instance of the platformer game
@@ -128,10 +131,10 @@ public class LevelController extends WorldController implements ContactListener 
 //        System.out.println("ret set to false in Level Controller");
         setRet(false);
         setFailure(false);
-        activatorList = new Array<Activator>();
-        spikesList = new Array<Spikes>();
-        deadBodyList = new Array<DeadBody>();
-        activationRelations = new HashMap<String, Array<Spikes>>();
+        activators = new Array<Activator>();
+        activatables = new Array<Activatable>();
+        deadBodyArray = new Array<DeadBody>();
+        activationRelations = new HashMap<String, Array<Activatable>>();
         world.setContactListener(this);
         sensorFixtures = new ObjectSet<Fixture>();
         this.level = level;
@@ -168,12 +171,13 @@ public class LevelController extends WorldController implements ContactListener 
 
         setBackground(backgroundTexture.getTexture());
 
+        constants = directory.getEntry("platform:constants", JsonValue.class);
         switch(level) {
             case 1:
-                constants = directory.getEntry("platform:constants_l1", JsonValue.class);
+                levelJV = directory.getEntry("platform:level1", JsonValue.class);
                 break;
             case 2:
-                constants = directory.getEntry("platform:constants_l2", JsonValue.class);
+                levelJV = directory.getEntry("platform:level2", JsonValue.class);
                 break;
             default:
                 throw new RuntimeException("Invalid level");
@@ -197,9 +201,9 @@ public class LevelController extends WorldController implements ContactListener 
         jointQueue.clear();
         world.dispose();
 
-        activatorList.clear();
-        spikesList.clear();
-        deadBodyList.clear();
+        activators.clear();
+        activatables.clear();
+        deadBodyArray.clear();
 
         numLives = MAX_NUM_LIVES;
         died = false;
@@ -207,11 +211,11 @@ public class LevelController extends WorldController implements ContactListener 
         world = new World(gravity,false);
         world.setContactListener(this);
         setComplete(false);
-        boolean temp_ret = isRet();
+        boolean tempRet = isRet();
         setRet(false);
         setFailure(false);
 
-        populateLevel(temp_ret);
+        populateLevel(tempRet);
     }
 
     /**
@@ -222,9 +226,9 @@ public class LevelController extends WorldController implements ContactListener 
         dwidth  = goalTile.getRegionWidth()/scale.x;
         dheight = goalTile.getRegionHeight()/scale.y;
 
-        activationRelations = new HashMap<String, Array<Spikes>>();
+        activationRelations = new HashMap<String, Array<Activatable>>();
 
-        JsonValue goal = constants.get("goal");
+        JsonValue goal = levelJV.get("goal");
         JsonValue goalpos = goal.get("pos");
         goalDoor = new BoxObstacle(goalpos.getFloat(0),goalpos.getFloat(1),dwidth,dheight);
         goalDoor.setBodyType(BodyDef.BodyType.StaticBody);
@@ -237,7 +241,7 @@ public class LevelController extends WorldController implements ContactListener 
         goalDoor.setName("goal");
         addObject(goalDoor);
 
-        JsonValue retgoal = constants.get("ret_goal");
+        JsonValue retgoal = levelJV.get("ret_goal");
         JsonValue retgoalpos = retgoal.get("pos");
         retDoor = new BoxObstacle(retgoalpos.getFloat(0),retgoalpos.getFloat(1),dwidth,dheight);
         retDoor.setBodyType(BodyDef.BodyType.StaticBody);
@@ -251,7 +255,7 @@ public class LevelController extends WorldController implements ContactListener 
         addObject(retDoor);
 
         String wname = "wall";
-        JsonValue walljv = constants.get("walls");
+        JsonValue walljv = levelJV.get("walls");
         JsonValue defaults = constants.get("defaults");
         for (int ii = 0; ii < walljv.size; ii++) {
             PolygonObstacle obj;
@@ -267,7 +271,7 @@ public class LevelController extends WorldController implements ContactListener 
         }
 
         String pname = "platform";
-        JsonValue platjv = constants.get("platforms");
+        JsonValue platjv = levelJV.get("platforms");
         for (int ii = 0; ii < platjv.size; ii++) {
             PolygonObstacle obj;
             obj = new PolygonObstacle(platjv.get(ii).asFloatArray(), 0, 0);
@@ -284,86 +288,53 @@ public class LevelController extends WorldController implements ContactListener 
         // This world is heavier
         world.setGravity( new Vector2(0,defaults.getFloat("gravity",0)) );
 
-        //Add activators
-        JsonValue activatorsJV = constants.get("activator");
-        for (JsonValue activatorJV : activatorsJV.get("activators")) {
-            float x = activatorJV.get("pos").getFloat(0);
-            float y = activatorJV.get("pos").getFloat(1);
-            String type = activatorJV.getString("type");
-            String id = activatorJV.getString("id");
+        JsonValue activatorConstants = constants.get("activators");
+        Activator.setConstants(activatorConstants);
+        for (JsonValue activatorJV : levelJV.get("activators")){
             Activator activator;
-            switch (type){
+            switch (activatorJV.getString("type")){
                 case "button":
-                    activator = new Button(x, y, id, buttonTexture, scale, activatorsJV);
+                    activator = new Button(buttonTexture, scale, activatorJV);
                     break;
                 case "switch":
-                    activator = new Switch(x, y, id, buttonTexture, scale, activatorsJV);
+                    activator = new Switch(buttonTexture, scale, activatorJV);
                     break;
                 case "timed":
-                    int duration = activatorJV.getInt("duration");
-                    activator = new TimedButton(x, y, id, duration, buttonTexture, scale, activatorsJV);
+                    activator = new TimedButton(buttonTexture, scale, activatorJV);
                     break;
                 default:
-                    throw new RuntimeException(String.format("unrecognised activator type %s", type));
+                    throw new RuntimeException("unrecognised activator type");
             }
-            activatorList.add(activator);
+            activators.add(activator);
             addObject(activator);
         }
 
-        // Add spikes
-        JsonValue spikesJV = constants.get("spike");
-        for (JsonValue spikeJV : spikesJV.get("spikes")) {
-            float x = spikeJV.get("pos").getFloat(0);
-            float y = spikeJV.get("pos").getFloat(1);
-            float angle = spikeJV.getFloat("angle");
-            boolean active = spikeJV.getBoolean("active");
-            String activatorID = spikeJV.getString("activatorID");
-
-            Spikes spikes = new Spikes(x, y, angle, active, spikesTexture, scale, spikesJV);
-
-            //add to dependency map if there is an associated activator
-            if (!activatorID.equals("")){
-                if (activationRelations.containsKey(activatorID)){
-                    activationRelations.get(activatorID).add(spikes);
-                } else {
-                    activationRelations.put(spikeJV.getString("activatorID"), new Array<Spikes>(new Spikes[]{spikes}));
-                }
-            }
-            spikesList.add(spikes);
-            addObject(spikes);
+        JsonValue spikesConstants = constants.get("spikes");
+        Spikes.setConstants(spikesConstants);
+        for (JsonValue spikeJV : levelJV.get("spikes")){
+            Spikes spike = new Spikes(spikesTexture, scale, spikeJV);
+            loadActivatable(spike, spikeJV);
         }
 
-        //Add pushable boxes
-        JsonValue boxesJV = constants.get("box");
-        dwidth  = steelTile.getRegionWidth()/scale.x;
-        dheight = steelTile.getRegionHeight()/scale.y;
-        for (JsonValue boxJV : boxesJV.get("boxes")) {
-            float x = boxJV.get("pos").getFloat(0);
-            float y = boxJV.get("pos").getFloat(1);
-            BoxObstacle box = new BoxObstacle(x, y, dwidth, dheight);
-            box.setTexture(steelTile);
-            box.setDrawScale(scale);
-            box.setName("box");
-            box.setFriction(boxesJV.getFloat("friction"));
-            box.setMass(boxesJV.getFloat("mass"));
-            addObject(box);
+        JsonValue boxConstants = constants.get("boxes");
+        PushableBox.setConstants(boxConstants);
+        for(JsonValue boxJV : levelJV.get("boxes")){
+            PushableBox box = new PushableBox(steelTile, scale, boxJV);
+            loadActivatable(box, boxJV);
         }
 
-        volume = constants.getFloat("volume", 0.2f);
-
-        // Create flamethrowers
-        JsonValue flamethrowersJV = constants.get("flamethrower");
-        for (JsonValue flamethrowerJV : flamethrowersJV.get("flamethrowers")) {
-            float x = flamethrowerJV.get("pos").getFloat(0);
-            float y = flamethrowerJV.get("pos").getFloat(1);
-            float angle = flamethrowerJV.getFloat("angle");
-            Flamethrower flamethrower = new Flamethrower(constants.get("flamethrower"),x, y, angle, scale, flamethrowerTexture, flameTexture);
-            addObject(flamethrower);
+        JsonValue flamethrowerConstants = constants.get("flamethrowers");
+        Flamethrower.setConstants(flamethrowerConstants);
+        Flame.setConstants(flamethrowerConstants);
+        for (JsonValue flamethrowerJV : levelJV.get("flamethrowers")){
+            Flamethrower flamethrower = new Flamethrower(flamethrowerTexture, flameTexture, scale, flamethrowerJV);
+            loadActivatable(flamethrower, flamethrowerJV);
         }
+
 
         // Create Laser
         JsonValue lasersJV = constants.get("laser");
-        for (JsonValue laserJV : lasersJV.get("lasers")) {
+        for (JsonValue laserJV : levelJV.get("lasers")) {
             float x = laserJV.get("pos").getFloat(0);
             float y = laserJV.get("pos").getFloat(1);
             LaserBeam laser = new LaserBeam(constants.get("laser"), x, y, 8, dwidth,dheight,"laserbeam");
@@ -375,12 +346,30 @@ public class LevelController extends WorldController implements ContactListener 
         // Create dude
         dwidth  = avatarTexture.getRegionWidth()/scale.x;
         dheight = avatarTexture.getRegionHeight()/scale.y;
-        avatar = new Cat(constants.get("cat"), dwidth, dheight, ret, avatar == null? null : avatar.getPosition());
+        avatar = new Cat(levelJV.get("cat"), dwidth, dheight, ret, avatar == null? null : avatar.getPosition());
         avatar.setDrawScale(scale);
         avatar.setTexture(avatarTexture);
         respawnPos = avatar.getPosition();
         addObject(avatar);
 
+        volume = constants.getFloat("volume", 0.2f);
+
+    }
+
+    private void loadActivatable(Activatable object, JsonValue objectJV){
+
+        addObject((Obstacle) object);
+
+        String activatorID = objectJV.getString("activatorID", "");
+        if (!activatorID.equals("")) {
+            if (activationRelations.containsKey(activatorID)) {
+                activationRelations.get(activatorID).add(object);
+            } else {
+                activationRelations.put(activatorID, new Array<>(new Activatable[]{object}));
+            }
+        }
+
+        activatables.add(object);
     }
 
     /**
@@ -406,9 +395,9 @@ public class LevelController extends WorldController implements ContactListener 
 
         if (!isFailure() && died) {
             died = false;
-            new_dead_body.setFacingRight(avatar.isFacingRight());
+            newDeadBody.setFacingRight(avatar.isFacingRight());
             avatar.setPosition(respawnPos);
-            deadBodyList.add(new_dead_body);
+            deadBodyArray.add(newDeadBody);
         }
 
         return true;
@@ -455,18 +444,13 @@ public class LevelController extends WorldController implements ContactListener 
         }
 
         // Process buttons
-        for (Activator a : activatorList){
+        for (Activator a : activators){
             a.updateActivated();
             if (activationRelations.containsKey(a.getID())){
-                for (Spikes s : activationRelations.get(a.getID())){
-                    s.setActive(a.isActive(), world);
+                for (Activatable s : activationRelations.get(a.getID())){
+                    s.updateActivated(a.isActive(), world);
                 }
             }
-        }
-
-        //Update objects
-        for (DeadBody d : deadBodyList){
-            d.update(dt);
         }
 
     }
@@ -679,16 +663,16 @@ public class LevelController extends WorldController implements ContactListener 
                 setFailure(true);
             } else {
                 // create dead body
-                DeadBody dead_body = new DeadBody(constants.get("cat"), dwidth, dheight);
-                dead_body.setDrawScale(scale);
-                dead_body.setTexture(deadCatTexture);
-                dead_body.setSensor(false);
-                dead_body.setLinearVelocity(avatar.getLinearVelocity());
-                dead_body.setLinearDamping(2f);
-                dead_body.setPosition(avatar.getPosition());
-                new_dead_body = dead_body;
-                addQueue.add(dead_body);
-                return dead_body;
+                DeadBody deadBody = new DeadBody(levelJV.get("cat"), dwidth, dheight);
+                deadBody.setDrawScale(scale);
+                deadBody.setTexture(deadCatTexture);
+                deadBody.setSensor(false);
+                deadBody.setLinearVelocity(avatar.getLinearVelocity());
+                deadBody.setLinearDamping(2f);
+                deadBody.setPosition(avatar.getPosition());
+                newDeadBody = deadBody;
+                addQueue.add(deadBody);
+                return deadBody;
             }
         }
         return null;

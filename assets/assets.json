@@ -26,8 +26,9 @@
         "platform:background": "platform/labBkg_concept.png"
     },
     "jsons"  : {
-        "platform:constants_l1": "platform/constants_l1.json",
-        "platform:constants_l2": "platform/constants_l2.json"
+        "platform:constants": "platform/constants.json",
+        "platform:level1": "platform/level1.json",
+        "platform:level2": "platform/level2.json"
     },
     "sounds" : {
         "platform:jump" : "platform/jump.mp3",

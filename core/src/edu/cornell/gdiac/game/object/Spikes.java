@@ -2,7 +2,6 @@ package edu.cornell.gdiac.game.object;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
 
@@ -11,20 +10,12 @@ import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
 
-public class Spikes extends BoxObstacle {
+public class Spikes extends BoxObstacle implements Activatable {
 
+    protected static JsonValue objectConstants;
     private PolygonShape sensorShape;
 
     private PolygonShape solidShape;
-
-    /** The initializing data (to avoid magic numbers) */
-    private final JsonValue data;
-
-    /** if the spikes are active */
-    private boolean active;
-
-    /** if the spikes are initially active */
-    private final boolean initialActive;
 
     private Fixture sensorFixture;
 
@@ -32,66 +23,59 @@ public class Spikes extends BoxObstacle {
 
     private ObjectSet<Joint> joints = new ObjectSet<Joint>();
 
-    public Spikes(float x, float y, float angle, boolean active,
-                  TextureRegion texture, Vector2 scale, JsonValue data){
-        super( x+data.get("offset").getFloat(0),
-                y+data.get("offset").getFloat(1),
-                texture.getRegionWidth()/scale.x,
-                texture.getRegionHeight()/scale.y);
-        assert angle % 90 == 0;
-        this.data = data;
-        this.active = active;
-        initialActive = active;
+    private boolean activated;
 
-        setAngle((float) (angle * Math.PI/180));
+    private boolean initialActivation;
+
+    public Spikes(TextureRegion texture, Vector2 scale, JsonValue data){
+        super(texture.getRegionWidth()/scale.x,
+                texture.getRegionHeight()/scale.y);
+
         setBodyType(BodyDef.BodyType.StaticBody);
         setSensor(true);
         setFixedRotation(true);
         setName("spikes");
         setDrawScale(scale);
         setTexture(texture);
-    }
 
-
-    /**
-     * Sets the active status of the spikes.
-     * @param activatorActive  whether the corresponding activators are active
-     */
-    public void setActive(boolean activatorActive, World world){
-
-        boolean next = initialActive ^ activatorActive;
-        if (next && !active) {
-            //state switch from inactive to active
-            active = true;
-            createFixtures();
-        } else if (!next && active){
-            //state switch from active to inactive
-            active = false;
-            releaseFixtures();
-            destroyJoints(world);
-        }
-    }
-
-
-    public boolean activatePhysics(World world){
-        Vector2 sensorCenter = new Vector2(data.get("sensor_offset").getFloat(0),
-                data.get("sensor_offset").getFloat(1));
+        Vector2 sensorCenter = new Vector2(objectConstants.get("sensor_offset").getFloat(0),
+                objectConstants.get("sensor_offset").getFloat(1));
         sensorShape = new PolygonShape();
-        sensorShape.setAsBox(getWidth() / 2 * data.getFloat("sensor_width_scale"),
-                getHeight() / 2 * data.getFloat("sensor_height_scale"),
+        sensorShape.setAsBox(getWidth() / 2 * objectConstants.getFloat("sensor_width_scale"),
+                getHeight() / 2 * objectConstants.getFloat("sensor_height_scale"),
                 sensorCenter, 0.0f);
 
-        Vector2 solidCenter = new Vector2(data.get("solid_offset").getFloat(0),
-                data.get("solid_offset").getFloat(1));
+        Vector2 solidCenter = new Vector2(objectConstants.get("solid_offset").getFloat(0),
+                objectConstants.get("solid_offset").getFloat(1));
         solidShape = new PolygonShape();
-        solidShape.setAsBox(getWidth() / 2 * data.getFloat("solid_width_scale"),
-                getHeight() / 2 * data.getFloat("solid_height_scale"),
+        solidShape.setAsBox(getWidth() / 2 * objectConstants.getFloat("solid_width_scale"),
+                getHeight() / 2 * objectConstants.getFloat("solid_height_scale"),
                 solidCenter, 0.0f);
 
+        setX(data.get("pos").getFloat(0)+objectConstants.get("offset").getFloat(0));
+        setY(data.get("pos").getFloat(1)+objectConstants.get("offset").getFloat(1));
+        setAngle((float) (data.getFloat("angle") * Math.PI/180));
+
+        initActivations(data);
+    }
+
+
+    @Override
+    public void activated(World world){
+        createFixtures();
+    }
+
+    @Override
+    public void deactivated(World world){
+        releaseFixtures();
+        destroyJoints(world);
+    }
+
+    public boolean activatePhysics(World world){
         if (!super.activatePhysics(world)) {
             return false;
         }
-        if (!active) {
+        if (!activated) {
             releaseFixtures();
         }
         return true;
@@ -149,7 +133,7 @@ public class Spikes extends BoxObstacle {
      */
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
-        if (active) {
+        if (activated) {
             canvas.drawPhysics(solidShape, Color.YELLOW, getX(), getY(), getAngle(), drawScale.x, drawScale.y);
             canvas.drawPhysics(sensorShape, Color.RED, getX(), getY(), getAngle(), drawScale.x, drawScale.y);
         }
@@ -157,11 +141,23 @@ public class Spikes extends BoxObstacle {
 
     @Override
     public void draw(GameCanvas canvas) {
-        if (active) {
+        if (activated) {
             super.draw(canvas);
         }
     }
 
+    @Override
+    public void setActivated(boolean activated){ this.activated = activated; }
 
+    @Override
+    public boolean getActivated() { return activated; }
+
+    @Override
+    public void setInitialActivation(boolean initialActivation){ this.initialActivation = initialActivation; }
+
+    @Override
+    public boolean getInitialActivation() { return initialActivation; }
+
+    public static void setConstants(JsonValue constants) { objectConstants = constants; }
 
 }

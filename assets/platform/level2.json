@@ -1,23 +1,5 @@
 {
-	"defaults" : {
-	    "gravity" : -14.7,
-    	"friction": 0.4,
-    	"density" : 0.0,
-    	"restitution": 0.1,
-    	"volume": 0.8
-	},
-	"goal" : {
-		"pos": [-20, -20], //temp impossible to exit
-		"density": 0.0,
-    	"friction": 0.0,
-    	"restitution": 0.0
-    },
-	"ret_goal" : {
-		"pos": [-2.5, 3.5],
-		"density": 0.0,
-		"friction": 0.0,
-		"restitution": 0.0
-	},
+	//TODO: factor constants out of level JSON and into constants JSON
 	"cat" : {
 		"pos": [0.5, 2.0],
 		"ret_pos": [-20,-20], //temp impossible
@@ -42,52 +24,37 @@
 			"width": 0.2
 		}
 	},
-	"spike" : {
-		"spikes":
-		[{"pos" : [10, 1], "angle": 0, "active": true, "activatorID": "button1"},
-			{"pos" : [11, 1], "angle": 0, "active": true, "activatorID": "button1"},
-			{"pos" : [17, 1], "angle": 0, "active": false, "activatorID": "button1"},
-			{"pos" : [29, 4], "angle": 90, "active": true, "activatorID": "button2"},
-			{"pos" : [29, 3], "angle": 90, "active": true, "activatorID": "button2"},
-			{"pos" : [29, 2], "angle": 90, "active": true, "activatorID": "button2"}],
-		"sensor_height_scale": 1,
-		"sensor_width_scale": 0.5,
-		"sensor_offset": [0, 0],
-		"solid_offset":[0, -0.25],
-		"solid_height_scale": 0.5,
-		"solid_width_scale": 1,
-		"offset": [
-			0.5,
-			0.5
-		]
+	"spikes":
+	[{"pos" : [10, 1], "angle": 0, "active": true, "activatorID": "button1"},
+		{"pos" : [11, 1], "angle": 0, "active": true, "activatorID": "button1"},
+		{"pos" : [17, 1], "angle": 0, "active": false, "activatorID": "button1"},
+		{"pos" : [29, 4], "angle": 90, "active": true, "activatorID": "button2"},
+		{"pos" : [29, 3], "angle": 90, "active": true, "activatorID": "button2"},
+		{"pos" : [29, 2], "angle": 90, "active": true, "activatorID": "button2"}],
+	"activators": [
+		{"pos": [4, 2], "type": "button","id" : "button1"},
+		{"pos": [13, 5], "type": "switch","id" : "button2"}
+	],
+	"boxes" : [
+		{"pos" :  [7, 2]}
+	],
+	"flamethrowers" : [
+		{"pos" :  [24, 3.8], "angle" : 0, "active": true, "activatorID" : "button1"}
+	],
+	"lasers" : [
+		{"pos" :  [20, 12.5]}
+	],
+	"goal" : {
+		"pos": [-20, -20], //temp impossible to exit
+		"density": 0.0,
+		"friction": 0.0,
+		"restitution": 0.0
 	},
-	"activator": {
-		"body_shape" : [-0.03125, 0.2, 0.96875, 0.2, 0.66875, 0.3, 0.26875, 0.3],
-		"sensor_shape" : [-0.03125, 0.2, 0.96875, 0.2, 0.96875, 0.6, -0.03125, 0.6],
-		"friction" : 0.4,
-		"offset": [0.03125, -0.2],
-		"activators": [
-			{"pos": [4, 2], "type": "button","id" : "button1"},
-			{"pos": [13, 5], "type": "switch","id" : "button2"}
-		]
-
-	},
-	"box": {
-		"friction" : 0.9,
-		"mass" : 200,
-		"boxes" : [
-			{"pos" :  [7.5, 4]}
-		]
-	},
-	"flamethrower": {
-		"flamethrowers" : [
-			{"pos" :  [24, 3.8], "angle" : 0}
-		]
-	},
-	"laser": {
-		"lasers" : [
-			{"pos" :  [20, 12.5]}
-		]
+	"ret_goal" : {
+		"pos": [-2.5, 3.5],
+		"density": 0.0,
+		"friction": 0.0,
+		"restitution": 0.0
 	},
 	"walls": 		[
 //						[0.0, 2.0, 0.0, 5.0, -1.0, 3.5], //invisible entrance wall

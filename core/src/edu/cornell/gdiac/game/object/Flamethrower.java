@@ -1,7 +1,6 @@
 package edu.cornell.gdiac.game.object;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Joint;
@@ -12,17 +11,19 @@ import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
 import edu.cornell.gdiac.game.obstacle.ComplexObstacle;
 
-import javax.swing.*;
+public class Flamethrower extends ComplexObstacle implements Activatable {
+    protected static JsonValue objectConstants;
 
-public class Flamethrower extends ComplexObstacle {
-    /** The initializing data (to avoid magic numbers) */
-    private final JsonValue data;
     protected Flame flame;
 
     protected BoxObstacle flameBase;
 
     /** Whether the flamethrower object is on and shooting a flame */
     private boolean isShooting;
+
+    private boolean activated;
+
+    private boolean initialActivation;
 
     /**
      * Returns true if the flamethrower if shooting
@@ -41,15 +42,12 @@ public class Flamethrower extends ComplexObstacle {
         isShooting = shooting;
     }
 
-    public Flamethrower(JsonValue data, float x, float y, float angle, Vector2 scale, TextureRegion flamethrowerTexture, TextureRegion flameTexture) {
-        super(x,y);
+    public Flamethrower(TextureRegion flamethrowerTexture, TextureRegion flameTexture, Vector2 scale, JsonValue data) {
+        super();
 //        setName("flamethrower");
-        assert angle % 90 == 0;
-        this.data = data;
-        this.setFixedRotation(false);
-        flame = new Flame(x, y,angle, scale, flameTexture,data);
 
-        flameBase = new BoxObstacle(x, y-(flame.getHeight()*0.65f), flamethrowerTexture.getRegionWidth()/scale.x, flamethrowerTexture.getRegionHeight()/scale.y);
+        this.setFixedRotation(false);
+        flameBase = new BoxObstacle(flamethrowerTexture.getRegionWidth()/scale.x, flamethrowerTexture.getRegionHeight()/scale.y);
         flameBase.setDrawScale(scale);
         flameBase.setTexture(flamethrowerTexture);
         flameBase.setBodyType(BodyDef.BodyType.StaticBody);
@@ -58,9 +56,15 @@ public class Flamethrower extends ComplexObstacle {
         flameBase.setRestitution(0f);
         flameBase.setName("flamethrower");
         flameBase.setDensity(0f);
-        bodies.add(flameBase);
 
+        flame = new Flame(flameTexture, scale, data);
+        bodies.add(flameBase);
         bodies.add(flame);
+
+        flameBase.setX(data.get("pos").getFloat(0));
+        flameBase.setY(data.get("pos").getFloat(1) +
+                (flame.getHeight()*objectConstants.getFloat("base_y_offset_scale")));
+        initActivations(data);
 //        this.setAngle((float) (angle * Math.PI/180));
     }
 
@@ -100,4 +104,33 @@ public class Flamethrower extends ComplexObstacle {
     public void update(float dt) {
 
     }
+
+    /** TODO: turn on flames */
+    @Override
+    public void activated(World world){}
+
+    /** TODO: turn off flames */
+    @Override
+    public void deactivated(World world){}
+
+    @Override
+    public void draw(GameCanvas canvas){
+        if (activated){
+            super.draw(canvas);
+        }
+    }
+
+    @Override
+    public void setActivated(boolean activated){ this.activated = activated; }
+
+    @Override
+    public boolean getActivated() { return activated; }
+
+    @Override
+    public void setInitialActivation(boolean initialActivation){ this.initialActivation = initialActivation; }
+
+    @Override
+    public boolean getInitialActivation() { return initialActivation; }
+
+    public static void setConstants(JsonValue constants) { objectConstants = constants; }
 }

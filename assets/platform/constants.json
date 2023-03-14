@@ -1,0 +1,39 @@
+{
+  "defaults" : {
+    "gravity" : -14.7,
+    "friction": 0.4,
+    "density" : 0.0,
+    "restitution": 0.1,
+    "volume": 0.8
+  },
+  "spikes" : {
+    "sensor_height_scale": 1,
+    "sensor_width_scale": 0.5,
+    "sensor_offset": [0, 0],
+    "solid_offset":[0, -0.25],
+    "solid_height_scale": 0.5,
+    "solid_width_scale": 1,
+    "offset": [
+      0.5,
+      0.5
+    ]
+  },
+  "activators": {
+    "body_shape" : [-0.03125, 0.2, 0.96875, 0.2, 0.66875, 0.3, 0.26875, 0.3],
+    "sensor_shape" : [-0.03125, 0.2, 0.96875, 0.2, 0.96875, 0.6, -0.03125, 0.6],
+    "friction" : 0.4,
+    "offset": [0.03125, -0.2]
+  },
+  "boxes": {
+    "friction" : 0.9,
+    "mass" : 200,
+    "offset": [0.5, 0.5]
+  },
+  "flamethrowers": {
+    "base_y_offset_scale" : -0.65,
+    "flame_sensor_scale": [0.45, 0.5]
+  },
+  "laser": {
+
+  }
+}

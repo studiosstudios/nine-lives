@@ -590,6 +590,7 @@ public class LevelController {
     public void update(float dt) {
         if (collisionController.getReturn()) {
             setRet(true);
+            collisionController.setReturn(false);
         }
 //        while (!jointQueue.isEmpty()) {
 //            JointDef jdef = jointQueue.poll();

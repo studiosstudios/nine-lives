@@ -469,6 +469,7 @@ public class WorldController implements Screen {
 			return false;
 		} else if (currController.isRet()) {
 			pause();
+
 			listener.exitScreen(this, EXIT_PREV);
 			return false;
 		}

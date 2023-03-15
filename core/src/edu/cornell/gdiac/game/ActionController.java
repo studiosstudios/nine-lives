@@ -36,15 +36,32 @@ public class ActionController {
     private long plopId = -1;
     /** The pew (fire) sound */
     private long fireId = -1;
-
+    /** The meow sound */
     private long meowId = -1;
-
     /** The level */
     private Level level;
 
+    /**
+     * Creates and initialize a new instance of a ActionController
+     *
+     * @param bounds    The game bounds in Box2d coordinates
+     * @param scale	    The game scale Vector2
+     * @param volume    The volume of the game
+     */
+    public ActionController(Rectangle bounds, Vector2 scale, float volume) {
+        this.bounds = bounds;
+        this.scale = scale;
+        this.volume = volume;
+    }
 
-
-
+    /**
+     * Sets the level model
+     *
+     * @param level The Level model to be set to level
+     */
+    public void setLevel(Level level){
+        this.level = level;
+    }
 
     /**
      * Sets the hashmaps for Texture Regions, Sounds, Fonts, and sets JSON value constants
@@ -63,16 +80,6 @@ public class ActionController {
         this.levelJV = levelJV;
     }
 
-    public ActionController(Rectangle bounds, Vector2 scale, float volume) {
-        this.bounds = bounds;
-        this.scale = scale;
-        this.volume = volume;
-    }
-
-    public void setLevel(Level level){
-        this.level = level;
-    }
-
     /**
      * Called when the Screen is paused.
      *
@@ -86,6 +93,16 @@ public class ActionController {
         soundAssetMap.get("meow").stop(meowId);
     }
 
+    /**
+     * The core gameplay loop of this world.
+     *
+     * This method contains the specific update code for this mini-game. It does
+     * not handle collisions, as those are managed by the parent class WorldController.
+     * This method is called after input is read, but before collisions are resolved.
+     * The very last thing that it should do is apply forces to the appropriate objects.
+     *
+     * @param dt	Number of seconds since last animation frame
+     */
     public void update(float dt){
         Cat cat = level.getCat();
         cat.setMovement(InputController.getInstance().getHorizontal() *cat.getForce() * (cat.getIsClimbing() ? 0 : 1));
@@ -114,6 +131,13 @@ public class ActionController {
         }
     }
 
+    /**
+     * Fixes a body to spikes
+     *
+     * @param deadbody the DeadBody to fix to the spikes
+     * @param spikes the spikes
+     * @param points the points to fix to
+     */
     public void fixBodyToSpikes(DeadBody deadbody, Spikes spikes, Vector2[] points) {
         switch ((int) (spikes.getAngle() * 180/Math.PI)) {
             case 0:
@@ -167,6 +191,13 @@ public class ActionController {
         return null;
     }
 
+    /**
+     * Actions carried out when the player has died
+     * The level model died is set to false
+     * The level model new dead body is set to face the same direction as the cat
+     * The level model new dead body is added to the array of dead bodies
+     *
+     */
     public void died() {
         level.setDied(false);
         level.getNewDeadBody().setFacingRight(level.getCat().isFacingRight());

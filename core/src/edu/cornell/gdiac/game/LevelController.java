@@ -42,54 +42,54 @@ public class LevelController {
     protected Rectangle bounds;
     /** The world scale */
     protected Vector2 scale;
-
     /** The amount of time for a physics engine step. */
     public static final float WORLD_STEP = 1/60.0f;
     /** Number of velocity iterations for the constrain solvers */
     public static final int WORLD_VELOC = 6;
     /** Number of position iterations for the constrain solvers */
     public static final int WORLD_POSIT = 2;
-
-    /** Whether or not debug mode is active */
+    /** Whether debug mode is active */
     private boolean debug;
     /** The default sound volume */
     private float volume;
-
     /** JSON representing the level */
     private JsonValue levelJV;
-
     /** Mark set to handle more sophisticated collision callbacks */
     protected ObjectSet<Fixture> sensorFixtures;
-
+    /** Whether to return to previous level */
     private boolean ret;
-
     /** Reference to the game canvas */
     protected GameCanvas canvas;
-
+    /** The maximum number of lives in the game */
     private static final int MAX_NUM_LIVES = 4;
-
     /** The hashmap for texture regions */
     private HashMap<String, TextureRegion> textureRegionAssetMap;
     /** The hashmap for sounds */
     private HashMap<String, Sound> soundAssetMap;
     /** The hashmap for fonts */
     private HashMap<String, BitmapFont> fontAssetMap;
+    /** The BitmapFont for the displayFont */
+    protected BitmapFont displayFont;
     /** The JSON value constants */
     private JsonValue JSONconstants;
-
+    /** The ActionController */
     private ActionController actionController;
-
+    /** The CollisionController */
     public CollisionController collisionController;
-
+    /** The Level model */
     private Level level;
 
-    protected BitmapFont displayFont;
-
-
     /**
-     * Creates and initialize a new instance of the platformer game
+     * Creates and initialize a new instance of a LevelController
      *
-     * The game has default gravity and other settings
+     * Creates a new game world
+     *
+     * The game world is scaled so that the screen coordinates do not agree
+     * with the Box2d coordinates.  The bounds are in terms of the Box2d
+     * world, not the screen.
+     *
+     * @param bounds	The game bounds in Box2d coordinates
+     * @param gravity	The gravitational force on this Box2d world
      */
     public LevelController(Rectangle bounds, Vector2 gravity) {
         world = new World(gravity,false);
@@ -105,39 +105,6 @@ public class LevelController {
         collisionController = new CollisionController(actionController);
         actionController.setLevel(level);
         collisionController.setLevel(level);
-    }
-
-    public void setRet(boolean value){
-        ret = value;
-    }
-
-    /** Returns true if returning to prev level
-     *
-     * @return true if returning to previous level
-     */
-    public boolean isRet() { return ret; }
-
-    public Level getLevel() {
-        return level;
-    }
-
-    /**
-     * Sets the hashmaps for Texture Regions, Sounds, Fonts, and sets JSON value constants
-     *
-     * @param tMap the hashmap for Texture Regions
-     * @param fMap the hashmap for Fonts
-     * @param sMap the hashmap for Sounds
-     * @param constants the JSON value for constants
-     */
-    public void setAssets(HashMap<String, TextureRegion> tMap, HashMap<String, BitmapFont> fMap,
-                          HashMap<String, Sound> sMap, JsonValue constants, JsonValue levelJV){
-        actionController.setAssets(tMap, fMap, sMap, constants, levelJV);
-        textureRegionAssetMap = tMap;
-        fontAssetMap = fMap;
-        soundAssetMap = sMap;
-        JSONconstants = constants;
-        this.levelJV = levelJV;
-        displayFont = fMap.get("display");
     }
 
     /**
@@ -165,6 +132,47 @@ public class LevelController {
         this.scale.y = canvas.getHeight()/bounds.getHeight();
     }
 
+    /**
+     * Sets whether to return to the previous level
+     *
+     * @param value to set ret to
+     */
+    public void setRet(boolean value){
+        ret = value;
+    }
+
+    /** Returns true if returning to prev level
+     *
+     * @return true if returning to previous level
+     */
+    public boolean isRet() { return ret; }
+
+    /** Returns the level model
+     *
+     * @return level
+     */
+    public Level getLevel() {
+        return level;
+    }
+
+    /**
+     * Sets the hashmaps for Texture Regions, Sounds, Fonts, and sets JSON value constants
+     *
+     * @param tMap the hashmap for Texture Regions
+     * @param fMap the hashmap for Fonts
+     * @param sMap the hashmap for Sounds
+     * @param constants the JSON value for constants
+     */
+    public void setAssets(HashMap<String, TextureRegion> tMap, HashMap<String, BitmapFont> fMap,
+                          HashMap<String, Sound> sMap, JsonValue constants, JsonValue levelJV){
+        actionController.setAssets(tMap, fMap, sMap, constants, levelJV);
+        textureRegionAssetMap = tMap;
+        fontAssetMap = fMap;
+        soundAssetMap = sMap;
+        JSONconstants = constants;
+        this.levelJV = levelJV;
+        displayFont = fMap.get("display");
+    }
 
     /**
      * Resets the status of the game so that we can play again.
@@ -212,7 +220,7 @@ public class LevelController {
      * to switch to a new game mode.  If not, the update proceeds
      * normally.
      *
-     * @param dt	Number of seconds since last animation frame
+     * @param dt Number of seconds since last animation frame
      *
      * @return whether to process the update loop
      */
@@ -231,7 +239,6 @@ public class LevelController {
             reset(null);
         }
 
-
         if (!level.isFailure() && level.getDied()) {
             actionController.died();
         }
@@ -239,5 +246,86 @@ public class LevelController {
         return input.didExit();
     }
 
+    /**
+     * The core gameplay loop of this world.
+     *
+     * This method contains the specific update code for this mini-game. It does
+     * not handle collisions, as those are managed by the parent class WorldController.
+     * This method is called after input is read, but before collisions are resolved.
+     * The very last thing that it should do is apply forces to the appropriate objects.
+     *
+     * @param dt	Number of seconds since last animation frame
+     */
+    public void update(float dt) {
+        if (collisionController.getReturn()) {
+            setRet(true);
+        }
+        actionController.update(dt);
+    }
+
+    /**
+     * Processes physics
+     *
+     * Once the update phase is over, but before we draw, we are ready to handle
+     * physics.  The primary method is the step() method in world.  This implementation
+     * works for all applications and should not need to be overwritten.
+     *
+     * @param dt	Number of seconds since last animation frame
+     */
+    public void postUpdate(float dt) {
+        // Add any objects created by actions
+        level.addQueuedObjects();
+        level.addQueuedJoints();
+
+        // Turn the physics engine crank.
+        world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
+
+        // Garbage collect the deleted objects.
+        // Note how we use the linked list nodes to delete O(1) in place.
+        // This is O(n) without copying.
+        Iterator<PooledList<Obstacle>.Entry> iterator = level.getObjects().entryIterator();
+        while (iterator.hasNext()) {
+            PooledList<Obstacle>.Entry entry = iterator.next();
+            Obstacle obj = entry.getValue();
+            if (obj.isRemoved()) {
+                obj.deactivatePhysics(world);
+                entry.remove();
+            } else {
+                // Note that update is called last!
+                obj.update(dt);
+            }
+        }
+    }
+
+    /**
+     * Called when the Screen is paused.
+     *
+     * We need this method to stop all sounds when we pause.
+     * Pausing happens when we switch game modes.
+     */
+    public void pause() {
+        actionController.pause();
+    }
+
+    /**
+     * Draw the physics objects to the canvas
+     *
+     * For simple worlds, this method is enough by itself.  It will need
+     * to be overriden if the world needs fancy backgrounds or the like.
+     *
+     * The method draws all objects in the order that they were added.
+     *
+     * @param dt	Number of seconds since last animation frame
+     */
+    public void draw(float dt) {
+        level.draw(canvas, debug);
+
+        // Final message
+        if (level.isComplete() && !level.isFailure()) {
+            displayFont.setColor(Color.YELLOW);
+            canvas.begin(); // DO NOT SCALE
+            canvas.end();
+        }
+    }
 
 }

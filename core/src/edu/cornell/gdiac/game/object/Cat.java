@@ -452,9 +452,7 @@ public class Cat extends CapsuleObstacle {
             setVY(Math.signum(getVerticalMovement())*(getMaxSpeed()*1.2f));
             setVX(Math.signum(getHorizontalMovement())*(getMaxSpeed()*1.2f));
             body.applyForce(forceCache,getPosition(),true);
-            if(!isGrounded) {
-                canDash = false;
-            }
+            canDash = false;
         }
         if (getIsClimbing()) {
             if (Math.abs(getVY()) >= getMaxSpeed()) {

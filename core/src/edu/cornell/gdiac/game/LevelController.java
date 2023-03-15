@@ -77,8 +77,6 @@ public class LevelController {
     /** The JSON value constants */
     private JsonValue JSONconstants;
 
-    private Texture background;
-
     private ActionController actionController;
 
     public CollisionController collisionController;
@@ -300,15 +298,6 @@ public class LevelController {
      */
     public void pause() {
         actionController.pause();
-    }
-
-    /**
-     * Sets the background to be drawn for this world
-     *
-     * @param bkgd the texture of the background
-     */
-    public void setBackground(Texture bkgd) {
-        background = bkgd;
     }
 
     /**

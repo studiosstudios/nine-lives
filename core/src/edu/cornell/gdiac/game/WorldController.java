@@ -160,7 +160,6 @@ public class WorldController implements Screen {
 	private void loadLevel(int levelNum, LevelController level){
 		levelJV = directory.getEntry("platform:level" + levelNum, JsonValue.class);
 		level.setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants, levelJV);
-		level.setBackground(textureRegionAssetMap.get("background").getTexture());
 	}
 	
 	/**
@@ -205,8 +204,6 @@ public class WorldController implements Screen {
 		soundAssetMap.put("meow", directory.getEntry( "platform:meow", Sound.class ));
 
 		constants = directory.getEntry("platform:constants", JsonValue.class);
-
-
 
 		// Allocate the tiles
 		textureRegionAssetMap.put("steel", new TextureRegion(directory.getEntry("shared:steel", Texture.class)));

@@ -16,6 +16,7 @@ package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
@@ -86,6 +87,7 @@ public class Level {
     private Vector2 respawnPos;
     private float dwidth;
     private float dheight;
+    private Texture background;
 
 
 
@@ -202,6 +204,7 @@ public class Level {
         dheight = tMap.get("goal").getRegionHeight()/scale.y;
 
         activationRelations = new HashMap<>();
+        background = tMap.get("background").getTexture();
 
         JsonValue goal = levelJV.get("goal");
         JsonValue goalpos = goal.get("pos");
@@ -486,6 +489,9 @@ public class Level {
         canvas.clear();
 
         canvas.begin();
+        if (background != null) {
+            canvas.draw(background, 0, 0);
+        }
         for(Obstacle obj : objects) {
             obj.draw(canvas);
         }

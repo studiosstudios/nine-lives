@@ -16,6 +16,7 @@
  */
 package edu.cornell.gdiac.game;
 
+import java.util.HashMap;
 import java.util.Iterator;
 
 import com.badlogic.gdx.*;
@@ -24,6 +25,7 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.game.obstacle.*;
@@ -42,15 +44,15 @@ import edu.cornell.gdiac.game.obstacle.*;
  * This is the purpose of our AssetState variable; it ensures that multiple instances
  * place nicely with the static assets.
  */
-public abstract class WorldController implements Screen {
+public class WorldController implements Screen {
 //	/** The texture for walls and platforms */
 //	protected TextureRegion earthTile;
 	/** The texture for walls and platforms */
 	protected TextureRegion steelTile;
 	/** The texture for the exit condition */
 	protected TextureRegion goalTile;
-	/** The font for giving messages to the player */
-	protected BitmapFont displayFont;
+//	/** The font for giving messages to the player */
+//	protected BitmapFont displayFont;
 	
 	/** Exit code for quitting the game */
 	public static final int EXIT_QUIT = 0;
@@ -84,18 +86,10 @@ public abstract class WorldController implements Screen {
 	/** Listener that will update the player mode when we are done */
 	private ScreenListener listener;
 
-	/** The Box2D world */
-	protected World world;
-	/** The boundary of the world */
-	protected Rectangle bounds;
-	/** The world scale */
-	protected Vector2 scale;
-	
-	/** Whether or not this is an active controller */
-	private boolean active;
+
 	/** Whether we have completed this level */
 	private boolean complete;
-	private boolean ret;
+//	private boolean ret;
 	/** Whether we have failed at this world (and need a reset) */
 	private boolean failed;
 	/** Whether or not debug mode is active */
@@ -104,6 +98,26 @@ public abstract class WorldController implements Screen {
 	private int countdown;
 
 	private Texture background;
+
+//	/** Level controller */
+//	private LevelController levelController;
+
+	/** The hashmap for texture regions */
+	private HashMap<String, TextureRegion> textureRegionAssetMap;
+	/** The hashmap for sounds */
+	private HashMap<String, Sound> soundAssetMap;
+	/** The hashmap for fonts */
+	private HashMap<String, BitmapFont> fontAssetMap;
+	/** The JSON value constants */
+	private JsonValue constants;
+	/** JSON representing the level */
+	private JsonValue levelJV;
+	/** Level number **/
+	private int levelNum;
+	private LevelController prevController;
+	private LevelController currController;
+
+	private LevelController nextController;
 
 	/**
 	 * Returns true if debug mode is active.
@@ -116,16 +130,6 @@ public abstract class WorldController implements Screen {
 		return debug;
 	}
 
-	/**
-	 * Sets whether debug mode is active.
-	 *
-	 * If true, all objects will display their physics bodies.
-	 *
-	 * @param value whether debug mode is active.
-	 */
-	public void setDebug(boolean value) {
-		debug = value;
-	}
 
 	/**
 	 * Returns true if the level is completed.
@@ -138,65 +142,56 @@ public abstract class WorldController implements Screen {
 		return complete;
 	}
 
-	/** Returns true if returning to prev level
-	 *
-	 * @return true if returning to previous level
-	 */
-	public boolean isRet() { return ret; }
-	/**
-	 * Sets whether the level is completed.
-	 *
-	 * If true, the level will advance after a countdown
-	 *
-	 * @param value whether the level is completed.
-	 */
-	public void setComplete(boolean value) {
-		if (value) {
-			countdown = EXIT_COUNT;
-		}
-		complete = value;
-	}
+//	/** Returns true if returning to prev level
+//	 *
+//	 * @return true if returning to previous level
+//	 */
+//	public boolean isRet() { return ret; }
+//	/**
+//	 * Sets whether the level is completed.
+//	 *
+//	 * If true, the level will advance after a countdown
+//	 *
+//	 * @param value whether the level is completed.
+//	 */
+//	public void setComplete(boolean value) {
+//		if (value) {
+//			countdown = EXIT_COUNT;
+//		}
+//		complete = value;
+//	}
 
-	public void setRet(boolean value){
-		if(value) {
-			countdown = EXIT_COUNT;
-		}
-//		System.out.println("ret set to " + value);
-		ret = value;
-	}
-	/**
-	 * Returns true if the level is failed.
-	 *
-	 * If true, the level will reset after a countdown
-	 *
-	 * @return true if the level is failed.
-	 */
-	public boolean isFailure( ) {
-		return failed;
-	}
+//	public void setRet(boolean value){
+//		if(value) {
+//			countdown = EXIT_COUNT;
+//		}
+////		System.out.println("ret set to " + value);
+//		ret = value;
+//	}
+//	/**
+//	 * Returns true if the level is failed.
+//	 *
+//	 * If true, the level will reset after a countdown
+//	 *
+//	 * @return true if the level is failed.
+//	 */
+//	public boolean isFailure( ) {
+//		return failed;
+//	}
 
-	/**
-	 * Sets whether the level is failed.
-	 *
-	 * If true, the level will reset after a countdown
-	 *
-	 * @param value whether the level is failed.
-	 */
-	public void setFailure(boolean value) {
-		if (value) {
-			countdown = EXIT_COUNT;
-		}
-		failed = value;
-	}
-	
-	/**
-	 * Returns true if this is the active screen
-	 *
-	 * @return true if this is the active screen
-	 */
-	public boolean isActive( ) {
-		return active;
-	}
+//	/**
+//	 * Sets whether the level is failed.
+//	 *
+//	 * If true, the level will reset after a countdown
+//	 *
+//	 * @param value whether the level is failed.
+//	 */
+//	public void setFailure(boolean value) {
+//		if (value) {
+//			countdown = EXIT_COUNT;
+//		}
+//		failed = value;
+//	}
 
 	/**
 	 * Returns the canvas associated with this controller
@@ -206,17 +201,17 @@ public abstract class WorldController implements Screen {
 	 * @return the canvas associated with this controller
 	 */
 	public GameCanvas getCanvas() {
-		return canvas;
+		return currController.getCanvas();
 	}
 
-	/**
-	 * Sets the background to be drawn for this world
-	 *
-	 * @param bkgd the texture of the background
-	 */
-	public void setBackground(Texture bkgd) {
-		background = bkgd;
-	}
+//	/**
+//	 * Sets the background to be drawn for this world
+//	 *
+//	 * @param bkgd the texture of the background
+//	 */
+//	public void setBackground(Texture bkgd) {
+//		background = bkgd;
+//	}
 
 
 	/**
@@ -228,9 +223,8 @@ public abstract class WorldController implements Screen {
 	 * @param canvas the canvas associated with this controller
 	 */
 	public void setCanvas(GameCanvas canvas) {
-		this.canvas = canvas;
-		this.scale.x = canvas.getWidth()/bounds.getWidth();
-		this.scale.y = canvas.getHeight()/bounds.getHeight();
+		currController.setCanvas(canvas);
+		nextController.setCanvas(canvas);
 	}
 	
 	/**
@@ -271,34 +265,49 @@ public abstract class WorldController implements Screen {
 	 * @param gravity	The gravitational force on this Box2d world
 	 */
 	protected WorldController(Rectangle bounds, Vector2 gravity) {
-		world = new World(gravity,false);
-		this.bounds = new Rectangle(bounds);
-		this.scale = new Vector2(1,1);
-		complete = false;
-//		System.out.println("ret set to false in WorldController");
-		ret = false;
-		failed = false;
-		debug  = false;
-		active = false;
+		prevController = null;
+		currController = new LevelController(1, bounds, gravity);
+		nextController = new LevelController(2, bounds, gravity);
+		levelNum = 1;
+
+//		controllers[0] = new LevelController(1);
+//		controllers[1] = new LevelController(2);
+
+//		levelController = new LevelController(bounds, gravity);
+//
+//		this.bounds = new Rectangle(bounds);
+//		this.scale = new Vector2(1,1);
+//		complete = false;
+//		ret = false;
 		countdown = -1;
 	}
+
+	public LevelController getPrevController() { return prevController; }
+	public LevelController getCurrController() { return currController; }
+	public LevelController getNextController() { return nextController; }
+
+	public void setPrevController(LevelController controller) { prevController = controller; }
+	public void setCurrController(LevelController controller) { currController = controller; }
+	public void setNextController(LevelController controller) { nextController = controller; }
 	
 	/**
 	 * Dispose of all (non-static) resources allocated to this mode.
 	 */
 	public void dispose() {
-		for(Obstacle obj : objects) {
-			obj.deactivatePhysics(world);
-		}
-		objects.clear();
-		addQueue.clear();
-		world.dispose();
-		objects = null;
-		addQueue = null;
-		bounds = null;
-		scale  = null;
-		world  = null;
-		canvas = null;
+		currController.dispose();
+
+//		for(Obstacle obj : objects) {
+//			obj.deactivatePhysics(world);
+//		}
+//		objects.clear();
+//		addQueue.clear();
+//		world.dispose();
+//		objects = null;
+//		addQueue = null;
+//		bounds = null;
+//		scale  = null;
+//		world  = null;
+//		canvas = null;
 	}
 
 	/**
@@ -311,58 +320,116 @@ public abstract class WorldController implements Screen {
 	 */
 	public void gatherAssets(AssetDirectory directory) {
 		// Allocate the tiles
-		steelTile = new TextureRegion(directory.getEntry( "shared:steel", Texture.class ));
-		goalTile  = new TextureRegion(directory.getEntry( "shared:goal", Texture.class ));
-		displayFont = directory.getEntry( "shared:retro" ,BitmapFont.class);
+		// Creating the hashmaps
+		textureRegionAssetMap = new HashMap<String, TextureRegion>();
+		soundAssetMap = new HashMap<String, Sound>();
+		fontAssetMap = new HashMap<String, BitmapFont>();
+
+		textureRegionAssetMap.put("cat", new TextureRegion(directory.getEntry("platform:cat",Texture.class)));
+		textureRegionAssetMap.put("barrier", new TextureRegion(directory.getEntry("platform:barrier",Texture.class)));
+		textureRegionAssetMap.put("rope", new TextureRegion(directory.getEntry("platform:rope",Texture.class)));
+		textureRegionAssetMap.put("spikes", new TextureRegion(directory.getEntry("platform:spikes", Texture.class)));
+		textureRegionAssetMap.put("button", new TextureRegion(directory.getEntry("platform:button", Texture.class)));
+		textureRegionAssetMap.put("flame", new TextureRegion(directory.getEntry("platform:flame", Texture.class)));
+		textureRegionAssetMap.put("flamethrower", new TextureRegion(directory.getEntry("platform:flamethrower", Texture.class)));
+		textureRegionAssetMap.put("laserleft", new TextureRegion(directory.getEntry("platform:laserLeft", Texture.class)));
+		textureRegionAssetMap.put("laserbeam", new TextureRegion(directory.getEntry("platform:laserBeam", Texture.class)));
+		textureRegionAssetMap.put("laserright", new TextureRegion(directory.getEntry("platform:laserRight", Texture.class)));
+		textureRegionAssetMap.put("deadcat", new TextureRegion(directory.getEntry("platform:deadCat", Texture.class)));
+		textureRegionAssetMap.put("background", new TextureRegion(directory.getEntry("platform:background", Texture.class)));
+
+		soundAssetMap.put("jump", directory.getEntry( "platform:jump", Sound.class ));
+		soundAssetMap.put("pew", directory.getEntry( "platform:pew", Sound.class ));
+		soundAssetMap.put("plop", directory.getEntry( "platform:plop", Sound.class ));
+		soundAssetMap.put("meow", directory.getEntry( "platform:meow", Sound.class ));
+
+		constants = directory.getEntry("platform:constants", JsonValue.class);
+
+//		constants = directory.getEntry("platform:constants", JsonValue.class);
+//		switch(levelNum) {
+//			case 1:
+//				levelJV = directory.getEntry("platform:level1", JsonValue.class);
+//				break;
+//			case 2:
+//				levelJV = directory.getEntry("platform:level2", JsonValue.class);
+//				break;
+//			default:
+//				throw new RuntimeException("Invalid level");
+//		}
+
+		// Giving assets to levelController
+
+
+
+		// Allocate the tiles
+		textureRegionAssetMap.put("steel", new TextureRegion(directory.getEntry("shared:steel", Texture.class)));
+		textureRegionAssetMap.put("goal", new TextureRegion(directory.getEntry("shared:goal", Texture.class)));
+		fontAssetMap.put("display", directory.getEntry( "shared:retro" ,BitmapFont.class));
+
+//		steelTile = new TextureRegion(directory.getEntry( "shared:steel", Texture.class ));
+//		goalTile  = new TextureRegion(directory.getEntry( "shared:goal", Texture.class ));
+//		displayFont = directory.getEntry( "shared:retro" ,BitmapFont.class);
+
+		levelJV = directory.getEntry("platform:level1", JsonValue.class);
+		currController.setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants, levelJV);
+		currController.setBackground(textureRegionAssetMap.get("background").getTexture());
+//		currController.setCanvas(canvas);
+
+		levelJV = directory.getEntry("platform:level2", JsonValue.class);
+		nextController.setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants, levelJV);
+		nextController.setBackground(textureRegionAssetMap.get("background").getTexture());
+//		nextController.setCanvas(canvas);
 	}
 
-	/**
-	 *
-	 * Adds a physics object in to the insertion queue.
-	 *
-	 * Objects on the queue are added just before collision processing.  We do this to 
-	 * control object creation.
-	 *
-	 * param obj The object to add
-	 */
-	public void addQueuedObject(Obstacle obj) {
-		assert inBounds(obj) : "Object is not in bounds";
-		addQueue.add(obj);
-	}
+//	/**
+//	 *
+//	 * Adds a physics object in to the insertion queue.
+//	 *
+//	 * Objects on the queue are added just before collision processing.  We do this to
+//	 * control object creation.
+//	 *
+//	 * param obj The object to add
+//	 */
+//	public void addQueuedObject(Obstacle obj) {
+//		assert inBounds(obj) : "Object is not in bounds";
+//		addQueue.add(obj);
+//	}
 
-	/**
-	 * Immediately adds the object to the physics world
-	 *
-	 * param obj The object to add
-	 */
-	protected void addObject(Obstacle obj) {
-		assert inBounds(obj) : "Object is not in bounds";
-		objects.add(obj);
-		obj.activatePhysics(world);
-	}
+//	/**
+//	 * Immediately adds the object to the physics world
+//	 *
+//	 * param obj The object to add
+//	 */
+//	protected void addObject(Obstacle obj) {
+//		assert inBounds(obj) : "Object is not in bounds";
+//		objects.add(obj);
+//		obj.activatePhysics(world);
+//	}
 
-	/**
-	 * Returns true if the object is in bounds.
-	 *
-	 * This assertion is useful for debugging the physics.
-	 *
-	 * @param obj The object to check.
-	 *
-	 * @return true if the object is in bounds.
-	 */
-	public boolean inBounds(Obstacle obj) {
-		boolean horiz = (bounds.x <= obj.getX() && obj.getX() <= bounds.x+bounds.width);
-		boolean vert  = (bounds.y <= obj.getY() && obj.getY() <= bounds.y+bounds.height);
-		return horiz && vert;
-	}
-	
+//	/**
+//	 * Returns true if the object is in bounds.
+//	 *
+//	 * This assertion is useful for debugging the physics.
+//	 *
+//	 * @param obj The object to check.
+//	 *
+//	 * @return true if the object is in bounds.
+//	 */
+//	public boolean inBounds(Obstacle obj) {
+//		boolean horiz = (bounds.x <= obj.getX() && obj.getX() <= bounds.x+bounds.width);
+//		boolean vert  = (bounds.y <= obj.getY() && obj.getY() <= bounds.y+bounds.height);
+//		return horiz && vert;
+//	}
+
 	/**
 	 * Resets the status of the game so that we can play again.
 	 *
 	 * This method disposes of the world and creates a new one.
 	 */
-	public abstract void reset();
-	
+	public void reset() {
+		currController.reset();
+	}
+
 	/**
 	 * Returns whether to process the update loop
 	 *
@@ -371,53 +438,89 @@ public abstract class WorldController implements Screen {
 	 * normally.
 	 *
 	 * @param dt	Number of seconds since last animation frame
-	 * 
+	 *
 	 * @return whether to process the update loop
 	 */
 	public boolean preUpdate(float dt) {
-		InputController input = InputController.getInstance();
-		input.readInput(bounds, scale);
 		if (listener == null) {
 			return true;
 		}
-
-		// Toggle debug
-		if (input.didDebug()) {
-			debug = !debug;
-		}
-		
-		// Handle resets
-		if (input.didReset()) {
-			reset();
-		}
-		
 		// Now it is time to maybe switch screens.
-		if (input.didExit()) {
+//		if (currController.preUpdate(dt)) {
+//			pause();
+//			listener.exitScreen(this, EXIT_QUIT);
+//			return false;
+//		} else if (currController.getLevel().checkFailure(dt)) {
+//			return false;
+//		}
+//		return true;
+
+		// Now it is time to maybe switch screens.
+		if (currController.preUpdate(dt)) {
 			pause();
 			listener.exitScreen(this, EXIT_QUIT);
 			return false;
 		}
-		else if (countdown > 0) {
-			countdown--;
-		} else if (countdown == 0) {
-//			System.out.println("got to preupdate");
-
-			if (failed) {
-//				System.out.println("got to failed here");
-				reset();
-			} else if (complete) {
-				pause();
-//				System.out.println("switchtonext-worldcontroller");
-				listener.exitScreen(this, EXIT_NEXT);
-				return false;
-			} else if (ret) {
-				pause();
-				listener.exitScreen(this, EXIT_PREV);
-				return false;
-			}
+		if (currController.getLevel().isFailure()) {
+			reset();
+		} else if (currController.getLevel().isComplete()) {
+			pause();
+			listener.exitScreen(this, EXIT_NEXT);
+			return false;
+		} else if (currController.isRet()) {
+			pause();
+			listener.exitScreen(this, EXIT_PREV);
+			return false;
 		}
 		return true;
 	}
+	
+//	/**
+//	 * Returns whether to process the update loop
+//	 *
+//	 * At the start of the update loop, we check if it is time
+//	 * to switch to a new game mode.  If not, the update proceeds
+//	 * normally.
+//	 *
+//	 * @param dt	Number of seconds since last animation frame
+//	 *
+//	 * @return whether to process the update loop
+//	 */
+//	public boolean preUpdate(float dt) {
+//		InputController input = InputController.getInstance();
+//		input.readInput(bounds, scale);
+//		if (listener == null) {
+//			return true;
+//		}
+//
+//		// Toggle debug
+//		if (input.didDebug()) {
+//			debug = !debug;
+//		}
+//
+//		// Handle resets
+//		if (input.didReset()) {
+//			reset();
+//		}
+//		// Now it is time to maybe switch screens.
+//		if (input.didExit()) {
+//			pause();
+//			listener.exitScreen(this, EXIT_QUIT);
+//			return false;
+//		}
+//		if (failed) {
+//			reset();
+//		} else if (complete) {
+//			pause();
+//			listener.exitScreen(this, EXIT_NEXT);
+//			return false;
+//		} else if (ret) {
+//			pause();
+//			listener.exitScreen(this, EXIT_PREV);
+//			return false;
+//		}
+//		return true;
+//	}
 	
 	/**
 	 * The core gameplay loop of this world.
@@ -429,8 +532,8 @@ public abstract class WorldController implements Screen {
 	 *
 	 * @param dt	Number of seconds since last animation frame
 	 */
-	public abstract void update(float dt);
-	
+	public void update(float dt) { currController.update(dt); }
+
 	/**
 	 * Processes physics
 	 *
@@ -440,130 +543,157 @@ public abstract class WorldController implements Screen {
 	 *
 	 * @param dt	Number of seconds since last animation frame
 	 */
-	public void postUpdate(float dt) {
-		// Add any objects created by actions
-		while (!addQueue.isEmpty()) {
-			addObject(addQueue.poll());
-		}
-		
-		// Turn the physics engine crank.
-		world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
-
-		// Garbage collect the deleted objects.
-		// Note how we use the linked list nodes to delete O(1) in place.
-		// This is O(n) without copying.
-		Iterator<PooledList<Obstacle>.Entry> iterator = objects.entryIterator();
-		while (iterator.hasNext()) {
-			PooledList<Obstacle>.Entry entry = iterator.next();
-			Obstacle obj = entry.getValue();
-			if (obj.isRemoved()) {
-				obj.deactivatePhysics(world);
-				entry.remove();
-			} else {
-				// Note that update is called last!
-				obj.update(dt);
-			}
-		}
+	public void postUpdate(float dt){
+		currController.postUpdate(dt);
 	}
 	
+//	/**
+//	 * Processes physics
+//	 *
+//	 * Once the update phase is over, but before we draw, we are ready to handle
+//	 * physics.  The primary method is the step() method in world.  This implementation
+//	 * works for all applications and should not need to be overwritten.
+//	 *
+//	 * @param dt	Number of seconds since last animation frame
+//	 */
+//	public void postUpdate(float dt) {
+//		// Add any objects created by actions
+//		while (!addQueue.isEmpty()) {
+//			addObject(addQueue.poll());
+//		}
+//
+//		// Turn the physics engine crank.
+//		world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
+//
+//		// Garbage collect the deleted objects.
+//		// Note how we use the linked list nodes to delete O(1) in place.
+//		// This is O(n) without copying.
+//		Iterator<PooledList<Obstacle>.Entry> iterator = objects.entryIterator();
+//		while (iterator.hasNext()) {
+//			PooledList<Obstacle>.Entry entry = iterator.next();
+//			Obstacle obj = entry.getValue();
+//			if (obj.isRemoved()) {
+//				obj.deactivatePhysics(world);
+//				entry.remove();
+//			} else {
+//				// Note that update is called last!
+//				obj.update(dt);
+//			}
+//		}
+//	}
+
 	/**
 	 * Draw the physics objects to the canvas
 	 *
 	 * For simple worlds, this method is enough by itself.  It will need
-	 * to be overriden if the world needs fancy backgrounds or the like.
+	 * to be overridden if the world needs fancy backgrounds or the like.
 	 *
 	 * The method draws all objects in the order that they were added.
 	 *
 	 * @param dt	Number of seconds since last animation frame
 	 */
 	public void draw(float dt) {
-		canvas.clear();
-		
-		canvas.begin();
-		if (background != null) {
-			canvas.draw(background, 0, 0);
-		}
-		for(Obstacle obj : objects) {
-			obj.draw(canvas);
-		}
-		canvas.end();
-		
-		if (debug) {
-			canvas.beginDebug();
-			//draw grid
-			Color lineColor = new Color(0.8f, 0.8f, 0.8f, 1);
-			for (int x = 0; x < bounds.width; x++){
-				Vector2 p1 = new Vector2(x, 0);
-				Vector2 p2 = new Vector2(x, bounds.height);
-				canvas.drawLine(p1, p2, lineColor, scale.x, scale.y);
-			}
-			for (int y = 0; y < bounds.height; y++){
-				Vector2 p1 = new Vector2(0, y);
-				Vector2 p2 = new Vector2(bounds.width, y);
-				canvas.drawLine(p1, p2, lineColor, scale.x, scale.y);
-			}
-			for(Obstacle obj : objects) {
-				obj.drawDebug(canvas);
-			}
-
-			canvas.endDebug();
-
-		}
-		
-		// Final message
-		if (complete && !failed) {
-			displayFont.setColor(Color.YELLOW);
-			canvas.begin(); // DO NOT SCALE
-//			canvas.drawTextCentered("VICTORY!", displayFont, 0.0f);
-			canvas.end();
-		}/* else if (failed) {
-			displayFont.setColor(Color.RED);
-			canvas.begin(); // DO NOT SCALE
-			canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
-			canvas.end();
-		}*/
+		currController.draw(dt);
 	}
 
-	/**
-	 * Method to ensure that a sound asset is only played once.
-	 *
-	 * Every time you play a sound asset, it makes a new instance of that sound.
-	 * If you play the sounds to close together, you will have overlapping copies.
-	 * To prevent that, you must stop the sound before you play it again.  That
-	 * is the purpose of this method.  It stops the current instance playing (if
-	 * any) and then returns the id of the new instance for tracking.
-	 *
-	 * @param sound		The sound asset to play
-	 * @param soundId	The previously playing sound instance
-	 *
-	 * @return the new sound instance for this asset.
-	 */
-	public long playSound(Sound sound, long soundId) {
-		return playSound( sound, soundId, 1.0f );
-	}
+//	/**
+//	 * Draw the physics objects to the canvas
+//	 *
+//	 * For simple worlds, this method is enough by itself.  It will need
+//	 * to be overriden if the world needs fancy backgrounds or the like.
+//	 *
+//	 * The method draws all objects in the order that they were added.
+//	 *
+//	 * @param dt	Number of seconds since last animation frame
+//	 */
+//	public void draw(float dt) {
+//		canvas.clear();
+//
+//		canvas.begin();
+//		if (background != null) {
+//			canvas.draw(background, 0, 0);
+//		}
+//		for(Obstacle obj : objects) {
+//			obj.draw(canvas);
+//		}
+//		canvas.end();
+//
+//		if (debug) {
+//			canvas.beginDebug();
+//			//draw grid
+//			Color lineColor = new Color(0.8f, 0.8f, 0.8f, 1);
+//			for (int x = 0; x < bounds.width; x++){
+//				Vector2 p1 = new Vector2(x, 0);
+//				Vector2 p2 = new Vector2(x, bounds.height);
+//				canvas.drawLine(p1, p2, lineColor, scale.x, scale.y);
+//			}
+//			for (int y = 0; y < bounds.height; y++){
+//				Vector2 p1 = new Vector2(0, y);
+//				Vector2 p2 = new Vector2(bounds.width, y);
+//				canvas.drawLine(p1, p2, lineColor, scale.x, scale.y);
+//			}
+//			for(Obstacle obj : objects) {
+//				obj.drawDebug(canvas);
+//			}
+//
+//			canvas.endDebug();
+//
+//		}
+//
+//		// Final message
+//		if (complete && !failed) {
+//			displayFont.setColor(Color.YELLOW);
+//			canvas.begin(); // DO NOT SCALE
+////			canvas.drawTextCentered("VICTORY!", displayFont, 0.0f);
+//			canvas.end();
+//		}/* else if (failed) {
+//			displayFont.setColor(Color.RED);
+//			canvas.begin(); // DO NOT SCALE
+//			canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
+//			canvas.end();
+//		}*/
+//	}
 
-
-	/**
-	 * Method to ensure that a sound asset is only played once.
-	 *
-	 * Every time you play a sound asset, it makes a new instance of that sound.
-	 * If you play the sounds to close together, you will have overlapping copies.
-	 * To prevent that, you must stop the sound before you play it again.  That
-	 * is the purpose of this method.  It stops the current instance playing (if
-	 * any) and then returns the id of the new instance for tracking.
-	 *
-	 * @param sound		The sound asset to play
-	 * @param soundId	The previously playing sound instance
-	 * @param volume	The sound volume
-	 *
-	 * @return the new sound instance for this asset.
-	 */
-	public long playSound(Sound sound, long soundId, float volume) {
-		if (soundId != -1) {
-			sound.stop( soundId );
-		}
-		return sound.play(volume);
-	}
+//	/**
+//	 * Method to ensure that a sound asset is only played once.
+//	 *
+//	 * Every time you play a sound asset, it makes a new instance of that sound.
+//	 * If you play the sounds to close together, you will have overlapping copies.
+//	 * To prevent that, you must stop the sound before you play it again.  That
+//	 * is the purpose of this method.  It stops the current instance playing (if
+//	 * any) and then returns the id of the new instance for tracking.
+//	 *
+//	 * @param sound		The sound asset to play
+//	 * @param soundId	The previously playing sound instance
+//	 *
+//	 * @return the new sound instance for this asset.
+//	 */
+//	public long playSound(Sound sound, long soundId) {
+//		return playSound( sound, soundId, 1.0f );
+//	}
+//
+//
+//	/**
+//	 * Method to ensure that a sound asset is only played once.
+//	 *
+//	 * Every time you play a sound asset, it makes a new instance of that sound.
+//	 * If you play the sounds to close together, you will have overlapping copies.
+//	 * To prevent that, you must stop the sound before you play it again.  That
+//	 * is the purpose of this method.  It stops the current instance playing (if
+//	 * any) and then returns the id of the new instance for tracking.
+//	 *
+//	 * @param sound		The sound asset to play
+//	 * @param soundId	The previously playing sound instance
+//	 * @param volume	The sound volume
+//	 *
+//	 * @return the new sound instance for this asset.
+//	 */
+//	public long playSound(Sound sound, long soundId, float volume) {
+//		if (soundId != -1) {
+//			sound.stop( soundId );
+//		}
+//		return sound.play(volume);
+//	}
 
 	/**
 	 * Called when the Screen is resized. 
@@ -586,15 +716,14 @@ public abstract class WorldController implements Screen {
 	 *
 	 * @param delta Number of seconds since last animation frame
 	 */
-	public void render(float delta) {
-		if (active) {
-			if (preUpdate(delta)) {
-				update(delta); // This is the one that must be defined.
-				postUpdate(delta);
-			}
-			draw(delta);
-//			System.out.println("render: " + isRet());
+	public void render(float delta){
+		if (preUpdate(delta)) {
+			update(delta); // This is the one that must be defined.
+			postUpdate(delta);
 		}
+		draw(delta);
+//			System.out.println("render: " + isRet());
+
 	}
 
 	/**
@@ -621,7 +750,7 @@ public abstract class WorldController implements Screen {
 	 */
 	public void show() {
 		// Useless if called in outside animation loop
-		active = true;
+//		active = true;
 	}
 
 	/**
@@ -629,7 +758,7 @@ public abstract class WorldController implements Screen {
 	 */
 	public void hide() {
 		// Useless if called in outside animation loop
-		active = false;
+//		active = false;
 	}
 
 	/**

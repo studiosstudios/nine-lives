@@ -58,12 +58,7 @@ public class NineLives extends Game implements ScreenListener {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json",canvas,1);
 
-		// Initialize the two levels
-		controller = new WorldController();
-
-//		controllers = new WorldController[2];
-//		controllers[0] = new LevelController(1);
-//		controllers[1] = new LevelController(2);
+		controller = new WorldController(2);
 		current = 0;
 		loading.setScreenListener(this);
 		setScreen(loading);
@@ -75,11 +70,7 @@ public class NineLives extends Game implements ScreenListener {
 	 * This is preceded by a call to pause().
 	 */
 	public void dispose() {
-		// Call dispose on our children
 		setScreen(null);
-//		for(int ii = 0; ii < controllers.length; ii++) {
-//			controllers[ii].dispose();
-//		}
 
 		canvas.dispose();
 		canvas = null;
@@ -121,60 +112,12 @@ public class NineLives extends Game implements ScreenListener {
 			directory = loading.getAssets();
 			controller.gatherAssets(directory);
 			controller.setScreenListener(this);
-
-//			for(int ii = 0; ii < controllers.length; ii++) {
-//				directory = loading.getAssets();
-//				controllers[ii].gatherAssets(directory);
-//				controllers[ii].setScreenListener(this);
-//				controllers[ii].setCanvas(canvas);
-//			}
 			controller.setCanvas(canvas);
 
-			controller.getCurrController().reset();
-//			controllers[current].reset();
+			controller.getCurrLevel().reset(null);
 			setScreen(controller);
-//			setScreen(controllers[current]);
 			loading.dispose();
 			loading = null;
-		} else if (exitCode == WorldController.EXIT_NEXT) {
-//			System.out.println("switch to next-gdxroot");
-//			current = (current+1) % controllers.length;
-
-//			controller.getNextController().getLevel().setComplete(false);
-//			controller.getCurrController().getLevel().setComplete(false);
-//			controller.getCurrController().setRet(false);
-			controller.getCurrController().reset();
-
-			controller.setPrevController(controller.getCurrController());
-			controller.setCurrController(controller.getNextController());
-			controller.getCurrController().reset();
-			controller.setCanvas(canvas);
-//			TODO: set next controller here after checking length or something
-			setScreen(controller);
-
-//			controllers[current].getLevel().setComplete(true);
-//			controllers[current].setRet(false);
-//			controllers[current].reset();
-//			setScreen(controllers[current]);
-		} else if (exitCode == WorldController.EXIT_PREV) {
-//			System.out.println("exit_prev ran");
-//			current = (current+controllers.length-1) % controllers.length;
-//			controllers[current].setRet(true);
-//			controllers[current].setComplete(false);
-//			controllers[current].reset();
-//			setScreen(controllers[current]);
-
-//			controller.getCurrController().getLevel().setComplete(false);
-			controller.getCurrController().reset();
-			controller.setNextController(controller.getCurrController());
-			controller.setCurrController(controller.getPrevController());
-			controller.getCurrController().setRet(true);
-//			controller.getCurrController().getLevel().setComplete(false);
-			controller.getCurrController().reset();
-			controller.setCanvas(canvas);
-//			TODO: set prev controller here after checking length or something
-			setScreen(controller);
-
 		} else if (exitCode == WorldController.EXIT_QUIT) {
 			// We quit the main application
 			Gdx.app.exit();

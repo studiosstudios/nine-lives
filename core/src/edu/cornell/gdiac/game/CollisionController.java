@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.object.*;
 import edu.cornell.gdiac.game.obstacle.Obstacle;
 
-public class CollisionController implements ContactListener {
+public class CollisionController implements ContactListener, ContactFilter {
 
     private Level level;
 
@@ -21,7 +21,7 @@ public class CollisionController implements ContactListener {
 
     public CollisionController(ActionController actionController){
         this.actionController = actionController;
-        sensorFixtures = new ObjectSet<Fixture>();
+        sensorFixtures = new ObjectSet<>();
         shouldReturn = false;
     }
 
@@ -29,8 +29,8 @@ public class CollisionController implements ContactListener {
         this.level = level;
     }
 
-    public Boolean getReturn() { return shouldReturn; }
-    public void setReturn(Boolean value) { shouldReturn = value; }
+    public boolean getReturn() { return shouldReturn; }
+    public void setReturn(boolean value) { shouldReturn = value; }
 
     /**
      * Callback method for the start of a collision
@@ -56,11 +56,11 @@ public class CollisionController implements ContactListener {
             Obstacle bd2 = (Obstacle) body2.getUserData();
 
             //cat collisions
-            if (bd1 == level.getAvatar() || bd2 == level.getAvatar()) {
+            if (bd1 == level.getCat() || bd2 == level.getCat()) {
 
                 //ensure bd1 and fd1 are cat body and fixtures
-                if (bd2 == level.getAvatar()) {
-                    //don't need to swap bd1 and bd2 because we are assuming bd1 == avatar
+                if (bd2 == level.getCat()) {
+                    //don't need to swap bd1 and bd2 because we are assuming bd1 == cat
                     bd2 = bd1;
 
                     Object temp = fd1;
@@ -69,14 +69,14 @@ public class CollisionController implements ContactListener {
                 }
 
                 // See if we have landed on the ground.
-                if (level.getAvatar().getGroundSensorName().equals(fd1)) {
-                    level.getAvatar().setGrounded(true);
+                if (level.getCat().getGroundSensorName().equals(fd1)) {
+                    level.getCat().setGrounded(true);
                     sensorFixtures.add(fix2); // Could have more than one ground
                 }
 
                 // See if we are touching a wall
-                if (level.getAvatar().getSideSensorName().equals(fd1) && level.getAvatar() != bd2) {
-                    level.getAvatar().incrementWalled();
+                if (level.getCat().getSideSensorName().equals(fd1) && level.getCat() != bd2) {
+                    level.getCat().incrementWalled();
                 }
 
                 // Check for win condition
@@ -146,18 +146,18 @@ public class CollisionController implements ContactListener {
         Object bd1 = body1.getUserData();
         Object bd2 = body2.getUserData();
 
-        if ((level.getAvatar().getGroundSensorName().equals(fd2) && level.getAvatar() != bd1) ||
-                (level.getAvatar().getGroundSensorName().equals(fd1) && level.getAvatar() != bd2)) {
-            sensorFixtures.remove(level.getAvatar() == bd1 ? fix2 : fix1);
+        if ((level.getCat().getGroundSensorName().equals(fd2) && level.getCat() != bd1) ||
+                (level.getCat().getGroundSensorName().equals(fd1) && level.getCat() != bd2)) {
+            sensorFixtures.remove(level.getCat() == bd1 ? fix2 : fix1);
             if (sensorFixtures.size == 0) {
-                level.getAvatar().setGrounded(false);
+                level.getCat().setGrounded(false);
             }
         }
 
         // Not handling case where there may be multiple walls at once
-        if ((level.getAvatar().getSideSensorName().equals(fd2) && level.getAvatar() != bd1) ||
-                (level.getAvatar().getSideSensorName().equals(fd1) && level.getAvatar() != bd2)) {
-            level.getAvatar().decrementWalled();
+        if ((level.getCat().getSideSensorName().equals(fd2) && level.getCat() != bd1) ||
+                (level.getCat().getSideSensorName().equals(fd1) && level.getCat() != bd2)) {
+            level.getCat().decrementWalled();
         }
 
         //Check for body
@@ -185,4 +185,8 @@ public class CollisionController implements ContactListener {
     /** Unused ContactListener method */
     public void preSolve(Contact contact, Manifold oldManifold) {}
 
+    /**Contact Filter method */
+    public boolean shouldCollide(Fixture fixtureA, Fixture fixtureB) {
+        return true;
+    }
 }

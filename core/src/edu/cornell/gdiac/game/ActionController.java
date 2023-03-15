@@ -5,23 +5,14 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.object.*;
-import edu.cornell.gdiac.game.obstacle.BoxObstacle;
-import edu.cornell.gdiac.game.obstacle.Obstacle;
-import edu.cornell.gdiac.game.obstacle.WheelObstacle;
-import edu.cornell.gdiac.util.PooledList;
 
 import java.util.HashMap;
 
 public class ActionController {
-    /** The Box2D world */
-    protected World world;
     /** The boundary of the world */
     protected Rectangle bounds;
     /** The world scale */
@@ -96,15 +87,15 @@ public class ActionController {
     }
 
     public void update(float dt){
-        Cat avatar = level.getAvatar();
-        avatar.setMovement(InputController.getInstance().getHorizontal() *avatar.getForce() * (avatar.getIsClimbing() ? 0 : 1));
-        avatar.setVerticalMovement(InputController.getInstance().getVertical() * avatar.getForce());
-        avatar.setJumping(InputController.getInstance().didPrimary());
-        avatar.setDashing(InputController.getInstance().didDash());
-        avatar.setClimbing(InputController.getInstance().didClimb() && avatar.isWalled());
+        Cat cat = level.getCat();
+        cat.setMovement(InputController.getInstance().getHorizontal() *cat.getForce() * (cat.getIsClimbing() ? 0 : 1));
+        cat.setVerticalMovement(InputController.getInstance().getVertical() * cat.getForce());
+        cat.setJumping(InputController.getInstance().didPrimary());
+        cat.setDashing(InputController.getInstance().didDash());
+        cat.setClimbing(InputController.getInstance().didClimb() && cat.isWalled());
 
-        avatar.applyForce();
-        if (avatar.isJumping()) {
+        cat.applyForce();
+        if (cat.isJumping()) {
             jumpId = playSound(soundAssetMap.get("jump"), jumpId, volume);
         }
 
@@ -117,7 +108,7 @@ public class ActionController {
             a.updateActivated();
             if (level.getActivationRelations().containsKey(a.getID())){
                 for (Activatable s : level.getActivationRelations().get(a.getID())){
-                    s.updateActivated(a.isActive(), world);
+                    s.updateActivated(a.isActive(), level.getWorld());
                 }
             }
         }
@@ -149,18 +140,15 @@ public class ActionController {
      * Called when a player dies. Removes all input but keeps velocities.
      */
     public DeadBody die(){
-        Cat avatar = level.getAvatar();
+        Cat cat = level.getCat();
         if (!level.getDied()) {
-            level.getAvatar().setJumping(false);
+            level.getCat().setJumping(false);
             level.setDied(true);
-//            died = true;
             // decrement lives
             level.setNumLives(level.getNumLives()-1);
-//            numLives--;
             // 0 lives
             if (level.getNumLives() <= 0) {
                 level.resetLives();
-//                numLives = MAX_NUM_LIVES;
                 level.setFailure(true);
             } else {
                 // create dead body
@@ -168,12 +156,11 @@ public class ActionController {
                 deadBody.setDrawScale(scale);
                 deadBody.setTexture(textureRegionAssetMap.get("deadcat"));
                 deadBody.setSensor(false);
-                deadBody.setLinearVelocity(avatar.getLinearVelocity());
+                deadBody.setLinearVelocity(cat.getLinearVelocity());
                 deadBody.setLinearDamping(2f);
-                deadBody.setPosition(avatar.getPosition());
+                deadBody.setPosition(cat.getPosition());
                 level.setNewDeadBody(deadBody);
-//                newDeadBody = deadBody;
-                level.getAddQueue().add(deadBody);
+                level.queueObject(deadBody);
                 return deadBody;
             }
         }
@@ -182,8 +169,8 @@ public class ActionController {
 
     public void died() {
         level.setDied(false);
-        level.getNewDeadBody().setFacingRight(level.getAvatar().isFacingRight());
-        level.getAvatar().setPosition(level.getRespawnPos());
+        level.getNewDeadBody().setFacingRight(level.getCat().isFacingRight());
+        level.getCat().setPosition(level.getRespawnPos());
         level.getdeadBodyArray().add(level.getNewDeadBody());
     }
 

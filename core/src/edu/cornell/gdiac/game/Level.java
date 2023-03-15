@@ -2,7 +2,7 @@
  * LevelMode.java
  *
  * This stores all of the information to define a level in our simple platform game.
- * We have an avatar, some walls, some platforms, and an exit.  This is a refactoring
+ * We have an cat, some walls, some platforms, and an exit.  This is a refactoring
  * of WorldController in Lab 4 that separates the level data from the level control.
  *
  * Note that most of the methods are getters and setters, as is common with models.
@@ -49,15 +49,13 @@ public class Level {
     protected Vector2 scale;
 
     // Physics objects for the game
-    /** Reference to the character avatar */
-    private Cat avatar;
+    /** Reference to the character cat */
+    private Cat cat;
     /** Reference to the goalDoor (for collision detection) */
     private BoxObstacle goalDoor;
     /**Reference to the returnDoor (for collision detection) */
     private BoxObstacle retDoor;
 
-    /** Whether or not the level is in debug more (showing off physics) */
-    private boolean debug;
 
     /** All the objects in the world. */
     protected PooledList<Obstacle> objects  = new PooledList<Obstacle>();
@@ -121,12 +119,12 @@ public class Level {
     }
 
     /**
-     * Returns a reference to the player avatar
+     * Returns a reference to the player cat
      *
-     * @return a reference to the player avatar
+     * @return a reference to the player cat
      */
-    public Cat getAvatar() {
-        return avatar;
+    public Cat getCat() {
+        return cat;
     }
 
     /**
@@ -138,23 +136,9 @@ public class Level {
         return goalDoor;
     }
 
-    /**
-     * Returns whether this level is currently in debug node
-     *
-     * If the level is in debug mode, then the physics bodies will all be drawn as
-     * wireframes onscreen
-     *
-     * @return whether this level is currently in debug node
-     */
-    public boolean getDebug() {
-        return debug;
-    }
-
     public Array<Activator> getActivators() { return activators; }
 
     public HashMap<String, Array<Activatable>> getActivationRelations() { return activationRelations; }
-
-    public PooledList<Obstacle> getAddQueue() { return addQueue; }
 
     public Array<DeadBody> getdeadBodyArray() { return deadBodyArray; }
 
@@ -178,29 +162,17 @@ public class Level {
         this.world  = world;
         this.bounds = bounds;
         this.scale = scale;
-        debug  = false;
         complete = false;
         failed = false;
         died = false;
         this.numLives = numLives;
         maxLives = numLives;
 
-        activators = new Array<Activator>();
-        activatables = new Array<Activatable>();
-        deadBodyArray = new Array<DeadBody>();
-        activationRelations = new HashMap<String, Array<Activatable>>();
+        activators = new Array<>();
+        activatables = new Array<>();
+        deadBodyArray = new Array<>();
+        activationRelations = new HashMap<>();
 
-    }
-
-    /**
-     * Sets whether debug mode is active.
-     *
-     * If true, all objects will display their physics bodies.
-     *
-     * @param value whether debug mode is active.
-     */
-    public void setDebug(boolean value) {
-        debug = value;
     }
 
     /**
@@ -211,9 +183,6 @@ public class Level {
      * @param value whether the level is completed.
      */
     public void setComplete(boolean value) {
-//        if (value) {
-//            countdown = EXIT_COUNT;
-//        }
         complete = value;
     }
 
@@ -227,12 +196,12 @@ public class Level {
      * Lays out the game geography.
      */
     public void populateLevel(HashMap<String, TextureRegion> tMap, HashMap<String, BitmapFont> fMap,
-                               HashMap<String, Sound> sMap, JsonValue constants, JsonValue levelJV, boolean ret) {
+                               HashMap<String, Sound> sMap, JsonValue constants, JsonValue levelJV, boolean ret, Cat prevCat) {
         // Add level goal
         dwidth  = tMap.get("goal").getRegionWidth()/scale.x;
         dheight = tMap.get("goal").getRegionHeight()/scale.y;
 
-        activationRelations = new HashMap<String, Array<Activatable>>();
+        activationRelations = new HashMap<>();
 
         JsonValue goal = levelJV.get("goal");
         JsonValue goalpos = goal.get("pos");
@@ -352,13 +321,11 @@ public class Level {
         // Create cat
         dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
         dheight = tMap.get("cat").getRegionHeight()/scale.y;
-        avatar = new Cat(levelJV.get("cat"), dwidth, dheight, ret, avatar == null? null : avatar.getPosition());
-        avatar.setDrawScale(scale);
-        avatar.setTexture(tMap.get("cat"));
-        respawnPos = avatar.getPosition();
-        addObject(avatar);
-
-//        volume = constants.getFloat("volume", 0.2f);
+        cat = new Cat(levelJV.get("cat"), dwidth, dheight, ret, prevCat == null? null : prevCat.getPosition());
+        cat.setDrawScale(scale);
+        cat.setTexture(tMap.get("cat"));
+        respawnPos = cat.getPosition();
+        addObject(cat);
 
     }
 
@@ -368,7 +335,6 @@ public class Level {
             obj.deactivatePhysics(world);
         }
         addQueue.clear();
-        addQueue = null;
         objects.clear();
         if (world != null) {
             world.dispose();
@@ -421,26 +387,6 @@ public class Level {
         return horiz && vert;
     }
 
-//    /**
-//     * Resets the status of the game so that we can play again.
-//     *
-//     * This method disposes of the world and creates a new one.
-//     */
-//    public void reset() {
-//        Vector2 gravity = new Vector2(world.getGravity() );
-//
-//        for(Obstacle obj : objects) {
-//            obj.deactivatePhysics(world);
-//        }
-//        objects.clear();
-//        addQueue.clear();
-//        world.dispose();
-//
-//        world = new World(gravity,false);
-//        world.setContactListener(this);
-//        populateLevel();
-//    }
-
     public PooledList<Obstacle> getObjects(){ return objects; }
 
     /**
@@ -473,25 +419,7 @@ public class Level {
      * @param value whether the level is failed.
      */
     public void setFailure(boolean value) {
-//        if (value) {
-//            countdown = EXIT_COUNT;
-//        }
         failed = value;
-    }
-
-    /**
-     * Returns whether the player has lost
-     *
-     * @param dt Number of seconds since last animation frame
-     *
-     * @return whether the player has lost
-     */
-    public boolean checkFailure(float dt) {
-        if (!isFailure() && getAvatar().getY() < -1) {
-            setFailure(true);
-            return true;
-        }
-        return false;
     }
 
     public void addQueuedObjects() {
@@ -535,7 +463,7 @@ public class Level {
 
     public Obstacle getRetDoor() {  return retDoor; }
 
-
+    public void setWorld(World world) { this.world = world; }
     public void setDied(boolean died){ this.died = died; }
 
     public boolean getDied() { return died; }
@@ -554,7 +482,7 @@ public class Level {
      *
      * @param canvas	the drawing context
      */
-    public void draw(GameCanvas canvas) {
+    public void draw(GameCanvas canvas, boolean debug) {
         canvas.clear();
 
         canvas.begin();
@@ -584,14 +512,6 @@ public class Level {
             canvas.endDebug();
 
         }
-
-//        if (debug) {
-//            canvas.beginDebug();
-//            for(Obstacle obj : objects) {
-//                obj.drawDebug(canvas);
-//            }
-//            canvas.endDebug();
-//        }
     }
 
 

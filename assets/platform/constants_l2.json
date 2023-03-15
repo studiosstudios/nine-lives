@@ -29,7 +29,7 @@
 		"maxspeed": 6.5,
 		"jump_force": 1.5,
 		"jump_damping": 0.8,
-		"dash_force": 1.5,
+		"dash_force": 2,
 		"sensor": {
 			"shrink": 0.9
 		},

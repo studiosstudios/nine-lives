@@ -28,7 +28,9 @@
     "jsons"  : {
         "platform:constants": "platform/constants.json",
         "platform:level1": "platform/level1.json",
-        "platform:level2": "platform/level2.json"
+        "platform:level2": "platform/level2.json",
+        "platform:level3": "platform/level3.json",
+        "platform:level4": "platform/level4.json"
     },
     "sounds" : {
         "platform:jump" : "platform/jump.mp3",

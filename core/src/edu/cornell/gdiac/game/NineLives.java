@@ -58,7 +58,7 @@ public class NineLives extends Game implements ScreenListener {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json",canvas,1);
 
-		controller = new WorldController(2);
+		controller = new WorldController(4);
 		current = 0;
 		loading.setScreenListener(this);
 		setScreen(loading);
@@ -113,6 +113,7 @@ public class NineLives extends Game implements ScreenListener {
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
 
+			System.out.println(controller.getCurrLevel().getLevel().world.getGravity());
 			controller.getCurrLevel().reset(null);
 			setScreen(controller);
 			loading.dispose();

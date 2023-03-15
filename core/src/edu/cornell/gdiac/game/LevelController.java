@@ -181,9 +181,8 @@ public class LevelController {
      */
     public void reset(Cat prevCat) {
 
+        Vector2 gravity = new Vector2( world.getGravity() );
         level.dispose();
-
-        Vector2 gravity = new Vector2(world.getGravity() );
         world = new World(gravity,false);
         level.setWorld(world);
         world.setContactListener(collisionController);
@@ -327,5 +326,8 @@ public class LevelController {
             canvas.end();
         }
     }
+
+    public void setJSON(JsonValue level) { levelJV = level; }
+    public JsonValue getJSON() { return levelJV; }
 
 }

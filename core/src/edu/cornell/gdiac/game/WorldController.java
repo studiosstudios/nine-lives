@@ -65,18 +65,16 @@ public class WorldController implements Screen {
 	private HashMap<String, BitmapFont> fontAssetMap;
 	/** The JSON value constants */
 	private JsonValue constants;
-	/** JSON representing the level */
-	private JsonValue levelJV;
 	/** Level number **/
 	private int levelNum;
 	/** Total number of levels */
 	private final int TOTAL_LEVELS;
-	/** LevelController for the previous level */
-	private LevelController prevLevel;
+	/** JSON for the previous level */
+	private JsonValue prevJSON;
 	/** LevelController for the current level */
 	private LevelController currLevel;
-	/** LevelController for the next level */
-	private LevelController nextLevel;
+	/** JSON for the next level */
+	private JsonValue nextJSON;
 	/** The AssetDirectory */
 	private AssetDirectory directory;
 
@@ -101,7 +99,6 @@ public class WorldController implements Screen {
 	 */
 	public void setCanvas(GameCanvas canvas) {
 		currLevel.setCanvas(canvas);
-		nextLevel.setCanvas(canvas);
 	}
 
 	/**
@@ -123,9 +120,7 @@ public class WorldController implements Screen {
 	 * @param gravity	The gravitational force on this Box2d world
 	 */
 	protected WorldController(Rectangle bounds, Vector2 gravity, int numLevels) {
-		prevLevel = null;
 		currLevel = new LevelController(bounds, gravity);
-		nextLevel = new LevelController(bounds, gravity);
 		TOTAL_LEVELS = numLevels;
 		levelNum = 1;
 	}
@@ -147,11 +142,14 @@ public class WorldController implements Screen {
 	public void nextLevel(){
 		if (levelNum < TOTAL_LEVELS) {
 			levelNum++;
-			prevLevel = currLevel;
-			currLevel = nextLevel;
+
+			prevJSON = currLevel.getJSON();
+			currLevel.setJSON(nextJSON);
 			currLevel.setRet(false);
-			currLevel.reset(prevLevel.getLevel().getCat());
-			loadLevel(levelNum, nextLevel);
+			currLevel.reset(currLevel.getLevel().getCat());
+			if (levelNum < TOTAL_LEVELS) {
+				nextJSON = levelJSON(levelNum + 1);
+			}
 		}
 	}
 
@@ -165,23 +163,22 @@ public class WorldController implements Screen {
 	public void prevLevel(){
 		if (levelNum > 1) {
 			levelNum--;
-			nextLevel = currLevel;
-			currLevel = prevLevel;
+			nextJSON = currLevel.getJSON();
+			currLevel.setJSON(prevJSON);
 			currLevel.setRet(true);
-			currLevel.reset(nextLevel.getLevel().getCat());
-			loadLevel(levelNum, prevLevel);
+			currLevel.reset(currLevel.getLevel().getCat());
+			if (levelNum > 1) {
+				prevJSON = levelJSON(levelNum - 1);
+			}
 		}
 	}
 	/**
-	 * Loads in a level from the level JSON and sets the assets in a specific LevelController
+	 * Loads in the JSON of a level
 	 *
 	 * @param levelNum the number associated with the level to be loaded in
-	 * @param level the LevelController to be set
+	 * @return JSON of the level
 	 */
-	private void loadLevel(int levelNum, LevelController level){
-		levelJV = directory.getEntry("platform:level" + levelNum, JsonValue.class);
-		level.setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants, levelJV);
-	}
+	private JsonValue levelJSON(int levelNum){ return directory.getEntry("platform:level" + levelNum, JsonValue.class); }
 	
 	/**
 	 * Dispose of all (non-static) resources allocated to this mode.
@@ -232,8 +229,8 @@ public class WorldController implements Screen {
 		fontAssetMap.put("display", directory.getEntry( "shared:retro" ,BitmapFont.class));
 
 		// Giving assets to levelController
-		loadLevel(1, currLevel);
-		loadLevel(2, nextLevel);
+		currLevel.setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants, levelJSON(1));
+		nextJSON = levelJSON(2);
 	}
 
 	/**

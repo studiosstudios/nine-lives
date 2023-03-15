@@ -57,7 +57,6 @@ public class Level {
     /**Reference to the returnDoor (for collision detection) */
     private BoxObstacle retDoor;
 
-
     /** All the objects in the world. */
     protected PooledList<Obstacle> objects  = new PooledList<Obstacle>();
     /** Queue for adding objects */
@@ -69,10 +68,11 @@ public class Level {
     private boolean complete;
     /** Whether we have failed at this world (and need a reset) */
     private boolean failed;
+    /** Whether we have died */
     private boolean died;
-
+    /** The number of lives remaining */
     private int numLives;
-
+    /** The max lives allowed */
     private int maxLives;
 
     /** hashmap to represent activator-spike relationships:
@@ -83,12 +83,16 @@ public class Level {
     private Array<Activator> activators;
     private Array<Activatable> activatables;
     private Array<DeadBody> deadBodyArray;
+    /** The new dead body to be added */
     private DeadBody newDeadBody;
+    /** The respawn position of the player */
     private Vector2 respawnPos;
+    /** Float value to scale width */
     private float dwidth;
+    /** Float value to scale height */
     private float dheight;
+    /** The background texture */
     private Texture background;
-
 
 
     /**
@@ -138,21 +142,156 @@ public class Level {
         return goalDoor;
     }
 
+    /**
+     * Returns a reference to the array of activators
+     *
+     * @return a reference to the activators
+     */
     public Array<Activator> getActivators() { return activators; }
 
+    /**
+     * Returns a reference to the hashmap of activation relations
+     *
+     * @return a reference to the activation relations
+     */
     public HashMap<String, Array<Activatable>> getActivationRelations() { return activationRelations; }
 
+    /**
+     * Returns a reference to the list of objects
+     *
+     * @return a reference to all objects
+     */
+    public PooledList<Obstacle> getObjects(){ return objects; }
+
+    /**
+     * Returns a reference to the array of dead bodies
+     *
+     * @return a reference to the dead body array
+     */
     public Array<DeadBody> getdeadBodyArray() { return deadBodyArray; }
 
+    /**
+     * Returns a reference to the new dead body
+     *
+     * @return a reference to the new dead body
+     */
     public DeadBody getNewDeadBody() { return newDeadBody; }
+
+    /**
+     * Sets the new dead body
+     *
+     * @param body the DeadBody to set to newDeadBody
+     */
     public void setNewDeadBody(DeadBody body) {
         newDeadBody = body;
     }
 
+    /**
+     * Returns a reference to the respawn position
+     *
+     * @return a reference to the respawn position
+     */
     public Vector2 getRespawnPos() { return respawnPos; }
 
+    /**
+     * Returns a reference to the dwidth
+     *
+     * @return a reference to the dwidth
+     */
     public float getDwidth() { return dwidth; }
+
+    /**
+     * Returns a reference to the dheight
+     *
+     * @return a reference to the dheight
+     */
     public float getDheight() { return dheight; }
+
+    /**
+     * Returns true if the level is completed.
+     *
+     * If true, the level will advance after a countdown
+     *
+     * @return true if the level is completed.
+     */
+    public boolean isComplete() {
+        return complete;
+    }
+
+    /**
+     * Returns true if the level is failed.
+     *
+     * If true, the level will reset after a countdown
+     *
+     * @return true if the level is failed.
+     */
+    public boolean isFailure() {
+        return failed;
+    }
+
+    /**
+     * Sets whether the level is failed.
+     *
+     * If true, the level will reset after a countdown
+     *
+     * @param value whether the level is failed.
+     */
+    public void setFailure(boolean value) {
+        failed = value;
+    }
+
+    /**
+     * Returns a reference to the goal door
+     *
+     * @return a reference to the goal door
+     */
+    public Obstacle getGoalDoor() {  return goalDoor; }
+
+    /**
+     * Returns a reference to the return door
+     *
+     * @return a reference to the return door
+     */
+    public Obstacle getRetDoor() {  return retDoor; }
+
+    /**
+     * Sets the game world
+     *
+     * @param world the world to set to
+     */
+    public void setWorld(World world) { this.world = world; }
+
+    /**
+     * Sets whether the player died in the level
+     * @param died the value to set died to
+     */
+    public void setDied(boolean died){ this.died = died; }
+
+    /**
+     * Returns a reference to whether the player has died
+     *
+     * @return a reference to died
+     */
+    public boolean getDied() { return died; }
+
+    /**
+     * Returns a reference to the number of lives the player has remaining in this level
+     *
+     * @return a reference to number of lives
+     */
+    public int getNumLives() { return numLives; }
+
+    /**
+     * Sets the number of lives in this level
+     *
+     * @param val the value to set numLives to
+     */
+    public void setNumLives(int val) { numLives = val; }
+
+    /**
+     * Resets the number of lives to the max number of lives
+     */
+    public void resetLives() { numLives = maxLives; }
 
     /**
      * Creates a new LevelModel
@@ -174,7 +313,6 @@ public class Level {
         activatables = new Array<>();
         deadBodyArray = new Array<>();
         activationRelations = new HashMap<>();
-
     }
 
     /**
@@ -309,7 +447,6 @@ public class Level {
             loadActivatable(flamethrower, flamethrowerJV);
         }
 
-
         // Create Laser
         JsonValue lasersJV = constants.get("laser");
         for (JsonValue laserJV : levelJV.get("lasers")) {
@@ -329,10 +466,14 @@ public class Level {
         cat.setTexture(tMap.get("cat"));
         respawnPos = cat.getPosition();
         addObject(cat);
-
     }
 
-
+    /**
+     * Resets the status of the level.
+     *
+     * This method clears objects, disposes world,
+     * and sets the level to not completed and not failed.
+     */
     public void dispose() {
         for(Obstacle obj : objects) {
             obj.deactivatePhysics(world);
@@ -351,7 +492,7 @@ public class Level {
     /**
      * Immediately adds the object to the physics world
      *
-     * param obj The object to add
+     * @param obj The object to add
      */
     protected void addObject(Obstacle obj) {
         assert inBounds(obj) : "Object is not in bounds";
@@ -360,19 +501,26 @@ public class Level {
     }
 
     /**
-     *
      * Adds a physics object in to the insertion queue.
      *
      * Objects on the queue are added just before collision processing.  We do this to
      * control object creation.
      *
-     * param obj The object to add
+     * @param obj The object to add
      */
     public void queueObject(Obstacle obj) {
         assert inBounds(obj) : "Object is not in bounds";
         addQueue.add(obj);
     }
 
+    /**
+     * Adds a jointDef to the joint queue.
+     *
+     * Joints on the queue are added just before collision processing.  We do this to
+     * control joint creation.
+     *
+     * @param j The jointDef to add
+     */
     public void queueJoint(JointDef j){ jointQueue.add(j); }
 
     /**
@@ -390,47 +538,20 @@ public class Level {
         return horiz && vert;
     }
 
-    public PooledList<Obstacle> getObjects(){ return objects; }
-
     /**
-     * Returns true if the level is completed.
+     * Adds the queued objects to the list of objects
      *
-     * If true, the level will advance after a countdown
-     *
-     * @return true if the level is completed.
      */
-    public boolean isComplete( ) {
-        return complete;
-    }
-
-    /**
-     * Returns true if the level is failed.
-     *
-     * If true, the level will reset after a countdown
-     *
-     * @return true if the level is failed.
-     */
-    public boolean isFailure( ) {
-        return failed;
-    }
-
-    /**
-     * Sets whether the level is failed.
-     *
-     * If true, the level will reset after a countdown
-     *
-     * @param value whether the level is failed.
-     */
-    public void setFailure(boolean value) {
-        failed = value;
-    }
-
     public void addQueuedObjects() {
         while (!addQueue.isEmpty()) {
             addObject(addQueue.poll());
         }
     }
 
+    /**
+     * Adds the queued joints to the list of joints
+     *
+     */
     public void addQueuedJoints(){
         while (!jointQueue.isEmpty()) {
             JointDef jdef = jointQueue.poll();
@@ -446,6 +567,15 @@ public class Level {
         }
     }
 
+    /**
+     * Loads an activatable object from a JSON
+     *
+     * Adds the object to the list of objects
+     * Adds the object to the list of activatables
+     *
+     * @param object the Activatable to add
+     * @param objectJV the JsonValue containing the activatable data
+     */
     private void loadActivatable(Activatable object, JsonValue objectJV){
 
         addObject((Obstacle) object);
@@ -461,21 +591,6 @@ public class Level {
 
         activatables.add(object);
     }
-
-    public Obstacle getGoalDoor() {  return goalDoor; }
-
-    public Obstacle getRetDoor() {  return retDoor; }
-
-    public void setWorld(World world) { this.world = world; }
-    public void setDied(boolean died){ this.died = died; }
-
-    public boolean getDied() { return died; }
-
-    public int getNumLives() { return numLives; }
-
-    public void setNumLives(int val) { numLives = val; }
-
-    public void resetLives() { numLives = maxLives; }
 
     /**
      * Draws the level to the given game canvas

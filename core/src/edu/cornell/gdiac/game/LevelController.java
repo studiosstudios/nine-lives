@@ -42,54 +42,54 @@ public class LevelController {
     protected Rectangle bounds;
     /** The world scale */
     protected Vector2 scale;
-
     /** The amount of time for a physics engine step. */
     public static final float WORLD_STEP = 1/60.0f;
     /** Number of velocity iterations for the constrain solvers */
     public static final int WORLD_VELOC = 6;
     /** Number of position iterations for the constrain solvers */
     public static final int WORLD_POSIT = 2;
-
-    /** Whether or not debug mode is active */
+    /** Whether debug mode is active */
     private boolean debug;
     /** The default sound volume */
     private float volume;
-
     /** JSON representing the level */
     private JsonValue levelJV;
-
     /** Mark set to handle more sophisticated collision callbacks */
     protected ObjectSet<Fixture> sensorFixtures;
-
+    /** Whether to return to previous level */
     private boolean ret;
-
     /** Reference to the game canvas */
     protected GameCanvas canvas;
-
+    /** The maximum number of lives in the game */
     private static final int MAX_NUM_LIVES = 4;
-
     /** The hashmap for texture regions */
     private HashMap<String, TextureRegion> textureRegionAssetMap;
     /** The hashmap for sounds */
     private HashMap<String, Sound> soundAssetMap;
     /** The hashmap for fonts */
     private HashMap<String, BitmapFont> fontAssetMap;
+    /** The BitmapFont for the displayFont */
+    protected BitmapFont displayFont;
     /** The JSON value constants */
     private JsonValue JSONconstants;
-
+    /** The ActionController */
     private ActionController actionController;
-
+    /** The CollisionController */
     public CollisionController collisionController;
-
+    /** The Level model */
     private Level level;
 
-    protected BitmapFont displayFont;
-
-
     /**
-     * Creates and initialize a new instance of the platformer game
+     * Creates and initialize a new instance of a LevelController
      *
-     * The game has default gravity and other settings
+     * Creates a new game world
+     *
+     * The game world is scaled so that the screen coordinates do not agree
+     * with the Box2d coordinates.  The bounds are in terms of the Box2d
+     * world, not the screen.
+     *
+     * @param bounds	The game bounds in Box2d coordinates
+     * @param gravity	The gravitational force on this Box2d world
      */
     public LevelController(Rectangle bounds, Vector2 gravity) {
         world = new World(gravity,false);
@@ -105,39 +105,6 @@ public class LevelController {
         collisionController = new CollisionController(actionController);
         actionController.setLevel(level);
         collisionController.setLevel(level);
-    }
-
-    public void setRet(boolean value){
-        ret = value;
-    }
-
-    /** Returns true if returning to prev level
-     *
-     * @return true if returning to previous level
-     */
-    public boolean isRet() { return ret; }
-
-    public Level getLevel() {
-        return level;
-    }
-
-    /**
-     * Sets the hashmaps for Texture Regions, Sounds, Fonts, and sets JSON value constants
-     *
-     * @param tMap the hashmap for Texture Regions
-     * @param fMap the hashmap for Fonts
-     * @param sMap the hashmap for Sounds
-     * @param constants the JSON value for constants
-     */
-    public void setAssets(HashMap<String, TextureRegion> tMap, HashMap<String, BitmapFont> fMap,
-                          HashMap<String, Sound> sMap, JsonValue constants, JsonValue levelJV){
-        actionController.setAssets(tMap, fMap, sMap, constants, levelJV);
-        textureRegionAssetMap = tMap;
-        fontAssetMap = fMap;
-        soundAssetMap = sMap;
-        JSONconstants = constants;
-        this.levelJV = levelJV;
-        displayFont = fMap.get("display");
     }
 
     /**
@@ -165,6 +132,47 @@ public class LevelController {
         this.scale.y = canvas.getHeight()/bounds.getHeight();
     }
 
+    /**
+     * Sets whether to return to the previous level
+     *
+     * @param value to set ret to
+     */
+    public void setRet(boolean value){
+        ret = value;
+    }
+
+    /** Returns true if returning to prev level
+     *
+     * @return true if returning to previous level
+     */
+    public boolean isRet() { return ret; }
+
+    /** Returns the level model
+     *
+     * @return level
+     */
+    public Level getLevel() {
+        return level;
+    }
+
+    /**
+     * Sets the hashmaps for Texture Regions, Sounds, Fonts, and sets JSON value constants
+     *
+     * @param tMap the hashmap for Texture Regions
+     * @param fMap the hashmap for Fonts
+     * @param sMap the hashmap for Sounds
+     * @param constants the JSON value for constants
+     */
+    public void setAssets(HashMap<String, TextureRegion> tMap, HashMap<String, BitmapFont> fMap,
+                          HashMap<String, Sound> sMap, JsonValue constants, JsonValue levelJV){
+        actionController.setAssets(tMap, fMap, sMap, constants, levelJV);
+        textureRegionAssetMap = tMap;
+        fontAssetMap = fMap;
+        soundAssetMap = sMap;
+        JSONconstants = constants;
+        this.levelJV = levelJV;
+        displayFont = fMap.get("display");
+    }
 
     /**
      * Resets the status of the game so that we can play again.
@@ -212,7 +220,7 @@ public class LevelController {
      * to switch to a new game mode.  If not, the update proceeds
      * normally.
      *
-     * @param dt	Number of seconds since last animation frame
+     * @param dt Number of seconds since last animation frame
      *
      * @return whether to process the update loop
      */
@@ -230,7 +238,6 @@ public class LevelController {
         if (input.didReset()) {
             reset(null);
         }
-
 
         if (!level.isFailure() && level.getDied()) {
             actionController.died();
@@ -317,7 +324,6 @@ public class LevelController {
         if (level.isComplete() && !level.isFailure()) {
             displayFont.setColor(Color.YELLOW);
             canvas.begin(); // DO NOT SCALE
-//
             canvas.end();
         }
     }

@@ -37,7 +37,7 @@ public class NineLives extends Game implements ScreenListener {
 	private int current;
 	/** List of all WorldControllers */
 //	private WorldController[] controllers;
-
+	/** The WorldController that contains all LevelControllers*/
 	private WorldController controller;
 	
 	/**
@@ -75,7 +75,6 @@ public class NineLives extends Game implements ScreenListener {
 		canvas.dispose();
 		canvas = null;
 	
-		// Unload all of the resources
 		// Unload all of the resources
 		if (directory != null) {
 			directory.unloadAssets();

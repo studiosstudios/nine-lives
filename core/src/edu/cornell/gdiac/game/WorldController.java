@@ -69,12 +69,15 @@ public class WorldController implements Screen {
 	private JsonValue levelJV;
 	/** Level number **/
 	private int levelNum;
-
+	/** Total number of levels */
 	private final int TOTAL_LEVELS;
+	/** LevelController for the previous level */
 	private LevelController prevLevel;
+	/** LevelController for the current level */
 	private LevelController currLevel;
+	/** LevelController for the next level */
 	private LevelController nextLevel;
-
+	/** The AssetDirectory */
 	private AssetDirectory directory;
 
 	/**
@@ -87,7 +90,6 @@ public class WorldController implements Screen {
 	public GameCanvas getCanvas() {
 		return currLevel.getCanvas();
 	}
-
 
 	/**
 	 * Sets the canvas associated with this controller
@@ -114,13 +116,8 @@ public class WorldController implements Screen {
 			 new Vector2(0,DEFAULT_GRAVITY), numLevels);
 	}
 
-
 	/**
-	 * Creates a new game world
-	 *
-	 * The game world is scaled so that the screen coordinates do not agree
-	 * with the Box2d coordinates.  The bounds are in terms of the Box2d
-	 * world, not the screen.
+	 * Creates a new controller for the game world
 	 *
 	 * @param bounds	The game bounds in Box2d coordinates
 	 * @param gravity	The gravitational force on this Box2d world
@@ -133,8 +130,20 @@ public class WorldController implements Screen {
 		levelNum = 1;
 	}
 
+	/**
+	 * Returns the current LevelController
+	 *
+	 * @return currLevel the LevelController for the current level
+	 */
 	public LevelController getCurrLevel() { return currLevel; }
 
+	/**
+	 * Steps the level
+	 *
+	 * The previous level is set to the current level
+	 * The current level is set to the next level
+	 * The next level is loaded in
+	 */
 	public void nextLevel(){
 		if (levelNum < TOTAL_LEVELS) {
 			levelNum++;
@@ -146,6 +155,13 @@ public class WorldController implements Screen {
 		}
 	}
 
+	/**
+	 * Steps the level
+	 *
+	 * The next level is set to the current level
+	 * The current level is set to the previous level
+	 * The previous level is loaded in
+	 */
 	public void prevLevel(){
 		if (levelNum > 1) {
 			levelNum--;
@@ -156,7 +172,12 @@ public class WorldController implements Screen {
 			loadLevel(levelNum, prevLevel);
 		}
 	}
-
+	/**
+	 * Loads in a level from the level JSON and sets the assets in a specific LevelController
+	 *
+	 * @param levelNum the number associated with the level to be loaded in
+	 * @param level the LevelController to be set
+	 */
 	private void loadLevel(int levelNum, LevelController level){
 		levelJV = directory.getEntry("platform:level" + levelNum, JsonValue.class);
 		level.setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants, levelJV);

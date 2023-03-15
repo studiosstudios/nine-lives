@@ -9,27 +9,48 @@ import edu.cornell.gdiac.game.obstacle.Obstacle;
 
 public class CollisionController implements ContactListener, ContactFilter {
 
+
+    /** The Level model */
     private Level level;
-
+    /** The ActionController */
     private ActionController actionController;
-
     /** Mark set to handle more sophisticated collision callbacks */
     protected ObjectSet<Fixture> sensorFixtures;
-
+    /** Whether should return to previous level */
     boolean shouldReturn;
 
-
+    /**
+     * Creates and initialize a new instance of a CollisionController
+     *
+     * @param actionController The ActionController associated with the level
+     */
     public CollisionController(ActionController actionController){
         this.actionController = actionController;
         sensorFixtures = new ObjectSet<>();
         shouldReturn = false;
     }
 
+    /**
+     * Sets the level model
+     *
+     * @param level The Level model to be set to level
+     */
     public void setLevel(Level level){
         this.level = level;
     }
 
+    /**
+     * Returns whether to return to previous level
+     *
+     * @return shouldReturn
+     */
     public boolean getReturn() { return shouldReturn; }
+
+    /**
+     * Sets whether to return to previous level
+     *
+     * @param value given to shouldReturn
+     */
     public void setReturn(boolean value) { shouldReturn = value; }
 
     /**

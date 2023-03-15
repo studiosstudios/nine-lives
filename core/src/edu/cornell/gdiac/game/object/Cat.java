@@ -435,41 +435,26 @@ public class Cat extends CapsuleObstacle {
             forceCache.set(0, jumpMovement);
             body.applyLinearImpulse(forceCache,getPosition(),true);
         }
-//        if (isDashing() && canDash){
-//            float jump = body.getPosition().y;
-//            if (isJumping()){
-//                jump = (dash_force)+body.getPosition().y;
-//            }
-//            if(movement > 0){
-//                forceCache.set((dash_force)+body.getPosition().x,jump);
-//            }
-//            else if(movement < 0){
-//                forceCache.set((-dash_force)+body.getPosition().x,jump);
-//            }
-//            else{
-//                forceCache.set(body.getPosition().x,jump);
-//            }
-//            body.setTransform(forceCache,0);
-//            canDash = false;
-//        }
         if (isDashing() && canDash){
             float jump = 0;
             if (isJumping()){
                 jump = (dash_force);
             }
             if(movement > 0){
-                forceCache.set((dash_force),jump);
+                forceCache.set((-dash_force),jump);
             }
             else if(movement < 0){
-                forceCache.set((-dash_force),jump);
+                forceCache.set((dash_force),jump);
             }
             else{
                 forceCache.set(0,jump);
             }
-            setVY(Math.signum(getVerticalMovement())*(getMaxSpeed()));
-            setVX(Math.signum(getHorizontalMovement())*(getMaxSpeed()));
+            setVY(Math.signum(getVerticalMovement())*(getMaxSpeed()*1.2f));
+            setVX(Math.signum(getHorizontalMovement())*(getMaxSpeed()*1.2f));
             body.applyForce(forceCache,getPosition(),true);
-            canDash = false;
+            if(!isGrounded) {
+                canDash = false;
+            }
         }
         if (getIsClimbing()) {
             if (Math.abs(getVY()) >= getMaxSpeed()) {

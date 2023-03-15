@@ -107,6 +107,7 @@ public class ActionController {
         Cat cat = level.getCat();
         cat.setMovement(InputController.getInstance().getHorizontal() *cat.getForce() * (cat.getIsClimbing() ? 0 : 1));
         cat.setVerticalMovement(InputController.getInstance().getVertical() * cat.getForce());
+        cat.setHorizontalMovement(InputController.getInstance().getHorizontal() * cat.getForce());
         cat.setJumping(InputController.getInstance().didPrimary());
         cat.setDashing(InputController.getInstance().didDash());
         cat.setClimbing(InputController.getInstance().didClimb() && cat.isWalled());

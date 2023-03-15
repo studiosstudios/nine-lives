@@ -1,0 +1,44 @@
+{
+	"textures": {
+        "shared:earth" : {
+            "file":  "shared/earthtile.png",
+            "wrapU": "repeated",
+            "wrapV": "repeated"
+        },
+        "shared:steel" : {
+          "file":  "shared/steeltile.png",
+          "wrapU": "repeated",
+          "wrapV": "repeated"
+        },
+        "shared:goal":   "shared/goaldoor.png",
+        "platform:cat":  "platform/cat.png",
+        "platform:deadCat": "platform/deadCat.png",
+        "platform:rope":  "platform/ropebridge.png",
+        "platform:barrier": "platform/barrier.png",
+        "platform:bullet":  "platform/bullet.png",
+        "platform:spikes": "platform/spikes.png",
+        "platform:button": "platform/button.png",
+        "platform:flamethrower": "platform/flamethrower.png",
+        "platform:flame": "platform/flame.png",
+        "platform:laserLeft": "platform/laser_left.png",
+        "platform:laserBeam": "platform/laserbeam.png",
+        "platform:laserRight": "platform/laser_right.png",
+        "platform:background": "platform/labBkg_concept.png"
+    },
+    "jsons"  : {
+        "platform:constants_l1": "platform/constants_l1.json",
+        "platform:constants_l2": "platform/constants_l2.json"
+    },
+    "sounds" : {
+        "platform:jump" : "platform/jump.mp3",
+        "platform:pew"  : "platform/pew.mp3",
+        "platform:plop" : "platform/plop.mp3",
+        "platform:meow" : "platform/meow.mp3"
+    },
+    "fonts": {
+        "shared:retro": {
+            "file": "shared/RetroGame.ttf",
+            "size": 64
+        }
+    }
+}

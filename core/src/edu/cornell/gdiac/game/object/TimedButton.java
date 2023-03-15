@@ -13,12 +13,11 @@ import edu.cornell.gdiac.game.obstacle.*;
 public class TimedButton extends Activator {
 
     private int pressedTicks;
-    private final int totalDurationTicks;
-    public TimedButton(float x, float y, String id, int totalDurationTicks,
-                       TextureRegion texture, Vector2 scale, JsonValue data){
-        super(x, y, id, texture, scale, data);
+    private int totalDurationTicks;
+    public TimedButton(TextureRegion texture, Vector2 scale, JsonValue data){
+        super(texture, scale, data);
+        totalDurationTicks = data.getInt("duration");
         pressedTicks = 0;
-        this.totalDurationTicks = totalDurationTicks;
         setName("timedButton");
     }
 

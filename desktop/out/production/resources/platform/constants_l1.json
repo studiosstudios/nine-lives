@@ -1,0 +1,86 @@
+{
+	"defaults" : {
+	    "gravity" : -14.7,
+    	"friction": 0.4,
+    	"density" : 0.0,
+    	"restitution": 0.1,
+    	"volume": 0.8
+	},
+	"goal" : {
+		"pos": [34.5, 3.5],
+		"density": 0.0,
+    	"friction": 0.0,
+    	"restitution": 0.0
+    },
+	"ret_goal" : {
+		"pos": [-20,-20], //temp impossible
+		"density": 0.0,
+		"friction": 0.0,
+		"restitution": 0.0
+	},
+	"cat" : {
+		"pos": [1.0, 2.0],
+		"ret_pos": [31.5, 2.0],
+		"shrink": [0.7, 0.95],
+		"force": 30.0,
+		"damping": 30.0,
+		"density": 1.0,
+		"friction": 0.0,
+		"maxspeed": 6.5,
+		"jump_force": 1.6,
+		"jump_damping": 0.8,
+		"dash_force": 1.5,
+		"ground_sensor": {
+			"shrink" : 0.6,
+			"height" : 0.05
+		},
+		"side_sensor": {
+			"shrink" : 0.6,
+			"width": 0.2
+		}
+	},
+	"spike" : {
+		"spikes": [],
+		"sensor_height_scale": 1,
+		"sensor_width_scale": 0.5,
+		"sensor_offset": [0, 0],
+		"solid_offset":[0, -0.25],
+		"solid_height_scale": 0.5,
+		"solid_width_scale": 1,
+		"offset": [
+			0.5,
+			0.5
+		]
+	},
+	"activator": {
+		"body_shape" : [-0.03125, 0.2, 0.96875, 0.2, 0.66875, 0.3, 0.26875, 0.3],
+		"sensor_shape" : [-0.03125, 0.2, 0.96875, 0.2, 0.96875, 0.6, -0.03125, 0.6],
+		"friction" : 0.4,
+		"offset": [0.03125, -0.2],
+		"activators": [
+			]
+	},
+	"box": {
+		"friction" : 0.9,
+		"mass" : 200,
+		"boxes" : [
+		]
+	},
+	"flamethrower": {
+		"flamethrowers" : [
+		]
+	},
+	"laser" : {
+		"lasers" : [
+		]
+	},
+	"walls": 		[
+						[0.0, 2.0, 0.0, 17.0, -1.0, 17.0, -1.0, 2], //invisible left side
+						[30.0, 7.0, 32.0, 7.0, 32.0, 17.0, 30.0, 17.0], //left
+						[0, 17.0, 32.0, 17.0, 32.0, 18.0, 0, 18.0] //top
+			 		],
+	"platforms":	[
+
+						[0.0, 2.0, 35.0, 2.0, 35.0, 0.0, 0.0, 0.0] //main platform
+					]
+}

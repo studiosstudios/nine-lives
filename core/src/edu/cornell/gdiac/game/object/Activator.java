@@ -1,7 +1,6 @@
 package edu.cornell.gdiac.game.object;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -11,12 +10,12 @@ import edu.cornell.gdiac.game.obstacle.*;
 
 public abstract class Activator extends PolygonObstacle {
 
+    protected static JsonValue objectConstants;
+
     /** if the activator is activating objects*/
     protected boolean active;
     /** each activator has a unique string id specified in JSON*/
-    protected final String id;
-    /** The initializing data (to avoid magic numbers) */
-    protected final JsonValue data;
+    protected String id;
     private PolygonShape sensorShape;
     /** the number of objects pressing on this activator */
     public int numPressing;
@@ -35,18 +34,18 @@ public abstract class Activator extends PolygonObstacle {
 
     public abstract void updateActivated();
 
-    public Activator(float x, float y, String id, TextureRegion texture, Vector2 scale, JsonValue data){
-        super(data.get("body_shape").asFloatArray(),
-                x+data.get("offset").getFloat(0),
-                y+data.get("offset").getFloat(1));
+    public Activator(TextureRegion texture, Vector2 scale, JsonValue data){
+        super(objectConstants.get("body_shape").asFloatArray());
 
-        this.data = data;
-        this.id = id;
         setBodyType(BodyDef.BodyType.StaticBody);
-        active = false;
         setDrawScale(scale);
         setTexture(texture);
         setFixedRotation(true);
+
+        id = data.getString("id");
+        setX(data.get("pos").getFloat(0)+objectConstants.get("offset").getFloat(0));
+        setY(data.get("pos").getFloat(1)+objectConstants.get("offset").getFloat(1));
+        active = false;
     }
 
     @Override
@@ -64,7 +63,7 @@ public abstract class Activator extends PolygonObstacle {
         sensorDef.density = 0;
         sensorDef.isSensor = true;
         sensorShape = new PolygonShape();
-        sensorShape.set(data.get("sensor_shape").asFloatArray());
+        sensorShape.set(objectConstants.get("sensor_shape").asFloatArray());
         sensorDef.shape = sensorShape;
 
         Fixture sensorFixture = body.createFixture( sensorDef );
@@ -86,4 +85,5 @@ public abstract class Activator extends PolygonObstacle {
         canvas.drawPhysics(sensorShape,Color.RED,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
     }
 
+    public static void setConstants(JsonValue constants) { objectConstants = constants; }
 }

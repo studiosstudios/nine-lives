@@ -12,8 +12,8 @@ import edu.cornell.gdiac.game.obstacle.*;
 
 public class Button extends Activator {
 
-    public Button(float x, float y, String id, TextureRegion texture, Vector2 scale, JsonValue data){
-        super(x, y, id, texture, scale, data);
+    public Button(TextureRegion texture, Vector2 scale, JsonValue data){
+        super(texture, scale, data);
         setName("button");
     }
 

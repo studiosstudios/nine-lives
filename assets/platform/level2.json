@@ -1,0 +1,87 @@
+{
+	//TODO: factor constants out of level JSON and into constants JSON
+	"cat" : {
+		"pos": [0.5, 2.0],
+		"ret_pos": [-20,-20], //temp impossible
+		"shrink": [0.7, 0.95],
+		"force": 30.0,
+		"damping": 30.0,
+		"density": 1.0,
+		"friction": 0.0,
+		"maxspeed": 6.5,
+		"jump_force": 1.5,
+		"jump_damping": 0.8,
+		"dash_force": 1.5,
+		"sensor": {
+			"shrink": 0.9
+		},
+		"ground_sensor": {
+			"shrink" : 0.6,
+			"height" : 0.05
+		},
+		"side_sensor": {
+			"shrink" : 0.6,
+			"width": 0.2
+		}
+	},
+	"spikes":
+	[{"pos" : [10, 1], "angle": 0, "active": true, "activatorID": "button1"},
+		{"pos" : [11, 1], "angle": 0, "active": true, "activatorID": "button1"},
+		{"pos" : [17, 1], "angle": 0, "active": false, "activatorID": "button1"},
+		{"pos" : [29, 4], "angle": 90, "active": true, "activatorID": "button2"},
+		{"pos" : [29, 3], "angle": 90, "active": true, "activatorID": "button2"},
+		{"pos" : [29, 2], "angle": 90, "active": true, "activatorID": "button2"}],
+	"activators": [
+		{"pos": [4, 2], "type": "button","id" : "button1"},
+		{"pos": [13, 5], "type": "switch","id" : "button2"}
+	],
+	"boxes" : [
+		{"pos" :  [7, 2]}
+	],
+	"flamethrowers" : [
+		{"pos" :  [24, 3.8], "angle" : 0, "active": true, "activatorID" : "button1"}
+	],
+	"lasers" : [
+		{"pos" :  [20, 12.5]}
+	],
+	"goal" : {
+		"pos": [-20, -20], //temp impossible to exit
+		"density": 0.0,
+		"friction": 0.0,
+		"restitution": 0.0
+	},
+	"ret_goal" : {
+		"pos": [-2.5, 3.5],
+		"density": 0.0,
+		"friction": 0.0,
+		"restitution": 0.0
+	},
+	"walls": 		[
+//						[0.0, 2.0, 0.0, 5.0, -1.0, 3.5], //invisible entrance wall
+			 			[32.0, 18.0, 32.0, 17.0,  2.0, 17.0, //top-left
+			 			  2.0,  7.0,  0.0,  7.0,  0.0, 18.0],
+						[30.0, 2.0, 32.0, 2.0, 32.0, 13.0, 30.0, 13.0] //right
+						[32.0, 13.0, 33.0, 13.0, 33.0, 17.0, 32.0, 17.0]//invisible exit wall (don't want to loop this time around)
+			 		],
+	"platforms":	[
+
+						[-2.5, 2.0, 10.0, 2.0, 10.0, 1.0, 18.0, 1.0,
+						 18.0, 2.0, 32.0, 2.0, 32.0, 0.0, -2.5, 0.0], //main platform
+						[18.0, 13.0, 20.0, 13.0, 20.0, 12.0, 28.0, 12.0,
+						 28.0, 13.0, 30.0, 13.0, 30.0, 11.0, 18.0, 11.0] //top spike platform
+						[17.0, 3.5, 20.0, 3.5, 20.0, 4.0, 17.0, 4.0], //first
+						[13.0, 5.0, 15.0, 5.0, 15.0, 4.5, 13.0, 4.5], //second
+						[14.0, 8.0, 16.0, 8.0, 16.0, 7.5, 14.0, 7.5], //third
+						[16.0, 10.0, 18.0, 10.0, 18.0, 9.5, 16.0, 9.5] //fourth
+//						[ 1.0, 3.0, 6.0, 3.0, 6.0, 2.5, 1.0, 2.5],
+//						[ 6.0, 4.0, 9.0, 4.0, 9.0, 2.5, 6.0, 2.5],
+//						[23.0, 4.0,31.0, 4.0,31.0, 2.5,23.0, 2.5],
+//						[26.0, 5.5,28.0, 5.5,28.0, 5.0,26.0, 5.0],
+//						[29.0, 7.0,31.0, 7.0,31.0, 6.5,29.0, 6.5],
+//						[24.0, 8.5,27.0, 8.5,27.0, 8.0,24.0, 8.0],
+//						[29.0,10.0,31.0,10.0,31.0, 9.5,29.0, 9.5],
+//						[23.0,11.5,27.0,11.5,27.0,11.0,23.0,11.0],
+//						[19.0,12.5,23.0,12.5,23.0,12.0,19.0,12.0],
+//						[ 1.0,12.5, 7.0,12.5, 7.0,12.0, 1.0,12.0]
+					]
+}

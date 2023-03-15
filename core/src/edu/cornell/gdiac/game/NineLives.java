@@ -140,6 +140,7 @@ public class NineLives extends Game implements ScreenListener {
 //			System.out.println("switch to next-gdxroot");
 //			current = (current+1) % controllers.length;
 
+			controller.getNextController().getLevel().setComplete(false);
 			controller.getCurrController().getLevel().setComplete(true);
 			controller.getCurrController().setRet(false);
 			controller.getCurrController().reset();
@@ -164,16 +165,16 @@ public class NineLives extends Game implements ScreenListener {
 //			controllers[current].reset();
 //			setScreen(controllers[current]);
 
-			controller.getCurrController().setRet(true);
 			controller.getCurrController().getLevel().setComplete(true);
 			controller.getCurrController().reset();
 			controller.setNextController(controller.getCurrController());
 			controller.setCurrController(controller.getPrevController());
+			controller.getCurrController().setRet(true);
+			controller.getCurrController().getLevel().setComplete(false);
 			controller.getCurrController().reset();
 			controller.setCanvas(canvas);
 //			TODO: set prev controller here after checking length or something
 			setScreen(controller);
-
 
 		} else if (exitCode == WorldController.EXIT_QUIT) {
 			// We quit the main application

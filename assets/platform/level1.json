@@ -3,6 +3,7 @@
 	"activators": [],
 	"boxes" : [],
 	"flamethrowers" : [],
+	"checkpoints" : [],
 	"lasers" : [],
 	//TODO: factor constants out of level JSON and into constants JSON
 	"goal" : {

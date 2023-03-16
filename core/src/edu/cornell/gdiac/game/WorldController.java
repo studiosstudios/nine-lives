@@ -213,6 +213,8 @@ public class WorldController implements Screen {
 		textureRegionAssetMap.put("laser", new TextureRegion(directory.getEntry("platform:laser", Texture.class)));
 		textureRegionAssetMap.put("laserbeam", new TextureRegion(directory.getEntry("platform:laserBeam", Texture.class)));
 		textureRegionAssetMap.put("deadcat", new TextureRegion(directory.getEntry("platform:deadCat", Texture.class)));
+		textureRegionAssetMap.put("checkpoint", new TextureRegion(directory.getEntry("platform:checkpoint", Texture.class)));
+		textureRegionAssetMap.put("checkpoint_active", new TextureRegion(directory.getEntry("platform:checkpointActive", Texture.class)));
 		textureRegionAssetMap.put("background", new TextureRegion(directory.getEntry("platform:background", Texture.class)));
 
 		soundAssetMap.put("jump", directory.getEntry( "platform:jump", Sound.class ));

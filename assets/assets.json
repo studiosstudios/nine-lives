@@ -22,6 +22,8 @@
         "platform:flame": "platform/flame.png",
         "platform:laser": "platform/laser.png",
         "platform:laserBeam": "platform/laserbeam.png",
+        "platform:checkpoint": "platform/checkpoint.png",
+        "platform:checkpointActive": "platform/checkpoint_active.png",
         "platform:background": "platform/labBkg_concept.png"
     },
     "jsons"  : {

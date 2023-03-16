@@ -210,9 +210,8 @@ public class WorldController implements Screen {
 		textureRegionAssetMap.put("button", new TextureRegion(directory.getEntry("platform:button", Texture.class)));
 		textureRegionAssetMap.put("flame", new TextureRegion(directory.getEntry("platform:flame", Texture.class)));
 		textureRegionAssetMap.put("flamethrower", new TextureRegion(directory.getEntry("platform:flamethrower", Texture.class)));
-		textureRegionAssetMap.put("laserleft", new TextureRegion(directory.getEntry("platform:laserLeft", Texture.class)));
+		textureRegionAssetMap.put("laser", new TextureRegion(directory.getEntry("platform:laser", Texture.class)));
 		textureRegionAssetMap.put("laserbeam", new TextureRegion(directory.getEntry("platform:laserBeam", Texture.class)));
-		textureRegionAssetMap.put("laserright", new TextureRegion(directory.getEntry("platform:laserRight", Texture.class)));
 		textureRegionAssetMap.put("deadcat", new TextureRegion(directory.getEntry("platform:deadCat", Texture.class)));
 		textureRegionAssetMap.put("background", new TextureRegion(directory.getEntry("platform:background", Texture.class)));
 

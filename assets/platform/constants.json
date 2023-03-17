@@ -37,6 +37,8 @@
 
   },
   "checkpoint": {
-    "offset": [0, 1]
+    "offset": [0, 1],
+    "solid_height_scale": 0.5,
+    "solid_width_scale": 1
   }
 }

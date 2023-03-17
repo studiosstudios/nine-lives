@@ -428,6 +428,7 @@ public class Level {
         JsonValue spikesConstants = constants.get("spikes");
         Spikes.setConstants(spikesConstants);
         for (JsonValue spikeJV : levelJV.get("spikes")){
+//            System.out.println(tMap.get("spikes"));
             Spikes spike = new Spikes(tMap.get("spikes"), scale, spikeJV);
             loadActivatable(spike, spikeJV);
         }
@@ -435,7 +436,7 @@ public class Level {
         JsonValue checkpointConstants = constants.get("checkpoint");
         Checkpoint.setConstants(checkpointConstants);
         for (JsonValue checkpointJV : levelJV.get("checkpoints")){
-            Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint"), tMap.get("checkpointActive"));
+            Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint"), tMap.get("checkpoint_active"));
             addObject(checkpoint);
         }
 

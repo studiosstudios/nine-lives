@@ -1,11 +1,11 @@
 {
 	"spikes": [{"pos" : [5, 2], "angle": 0, "active": true},
-		{"pos" : [10, 2], "angle": 0, "active": true}],
+		{"pos" : [15, 2], "angle": 0, "active": true}],
 	"activators": [],
 	"boxes" : [],
 	"flamethrowers" : [],
-	"checkpoints" : [{"pos" : [2, 2]},
-					{"pos": [7,2]}], //[xpos, ypos, radius]
+	"checkpoints" : [{"pos" : [3, 2]},
+					{"pos": [13,2]}], //[xpos, ypos, radius]
 	"lasers" : [],
 	//TODO: factor constants out of level JSON and into constants JSON
 	"goal" : {

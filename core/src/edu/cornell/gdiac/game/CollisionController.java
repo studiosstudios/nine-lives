@@ -65,13 +65,11 @@ public class CollisionController implements ContactListener, ContactFilter {
     public void beginContact(Contact contact) {
         Fixture fix1 = contact.getFixtureA();
         Fixture fix2 = contact.getFixtureB();
-
         Body body1 = fix1.getBody();
         Body body2 = fix2.getBody();
 
         Object fd1 = fix1.getUserData();
         Object fd2 = fix2.getUserData();
-
         try {
             Obstacle bd1 = (Obstacle) body1.getUserData();
             Obstacle bd2 = (Obstacle) body2.getUserData();
@@ -116,6 +114,9 @@ public class CollisionController implements ContactListener, ContactFilter {
                 }
                 if (fd2 == LaserBeam.getSensorName()) {
                     actionController.die();
+                }
+                if (fd2 instanceof Checkpoint){
+                    ((Checkpoint) fd2).setActive(true);
                 }
             }
 
@@ -166,7 +167,6 @@ public class CollisionController implements ContactListener, ContactFilter {
 
         Object bd1 = body1.getUserData();
         Object bd2 = body2.getUserData();
-
         if ((level.getCat().getGroundSensorName().equals(fd2) && level.getCat() != bd1) ||
                 (level.getCat().getGroundSensorName().equals(fd1) && level.getCat() != bd2)) {
             sensorFixtures.remove(level.getCat() == bd1 ? fix2 : fix1);

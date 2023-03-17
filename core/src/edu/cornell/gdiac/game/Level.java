@@ -83,6 +83,7 @@ public class Level {
     private Array<Activator> activators;
     private Array<Activatable> activatables;
     private Array<DeadBody> deadBodyArray;
+    private Array<Checkpoint> checkpointArray;
     /** The new dead body to be added */
     private DeadBody newDeadBody;
     /** The respawn position of the player */
@@ -171,6 +172,13 @@ public class Level {
     public Array<DeadBody> getdeadBodyArray() { return deadBodyArray; }
 
     /**
+     * Returns a reference to the array of checkpoints
+     *
+     * @return a reference to the dead body array
+     */
+    public Array<Checkpoint> getCheckpoints() { return checkpointArray; }
+
+    /**
      * Returns a reference to the new dead body
      *
      * @return a reference to the new dead body
@@ -192,6 +200,13 @@ public class Level {
      * @return a reference to the respawn position
      */
     public Vector2 getRespawnPos() { return respawnPos; }
+
+    /**
+     * Sets the respawn position
+     *
+     * @param pos the Vector2 value to set respawn position to
+     */
+    public void setRespawnPos(Vector2 pos) { respawnPos = pos; }
 
     /**
      * Returns a reference to the dwidth
@@ -312,6 +327,7 @@ public class Level {
         activators = new Array<>();
         activatables = new Array<>();
         deadBodyArray = new Array<>();
+        checkpointArray = new Array<>();
         activationRelations = new HashMap<>();
     }
 
@@ -438,6 +454,7 @@ public class Level {
         for (JsonValue checkpointJV : levelJV.get("checkpoints")){
             Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint"), tMap.get("checkpoint_active"));
             addObject(checkpoint);
+            checkpointArray.add(checkpoint);
         }
 
         JsonValue boxConstants = constants.get("boxes");

@@ -117,6 +117,12 @@ public class CollisionController implements ContactListener, ContactFilter {
                 }
                 if (fd2 instanceof Checkpoint){
                     ((Checkpoint) fd2).setActive(true);
+                    level.setRespawnPos(((Checkpoint) fd2).getPosition());
+                    for (Checkpoint chkpt : level.getCheckpoints()) {
+                        if (chkpt != fd2) {
+                            chkpt.setActive(false);
+                        }
+                    }
                 }
             }
 

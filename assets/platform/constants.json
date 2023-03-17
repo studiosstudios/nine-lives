@@ -35,5 +35,8 @@
   },
   "laser": {
 
+  },
+  "checkpoint": {
+    "offset": [0, 1]
   }
 }

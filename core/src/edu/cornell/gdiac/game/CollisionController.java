@@ -151,7 +151,7 @@ public class CollisionController implements ContactListener, ContactFilter {
      * Callback method for the start of a collision
      *
      * This method is called when two objects cease to touch.  The main use of this method
-     * is to determine when the characer is NOT on the ground.  This is how we prevent
+     * is to determine when the character is NOT on the ground.  This is how we prevent
      * double jumping.
      */
     public void endContact(Contact contact) {

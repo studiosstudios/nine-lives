@@ -432,6 +432,13 @@ public class Level {
             loadActivatable(spike, spikeJV);
         }
 
+        JsonValue checkpointConstants = constants.get("checkpoint");
+        Checkpoint.setConstants(checkpointConstants);
+        for (JsonValue checkpointJV : levelJV.get("checkpoints")){
+            Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint"), tMap.get("checkpointActive"));
+            addObject(checkpoint);
+        }
+
         JsonValue boxConstants = constants.get("boxes");
         PushableBox.setConstants(boxConstants);
         for(JsonValue boxJV : levelJV.get("boxes")){

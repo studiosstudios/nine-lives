@@ -178,7 +178,7 @@ public class WorldController implements Screen {
 	 * @param levelNum the number associated with the level to be loaded in
 	 * @return JSON of the level
 	 */
-	private JsonValue levelJSON(int levelNum){ return directory.getEntry("platform:level" + levelNum, JsonValue.class); }
+	private JsonValue levelJSON(int levelNum){ return directory.getEntry("level" + levelNum, JsonValue.class); }
 	
 	/**
 	 * Dispose of all (non-static) resources allocated to this mode.
@@ -198,36 +198,28 @@ public class WorldController implements Screen {
 	public void gatherAssets(AssetDirectory directory) {
 		// Allocate the tiles
 		// Creating the hashmaps
+		textureRegionAssetMap = new HashMap<>();
+		soundAssetMap = new HashMap<>();
+		fontAssetMap = new HashMap<>();
+
+		String[] names = {"cat", "barrier", "rope", "spikes", "button", "flame", "flamethrower", "laser", "laserBeam",
+				"deadCat", "checkpoint", "checkpointActive", "background", "steel", "goal"};
+		for (String n : names){
+			textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
+		}
+
+		names = new String[]{"jump", "pew", "plop", "meow"};
+		for (String n : names){
+			soundAssetMap.put(n, directory.getEntry(n, Sound.class));
+		}
+
+		names = new String[]{"retro"};
+		for (String n : names){
+			fontAssetMap.put(n, directory.getEntry(n, BitmapFont.class));
+		}
+
+		constants = directory.getEntry("constants", JsonValue.class);
 		this.directory = directory;
-		textureRegionAssetMap = new HashMap<String, TextureRegion>();
-		soundAssetMap = new HashMap<String, Sound>();
-		fontAssetMap = new HashMap<String, BitmapFont>();
-
-		textureRegionAssetMap.put("cat", new TextureRegion(directory.getEntry("platform:cat",Texture.class)));
-		textureRegionAssetMap.put("barrier", new TextureRegion(directory.getEntry("platform:barrier",Texture.class)));
-		textureRegionAssetMap.put("rope", new TextureRegion(directory.getEntry("platform:rope",Texture.class)));
-		textureRegionAssetMap.put("spikes", new TextureRegion(directory.getEntry("platform:spikes", Texture.class)));
-		textureRegionAssetMap.put("button", new TextureRegion(directory.getEntry("platform:button", Texture.class)));
-		textureRegionAssetMap.put("flame", new TextureRegion(directory.getEntry("platform:flame", Texture.class)));
-		textureRegionAssetMap.put("flamethrower", new TextureRegion(directory.getEntry("platform:flamethrower", Texture.class)));
-		textureRegionAssetMap.put("laser", new TextureRegion(directory.getEntry("platform:laser", Texture.class)));
-		textureRegionAssetMap.put("laserbeam", new TextureRegion(directory.getEntry("platform:laserBeam", Texture.class)));
-		textureRegionAssetMap.put("deadcat", new TextureRegion(directory.getEntry("platform:deadCat", Texture.class)));
-		textureRegionAssetMap.put("checkpoint", new TextureRegion(directory.getEntry("platform:checkpoint", Texture.class)));
-		textureRegionAssetMap.put("checkpoint_active", new TextureRegion(directory.getEntry("platform:checkpointActive", Texture.class)));
-		textureRegionAssetMap.put("background", new TextureRegion(directory.getEntry("platform:background", Texture.class)));
-
-		soundAssetMap.put("jump", directory.getEntry( "platform:jump", Sound.class ));
-		soundAssetMap.put("pew", directory.getEntry( "platform:pew", Sound.class ));
-		soundAssetMap.put("plop", directory.getEntry( "platform:plop", Sound.class ));
-		soundAssetMap.put("meow", directory.getEntry( "platform:meow", Sound.class ));
-
-		constants = directory.getEntry("platform:constants", JsonValue.class);
-
-		// Allocate the tiles
-		textureRegionAssetMap.put("steel", new TextureRegion(directory.getEntry("shared:steel", Texture.class)));
-		textureRegionAssetMap.put("goal", new TextureRegion(directory.getEntry("shared:goal", Texture.class)));
-		fontAssetMap.put("display", directory.getEntry( "shared:retro" ,BitmapFont.class));
 
 		// Giving assets to levelController
 		currLevel.setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants, levelJSON(1));

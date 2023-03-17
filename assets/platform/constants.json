@@ -35,5 +35,13 @@
   },
   "laser": {
 
+  },
+  "deadBody": {
+    "friction": 0.4,
+    "density" : 1,
+    "damping" : 2,
+    "offset": [0, 0],
+    "sensorRadius": 0.2,
+    "shrink": [0.6, 0.5]
   }
 }

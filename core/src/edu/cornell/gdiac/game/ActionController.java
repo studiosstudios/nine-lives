@@ -17,17 +17,10 @@ public class ActionController {
     protected Rectangle bounds;
     /** The world scale */
     protected Vector2 scale;
-
-    /** The hashmap for texture regions */
-    private HashMap<String, TextureRegion> textureRegionAssetMap;
     /** The hashmap for sounds */
     private HashMap<String, Sound> soundAssetMap;
-    /** The hashmap for fonts */
-    private HashMap<String, BitmapFont> fontAssetMap;
     /** The JSON value constants */
     private JsonValue JSONconstants;
-    /** JSON representing the level */
-    private JsonValue levelJV;
     /** The default sound volume */
     private float volume;
     /** The jump sound */
@@ -66,19 +59,9 @@ public class ActionController {
     /**
      * Sets the hashmaps for Texture Regions, Sounds, Fonts, and sets JSON value constants
      *
-     * @param tMap the hashmap for Texture Regions
-     * @param fMap the hashmap for Fonts
      * @param sMap the hashmap for Sounds
-     * @param constants the JSON value for constants
      */
-    public void setAssets(HashMap<String, TextureRegion> tMap, HashMap<String, BitmapFont> fMap,
-                          HashMap<String, Sound> sMap, JsonValue constants, JsonValue levelJV){
-        textureRegionAssetMap = tMap;
-        fontAssetMap = fMap;
-        soundAssetMap = sMap;
-        JSONconstants = constants;
-        this.levelJV = levelJV;
-    }
+    public void setAssets(HashMap<String, Sound> sMap){ soundAssetMap = sMap; }
 
     /**
      * Called when the Screen is paused.
@@ -164,8 +147,7 @@ public class ActionController {
     /**
      * Called when a player dies. Removes all input but keeps velocities.
      */
-    public DeadBody die(){
-        Cat cat = level.getCat();
+    public void die(){
         if (!level.getDied()) {
             level.getCat().setJumping(false);
             level.setDied(true);
@@ -177,33 +159,19 @@ public class ActionController {
                 level.setFailure(true);
             } else {
                 // create dead body
-                DeadBody deadBody = new DeadBody(levelJV.get("cat"), level.getDwidth(), level.getDheight());
-                deadBody.setDrawScale(scale);
-                deadBody.setTexture(textureRegionAssetMap.get("deadcat"));
-                deadBody.setSensor(false);
-                deadBody.setLinearVelocity(cat.getLinearVelocity());
-                deadBody.setLinearDamping(2f);
-                deadBody.setPosition(cat.getPosition());
-                level.setNewDeadBody(deadBody);
-                level.queueObject(deadBody);
-                return deadBody;
+                level.spawnDeadBody();
             }
         }
-        return null;
     }
 
     /**
      * Actions carried out when the player has died
      * The level model died is set to false
-     * The level model new dead body is set to face the same direction as the cat
-     * The level model new dead body is added to the array of dead bodies
-     *
+     * The level model cat is set to its respawn position
      */
     public void died() {
         level.setDied(false);
-        level.getNewDeadBody().setFacingRight(level.getCat().isFacingRight());
         level.getCat().setPosition(level.getRespawnPos());
-        level.getdeadBodyArray().add(level.getNewDeadBody());
     }
 
     /**

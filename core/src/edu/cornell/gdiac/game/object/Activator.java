@@ -41,20 +41,20 @@ public abstract class Activator extends PolygonObstacle {
 
     public abstract void updateActivated();
 
-    public Activator(TextureRegion texture, Vector2 scale, JsonValue data){
+    public Activator(TextureRegion texture, TextureRegion texture2, Vector2 scale, JsonValue data){
         super(objectConstants.get("body_shape").asFloatArray());
         int spriteWidth = 32;
         int spriteHeight = 32;
         spriteFrames = TextureRegion.split(texture.getTexture(), spriteWidth, spriteHeight);
-        float frameDuration = 0.1f;
+        float frameDuration = 0.2f;
         animation = new Animation<>(frameDuration, spriteFrames[0]);
         setBodyType(BodyDef.BodyType.StaticBody);
-        animation.setPlayMode(Animation.PlayMode.LOOP);
+        animation.setPlayMode(Animation.PlayMode.REVERSED);
         spriteBatch = new SpriteBatch();
         animationTime = 0f;
 
         setDrawScale(scale);
-//        setTexture(texture);
+        setTexture(texture2);
         setFixedRotation(true);
 
         id = data.getString("id");
@@ -65,14 +65,23 @@ public abstract class Activator extends PolygonObstacle {
 
     @Override
     public void draw(GameCanvas canvas){
-        animationTime += Gdx.graphics.getDeltaTime();
-        TextureRegion currentFrame = animation.getKeyFrame(animationTime);
-        spriteBatch.begin();
-        spriteBatch.draw(currentFrame, getX()*drawScale.x,getY()*drawScale.x);
-        spriteBatch.end();
-//        canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
+        if(isPressed()){
+            animation.setPlayMode(Animation.PlayMode.REVERSED);
+            animationTime += Gdx.graphics.getDeltaTime();
+            TextureRegion currentFrame = animation.getKeyFrame(animationTime);
+            spriteBatch.begin();
+            spriteBatch.draw(currentFrame, getX()*drawScale.x,getY()*drawScale.x);
+            spriteBatch.end();
+        }
+        else {
+            animation.setPlayMode(Animation.PlayMode.NORMAL);
+            animationTime += Gdx.graphics.getDeltaTime();
+            TextureRegion currentFrame = animation.getKeyFrame(animationTime);
+            spriteBatch.begin();
+            spriteBatch.draw(currentFrame, getX()*drawScale.x,getY()*drawScale.x);
+            spriteBatch.end();
+        }
     }
-
     public boolean activatePhysics(World world){
         if (!super.activatePhysics(world)) {
             return false;

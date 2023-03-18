@@ -407,13 +407,13 @@ public class Level {
             Activator activator;
             switch (activatorJV.getString("type")){
                 case "button":
-                    activator = new Button(tMap.get("button_anim"), scale, activatorJV);
+                    activator = new Button(tMap.get("button_anim"), tMap.get("button"), scale, activatorJV);
                     break;
                 case "switch":
-                    activator = new Switch(tMap.get("button_anim"), scale, activatorJV);
+                    activator = new Switch(tMap.get("button_anim"), tMap.get("button"),scale, activatorJV);
                     break;
                 case "timed":
-                    activator = new TimedButton(tMap.get("button_anim"), scale, activatorJV);
+                    activator = new TimedButton(tMap.get("button_anim"), tMap.get("button"),scale, activatorJV);
                     break;
                 default:
                     throw new RuntimeException("unrecognised activator type");
@@ -440,7 +440,7 @@ public class Level {
         Flamethrower.setConstants(flamethrowerConstants);
         Flame.setConstants(flamethrowerConstants);
         for (JsonValue flamethrowerJV : levelJV.get("flamethrowers")){
-            Flamethrower flamethrower = new Flamethrower(tMap.get("flamethrower"), tMap.get("flame"), scale, flamethrowerJV);
+            Flamethrower flamethrower = new Flamethrower(tMap.get("flamethrower"), tMap.get("flame"),scale, flamethrowerJV);
             loadActivatable(flamethrower, flamethrowerJV);
         }
 

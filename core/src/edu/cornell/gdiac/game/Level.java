@@ -22,6 +22,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.physics.box2d.*;
+import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.game.object.*;
 
 import edu.cornell.gdiac.game.obstacle.*;
@@ -94,6 +95,12 @@ public class Level {
     private float dheight;
     /** The background texture */
     private Texture background;
+    /** JSON of the level */
+    private JsonValue levelJV;
+
+    /** texture assets */
+    private HashMap<String, TextureRegion> textureRegionAssetMap;
+
 
     /** */
 
@@ -171,22 +178,6 @@ public class Level {
      * @return a reference to the dead body array
      */
     public Array<DeadBody> getdeadBodyArray() { return deadBodyArray; }
-
-    /**
-     * Returns a reference to the new dead body
-     *
-     * @return a reference to the new dead body
-     */
-    public DeadBody getNewDeadBody() { return newDeadBody; }
-
-    /**
-     * Sets the new dead body
-     *
-     * @param body the DeadBody to set to newDeadBody
-     */
-    public void setNewDeadBody(DeadBody body) {
-        newDeadBody = body;
-    }
 
     /**
      * Returns a reference to the respawn position
@@ -304,6 +295,11 @@ public class Level {
 
 
     /**
+     * Allows level to have access to textures for creating new objects
+     */
+    public void setAssets(HashMap<String, TextureRegion> tMap){ textureRegionAssetMap = tMap; }
+
+    /**
      * Creates a new LevelModel
      *
      * The level is empty and there is no active physics world.  You must read
@@ -356,6 +352,7 @@ public class Level {
      */
     public void populateLevel(HashMap<String, TextureRegion> tMap, HashMap<String, BitmapFont> fMap,
                                HashMap<String, Sound> sMap, JsonValue constants, JsonValue levelJV, boolean ret, Cat prevCat) {
+        this.levelJV = levelJV;
         // Add level goal
         dwidth  = tMap.get("goal").getRegionWidth()/scale.x;
         dheight = tMap.get("goal").getRegionHeight()/scale.y;
@@ -429,13 +426,13 @@ public class Level {
             Activator activator;
             switch (activatorJV.getString("type")){
                 case "button":
-                    activator = new Button(tMap.get("button"), scale, activatorJV);
+                    activator = new Button(tMap.get("button_anim"), tMap.get("button"), scale, activatorJV);
                     break;
                 case "switch":
-                    activator = new Switch(tMap.get("button"), scale, activatorJV);
+                    activator = new Switch(tMap.get("button_anim"), tMap.get("button"),scale, activatorJV);
                     break;
                 case "timed":
-                    activator = new TimedButton(tMap.get("button"), scale, activatorJV);
+                    activator = new TimedButton(tMap.get("button_anim"), tMap.get("button"),scale, activatorJV);
                     break;
                 default:
                     throw new RuntimeException("unrecognised activator type");
@@ -455,7 +452,7 @@ public class Level {
         JsonValue checkpointConstants = constants.get("checkpoint");
         Checkpoint.setConstants(checkpointConstants);
         for (JsonValue checkpointJV : levelJV.get("checkpoints")){
-            Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint"), tMap.get("checkpoint_active"));
+            Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint"), tMap.get("checkpointActive"));
             addObject(checkpoint);
         }
 
@@ -470,7 +467,7 @@ public class Level {
         Flamethrower.setConstants(flamethrowerConstants);
         Flame.setConstants(flamethrowerConstants);
         for (JsonValue flamethrowerJV : levelJV.get("flamethrowers")){
-            Flamethrower flamethrower = new Flamethrower(tMap.get("flamethrower"), tMap.get("flame"), scale, flamethrowerJV);
+            Flamethrower flamethrower = new Flamethrower(tMap.get("flamethrower"), tMap.get("flame"),scale, flamethrowerJV);
             loadActivatable(flamethrower, flamethrowerJV);
         }
 
@@ -480,10 +477,13 @@ public class Level {
             float x = laserJV.get("pos").getFloat(0);
             float y = laserJV.get("pos").getFloat(1);
             LaserBeam laser = new LaserBeam(constants.get("laser"), x, y, 8, dwidth,dheight,"laserbeam");
-            laser.setTexture(tMap.get("laserbeam"));
+            laser.setTexture(tMap.get("laserBeam"));
             laser.setDrawScale(scale);
             addObject(laser);
         }
+
+        JsonValue deadBodyConstants = constants.get("deadBody");
+        DeadBody.setConstants(deadBodyConstants);
 
         // Create cat
         dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
@@ -659,6 +659,15 @@ public class Level {
             canvas.endDebug();
 
         }
+    }
+
+    /** spawns a dead body at the location of the cat */
+    public void spawnDeadBody(){
+        DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat"), scale, cat.getPosition());
+        deadBody.setLinearVelocity(cat.getLinearVelocity());
+        deadBody.setFacingRight(cat.isFacingRight());
+        queueObject(deadBody);
+        deadBodyArray.add(deadBody);
     }
 
 

@@ -75,7 +75,7 @@ public class LevelController {
     /** The ActionController */
     private ActionController actionController;
     /** The CollisionController */
-    public CollisionController collisionController;
+    private CollisionController collisionController;
     /** The Level model */
     private Level level;
 
@@ -165,13 +165,19 @@ public class LevelController {
      */
     public void setAssets(HashMap<String, TextureRegion> tMap, HashMap<String, BitmapFont> fMap,
                           HashMap<String, Sound> sMap, JsonValue constants, JsonValue levelJV){
-        actionController.setAssets(tMap, fMap, sMap, constants, levelJV);
+
+
+        //for now levelcontroller will have access to these assets, but in the future we may see that it is unnecessary
         textureRegionAssetMap = tMap;
         fontAssetMap = fMap;
         soundAssetMap = sMap;
         JSONconstants = constants;
         this.levelJV = levelJV;
-        displayFont = fMap.get("display");
+        displayFont = fMap.get("retro");
+
+        //send the relevant assets to classes that need them
+        actionController.setAssets(sMap);
+        level.setAssets(tMap);
     }
 
     /**

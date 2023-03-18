@@ -1,46 +1,48 @@
 {
 	"textures": {
-        "shared:earth" : {
+        "earth" : {
             "file":  "shared/earthtile.png",
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
-        "shared:steel" : {
+        "steel" : {
           "file":  "shared/steeltile.png",
           "wrapU": "repeated",
           "wrapV": "repeated"
         },
-        "shared:goal":   "shared/goaldoor.png",
-        "platform:cat":  "platform/cat.png",
-        "platform:deadCat": "platform/deadCat.png",
-        "platform:rope":  "platform/ropebridge.png",
-        "platform:barrier": "platform/barrier.png",
-        "platform:bullet":  "platform/bullet.png",
-        "platform:spikes": "platform/spikes.png",
-        "platform:button": "platform/button.png",
-        "platform:flamethrower": "platform/flamethrower.png",
-        "platform:flame": "platform/flame.png",
-        "platform:laser": "platform/laser.png",
-        "platform:laserBeam": "platform/laserbeam.png",
-        "platform:checkpoint": "platform/checkpoint.png",
-        "platform:checkpointActive": "platform/checkpoint_active.png",
-        "platform:background": "platform/labBkg_concept.png"
+        "goal":   "shared/goaldoor.png",
+        "cat":  "platform/cat.png",
+        "deadCat": "platform/deadCat.png",
+        "rope":  "platform/ropebridge.png",
+        "barrier": "platform/barrier.png",
+        "bullet":  "platform/bullet.png",
+      "button_anim": "platform/button_anim.png",
+        "spikes": "platform/spikes.png",
+        "button": "platform/button.png",
+        "flamethrower": "platform/flamethrower.png",
+        "flame": "platform/flame.png",
+        "laser": "platform/laser.png",
+        "laserBeam": "platform/laserbeam.png",
+        "checkpoint": "platform/checkpoint.png",
+        "checkpointActive": "platform/checkpointActive.png",
+        "background": "platform/labBkg_concept.png",
+      "flame_anim": "platform/flame_anim.png"
     },
     "jsons"  : {
-        "platform:constants": "platform/constants.json",
-        "platform:level1": "platform/level1.json",
-        "platform:level2": "platform/level2.json",
-        "platform:level3": "platform/level3.json",
-        "platform:level4": "platform/level4.json"
+        "constants": "platform/constants.json",
+        "level1": "platform/level1.json",
+        "level2": "platform/level2.json",
+        "level3": "platform/level3.json",
+        "level4": "platform/level4.json"
     },
     "sounds" : {
-        "platform:jump" : "platform/jump.mp3",
-        "platform:pew"  : "platform/pew.mp3",
-        "platform:plop" : "platform/plop.mp3",
-        "platform:meow" : "platform/meow.mp3"
+        "jump" : "platform/jump.mp3",
+        "pew"  : "platform/pew.mp3",
+        "plop" : "platform/plop.mp3",
+        "meow" : "platform/meow.mp3"
     },
     "fonts": {
-        "shared:retro": {
+        "retro": {
             "file": "shared/RetroGame.ttf",
             "size": 64
         }

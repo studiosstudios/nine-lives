@@ -68,6 +68,8 @@ public class Cat extends CapsuleObstacle {
     private int wallCount;
     /** Whether we are climbing on a wall */
     private boolean isClimbing;
+    private Texture normal_texture;
+    private Texture jumping_texture;
 
     /** List of shapes corresponding to the sensors attached to this body */
     private Array<PolygonShape> sensorShapes;
@@ -300,7 +302,8 @@ public class Cat extends CapsuleObstacle {
      * @param width		The object width in physics units
      * @param height	The object width in physics units
      */
-    public Cat(JsonValue data, float width, float height, boolean ret, Vector2 prev_pos) {
+    public Cat(JsonValue data, float width, float height, boolean ret, Vector2 prev_pos,
+               com.badlogic.gdx.graphics.g2d.TextureRegion catBody, com.badlogic.gdx.graphics.g2d.TextureRegion jumping) {
         // The shrink factors fit the image to a tigher hitbox
         super(data.get(ret?"ret_pos":"pos").getFloat(0),
                 prev_pos == null ? data.get(ret?"ret_pos":"pos").getFloat(1) : prev_pos.y,
@@ -310,7 +313,8 @@ public class Cat extends CapsuleObstacle {
         setDensity(data.getFloat("density", 0));
         setFriction(data.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
         setFixedRotation(true);
-
+        normal_texture = catBody.getTexture();
+        jumping_texture = jumping.getTexture();
         maxspeed = data.getFloat("maxspeed", 0);
         damping = data.getFloat("damping", 0);
         force = data.getFloat("force", 0);
@@ -333,7 +337,6 @@ public class Cat extends CapsuleObstacle {
         stoppedJumping = false;
         setName("cat");
     }
-
     /**
      * Creates the physics Body(s) for this object, adding them to the world.
      *
@@ -490,7 +493,23 @@ public class Cat extends CapsuleObstacle {
      */
     public void draw(GameCanvas canvas) {
         float effect = faceRight ? 1.0f : -1.0f;
-        canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),effect,1.0f);
+        if(isJumping){
+            if(faceRight){
+                canvas.draw(jumping_texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x-20,getY()*drawScale.y-15,getAngle(),effect,1.0f);
+            }
+            else{
+                canvas.draw(jumping_texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x+30,getY()*drawScale.y-15,getAngle(),effect,1.0f);
+            }
+
+        }
+        else{
+            if(faceRight){
+                canvas.draw(normal_texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x-20,getY()*drawScale.y-15,getAngle(),effect,1.0f);
+            }
+            else{
+                canvas.draw(normal_texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x+30,getY()*drawScale.y-15,getAngle(),effect,1.0f);
+            }
+        }
     }
 
     /**

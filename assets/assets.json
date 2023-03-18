@@ -13,6 +13,7 @@
         "goal":   "shared/goaldoor.png",
         "cat":  "platform/cat.png",
         "deadCat": "platform/deadCat.png",
+      "jumpingCat": "platform/Jump.png",
         "rope":  "platform/ropebridge.png",
         "barrier": "platform/barrier.png",
         "bullet":  "platform/bullet.png",

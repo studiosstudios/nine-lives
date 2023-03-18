@@ -461,9 +461,9 @@ public class Level {
         // Create cat
         dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
         dheight = tMap.get("cat").getRegionHeight()/scale.y;
-        cat = new Cat(levelJV.get("cat"), dwidth, dheight, ret, prevCat == null? null : prevCat.getPosition());
+        cat = new Cat(levelJV.get("cat"), dwidth, dheight, ret, prevCat == null? null : prevCat.getPosition(),tMap.get("cat"),tMap.get("jumpingCat"));
         cat.setDrawScale(scale);
-        cat.setTexture(tMap.get("cat"));
+//        cat.setTexture(tMap.get("cat"));
         respawnPos = cat.getPosition();
         addObject(cat);
     }

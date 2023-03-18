@@ -196,6 +196,13 @@ public class Level {
     public Vector2 getRespawnPos() { return respawnPos; }
 
     /**
+     * Sets the respawn position
+     *
+     * @param pos the Vector2 value to set respawn position to
+     */
+    public void setRespawnPos(Vector2 pos) { respawnPos = pos; }
+
+    /**
      * Returns a reference to the dwidth
      *
      * @return a reference to the dwidth

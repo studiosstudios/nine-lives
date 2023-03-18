@@ -2,7 +2,7 @@
 	"spikes": [],
 	"activators": [],
 	"boxes" : [],
-	"flamethrowers" : [],
+	"flamethrowers" : [{"pos": [5, 2], "pushable": true, "angle":  270}],
 	"lasers" : [],
 	//TODO: factor constants out of level JSON and into constants JSON
 	"goal" : {

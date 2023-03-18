@@ -39,7 +39,7 @@
 		{"pos" :  [7, 2]}
 	],
 	"flamethrowers" : [
-		{"pos" :  [24, 3.8], "angle" : 0, "active": true, "activatorID" : "button1"}
+		{"pos" :  [24, 2], "angle" : 0, "active": false, "activatorID" : "button2"}
 	],
 	"lasers" : [
 		{"pos" :  [20, 12.5]}

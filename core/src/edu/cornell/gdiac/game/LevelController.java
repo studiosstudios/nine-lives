@@ -172,6 +172,7 @@ public class LevelController {
         fontAssetMap = fMap;
         soundAssetMap = sMap;
         JSONconstants = constants;
+        level.setConstants(constants);
         this.levelJV = levelJV;
         displayFont = fMap.get("retro");
 

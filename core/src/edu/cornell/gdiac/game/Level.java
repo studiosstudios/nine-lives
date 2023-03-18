@@ -401,8 +401,6 @@ public class Level {
         // This world is heavier
         world.setGravity( new Vector2(0,defaults.getFloat("gravity",0)) );
 
-        JsonValue activatorConstants = constants.get("activators");
-        Activator.setConstants(activatorConstants);
         for (JsonValue activatorJV : levelJV.get("activators")){
             Activator activator;
             switch (activatorJV.getString("type")){
@@ -422,41 +420,31 @@ public class Level {
             addObject(activator);
         }
 
-        JsonValue spikesConstants = constants.get("spikes");
-        Spikes.setConstants(spikesConstants);
         for (JsonValue spikeJV : levelJV.get("spikes")){
             Spikes spike = new Spikes(tMap.get("spikes"), scale, spikeJV);
             loadActivatable(spike, spikeJV);
         }
 
-        JsonValue boxConstants = constants.get("boxes");
-        PushableBox.setConstants(boxConstants);
         for(JsonValue boxJV : levelJV.get("boxes")){
             PushableBox box = new PushableBox(tMap.get("steel"), scale, boxJV);
             loadActivatable(box, boxJV);
         }
 
-        JsonValue flamethrowerConstants = constants.get("flamethrowers");
-        Flamethrower.setConstants(flamethrowerConstants);
-        Flame.setConstants(flamethrowerConstants);
         for (JsonValue flamethrowerJV : levelJV.get("flamethrowers")){
             Flamethrower flamethrower = new Flamethrower(tMap.get("flamethrower"), tMap.get("flame"), scale, flamethrowerJV);
             loadActivatable(flamethrower, flamethrowerJV);
         }
 
         // Create Laser
-        JsonValue lasersJV = constants.get("laser");
-        for (JsonValue laserJV : levelJV.get("lasers")) {
-            float x = laserJV.get("pos").getFloat(0);
-            float y = laserJV.get("pos").getFloat(1);
-            LaserBeam laser = new LaserBeam(constants.get("laser"), x, y, 8, dwidth,dheight,"laserbeam");
-            laser.setTexture(tMap.get("laserBeam"));
-            laser.setDrawScale(scale);
-            addObject(laser);
-        }
-
-        JsonValue deadBodyConstants = constants.get("deadBody");
-        DeadBody.setConstants(deadBodyConstants);
+//        JsonValue lasersJV = constants.get("laser");
+//        for (JsonValue laserJV : levelJV.get("lasers")) {
+//            float x = laserJV.get("pos").getFloat(0);
+//            float y = laserJV.get("pos").getFloat(1);
+//            LaserBeam laser = new LaserBeam(constants.get("laser"), x, y, 8, dwidth,dheight,"laserbeam");
+//            laser.setTexture(tMap.get("laserBeam"));
+//            laser.setDrawScale(scale);
+//            addObject(laser);
+//        }
 
         // Create cat
         dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
@@ -466,6 +454,14 @@ public class Level {
         cat.setTexture(tMap.get("cat"));
         respawnPos = cat.getPosition();
         addObject(cat);
+    }
+
+    public static void setConstants(JsonValue constants){
+        DeadBody.setConstants(constants.get("deadBody"));
+        Flamethrower.setConstants(constants.get("flamethrowers"));
+        PushableBox.setConstants(constants.get("boxes"));
+        Spikes.setConstants(constants.get("spikes"));
+        Activator.setConstants(constants.get("activators"));
     }
 
     /**
@@ -480,6 +476,10 @@ public class Level {
         }
         addQueue.clear();
         objects.clear();
+        activators.clear();
+        deadBodyArray.clear();
+        activatables.clear();
+        numLives = maxLives;
         if (world != null) {
             world.dispose();
             world = null;

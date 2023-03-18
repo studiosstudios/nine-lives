@@ -13,6 +13,7 @@ import edu.cornell.gdiac.game.obstacle.*;
 public class Button extends Activator {
 
     public Button(TextureRegion texture, Vector2 scale, JsonValue data){
+
         super(texture, scale, data);
         setName("button");
     }

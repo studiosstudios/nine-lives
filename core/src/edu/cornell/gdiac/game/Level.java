@@ -407,13 +407,13 @@ public class Level {
             Activator activator;
             switch (activatorJV.getString("type")){
                 case "button":
-                    activator = new Button(tMap.get("button"), scale, activatorJV);
+                    activator = new Button(tMap.get("button_anim"), scale, activatorJV);
                     break;
                 case "switch":
-                    activator = new Switch(tMap.get("button"), scale, activatorJV);
+                    activator = new Switch(tMap.get("button_anim"), scale, activatorJV);
                     break;
                 case "timed":
-                    activator = new TimedButton(tMap.get("button"), scale, activatorJV);
+                    activator = new TimedButton(tMap.get("button_anim"), scale, activatorJV);
                     break;
                 default:
                     throw new RuntimeException("unrecognised activator type");

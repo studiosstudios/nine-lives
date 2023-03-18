@@ -289,6 +289,10 @@ public class Cat extends CapsuleObstacle {
         return faceRight;
     }
 
+    /**
+     * Manually force cat to face right
+     * @param faceRight true if we want the cat to face right
+     */
     public void setFacingRight(boolean faceRight) { this.faceRight = faceRight; }
 
     /**

@@ -101,9 +101,6 @@ public class Level {
     /** texture assets */
     private HashMap<String, TextureRegion> textureRegionAssetMap;
 
-
-    /** */
-
     /**
      * Returns the bounding rectangle for the physics world
      *

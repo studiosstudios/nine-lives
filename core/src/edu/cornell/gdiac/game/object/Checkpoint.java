@@ -14,8 +14,6 @@ public class Checkpoint extends BoxObstacle
     /** The initializing data (to avoid magic numbers) */
     private final JsonValue data;
 
-    /** Whether the laser object is on and firing a beam */
-
     protected TextureRegion checkpoint;
     protected TextureRegion active_checkpoint;
 
@@ -23,10 +21,9 @@ public class Checkpoint extends BoxObstacle
 
     private boolean active;
     private PolygonShape sensorShape;
-    private Fixture sensorFixture;
     protected static JsonValue objectConstants;
     /**
-     * Creates a new LaserBase
+     * Creates a new Checkpoint
      *
      * The size is expressed in physics units NOT pixels.  In order for
      * drawing to work properly, you MUST set the drawScale. The drawScale
@@ -57,9 +54,13 @@ public class Checkpoint extends BoxObstacle
     }
 
     @Override
+    /**
+     * @return position of checkpoint base
+     */
     public Vector2 getPosition(){
         return new Vector2(getX()-objectConstants.get("offset").getFloat(0),getY()-objectConstants.get("offset").getFloat(1));
     }
+
     /**
      * Creates the physics Body(s) for this object, adding them to the world.
      * <p>
@@ -76,11 +77,17 @@ public class Checkpoint extends BoxObstacle
         return true;
     }
 
+    /**
+     * @param b  whether we want the checkpoint to be active
+     */
     public void setActive(boolean b){
         active = b;
         setTexture(active?active_checkpoint:checkpoint);
     }
 
+    /**
+     * @return true if the checkpoint is active
+     */
     public boolean getActive(){
         return active;
     }
@@ -91,23 +98,9 @@ public class Checkpoint extends BoxObstacle
 //        System.out.println("drawing checkpoint");
     }
 
+    /**
+     * Loads json values that specify object properties that remain the same across all levels
+     * @param constants Json field corresponding to this object
+     */
     public static void setConstants(JsonValue constants) { objectConstants = constants; }
-    protected void createFixtures(){
-        super.createFixtures();
-
-//        FixtureDef sensorDef = new FixtureDef();
-//        sensorDef.density = 0;
-//        sensorDef.isSensor = true;
-//        sensorDef.shape = sensorShape;
-//        sensorFixture = body.createFixture( sensorDef );
-//        sensorFixture.setUserData(this);
-    }
-
-    protected void releaseFixtures(){
-        super.releaseFixtures();
-        if (sensorFixture != null) {
-            body.destroyFixture(sensorFixture);
-            sensorFixture = null;
-        }
-    }
 }

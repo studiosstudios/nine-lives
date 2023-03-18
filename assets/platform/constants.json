@@ -36,6 +36,11 @@
   "laser": {
 
   },
+  "checkpoint": {
+    "offset": [0, 1],
+    "solid_height_scale": 0.5,
+    "solid_width_scale": 1
+  },
   "deadBody": {
     "friction": 0.4,
     "density" : 1,

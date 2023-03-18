@@ -172,6 +172,7 @@ public class ActionController {
     public void died() {
         level.setDied(false);
         level.getCat().setPosition(level.getRespawnPos());
+        level.getCat().setFacingRight(true);
     }
 
     /**

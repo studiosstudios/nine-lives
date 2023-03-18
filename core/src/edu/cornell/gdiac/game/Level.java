@@ -84,6 +84,7 @@ public class Level {
     private Array<Activator> activators;
     private Array<Activatable> activatables;
     private Array<DeadBody> deadBodyArray;
+    private Checkpoint currCheckpoint;
     /** The new dead body to be added */
     private DeadBody newDeadBody;
     /** The respawn position of the player */
@@ -99,8 +100,6 @@ public class Level {
 
     /** texture assets */
     private HashMap<String, TextureRegion> textureRegionAssetMap;
-
-
 
     /**
      * Returns the bounding rectangle for the physics world
@@ -183,6 +182,13 @@ public class Level {
      * @return a reference to the respawn position
      */
     public Vector2 getRespawnPos() { return respawnPos; }
+
+    /**
+     * Sets the respawn position
+     *
+     * @param pos the Vector2 value to set respawn position to
+     */
+    public void setRespawnPos(Vector2 pos) { respawnPos = pos; }
 
     /**
      * Returns a reference to the dwidth
@@ -284,6 +290,7 @@ public class Level {
      */
     public void resetLives() { numLives = maxLives; }
 
+
     /**
      * Allows level to have access to textures for creating new objects
      */
@@ -320,6 +327,19 @@ public class Level {
      */
     public void setComplete(boolean value) {
         complete = value;
+    }
+
+    /**
+     * Updates active checkpoints and cat respawning position
+     * @param c The most recent checkpoint the cat has come in contact with
+     */
+    public void updateCheckpoints(Checkpoint c){
+        if(currCheckpoint != null){
+            currCheckpoint.setActive(false);
+        }
+        currCheckpoint = c;
+        currCheckpoint.setActive(true);
+        respawnPos = currCheckpoint.getPosition();
     }
 
     /**
@@ -429,6 +449,13 @@ public class Level {
             loadActivatable(spike, spikeJV);
         }
 
+        JsonValue checkpointConstants = constants.get("checkpoint");
+        Checkpoint.setConstants(checkpointConstants);
+        for (JsonValue checkpointJV : levelJV.get("checkpoints")){
+            Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint"), tMap.get("checkpointActive"));
+            addObject(checkpoint);
+        }
+
         JsonValue boxConstants = constants.get("boxes");
         PushableBox.setConstants(boxConstants);
         for(JsonValue boxJV : levelJV.get("boxes")){
@@ -484,7 +511,6 @@ public class Level {
             world.dispose();
             world = null;
         }
-
         setComplete(false);
         setFailure(false);
     }

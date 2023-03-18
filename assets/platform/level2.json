@@ -44,6 +44,7 @@
 	"lasers" : [
 		{"pos" :  [20, 12.5]}
 	],
+	"checkpoints" : [{"pos" : [22, 2]}],
 	"goal" : {
 		"pos": [34.5, 13.5],
 		"density": 0.0,

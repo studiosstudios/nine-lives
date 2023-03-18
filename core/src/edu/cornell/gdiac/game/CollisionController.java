@@ -65,13 +65,11 @@ public class CollisionController implements ContactListener, ContactFilter {
     public void beginContact(Contact contact) {
         Fixture fix1 = contact.getFixtureA();
         Fixture fix2 = contact.getFixtureB();
-
         Body body1 = fix1.getBody();
         Body body2 = fix2.getBody();
 
         Object fd1 = fix1.getUserData();
         Object fd2 = fix2.getUserData();
-
         try {
             Obstacle bd1 = (Obstacle) body1.getUserData();
             Obstacle bd2 = (Obstacle) body2.getUserData();
@@ -117,6 +115,9 @@ public class CollisionController implements ContactListener, ContactFilter {
                 if (fd2 == LaserBeam.getSensorName()) {
                     actionController.die();
                 }
+                if (fd2 instanceof Checkpoint){
+                    level.updateCheckpoints(((Checkpoint) fd2));
+                }
             }
 
             //Check for body
@@ -151,7 +152,7 @@ public class CollisionController implements ContactListener, ContactFilter {
      * Callback method for the start of a collision
      *
      * This method is called when two objects cease to touch.  The main use of this method
-     * is to determine when the characer is NOT on the ground.  This is how we prevent
+     * is to determine when the character is NOT on the ground.  This is how we prevent
      * double jumping.
      */
     public void endContact(Contact contact) {
@@ -166,7 +167,6 @@ public class CollisionController implements ContactListener, ContactFilter {
 
         Object bd1 = body1.getUserData();
         Object bd2 = body2.getUserData();
-
         if ((level.getCat().getGroundSensorName().equals(fd2) && level.getCat() != bd1) ||
                 (level.getCat().getGroundSensorName().equals(fd1) && level.getCat() != bd2)) {
             sensorFixtures.remove(level.getCat() == bd1 ? fix2 : fix1);

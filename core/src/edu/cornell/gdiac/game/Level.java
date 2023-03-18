@@ -449,6 +449,7 @@ public class Level {
         // Create cat
         dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
         dheight = tMap.get("cat").getRegionHeight()/scale.y;
+        System.out.println(ret);
         cat = new Cat(levelJV.get("cat"), dwidth, dheight, ret, prevCat == null? null : prevCat.getPosition());
         cat.setDrawScale(scale);
         cat.setTexture(tMap.get("cat"));

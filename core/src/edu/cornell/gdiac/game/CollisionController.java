@@ -88,7 +88,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                 }
 
                 // See if we have landed on the ground.
-                if (level.getCat().getGroundSensorName().equals(fd1)) {
+                if (!bd2.isSensor() && level.getCat().getGroundSensorName().equals(fd1)) {
                     level.getCat().setGrounded(true);
                     sensorFixtures.add(fix2); // Could have more than one ground
                 }

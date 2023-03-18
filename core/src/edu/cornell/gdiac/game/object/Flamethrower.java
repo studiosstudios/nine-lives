@@ -70,10 +70,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
     }
 
     /**
-     * Creates the joints for this object.
-     * <p>
-     * This method is executed as part of activePhysics. This is the primary method to
-     * override for custom physics objects.
+     * Welds the flame to the flamethrower base.
      *
      * @param world Box2D world to store joints
      * @return true if object allocation succeeded
@@ -93,7 +90,6 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
 
         return true;
     }
-
 
     /**
      * Returns the name of the top sensor
@@ -116,7 +112,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
         return true;
     }
 
-    /** TODO: turn on flames */
+    /** Turns on flames */
     @Override
     public void activated(World world){
         flame.setActive(true);
@@ -124,7 +120,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
         createJoints(world);
     }
 
-    /** TODO: turn off flames */
+    /** Turns off flames */
     @Override
     public void deactivated(World world){
         flame.setActive(false);
@@ -148,8 +144,9 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
 
     public static void setConstants(JsonValue constants) { objectConstants = constants; }
 
-    public class Flame extends BoxObstacle {
+    private class Flame extends BoxObstacle {
 
+        /** the shape of the hitbox that will kill the player */
         private PolygonShape sensorShape;
 
         public Flame(TextureRegion texture, Vector2 scale, Vector2 pos, float angle) {
@@ -162,9 +159,9 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
             setSensor(true);
             setX(pos.x + flameOffset.x);
             setY(pos.y + flameOffset.y);
-
         }
 
+        /** creates sensor */
         public boolean activatePhysics(World world) {
             if (!super.activatePhysics(world)) {
                 return false;

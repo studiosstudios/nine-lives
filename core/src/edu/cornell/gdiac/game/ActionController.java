@@ -47,6 +47,9 @@ public class ActionController {
         this.volume = volume;
     }
 
+    /** sets the volume */
+    public void setVolume(float volume) { this.volume = volume; }
+
     /**
      * Sets the level model
      *

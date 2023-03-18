@@ -116,7 +116,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                     actionController.die();
                 }
                 if (fd2 instanceof Checkpoint){
-                    ((Checkpoint) fd2).setActive(true);
+                    level.updateCheckpoints(((Checkpoint) fd2));
                 }
             }
 

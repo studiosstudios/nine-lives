@@ -56,6 +56,10 @@ public class Checkpoint extends BoxObstacle
 //        System.out.println(getHeight());
     }
 
+    @Override
+    public Vector2 getPosition(){
+        return new Vector2(getX()-objectConstants.get("offset").getFloat(0),getY()-objectConstants.get("offset").getFloat(1));
+    }
     /**
      * Creates the physics Body(s) for this object, adding them to the world.
      * <p>
@@ -68,6 +72,7 @@ public class Checkpoint extends BoxObstacle
         if (!super.activatePhysics(world)) {
             return false;
         }
+        body.getFixtureList().get(0).setUserData(this);
         return true;
     }
 
@@ -90,13 +95,14 @@ public class Checkpoint extends BoxObstacle
     protected void createFixtures(){
         super.createFixtures();
 
-        FixtureDef sensorDef = new FixtureDef();
-        sensorDef.density = 0;
-        sensorDef.isSensor = true;
-        sensorDef.shape = sensorShape;
-        sensorFixture = body.createFixture( sensorDef );
-        sensorFixture.setUserData(this);
+//        FixtureDef sensorDef = new FixtureDef();
+//        sensorDef.density = 0;
+//        sensorDef.isSensor = true;
+//        sensorDef.shape = sensorShape;
+//        sensorFixture = body.createFixture( sensorDef );
+//        sensorFixture.setUserData(this);
     }
+
     protected void releaseFixtures(){
         super.releaseFixtures();
         if (sensorFixture != null) {

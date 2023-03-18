@@ -203,6 +203,7 @@ public class ActionController {
         level.setDied(false);
         level.getNewDeadBody().setFacingRight(level.getCat().isFacingRight());
         level.getCat().setPosition(level.getRespawnPos());
+        level.getCat().setFacingRight(true);
         level.getdeadBodyArray().add(level.getNewDeadBody());
     }
 

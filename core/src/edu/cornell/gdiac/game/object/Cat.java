@@ -289,6 +289,8 @@ public class Cat extends CapsuleObstacle {
         return faceRight;
     }
 
+    public void setFacingRight(boolean faceRight) { this.faceRight = faceRight; }
+
     /**
      * Creates a new cat avatar with the given physics data
      *

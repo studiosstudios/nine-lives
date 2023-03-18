@@ -83,6 +83,7 @@ public class Level {
     private Array<Activator> activators;
     private Array<Activatable> activatables;
     private Array<DeadBody> deadBodyArray;
+    private Checkpoint currCheckpoint;
     /** The new dead body to be added */
     private DeadBody newDeadBody;
     /** The respawn position of the player */
@@ -94,6 +95,7 @@ public class Level {
     /** The background texture */
     private Texture background;
 
+    /** */
 
     /**
      * Returns the bounding rectangle for the physics world
@@ -293,6 +295,7 @@ public class Level {
      */
     public void resetLives() { numLives = maxLives; }
 
+
     /**
      * Creates a new LevelModel
      *
@@ -324,6 +327,15 @@ public class Level {
      */
     public void setComplete(boolean value) {
         complete = value;
+    }
+
+    public void updateCheckpoints(Checkpoint c){
+        if(currCheckpoint != null){
+            currCheckpoint.setActive(false);
+        }
+        currCheckpoint = c;
+        currCheckpoint.setActive(true);
+        respawnPos = currCheckpoint.getPosition();
     }
 
     /**
@@ -492,7 +504,6 @@ public class Level {
             world.dispose();
             world = null;
         }
-
         setComplete(false);
         setFailure(false);
     }

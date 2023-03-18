@@ -329,6 +329,10 @@ public class Level {
         complete = value;
     }
 
+    /**
+     * Updates active checkpoints and cat respawning position
+     * @param c The most recent checkpoint the cat has come in contact with
+     */
     public void updateCheckpoints(Checkpoint c){
         if(currCheckpoint != null){
             currCheckpoint.setActive(false);
@@ -441,7 +445,6 @@ public class Level {
         JsonValue spikesConstants = constants.get("spikes");
         Spikes.setConstants(spikesConstants);
         for (JsonValue spikeJV : levelJV.get("spikes")){
-//            System.out.println(tMap.get("spikes"));
             Spikes spike = new Spikes(tMap.get("spikes"), scale, spikeJV);
             loadActivatable(spike, spikeJV);
         }

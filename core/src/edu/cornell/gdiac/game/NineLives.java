@@ -33,6 +33,8 @@ public class NineLives extends Game implements ScreenListener {
 	private GameCanvas canvas; 
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
 	private LoadingMode loading;
+	/** Player mode for the settings screen */
+	private SettingsMode settings;
 	/** Player mode for the the game proper (CONTROLLER CLASS) */
 	private int current;
 	/** List of all WorldControllers */
@@ -57,6 +59,7 @@ public class NineLives extends Game implements ScreenListener {
 	public void create() {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json",canvas,1);
+//		settings = new SettingsMode("assets.json",canvas,1);
 
 		controller = new WorldController(4);
 		current = 0;
@@ -107,7 +110,7 @@ public class NineLives extends Game implements ScreenListener {
 	 * @param exitCode The state of the screen upon exit
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
-		if (screen == loading) {
+		if (screen == loading && exitCode == 0) {
 			directory = loading.getAssets();
 			controller.gatherAssets(directory);
 			controller.setScreenListener(this);
@@ -118,7 +121,19 @@ public class NineLives extends Game implements ScreenListener {
 			setScreen(controller);
 			loading.dispose();
 			loading = null;
-		} else if (exitCode == WorldController.EXIT_QUIT) {
+		} else if (screen == loading && exitCode == 1) {
+			settings = new SettingsMode("assets.json", canvas, 1);
+			settings.setScreenListener(this);
+			setScreen(settings);
+			loading.dispose();
+			loading = null;
+		} else if (screen == settings && exitCode == 2) {
+			loading = new LoadingMode("assets.json",canvas,1);
+			loading.setScreenListener(this);
+			setScreen(loading);
+			settings.dispose();
+			settings = null;
+		} else if (exitCode == WorldController.EXIT_QUIT || exitCode == 99) {
 			// We quit the main application
 			Gdx.app.exit();
 		}

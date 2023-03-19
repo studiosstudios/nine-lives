@@ -85,8 +85,6 @@ public class GameCanvas {
 	/** ExtendViewport, used during gameplay */
 	private Viewport extendView;
 
-	private Viewport fitView;
-	
 	/** Value to cache window width (if we are currently full screen) */
 	int width;
 	/** Value to cache window height (if we are currently full screen) */
@@ -115,12 +113,14 @@ public class GameCanvas {
 		
 		// Set the projection matrix (for proper scaling)
 		camera = new OrthographicCamera(STANDARD_WIDTH, STANDARD_HEIGHT);
-		camera.setToOrtho(false);
-//		extendView = new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT, camera);
-		fitView = new FitViewport(STANDARD_WIDTH, STANDARD_HEIGHT, camera);
-		fitView.apply(true);
-//		spriteBatch.setProjectionMatrix(camera.combined);
-//		debugRender.setProjectionMatrix(camera.combined);
+		camera.setToOrtho(false, STANDARD_WIDTH, STANDARD_HEIGHT);
+//		camera.position.set(STANDARD_WIDTH / 2, STANDARD_HEIGHT / 2, 0);
+//		camera.update();
+//		extendView = new ExtendViewport(0, 0, STANDARD_WIDTH, STANDARD_HEIGHT, camera);
+		extendView = new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT, camera);
+		extendView.apply(true);
+		spriteBatch.setProjectionMatrix(camera.combined);
+		debugRender.setProjectionMatrix(camera.combined);
 
 		// Initialize the cache objects
 		holder = new TextureRegion();
@@ -276,12 +276,12 @@ public class GameCanvas {
 
 	/** Activates the ExtendViewport for drawing to canvas */
 	public void applyExtendViewport() {
-		extendView.apply();
+		extendView.apply(true);
 	}
 
 	/** Activates the FitViewport for drawing to canvas */
 	public void applyFitViewport() {
-		fitView.apply(true);
+//		fitView.apply(true);
 	}
 	
 	/**
@@ -293,10 +293,12 @@ public class GameCanvas {
 	 public void resize() {
 		// Resizing screws up the spriteBatch projection matrix
 		 System.out.println(getWidth() + " " + getHeight());
-//		spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, getWidth(), getHeight());
+		spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, getWidth(), getHeight());
 //		spriteBatch.setProjectionMatrix(camera.combined);
-//		 extendView.update(getWidth(), getHeight());
-		 fitView.update(getWidth(), getHeight());
+//		 camera.position.set(STANDARD_WIDTH / 2, STANDARD_HEIGHT / 2, 0);
+//		 camera.update();
+		 extendView.update(getWidth(), getHeight(), true);
+//		 fitView.update(getWidth(), getHeight());
 	}
 	
 	/**

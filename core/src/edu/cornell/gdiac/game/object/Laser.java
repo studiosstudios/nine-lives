@@ -1,83 +1,119 @@
 package edu.cornell.gdiac.game.object;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.game.GameCanvas;
-import edu.cornell.gdiac.game.obstacle.ComplexObstacle;
+import edu.cornell.gdiac.game.obstacle.BoxObstacle;
+import com.badlogic.gdx.physics.box2d.World;
 
-public class Laser extends ComplexObstacle {
-    /** The initializing data (to avoid magic numbers) */
-    private final JsonValue data;
+public class Laser extends BoxObstacle implements Activatable{
 
-    /** Whether the laser object is on and firing a beam */
-    private boolean isFiring;
+    /** points of the beam */
+    private Array<Vector2> points;
 
-    protected LaserBeam beam;
-    protected TextureRegion laserTexture;
+    private Vector2 endPointCache = new Vector2();
 
-    // Dimension information
-    /** The size of the entire laser */
-    protected Vector2 dimension;
-    /** The size of a single section of laser */
-    protected Vector2 sectionsize;
-    /** The length of each link */
-    protected float linksize = 1.0f;
-    /** The spacing between each link */
-    protected float spacing = 0.0f;
+    private static float thickness;
+    protected static JsonValue objectConstants;
+    private boolean activated;
+    private boolean initialActivation;
 
-    /**
-     * Returns true if the laser if firing
-     *
-     * @return true if the laser is firing
-     */
-    public boolean getFiring() {
-        return isFiring;
+    /** storing the angle in degrees to prevent comparison errors*/
+    private int angle;
+
+    public Laser(TextureRegion texture, Vector2 scale, JsonValue data){
+        super(texture.getRegionWidth()/scale.x,
+                texture.getRegionHeight()/scale.y);
+
+        setBodyType(BodyDef.BodyType.StaticBody);
+        setName("laser");
+        setDrawScale(scale);
+        setTexture(texture);;
+
+        setRestitution(objectConstants.getFloat("restitution", 0));
+        setFriction(objectConstants.getFloat("friction", 0));
+        setDensity(objectConstants.getFloat("density", 0));
+        setMass(objectConstants.getFloat("mass", 0));
+        setX(data.get("pos").getFloat(0)+objectConstants.get("offset").getFloat(0));
+        setY(data.get("pos").getFloat(1)+objectConstants.get("offset").getFloat(1));
+        angle = data.getInt("angle");
+        setAngle((float) (angle * Math.PI/180));
+        setFixedRotation(true);
+
+        points = new Array<>();
+        initActivations(data);
     }
-    /**
-     * Sets whether the laser object is firing
-     *
-     * @param firing whether the laser is firing
-     */
-    public void setFiring(boolean firing) {
-        isFiring = firing;
+
+    public void addBeamPoint(Vector2 point){ points.add(point);}
+
+    public void beginRayCast(){
+        points.clear();
+        points.add(getPosition());
     }
 
-    /**
-     * Creates a new LaserBase
-     *
-     * The size is expressed in physics units NOT pixels.  In order for
-     * drawing to work properly, you MUST set the drawScale. The drawScale
-     * converts the physics units to pixels.
-     *
-     * @param x x position of the laser base
-     * @param y y position of the laser base
-     */
-    public Laser(JsonValue data, float x, float y, float lwidth, float lheight, String name, TextureRegion laserTexture) {
-        super(x,y);
-        setName(name);
-        this.data = data;
-        this.laserTexture = laserTexture;
-        beam = new LaserBeam(data, x,y ,9f, lwidth, lheight,name + "Beam");
-        beam.setTexture(laserTexture);
-        bodies.add(beam);
+    public Vector2 getRayCastStart(){
+        return getPosition();
+    }
 
+    public Vector2 getRayCastEnd(Rectangle bounds){
+        switch (angle) {
+            case 0:
+                endPointCache.set(getX(),bounds.height);
+                break;
+            case 90:
+                endPointCache.set(0, getY());
+                break;
+            case 180:
+                endPointCache.set(getX(), 0);
+                break;
+            case 270:
+                endPointCache.set(bounds.width, getY());
+                break;
+            default:
+                throw new RuntimeException("undefined angle");
+        }
+        return endPointCache;
+    }
+    @Override
+    public void draw(GameCanvas canvas){
+        if (activated) {
+            if (points.size > 1) {
+                canvas.drawFactoryPath(points, thickness, Color.RED, drawScale.x, drawScale.y);
+            }
+        }
+        super.draw(canvas);
+    }
+
+
+    @Override
+    public void activated(World world){
     }
 
     @Override
-    protected boolean createJoints(World world) {
-        return true;
+    public void deactivated(World world){
+        points.clear();
+        points.add(getPosition());
     }
 
-    /**
-     * Updates the object's physics state (NOT GAME LOGIC).
-     *
-     * We use this method to reset cooldowns.
-     *
-     * @param dt	Number of seconds since last animation frame
-     */
-    public void update(float dt) {
+    @Override
+    public void setActivated(boolean activated) {this.activated = activated;}
 
+    @Override
+    public boolean getActivated() { return activated; }
+
+    @Override
+    public void setInitialActivation(boolean initialActivation){ this.initialActivation = initialActivation; }
+
+    @Override
+    public boolean getInitialActivation() { return initialActivation; }
+    public static void setConstants(JsonValue constants) {
+        objectConstants = constants;
+        thickness = constants.getFloat("thickness");
     }
 }

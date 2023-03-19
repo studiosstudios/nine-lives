@@ -36,7 +36,7 @@ public interface Activatable {
         if (data == null) {
             setActivated(false);
         } else {
-            setActivated(data.getBoolean("active", false));
+            setActivated(data.getBoolean("active", true));
         }
         setInitialActivation(getActivated());
     }

@@ -23,6 +23,13 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.*;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
+import edu.cornell.gdiac.math.Path2;
+import edu.cornell.gdiac.math.PathExtruder;
+import edu.cornell.gdiac.math.PathFactory;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
@@ -63,6 +70,15 @@ public class GameCanvas {
 	
 	/** Drawing context to handle textures AND POLYGONS as sprites */
 	private PolygonSpriteBatch spriteBatch;
+
+	/** Path rendering */
+	private PathFactory pathFactory;
+
+	/** extruder for path rendering */
+	private PathExtruder extruder;
+
+	/** region used for drawing paths */
+	private TextureRegion region;
 	
 	/** Rendering context for the debug outlines */
 	private ShapeRenderer debugRender;
@@ -101,6 +117,9 @@ public class GameCanvas {
 		active = DrawPass.INACTIVE;
 		spriteBatch = new PolygonSpriteBatch();
 		debugRender = new ShapeRenderer();
+		pathFactory = new PathFactory();
+		extruder = new PathExtruder();
+		region = new TextureRegion(new Texture("white.png"));
 		
 		// Set the projection matrix (for proper scaling)
 		camera = new OrthographicCamera(getWidth(),getHeight());
@@ -1135,7 +1154,7 @@ public class GameCanvas {
     }
 
 	/**
-	 * Draws a line of a specific color between two points.
+	 * Draws a line of a specific color between two points in the debug pass.
 	 *
 	 * @param p1 Endpoint of the line
 	 * @param p2 Endpoint of the line
@@ -1143,9 +1162,55 @@ public class GameCanvas {
 	 * @param sx The amount to scale the x-axis
 	 * @param sy The amount to scale the y-axis
 	 */
-	public void drawLine(Vector2 p1, Vector2 p2, Color color, float sx, float sy){
+	public void drawLineDebug(Vector2 p1, Vector2 p2, Color color, float sx, float sy){
+		if (active != DrawPass.DEBUG) {
+			Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()", new IllegalStateException());
+			return;
+		}
 		debugRender.setColor(color);
 		debugRender.line(p1.scl(new Vector2(sx, sy)), p2.scl(new Vector2(sx, sy)));
+	}
+
+	/**
+	 * Draws a line of a specific color between two points using PathFactory.
+	 *
+	 * @param p1 Endpoint of the line
+	 * @param p2 Endpoint of the line
+	 * @param color The outline color
+	 * @param sx The amount to scale the x-axis
+	 * @param sy The amount to scale the y-axis
+	 */
+	public void drawFactoryLine(Vector2 p1, Vector2 p2, float thickness, Color color, float sx, float sy){
+		if (active != DrawPass.STANDARD) {
+			Gdx.app.error("GameCanvas", "Cannot draw without active begin", new IllegalStateException());
+			return;
+		}
+		Path2 path = pathFactory.makeLine(0, 0, (p2.x-p1.x)*sx, (p2.y-p1.y)*sy);
+		extruder.set(path);
+		extruder.calculate(thickness);
+		spriteBatch.setColor(color);
+		spriteBatch.draw(extruder.getPolygon().makePolyRegion(region), p1.x*sx, p1.y*sx);
+	}
+
+	/**
+	 * Draws a path of a specified by an array of points.
+	 *
+	 * @param points The array of points
+	 * @param color The outline color
+	 * @param sx The amount to scale the x-axis
+	 * @param sy The amount to scale the y-axis
+	 */
+	public void drawFactoryPath(Array<Vector2> points, float thickness, Color color, float sx, float sy){
+		if (active != DrawPass.STANDARD) {
+			Gdx.app.error("GameCanvas", "Cannot draw without active begin", new IllegalStateException());
+			return;
+		}
+		Vector2 start = points.get(0);
+		for(int i=1; i< points.size; i++){
+			drawFactoryLine(start, points.get(i), thickness, color, sx, sy);
+			start = points.get(i);
+		}
+		points.iterator();
 	}
     
 	/**

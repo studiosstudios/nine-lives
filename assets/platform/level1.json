@@ -1,9 +1,9 @@
 {
-	"spikes": [{"pos" : [5, 2], "angle": 0, "active": true},
-		{"pos" : [15, 2], "angle": 0, "active": true}],
-	"activators": [],
+	"spikes": [{"pos" : [15, 2], "angle": 0, "active": true}],
+	"activators": [{"pos": [8, 2], "type": "button","id" : "button1"}],
 	"boxes" : [],
-	"flamethrowers" : [],
+	"flamethrowers" : [{"pos": [3, 2], "pushable": true, "angle":  270}],
+	"lasers" : [{"pos" :  [16, 16], "angle": 180, "active":true, "activatorID": "button1"}],
 	"checkpoints" : [{"pos" : [3, 2]},
 					{"pos": [13,2]}], //[xpos, ypos, radius]
 	"lasers" : [],

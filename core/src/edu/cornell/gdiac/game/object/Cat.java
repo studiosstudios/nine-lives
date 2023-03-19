@@ -228,6 +228,7 @@ public class Cat extends CapsuleObstacle {
         if (isGrounded) {
             canDash = true;
             jump_animated = false;
+            animationTime = 0;
             jumpMovement = jump_force;
             stoppedJumping = false;
         }
@@ -339,10 +340,9 @@ public class Cat extends CapsuleObstacle {
         int spriteWidth = 50;
         int spriteHeight = 50;
         spriteFrames = TextureRegion.split(arr[2], spriteWidth, spriteHeight);
-        float frameDuration = 1f;
+        float frameDuration = 0.025f;
         animation = new Animation<>(frameDuration, spriteFrames[0]);
         animation.setPlayMode(Animation.PlayMode.REVERSED);
-//        spriteBatch = new SpriteBatch();
         animationTime = 0f;
 
         // Gameplay attributes
@@ -512,24 +512,19 @@ public class Cat extends CapsuleObstacle {
      */
     public void draw(GameCanvas canvas) {
         float effect = faceRight ? 1.0f : -1.0f;
+        float x;
+        if (faceRight) {
+            x = getX() * drawScale.x - 20;
+        } else {
+            x = getX() * drawScale.x + 30;
+        }
         if(isJumping && !jump_animated){
-            animation.setPlayMode(Animation.PlayMode.NORMAL);
+            animation.setPlayMode(Animation.PlayMode.REVERSED);
             animationTime += Gdx.graphics.getDeltaTime();
-            System.out.println(animationTime);
             TextureRegion currentFrame = animation.getKeyFrame(animationTime);
-//            spriteBatch.begin();
-//            spriteBatch.draw(currentFrame, getX()*drawScale.x-25,getY()*drawScale.y-25);
-//            spriteBatch.end();
-            jump_animated = true;
+            canvas.draw(currentFrame,Color.WHITE, origin.x, origin.y,x,getY()*drawScale.y-25, getAngle(),effect,1.0f);
         }
         else {
-            float x;
-            float y;
-            if (faceRight) {
-                x = getX() * drawScale.x - 20;
-            } else {
-                x = getX() * drawScale.x + 30;
-            }
             if (isJumping) {
                 canvas.draw(jumping_texture, Color.WHITE, origin.x, origin.y, x, getY() * drawScale.y - 15, getAngle(), effect, 1.0f);
             } else {

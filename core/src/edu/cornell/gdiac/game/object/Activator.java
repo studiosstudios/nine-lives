@@ -20,7 +20,6 @@ public abstract class Activator extends PolygonObstacle {
     protected boolean active;
     /** each activator has a unique string id specified in JSON*/
     protected String id;
-    protected SpriteBatch spriteBatch;
     private TextureRegion[][] spriteFrames;
     private float animationTime;
     private PolygonShape sensorShape;
@@ -50,7 +49,6 @@ public abstract class Activator extends PolygonObstacle {
         animation = new Animation<>(frameDuration, spriteFrames[0]);
         setBodyType(BodyDef.BodyType.StaticBody);
         animation.setPlayMode(Animation.PlayMode.REVERSED);
-        spriteBatch = new SpriteBatch();
         animationTime = 0f;
 
         setDrawScale(scale);
@@ -69,17 +67,13 @@ public abstract class Activator extends PolygonObstacle {
             animation.setPlayMode(Animation.PlayMode.REVERSED);
             animationTime += Gdx.graphics.getDeltaTime();
             TextureRegion currentFrame = animation.getKeyFrame(animationTime);
-            spriteBatch.begin();
-            spriteBatch.draw(currentFrame, getX()*drawScale.x,getY()*drawScale.x);
-            spriteBatch.end();
+            canvas.draw(currentFrame, getX()*drawScale.x,getY()*drawScale.x);
         }
         else {
             animation.setPlayMode(Animation.PlayMode.NORMAL);
             animationTime += Gdx.graphics.getDeltaTime();
             TextureRegion currentFrame = animation.getKeyFrame(animationTime);
-            spriteBatch.begin();
-            spriteBatch.draw(currentFrame, getX()*drawScale.x,getY()*drawScale.x);
-            spriteBatch.end();
+            canvas.draw(currentFrame, getX()*drawScale.x,getY()*drawScale.x);
         }
     }
     public boolean activatePhysics(World world){

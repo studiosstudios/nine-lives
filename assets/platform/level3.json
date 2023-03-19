@@ -28,7 +28,19 @@
 	"activators": [],
 	"boxes" : [],
 	"flamethrowers" : [],
-	"lasers" : [],
+	"lasers" : [{
+		"pos": [6, 17], "angle": 180
+	}],
+	"mirrors": [{"pos": [6, 13], "angle": 0, "pushable":  true},
+		{"pos": [15, 13], "angle": 90},
+		{"pos": [15, 16], "angle": 270},
+		{"pos": [20, 16], "angle": 180},
+		{"pos": [5, 13], "angle": 90, "pushable":  true},
+		{"pos": [4, 13], "angle": 0, "pushable":  true},
+		{"pos": [20, 13], "angle": 90},
+		{"pos": [5, 17], "angle": 180},
+		{"pos": [2, 17], "angle": 270}
+	],
 	"checkpoints" : [{"pos" : [1, 13]}],
 	"goal" : {
 		"pos": [34.5, 13.5],

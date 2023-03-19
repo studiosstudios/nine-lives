@@ -24,12 +24,12 @@ public class PushableBox extends BoxObstacle implements Activatable {
         setFixedRotation(true);
         setName("box");
         setDrawScale(scale);
-        setTexture(texture);;
+        setTexture(texture);
 
-
-        setFriction(data.getFloat("friction", 0));
-        setDensity(data.getFloat("density", 0));
-        setMass(data.getFloat("mass", 0));
+        setRestitution(objectConstants.getFloat("restitution", 0));
+        setFriction(objectConstants.getFloat("friction", 0));
+        setDensity(objectConstants.getFloat("density", 0));
+        setMass(objectConstants.getFloat("mass", 0));
         setX(data.get("pos").getFloat(0)+objectConstants.get("offset").getFloat(0));
         setY(data.get("pos").getFloat(1)+objectConstants.get("offset").getFloat(1));
 

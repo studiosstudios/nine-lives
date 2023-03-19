@@ -55,7 +55,7 @@ public class Checkpoint extends BoxObstacle
 
     @Override
     /**
-     * @return position of checkpoint base
+     * @return position of checkpoint base rather than checkpoint origin
      */
     public Vector2 getPosition(){
         return new Vector2(getX()-objectConstants.get("offset").getFloat(0),getY()-objectConstants.get("offset").getFloat(1));
@@ -95,7 +95,6 @@ public class Checkpoint extends BoxObstacle
     @Override
     public void draw(GameCanvas canvas){
         super.draw(canvas);
-//        System.out.println("drawing checkpoint");
     }
 
     /**

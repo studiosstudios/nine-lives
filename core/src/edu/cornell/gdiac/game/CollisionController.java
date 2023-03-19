@@ -112,9 +112,6 @@ public class CollisionController implements ContactListener, ContactFilter {
                 if (fd2 == Flamethrower.getSensorName()){
                     actionController.die();
                 }
-                if (fd2 == LaserBeam.getSensorName()) {
-                    actionController.die();
-                }
                 if (fd2 instanceof Checkpoint){
                     level.updateCheckpoints(((Checkpoint) fd2));
                 }

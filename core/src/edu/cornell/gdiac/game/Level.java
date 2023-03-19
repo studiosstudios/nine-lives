@@ -466,6 +466,11 @@ public class Level {
             lasers.add(laser);
         }
 
+        for (JsonValue mirrorJV : levelJV.get("mirrors")){
+            Mirror mirror = new Mirror(tMap.get("steel"), scale, mirrorJV);
+            addObject(mirror);
+        }
+
         // Create cat
         dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
         dheight = tMap.get("cat").getRegionHeight()/scale.y;
@@ -484,6 +489,7 @@ public class Level {
         Activator.setConstants(constants.get("activators"));
         Laser.setConstants(constants.get("lasers"));
         Checkpoint.setConstants(constants.get("checkpoint"));
+        Mirror.setConstants(constants.get("mirrors"));
     }
 
     /**

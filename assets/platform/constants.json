@@ -58,5 +58,9 @@
     "offset": [0, 0],
     "sensorRadius": 0.2,
     "shrink": [0.6, 0.7]
+  },
+  "mirrors": {
+    "shape": [0, 0, 0, 1, 1, 0],
+    "offset": [0,0]
   }
 }

@@ -29,6 +29,7 @@
 	"boxes" : [],
 	"flamethrowers" : [],
 	"lasers" : [],
+	"mirrors": [],
 	"checkpoints" : [{"pos" : [1, 13]}],
 	"goal" : {
 		"pos": [-20, -20], //temp impossible to exit

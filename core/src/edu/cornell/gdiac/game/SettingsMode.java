@@ -47,24 +47,13 @@ import edu.cornell.gdiac.util.*;
  * loading screen.
  */
 public class SettingsMode implements Screen, InputProcessor, ControllerListener {
-    // There are TWO asset managers.  One to load the loading screen.  The other to load the assets
     /** Internal assets for this loading screen */
     private AssetDirectory internal;
-    /** The actual assets to be loaded */
-//    private AssetDirectory assets;
 
     /** Background texture for start-up */
     private Texture background;
     /** Back button to go back to home screen */
     private Texture backButton;
-    /** Play button to display when done */
-//    private Texture playButton;
-    /** Level Select button to display when done */
-//    private Texture levelSelectButton;
-    /** Settings button to display when done */
-//    private Texture settingsButton;
-    /** Texture atlas to support a progress bar */
-    private final Texture statusBar;
 
     /** Default budget for asset loader (do nothing but load 60 fps) */
     private static int DEFAULT_BUDGET = 15;
@@ -84,8 +73,6 @@ public class SettingsMode implements Screen, InputProcessor, ControllerListener 
     /** Listener that will update the player mode when we are done */
     private ScreenListener listener;
 
-    /** The width of the progress bar */
-    private int width;
     /** The y-coordinate of the center of the progress bar */
     private int centerY;
     /** The x-coordinate of the center of the progress bar */
@@ -94,11 +81,6 @@ public class SettingsMode implements Screen, InputProcessor, ControllerListener 
     private int heightY;
     /** Scaling factor for when the student changes the resolution. */
     private float scale;
-
-    /** Current progress (0 to 1) of the asset manager */
-    private float progress;
-    /** The current state of the play button */
-//    private int   pressState;
     /** The current state of the back button */
     private int backButtonState;
     /** The amount of time to devote to loading assets (as opposed to on screen hints, etc.) */
@@ -136,33 +118,11 @@ public class SettingsMode implements Screen, InputProcessor, ControllerListener 
     }
 
     /**
-     * Returns true if all assets are loaded and the player is ready to go.
-     *
-     * @return true if the player is ready to go
-     */
-//    public boolean isReady() {
-//        return pressState == 2;
-//    }
-
-    /**
      * Returns true if the player wants to go back to home screen
      *
      * @return true if the player wants to go back to home screen
      */
     public boolean isBack() { return backButtonState == 2; }
-
-    /**
-     * Returns the asset directory produced by this loading screen
-     *
-     * This asset loader is NOT owned by this loading scene, so it persists even
-     * after the scene is disposed.  It is your responsbility to unload the
-     * assets in this directory.
-     *
-     * @return the asset directory produced by this loading screen
-     */
-//    public AssetDirectory getAssets() {
-//        return assets;
-//    }
 
     /**
      * Creates a LoadingMode with the default budget, size and position.
@@ -199,17 +159,10 @@ public class SettingsMode implements Screen, InputProcessor, ControllerListener 
         internal.finishLoading();
 
         // Load the next two images immediately.
-//        playButton = null;
-//        levelSelectButton = null;
-//        settingsButton = null;
         backButton = null;
         background = internal.getEntry( "settingsBackground", Texture.class );
         background.setFilter( TextureFilter.Linear, TextureFilter.Linear );
-        statusBar = internal.getEntry( "progress", Texture.class );
 
-        // No progress so far.
-        progress = 0;
-//        pressState = 0;
         backButtonState = 0;
 
         Gdx.input.setInputProcessor( this );
@@ -219,9 +172,6 @@ public class SettingsMode implements Screen, InputProcessor, ControllerListener 
             controller.addListener( this );
         }
 
-        // Start loading the real assets
-//        assets = new AssetDirectory( file );
-//        assets.loadAssets();
         active = true;
     }
 
@@ -244,15 +194,7 @@ public class SettingsMode implements Screen, InputProcessor, ControllerListener 
      */
     private void update(float delta) {
         if (backButton == null) {
-//            assets.update(budget);
-//            this.progress = assets.getProgress();
-//            if (progress >= 1.0f) {
-//                this.progress = 1.0f;
-//                playButton = internal.getEntry("playGame",Texture.class);
-//                settingsButton = internal.getEntry("settings", Texture.class);
-//                levelSelectButton = internal.getEntry("levelSelect", Texture.class);
-                backButton = internal.getEntry("back", Texture.class);
-//            }
+            backButton = internal.getEntry("back", Texture.class);
         }
     }
 
@@ -269,44 +211,8 @@ public class SettingsMode implements Screen, InputProcessor, ControllerListener 
         Color tint = (backButtonState == 1 ? Color.GRAY: Color.WHITE);
         canvas.draw(backButton, tint, backButton.getWidth()/2, backButton.getHeight()/2,
                 centerX*3f/2f, centerY*3f/2f, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
-//        canvas.draw(levelSelectButton, Color.WHITE, levelSelectButton.getWidth()/2, levelSelectButton.getHeight()/2,
-//                centerX*3f/2f, (centerY*3f/2f)-50f, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
-//        canvas.draw(settingsButton, Color.WHITE, settingsButton.getWidth()/2, settingsButton.getHeight()/2,
-//                centerX*3f/2f, (centerY*3f/2f)-100f, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
         canvas.end();
     }
-
-    /**
-     * Updates the progress bar according to loading progress
-     *
-     * The progress bar is composed of parts: two rounded caps on the end,
-     * and a rectangle in a middle.  We adjust the size of the rectangle in
-     * the middle to represent the amount of progress.
-     *
-     * @param canvas The drawing context
-     */
-//    private void drawProgress(GameCanvas canvas) {
-//        canvas.draw(statusBkgLeft,   Color.WHITE, centerX-width/2, centerY,
-//                scale*statusBkgLeft.getRegionWidth(), scale*statusBkgLeft.getRegionHeight());
-//        canvas.draw(statusBkgRight,  Color.WHITE,centerX+width/2-scale*statusBkgRight.getRegionWidth(), centerY,
-//                scale*statusBkgRight.getRegionWidth(), scale*statusBkgRight.getRegionHeight());
-//        canvas.draw(statusBkgMiddle, Color.WHITE,centerX-width/2+scale*statusBkgLeft.getRegionWidth(), centerY,
-//                width-scale*(statusBkgRight.getRegionWidth()+statusBkgLeft.getRegionWidth()),
-//                scale*statusBkgMiddle.getRegionHeight());
-//
-//        canvas.draw(statusFrgLeft,   Color.WHITE,centerX-width/2, centerY,
-//                scale*statusFrgLeft.getRegionWidth(), scale*statusFrgLeft.getRegionHeight());
-//        if (progress > 0) {
-//            float span = progress*(width-scale*(statusFrgLeft.getRegionWidth()+statusFrgRight.getRegionWidth()))/2.0f;
-//            canvas.draw(statusFrgRight,  Color.WHITE,centerX-width/2+scale*statusFrgLeft.getRegionWidth()+span, centerY,
-//                    scale*statusFrgRight.getRegionWidth(), scale*statusFrgRight.getRegionHeight());
-//            canvas.draw(statusFrgMiddle, Color.WHITE,centerX-width/2+scale*statusFrgLeft.getRegionWidth(), centerY,
-//                    span, scale*statusFrgMiddle.getRegionHeight());
-//        } else {
-//            canvas.draw(statusFrgRight,  Color.WHITE,centerX-width/2+scale*statusFrgLeft.getRegionWidth(), centerY,
-//                    scale*statusFrgRight.getRegionWidth(), scale*statusFrgRight.getRegionHeight());
-//        }
-//    }
 
     // ADDITIONAL SCREEN METHODS
     /**
@@ -344,7 +250,6 @@ public class SettingsMode implements Screen, InputProcessor, ControllerListener 
         float sy = ((float)height)/STANDARD_HEIGHT;
         scale = (sx < sy ? sx : sy);
 
-        this.width = (int)(BAR_WIDTH_RATIO*width);
         centerY = (int)(BAR_HEIGHT_RATIO*height);
         centerX = width/2;
         heightY = height;

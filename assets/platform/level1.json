@@ -1,6 +1,5 @@
 {
-	"spikes": [{"pos" : [5, 2], "angle": 0, "active": true},
-		{"pos" : [15, 2], "angle": 0, "active": true}],
+	"spikes": [{"pos" : [15, 2], "angle": 0, "active": true}],
 	"activators": [{"pos": [8, 2], "type": "button","id" : "button1"}],
 	"boxes" : [],
 	"flamethrowers" : [{"pos": [3, 2], "pushable": true, "angle":  270}],

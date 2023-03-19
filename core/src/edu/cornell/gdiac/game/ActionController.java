@@ -99,33 +99,6 @@ public class ActionController {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt){
-        Cat cat = level.getCat();
-        if (InputController.getInstance().didSwitch()){
-            DeadBody body = level.getNextBody();
-            if (body != null){
-                level.spawnDeadBody();
-                level.getCat().setPosition(body.getPosition());
-                body.markRemoved(true);
-                level.removeDeadBody(body);
-            }
-        } else {
-            cat.setMovement(InputController.getInstance().getHorizontal() * cat.getForce() * (cat.getIsClimbing() ? 0 : 1));
-            cat.setVerticalMovement(InputController.getInstance().getVertical() * cat.getForce());
-            cat.setHorizontalMovement(InputController.getInstance().getHorizontal() * cat.getForce());
-            cat.setJumping(InputController.getInstance().didPrimary());
-            cat.setDashing(InputController.getInstance().didDash());
-            cat.setClimbing(InputController.getInstance().didClimb() && cat.isWalled());
-        }
-
-        cat.applyForce();
-        if (cat.isJumping()) {
-            jumpId = playSound(soundAssetMap.get("jump"), jumpId, volume);
-        }
-
-        if (InputController.getInstance().didMeow()){
-            meowId = playSound(soundAssetMap.get("meow"), meowId, volume);
-        }
-
         //Raycast lasers
         for (Laser l : level.getLasers()){
             if (l.getActivated()) {
@@ -142,6 +115,35 @@ public class ActionController {
                 }
             }
         }
+
+        Cat cat = level.getCat();
+        level.setSpiritMode(InputController.getInstance().holdSwitch());
+        if (InputController.getInstance().didSwitch()){
+            //switch body
+            DeadBody body = level.getNextBody();
+            if (body != null){
+                level.spawnDeadBody();
+                level.getCat().setPosition(body.getPosition());
+                body.markRemoved(true);
+                level.removeDeadBody(body);
+            }
+        } else {
+            cat.setMovement(InputController.getInstance().getHorizontal() * cat.getForce() * (cat.getIsClimbing() ? 0 : 1));
+            cat.setVerticalMovement(InputController.getInstance().getVertical() * cat.getForce());
+            cat.setHorizontalMovement(InputController.getInstance().getHorizontal() * cat.getForce());
+            cat.setJumping(InputController.getInstance().didPrimary());
+            cat.setDashing(InputController.getInstance().didDash());
+            cat.setClimbing(InputController.getInstance().didClimb() && cat.isWalled());
+
+            cat.applyForce();
+            if (cat.isJumping()) {
+                jumpId = playSound(soundAssetMap.get("jump"), jumpId, volume);
+            }
+        }
+        if (InputController.getInstance().didMeow()){
+            meowId = playSound(soundAssetMap.get("meow"), meowId, volume);
+        }
+
     }
 
     /**
@@ -193,6 +195,9 @@ public class ActionController {
 
         if (level.getCat().getBody().getFixtureList().contains(rayCastFixture, true)){
             die();
+        }
+        if (rayCastFixture != null && rayCastFixture.getBody().getUserData() instanceof DeadBody){
+            ((DeadBody) rayCastFixture.getBody().getUserData()).touchingLaser();
         }
     }
 

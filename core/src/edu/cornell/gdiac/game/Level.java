@@ -98,6 +98,15 @@ public class Level {
 
     /** texture assets */
     private HashMap<String, TextureRegion> textureRegionAssetMap;
+    /** if the player is in spirit mode */
+    private boolean spiritMode;
+    /** cache for efficiency */
+    private Color spiritLineColor = new Color();
+    /** counter of total ticks in spirit mode */
+    private int spiritModeTicks;
+    /** next dead body to switch into */
+    private DeadBody nextDeadBody;
+    private Vector2 spiritEndPos = new Vector2();
 
     /**
      * Returns the bounding rectangle for the physics world
@@ -316,6 +325,7 @@ public class Level {
         deadBodyArray = new Array<>();
         lasers = new Array<>();
         activationRelations = new HashMap<>();
+        spiritMode = false;
     }
 
     /**
@@ -635,9 +645,17 @@ public class Level {
         if (background != null) {
             canvas.draw(background, 0, 0);
         }
+        //draw everything except cat and dead bodies
         for(Obstacle obj : objects) {
-            obj.draw(canvas);
+            if (obj != cat && !(obj instanceof DeadBody)){
+                obj.draw(canvas);
+            }
         }
+        canvas.drawFactoryLine(cat.getPosition(), spiritEndPos, 2, spiritLineColor, scale.x, scale.y);
+        for (DeadBody db : deadBodyArray){
+            db.draw(canvas);
+        }
+        cat.draw(canvas);
         canvas.end();
 
         if (debug) {
@@ -677,6 +695,10 @@ public class Level {
         deadBodyArray.removeValue(db, true);
     }
 
+    /**
+     * Gets the next dead body to switch into. Currently selects the closest valid body.
+     * @return Dead body to switch into, null if there are none.
+     */
     public DeadBody getNextBody(){
         float minDist = Float.MAX_VALUE;
         DeadBody nextdb = null;
@@ -690,5 +712,35 @@ public class Level {
             }
         }
         return nextdb;
+    }
+
+    /**
+     * Sets if the level is in spirit mode or not. Currently all spirit mode does is draw a line
+     * from the cat to the closest valid dead body.
+     * @param next new spirit mode state of level
+     */
+    public void setSpiritMode(boolean next) {
+        spiritMode = next;
+    }
+
+    /**
+     * Updates spirit mode logic
+     * @param dt Number of seconds since last animation frame
+     */
+    public void update(float dt){
+        if (spiritMode){
+            spiritModeTicks++;
+            spiritLineColor.set(1, 1, 1, spiritLineColor.a + (1-spiritLineColor.a)/20);
+            nextDeadBody = getNextBody();
+            if (nextDeadBody != null) {
+                spiritEndPos.add(nextDeadBody.getPosition().sub(spiritEndPos).scl(0.2f));
+            } else {
+                spiritEndPos.set(cat.getPosition());
+            }
+        } else {
+            spiritModeTicks = 0;
+            spiritLineColor.set(1, 1, 1, spiritLineColor.a - spiritLineColor.a/5);
+            spiritEndPos.set(cat.getPosition());
+        }
     }
 }

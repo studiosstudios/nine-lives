@@ -91,7 +91,9 @@ public class DeadBody extends BoxObstacle {
      * If the dead body is safe to be switched into.
      * @return true if the dead body can be switched into
      */
-    public boolean isSwitchable(){ return hazardsTouching == 0 && !touchingLaser; }
+    public boolean isSwitchable(){
+        return hazardsTouching == 0 && !touchingLaser;
+    }
 
     /**
      * Sets the dead body state to be touching a laser.

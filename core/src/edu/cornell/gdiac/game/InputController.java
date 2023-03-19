@@ -216,7 +216,7 @@ public class InputController {
 	public boolean didDebug() {
 		return debugPressed && !debugPrevious;
 	}
-	
+
 	/**
 	 * Returns true if the exit button was pressed.
 	 *
@@ -241,9 +241,18 @@ public class InputController {
 	 * @return true if the switch button was pressed.
 	 */
 	public boolean didSwitch() {
-		return switchPressed && !switchPrevious;
+		return !switchPressed && switchPrevious;
 	}
-	
+
+	/**
+	 * Returns true if the switch button is being held.
+	 *
+	 * @return true if the switch button is being held.
+	 */
+	public boolean holdSwitch() {
+		return switchPressed;
+	}
+
 	/**
 	 * Creates a new input controller
 	 * 

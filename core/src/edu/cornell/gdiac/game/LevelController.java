@@ -268,6 +268,7 @@ public class LevelController {
             setRet(true);
         }
         actionController.update(dt);
+        level.update(dt);
     }
 
     /**

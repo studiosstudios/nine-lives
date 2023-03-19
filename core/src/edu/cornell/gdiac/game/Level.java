@@ -22,7 +22,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.physics.box2d.*;
-import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.game.object.*;
 
 import edu.cornell.gdiac.game.obstacle.*;
@@ -84,8 +83,7 @@ public class Level {
     private Array<Activator> activators;
     private Array<Activatable> activatables;
     private Array<DeadBody> deadBodyArray;
-    /** The new dead body to be added */
-    private DeadBody newDeadBody;
+    private Array<Laser> lasers;
     /** The respawn position of the player */
     private Vector2 respawnPos;
     /** Float value to scale width */
@@ -155,6 +153,7 @@ public class Level {
      * @return a reference to the activators
      */
     public Array<Activator> getActivators() { return activators; }
+    public Array<Laser> getLasers() { return lasers; }
 
     /**
      * Returns a reference to the hashmap of activation relations
@@ -308,6 +307,7 @@ public class Level {
         activators = new Array<>();
         activatables = new Array<>();
         deadBodyArray = new Array<>();
+        lasers = new Array<>();
         activationRelations = new HashMap<>();
     }
 
@@ -435,21 +435,15 @@ public class Level {
             loadActivatable(flamethrower, flamethrowerJV);
         }
 
-        // Create Laser
-//        JsonValue lasersJV = constants.get("laser");
-//        for (JsonValue laserJV : levelJV.get("lasers")) {
-//            float x = laserJV.get("pos").getFloat(0);
-//            float y = laserJV.get("pos").getFloat(1);
-//            LaserBeam laser = new LaserBeam(constants.get("laser"), x, y, 8, dwidth,dheight,"laserbeam");
-//            laser.setTexture(tMap.get("laserBeam"));
-//            laser.setDrawScale(scale);
-//            addObject(laser);
-//        }
+        for (JsonValue laserJV : levelJV.get("lasers")){
+            Laser laser = new Laser(tMap.get("laser"), scale, laserJV);
+            loadActivatable(laser, laserJV);
+            lasers.add(laser);
+        }
 
         // Create cat
         dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
         dheight = tMap.get("cat").getRegionHeight()/scale.y;
-        System.out.println(ret);
         cat = new Cat(levelJV.get("cat"), dwidth, dheight, ret, prevCat == null? null : prevCat.getPosition());
         cat.setDrawScale(scale);
         cat.setTexture(tMap.get("cat"));
@@ -463,6 +457,7 @@ public class Level {
         PushableBox.setConstants(constants.get("boxes"));
         Spikes.setConstants(constants.get("spikes"));
         Activator.setConstants(constants.get("activators"));
+        Laser.setConstants(constants.get("lasers"));
     }
 
     /**
@@ -478,6 +473,7 @@ public class Level {
         addQueue.clear();
         objects.clear();
         activators.clear();
+        lasers.clear();
         deadBodyArray.clear();
         activatables.clear();
         numLives = maxLives;
@@ -620,12 +616,12 @@ public class Level {
             for (int x = 0; x < bounds.width; x++){
                 Vector2 p1 = new Vector2(x, 0);
                 Vector2 p2 = new Vector2(x, bounds.height);
-                canvas.drawLine(p1, p2, lineColor, scale.x, scale.y);
+                canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
             }
             for (int y = 0; y < bounds.height; y++){
                 Vector2 p1 = new Vector2(0, y);
                 Vector2 p2 = new Vector2(bounds.width, y);
-                canvas.drawLine(p1, p2, lineColor, scale.x, scale.y);
+                canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
             }
             for(Obstacle obj : objects) {
                 obj.drawDebug(canvas);

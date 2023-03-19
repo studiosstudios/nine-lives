@@ -1,9 +1,9 @@
 {
 	"spikes": [],
-	"activators": [],
+	"activators": [{"pos": [8, 2], "type": "button","id" : "button1"}],
 	"boxes" : [],
-	"flamethrowers" : [{"pos": [5, 2], "pushable": true, "angle":  270}],
-	"lasers" : [],
+	"flamethrowers" : [{"pos": [3, 2], "pushable": true, "angle":  270}],
+	"lasers" : [{"pos" :  [16, 16], "angle": 180, "active":true, "activatorID": "button1"}],
 	//TODO: factor constants out of level JSON and into constants JSON
 	"goal" : {
 		"pos": [34.5, 3.5],

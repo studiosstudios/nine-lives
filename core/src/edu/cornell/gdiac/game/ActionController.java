@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.JsonValue;
@@ -34,6 +36,11 @@ public class ActionController {
     /** The level */
     private Level level;
 
+    /** fields needed for raycasting */
+    private Vector2 rayCastPoint = new Vector2();
+    private Fixture rayCastFixture;
+
+    private float closestFraction;
     /**
      * Creates and initialize a new instance of a ActionController
      *
@@ -105,6 +112,23 @@ public class ActionController {
 
         if (InputController.getInstance().didMeow()){
             meowId = playSound(soundAssetMap.get("meow"), meowId, volume);
+        }
+
+        //Raycast lasers
+        for (Laser l : level.getLasers()){
+            if (l.getActivated()) {
+                l.beginRayCast();
+                closestFraction = 1;
+                level.world.rayCast(LaserRayCastCallback, l.getRayCastStart(), l.getRayCastEnd(level.bounds));
+                if (closestFraction == 1){
+                    rayCastPoint = l.getRayCastEnd(level.bounds);
+                    rayCastFixture = null;
+                }
+                l.addBeamPoint(new Vector2(rayCastPoint));
+                if (level.getCat().getBody().getFixtureList().contains(rayCastFixture, true)){
+                    die();
+                }
+            }
         }
 
         // Process buttons
@@ -216,4 +240,17 @@ public class ActionController {
         }
         return sound.play(volume);
     }
+
+    private RayCastCallback LaserRayCastCallback = new RayCastCallback() {
+        @Override
+        public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
+            if ( fraction < closestFraction ) {
+                closestFraction = fraction;
+                rayCastPoint.set(point);
+                rayCastFixture = fixture;
+            }
+
+            return 1;
+        }
+    };
 }

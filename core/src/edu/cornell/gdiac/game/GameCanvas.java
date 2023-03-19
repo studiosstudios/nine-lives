@@ -23,9 +23,13 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.*;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.math.Path2;
 import edu.cornell.gdiac.math.PathExtruder;
 import edu.cornell.gdiac.math.PathFactory;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
@@ -1186,6 +1190,27 @@ public class GameCanvas {
 		extruder.calculate(thickness);
 		spriteBatch.setColor(color);
 		spriteBatch.draw(extruder.getPolygon().makePolyRegion(region), p1.x*sx, p1.y*sx);
+	}
+
+	/**
+	 * Draws a path of a specified by an array of points.
+	 *
+	 * @param points The array of points
+	 * @param color The outline color
+	 * @param sx The amount to scale the x-axis
+	 * @param sy The amount to scale the y-axis
+	 */
+	public void drawFactoryPath(Array<Vector2> points, float thickness, Color color, float sx, float sy){
+		if (active != DrawPass.STANDARD) {
+			Gdx.app.error("GameCanvas", "Cannot draw without active begin", new IllegalStateException());
+			return;
+		}
+		Vector2 start = points.get(0);
+		for(int i=1; i< points.size; i++){
+			drawFactoryLine(start, points.get(i), thickness, color, sx, sy);
+			start = points.get(i);
+		}
+		points.iterator();
 	}
     
 	/**

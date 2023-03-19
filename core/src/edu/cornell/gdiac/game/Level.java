@@ -356,7 +356,7 @@ public class Level {
         this.levelJV = levelJV;
         // Add level goal
         dwidth  = tMap.get("goal").getRegionWidth()/scale.x;
-        dheight = tMap.get("goal").getRegionHeight()/scale.y;
+        dheight = tMap.get("goal").getRegionHeight()*5/scale.y; //TEMP FIX TO CAT GETTING LOST UPON JUMPING INTO NEXT LEVEL
 
         activationRelations = new HashMap<>();
         background = tMap.get("background").getTexture();

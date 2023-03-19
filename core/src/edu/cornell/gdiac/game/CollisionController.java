@@ -204,6 +204,13 @@ public class CollisionController implements ContactListener, ContactFilter {
             }
         }
 
+        // Check mobs
+        if (fd1 instanceof Mob) {
+            ((Mob) fd1).setFacingRight(!((Mob) fd1).isFacingRight());
+        } else if (fd2 instanceof Mob) {
+            ((Mob) fd1).setFacingRight(!((Mob) fd1).isFacingRight());
+        }
+
         // Check for button
         if (fd2 instanceof Activator) {
             ((Activator) fd2).removePress();

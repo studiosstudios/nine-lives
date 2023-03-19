@@ -342,7 +342,7 @@ public class Cat extends CapsuleObstacle {
         float frameDuration = 1f;
         animation = new Animation<>(frameDuration, spriteFrames[0]);
         animation.setPlayMode(Animation.PlayMode.REVERSED);
-        spriteBatch = new SpriteBatch();
+//        spriteBatch = new SpriteBatch();
         animationTime = 0f;
 
         // Gameplay attributes
@@ -517,9 +517,9 @@ public class Cat extends CapsuleObstacle {
             animationTime += Gdx.graphics.getDeltaTime();
             System.out.println(animationTime);
             TextureRegion currentFrame = animation.getKeyFrame(animationTime);
-            spriteBatch.begin();
-            spriteBatch.draw(currentFrame, getX()*drawScale.x-25,getY()*drawScale.y-25);
-            spriteBatch.end();
+//            spriteBatch.begin();
+//            spriteBatch.draw(currentFrame, getX()*drawScale.x-25,getY()*drawScale.y-25);
+//            spriteBatch.end();
             jump_animated = true;
         }
         else {

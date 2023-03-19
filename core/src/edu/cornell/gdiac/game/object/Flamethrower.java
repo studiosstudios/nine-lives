@@ -145,7 +145,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
 
     public static void setConstants(JsonValue constants) { objectConstants = constants; }
 
-    private class Flame extends BoxObstacle {
+    public class Flame extends BoxObstacle {
 
         /** the shape of the hitbox that will kill the player */
         private PolygonShape sensorShape;
@@ -160,6 +160,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
             setSensor(true);
             setX(pos.x + flameOffset.x);
             setY(pos.y + flameOffset.y);
+
         }
 
         /** creates sensor */
@@ -176,6 +177,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
 
             Fixture sensorFixture = body.createFixture( sensorDef );
             sensorFixture.setUserData(getSensorName());
+            body.setUserData(this);
             return true;
         }
 

@@ -194,6 +194,7 @@ public class LevelController {
         world = new World(gravity,false);
         level.setWorld(world);
         world.setContactListener(collisionController);
+        world.setContactFilter(collisionController);
 
         collisionController.setReturn(false);
 

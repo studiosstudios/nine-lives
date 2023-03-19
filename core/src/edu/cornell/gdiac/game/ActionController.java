@@ -114,6 +114,13 @@ public class ActionController {
             meowId = playSound(soundAssetMap.get("meow"), meowId, volume);
         }
 
+        // Mob control:
+//        for (Mob mob : level.getMobArray()) {
+//
+//        }
+
+
+
         //Raycast lasers
         for (Laser l : level.getLasers()){
             if (l.getActivated()) {

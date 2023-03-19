@@ -83,6 +83,7 @@ public class Level {
     private Array<Activator> activators;
     private Array<Activatable> activatables;
     private Array<DeadBody> deadBodyArray;
+    private Array<Mob> mobArray;
     private Checkpoint currCheckpoint;
     private Array<Laser> lasers;
     /** The respawn position of the player */
@@ -137,6 +138,7 @@ public class Level {
         return cat;
     }
 
+
     /**
      * Returns a reference to the exit door
      *
@@ -174,6 +176,13 @@ public class Level {
      * @return a reference to the dead body array
      */
     public Array<DeadBody> getdeadBodyArray() { return deadBodyArray; }
+
+    /**
+     * Returns a reference to the array of mobs
+     *
+     * @return a reference to the mob array
+     */
+    public Array<Mob> getMobArray() { return mobArray; }
 
     /**
      * Returns a reference to the respawn position
@@ -315,6 +324,7 @@ public class Level {
         activatables = new Array<>();
         deadBodyArray = new Array<>();
         lasers = new Array<>();
+        mobArray = new Array<>();
         activationRelations = new HashMap<>();
     }
 
@@ -474,6 +484,13 @@ public class Level {
         cat.setTexture(tMap.get("cat"));
         respawnPos = cat.getPosition();
         addObject(cat);
+
+        // Create mobs
+        for (JsonValue mobJV : levelJV.get("mobs")){
+            Mob mob = new Mob(tMap.get("roboMob"), scale, mobJV);
+            mobArray.add(mob);
+            addObject(mob);
+        }
     }
 
     public static void setConstants(JsonValue constants){

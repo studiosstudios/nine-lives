@@ -16,7 +16,7 @@
         "rope":  "platform/ropebridge.png",
         "barrier": "platform/barrier.png",
         "bullet":  "platform/bullet.png",
-      "button_anim": "platform/button_anim.png",
+        "button_anim": "platform/button_anim.png",
         "spikes": "platform/spikes.png",
         "button": "platform/button.png",
         "flamethrower": "platform/flamethrower.png",
@@ -26,7 +26,8 @@
         "checkpoint": "platform/checkpoint.png",
         "checkpointActive": "platform/checkpointActive.png",
         "background": "platform/labBkg_concept.png",
-      "flame_anim": "platform/flame_anim.png"
+        "flame_anim": "platform/flame_anim.png",
+        "roboMob": "platform/robo_mob.png"
     },
     "jsons"  : {
         "constants": "platform/constants.json",

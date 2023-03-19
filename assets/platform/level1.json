@@ -7,6 +7,7 @@
 	"checkpoints" : [{"pos" : [3, 2]},
 					{"pos": [13,2]}], //[xpos, ypos, radius]
 	"lasers" : [],
+	"mobs" : [{"pos" :  [ 25, 2], "aggressive": true}],
 	//TODO: factor constants out of level JSON and into constants JSON
 	"goal" : {
 		"pos": [34.5, 3.5],

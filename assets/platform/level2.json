@@ -43,6 +43,7 @@
 	],
 	"checkpoints" : [{"pos" : [22, 2]}],
 	"lasers" : [{"pos" :  [27, 12], "angle" : 90}],
+	"mobs": [],
 	"goal" : {
 		"pos": [34.5, 13.5],
 		"density": 0.0,

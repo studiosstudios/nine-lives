@@ -632,6 +632,7 @@ public class Level {
         canvas.clear();
 
         canvas.begin();
+        canvas.applyExtendViewport();
         if (background != null) {
             canvas.draw(background, 0, 0);
         }

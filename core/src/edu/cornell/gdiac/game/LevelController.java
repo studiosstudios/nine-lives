@@ -61,7 +61,7 @@ public class LevelController {
     /** Reference to the game canvas */
     protected GameCanvas canvas;
     /** The maximum number of lives in the game */
-    private static final int MAX_NUM_LIVES = 4;
+    private static final int MAX_NUM_LIVES = 9;
     /** The hashmap for texture regions */
     private HashMap<String, TextureRegion> textureRegionAssetMap;
     /** The hashmap for sounds */
@@ -295,6 +295,9 @@ public class LevelController {
             PooledList<Obstacle>.Entry entry = iterator.next();
             Obstacle obj = entry.getValue();
             if (obj.isRemoved()) {
+                if (obj instanceof DeadBody){
+                  level.removeDeadBody((DeadBody) obj);
+                }
                 obj.deactivatePhysics(world);
                 entry.remove();
             } else {

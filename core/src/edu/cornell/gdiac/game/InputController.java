@@ -76,6 +76,10 @@ public class InputController {
 	/** Whether the previous button was pressed. */
 	private boolean prevPressed;
 	private boolean prevPrevious;
+
+	/** Whether the body switch button was pressed. */
+	private boolean switchPressed;
+	private boolean switchPrevious;
 	
 	/** How much did we move horizontally? */
 	private float horizontal;
@@ -230,6 +234,15 @@ public class InputController {
 	public boolean didMeow() {
 		return meowPressed && !meowPrevious;
 	}
+
+	/**
+	 * Returns true if the switch button was pressed.
+	 *
+	 * @return true if the switch button was pressed.
+	 */
+	public boolean didSwitch() {
+		return switchPressed && !switchPrevious;
+	}
 	
 	/**
 	 * Creates a new input controller
@@ -265,6 +278,7 @@ public class InputController {
 		meowPrevious = meowPressed;
 		nextPrevious  = nextPressed;
 		prevPrevious = prevPressed;
+		switchPrevious = switchPressed;
 		
 		readKeyboard(bounds, scale);
 	}
@@ -287,10 +301,13 @@ public class InputController {
 		climbPressed = (Gdx.input.isKeyPressed(Input.Keys.A));
 		exitPressed  = (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
 		meowPressed = (Gdx.input.isKeyPressed(Input.Keys.M));
+		switchPressed = (Gdx.input.isKeyPressed(Input.Keys.S));
 
 		//useful keys for testing/debugging
 		nextPressed = (Gdx.input.isKeyPressed(Input.Keys.N));
 		prevPressed  = (Gdx.input.isKeyPressed(Input.Keys.P));
+
+
 
 		// Directional controls
 		horizontal = 0.0f;

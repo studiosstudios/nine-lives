@@ -672,5 +672,23 @@ public class Level {
         deadBodyArray.add(deadBody);
     }
 
+    /** removes a DeadBody from the dead body array */
+    public void removeDeadBody(DeadBody db){
+        deadBodyArray.removeValue(db, true);
+    }
 
+    public DeadBody getNextBody(){
+        float minDist = Float.MAX_VALUE;
+        DeadBody nextdb = null;
+        for (DeadBody db : deadBodyArray){
+            if (db.isSwitchable()){
+                float dist = cat.getPosition().dst(db.getPosition());
+                if (dist < minDist){
+                    minDist = dist;
+                    nextdb = db;
+                }
+            }
+        }
+        return nextdb;
+    }
 }

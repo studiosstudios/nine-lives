@@ -100,12 +100,22 @@ public class ActionController {
      */
     public void update(float dt){
         Cat cat = level.getCat();
-        cat.setMovement(InputController.getInstance().getHorizontal() *cat.getForce() * (cat.getIsClimbing() ? 0 : 1));
-        cat.setVerticalMovement(InputController.getInstance().getVertical() * cat.getForce());
-        cat.setHorizontalMovement(InputController.getInstance().getHorizontal() * cat.getForce());
-        cat.setJumping(InputController.getInstance().didPrimary());
-        cat.setDashing(InputController.getInstance().didDash());
-        cat.setClimbing(InputController.getInstance().didClimb() && cat.isWalled());
+        if (InputController.getInstance().didSwitch()){
+            DeadBody body = level.getNextBody();
+            if (body != null){
+                level.spawnDeadBody();
+                level.getCat().setPosition(body.getPosition());
+                body.markRemoved(true);
+                level.removeDeadBody(body);
+            }
+        } else {
+            cat.setMovement(InputController.getInstance().getHorizontal() * cat.getForce() * (cat.getIsClimbing() ? 0 : 1));
+            cat.setVerticalMovement(InputController.getInstance().getVertical() * cat.getForce());
+            cat.setHorizontalMovement(InputController.getInstance().getHorizontal() * cat.getForce());
+            cat.setJumping(InputController.getInstance().didPrimary());
+            cat.setDashing(InputController.getInstance().didDash());
+            cat.setClimbing(InputController.getInstance().didClimb() && cat.isWalled());
+        }
 
         cat.applyForce();
         if (cat.isJumping()) {
@@ -227,7 +237,7 @@ public class ActionController {
                     wjoint.bodyB = spikes.getBody();
                     wjoint.localAnchorA.set(deadbody.getBody().getLocalPoint(contactPoint));
                     wjoint.localAnchorB.set(spikes.getBody().getLocalPoint(contactPoint));
-                    wjoint.collideConnected = false;
+                    wjoint.collideConnected = true;
                     level.queueJoint(wjoint);
                 }
                 break;

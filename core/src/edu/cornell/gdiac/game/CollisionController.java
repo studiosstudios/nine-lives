@@ -65,13 +65,11 @@ public class CollisionController implements ContactListener, ContactFilter {
     public void beginContact(Contact contact) {
         Fixture fix1 = contact.getFixtureA();
         Fixture fix2 = contact.getFixtureB();
-
         Body body1 = fix1.getBody();
         Body body2 = fix2.getBody();
 
         Object fd1 = fix1.getUserData();
         Object fd2 = fix2.getUserData();
-
         try {
             Obstacle bd1 = (Obstacle) body1.getUserData();
             Obstacle bd2 = (Obstacle) body2.getUserData();
@@ -90,7 +88,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                 }
 
                 // See if we have landed on the ground.
-                if (level.getCat().getGroundSensorName().equals(fd1)) {
+                if (!bd2.isSensor() && level.getCat().getGroundSensorName().equals(fd1)) {
                     level.getCat().setGrounded(true);
                     sensorFixtures.add(fix2); // Could have more than one ground
                 }
@@ -111,11 +109,11 @@ public class CollisionController implements ContactListener, ContactFilter {
                 if (fd2 instanceof Spikes) {
                     actionController.die();
                 }
-                if (fd2 == Flame.getSensorName()){
+                if (fd2 == Flamethrower.getSensorName()){
                     actionController.die();
                 }
-                if (fd2 == LaserBeam.getSensorName()) {
-                    actionController.die();
+                if (fd2 instanceof Checkpoint){
+                    level.updateCheckpoints(((Checkpoint) fd2));
                 }
             }
 
@@ -123,14 +121,14 @@ public class CollisionController implements ContactListener, ContactFilter {
             if (fd1 instanceof DeadBody) {
                 if (fd2 instanceof Spikes) {
                     actionController.fixBodyToSpikes((DeadBody) fd1, (Spikes) fd2, contact.getWorldManifold().getPoints());
-                } else if (fd2 == Flame.getSensorName()) {
+                } else if (fd2 == Flamethrower.getSensorName()) {
                     ((DeadBody) fd1).setBurning(true);
                 }
 
             } else if (fd2 instanceof DeadBody) {
                 if (fd1 instanceof Spikes) {
                     actionController.fixBodyToSpikes((DeadBody) fd2, (Spikes) fd1, contact.getWorldManifold().getPoints());
-                } else if (fd1 == Flame.getSensorName()) {
+                } else if (fd1 == Flamethrower.getSensorName()) {
                     ((DeadBody) fd2).setBurning(true);
                 }
             }
@@ -151,7 +149,7 @@ public class CollisionController implements ContactListener, ContactFilter {
      * Callback method for the start of a collision
      *
      * This method is called when two objects cease to touch.  The main use of this method
-     * is to determine when the characer is NOT on the ground.  This is how we prevent
+     * is to determine when the character is NOT on the ground.  This is how we prevent
      * double jumping.
      */
     public void endContact(Contact contact) {
@@ -166,7 +164,6 @@ public class CollisionController implements ContactListener, ContactFilter {
 
         Object bd1 = body1.getUserData();
         Object bd2 = body2.getUserData();
-
         if ((level.getCat().getGroundSensorName().equals(fd2) && level.getCat() != bd1) ||
                 (level.getCat().getGroundSensorName().equals(fd1) && level.getCat() != bd2)) {
             sensorFixtures.remove(level.getCat() == bd1 ? fix2 : fix1);
@@ -183,12 +180,12 @@ public class CollisionController implements ContactListener, ContactFilter {
 
         //Check for body
         if (fd1 instanceof DeadBody) {
-            if (fd2 == Flame.getSensorName()) {
+            if (fd2 == Flamethrower.getSensorName()) {
                 ((DeadBody) fd1).setBurning(false);
             }
 
         } else if (fd2 instanceof DeadBody) {
-            if (fd1 == Flame.getSensorName()) {
+            if (fd1 == Flamethrower.getSensorName()) {
                 ((DeadBody) fd2).setBurning(false);
             }
         }
@@ -207,7 +204,21 @@ public class CollisionController implements ContactListener, ContactFilter {
     public void preSolve(Contact contact, Manifold oldManifold) {}
 
     /**Contact Filter method */
-    public boolean shouldCollide(Fixture fixtureA, Fixture fixtureB) {
+    public boolean shouldCollide(Fixture fix1, Fixture fix2) {
+        Body body1 = fix1.getBody();
+        Body body2 = fix2.getBody();
+
+        Object fd1 = fix1.getUserData();
+        Object fd2 = fix2.getUserData();
+
+        Object bd1 = body1.getUserData();
+        Object bd2 = body2.getUserData();
+
+        //flame does not turn on activators
+        if (fd1 instanceof Activator && bd2 instanceof Flamethrower.Flame ||
+                fd2 instanceof Activator && bd1 instanceof Flamethrower.Flame){
+            return false;
+        }
         return true;
     }
 }

@@ -303,6 +303,12 @@ public class Cat extends CapsuleObstacle {
     }
 
     /**
+     * Manually force cat to face right
+     * @param faceRight true if we want the cat to face right
+     */
+    public void setFacingRight(boolean faceRight) { this.faceRight = faceRight; }
+
+    /**
      * Creates a new cat avatar with the given physics data
      *
      * The size is expressed in physics units NOT pixels.  In order for

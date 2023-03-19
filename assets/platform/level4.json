@@ -2,7 +2,7 @@
 	//TODO: factor constants out of level JSON and into constants JSON
 	"cat" : {
 		"pos": [0.5, 13],
-		"ret_pos": [-20,-20], //temp impossible
+		"ret_pos": [31.5,13], //temp impossible
 		"shrink": [0.7, 0.95],
 		"force": 30.0,
 		"damping": 30.0,
@@ -29,6 +29,8 @@
 	"boxes" : [],
 	"flamethrowers" : [],
 	"lasers" : [],
+	"mirrors": [],
+	"checkpoints" : [{"pos" : [1, 13]}],
 	"goal" : {
 		"pos": [-20, -20], //temp impossible to exit
 		"density": 0.0,

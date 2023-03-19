@@ -5,11 +5,14 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.game.object.*;
 
+import java.lang.reflect.Array;
 import java.util.HashMap;
 
 public class ActionController {
@@ -34,6 +37,12 @@ public class ActionController {
     /** The level */
     private Level level;
 
+    /** fields needed for raycasting */
+    private Vector2 rayCastPoint = new Vector2();
+    private Fixture rayCastFixture;
+    private float closestFraction;
+    private Vector2 startPointCache = new Vector2();
+    private Vector2 endPointCache = new Vector2();
     /**
      * Creates and initialize a new instance of a ActionController
      *
@@ -46,6 +55,9 @@ public class ActionController {
         this.scale = scale;
         this.volume = volume;
     }
+
+    /** sets the volume */
+    public void setVolume(float volume) { this.volume = volume; }
 
     /**
      * Sets the level model
@@ -104,6 +116,13 @@ public class ActionController {
             meowId = playSound(soundAssetMap.get("meow"), meowId, volume);
         }
 
+        //Raycast lasers
+        for (Laser l : level.getLasers()){
+            if (l.getActivated()) {
+                rayCastLaser(l);
+            }
+        }
+
         // Process buttons
         for (Activator a : level.getActivators()){
             a.updateActivated();
@@ -112,6 +131,81 @@ public class ActionController {
                     s.updateActivated(a.isActive(), level.getWorld());
                 }
             }
+        }
+    }
+
+    /**
+     * Finds the points of a laser beam using raycasting. The beam will reflect off of mirrors and stop at any other
+     * obstacle (or the edge of the screen). The points are added to the <code>Laser</code> instance which will draw the
+     * beam. Also handles any collision logic involving laser beams.
+     * @param l The laser to raycast a beam out of
+     */
+    private void rayCastLaser(Laser l){
+        l.beginRayCast();
+
+        //initial beam
+        closestFraction = 1;
+        startPointCache.set(l.getRayCastStart());
+        Laser.Direction dir = l.getDirection();
+        getRayCastEnd(startPointCache, dir);
+        level.world.rayCast(LaserRayCastCallback, startPointCache, endPointCache);
+        boolean reflect = false;
+        if (closestFraction == 1) {
+            rayCastPoint = endPointCache;
+            rayCastFixture = null;
+        } else {
+            reflect = rayCastFixture.getBody().getUserData() instanceof Mirror;
+        }
+        l.addBeamPoint(new Vector2(rayCastPoint));
+
+        //reflect off of mirrors
+        while(reflect) {
+            Mirror mirror = (Mirror) rayCastFixture.getBody().getUserData();
+            dir = mirror.reflect(dir);
+            if (dir != null) {
+                closestFraction = 1;
+                startPointCache.set(rayCastPoint);
+                getRayCastEnd(startPointCache, dir);
+                level.world.rayCast(LaserRayCastCallback, startPointCache, endPointCache);
+                if (closestFraction == 1) {
+                    rayCastPoint = endPointCache;
+                    rayCastFixture = null;
+                    reflect = false;
+                } else {
+                    reflect = rayCastFixture.getBody().getUserData() instanceof Mirror;
+                }
+                l.addBeamPoint(new Vector2(rayCastPoint));
+            } else {
+                reflect = false;
+            }
+
+        }
+
+        if (level.getCat().getBody().getFixtureList().contains(rayCastFixture, true)){
+            die();
+        }
+    }
+
+    /**
+     * Sets the target end point of a raycast in the current level starting at a given point.
+     * Stores the result into <code>endPointCache</code> for efficiency.
+     * @param start
+     * @param dir
+     */
+    private void getRayCastEnd(Vector2 start, Laser.Direction dir){
+        switch (dir) {
+            case UP:
+                endPointCache.set(start.x,bounds.height);
+                break;
+            case LEFT:
+                endPointCache.set(0, start.y);
+                break;
+            case DOWN:
+                endPointCache.set(start.x, 0);
+                break;
+            case RIGHT:
+                endPointCache.set(bounds.width, start.y);
+                break;
         }
     }
 
@@ -172,6 +266,7 @@ public class ActionController {
     public void died() {
         level.setDied(false);
         level.getCat().setPosition(level.getRespawnPos());
+        level.getCat().setFacingRight(true);
     }
 
     /**
@@ -213,4 +308,17 @@ public class ActionController {
         }
         return sound.play(volume);
     }
+
+    private RayCastCallback LaserRayCastCallback = new RayCastCallback() {
+        @Override
+        public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
+            if ( fraction < closestFraction ) {
+                closestFraction = fraction;
+                rayCastPoint.set(point);
+                rayCastFixture = fixture;
+            }
+
+            return 1;
+        }
+    };
 }

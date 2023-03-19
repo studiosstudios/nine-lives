@@ -22,7 +22,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.physics.box2d.*;
-import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.game.object.*;
 
 import edu.cornell.gdiac.game.obstacle.*;
@@ -84,8 +83,8 @@ public class Level {
     private Array<Activator> activators;
     private Array<Activatable> activatables;
     private Array<DeadBody> deadBodyArray;
-    /** The new dead body to be added */
-    private DeadBody newDeadBody;
+    private Checkpoint currCheckpoint;
+    private Array<Laser> lasers;
     /** The respawn position of the player */
     private Vector2 respawnPos;
     /** Float value to scale width */
@@ -99,8 +98,6 @@ public class Level {
 
     /** texture assets */
     private HashMap<String, TextureRegion> textureRegionAssetMap;
-
-
 
     /**
      * Returns the bounding rectangle for the physics world
@@ -155,6 +152,7 @@ public class Level {
      * @return a reference to the activators
      */
     public Array<Activator> getActivators() { return activators; }
+    public Array<Laser> getLasers() { return lasers; }
 
     /**
      * Returns a reference to the hashmap of activation relations
@@ -183,6 +181,13 @@ public class Level {
      * @return a reference to the respawn position
      */
     public Vector2 getRespawnPos() { return respawnPos; }
+
+    /**
+     * Sets the respawn position
+     *
+     * @param pos the Vector2 value to set respawn position to
+     */
+    public void setRespawnPos(Vector2 pos) { respawnPos = pos; }
 
     /**
      * Returns a reference to the dwidth
@@ -284,6 +289,7 @@ public class Level {
      */
     public void resetLives() { numLives = maxLives; }
 
+
     /**
      * Allows level to have access to textures for creating new objects
      */
@@ -308,6 +314,7 @@ public class Level {
         activators = new Array<>();
         activatables = new Array<>();
         deadBodyArray = new Array<>();
+        lasers = new Array<>();
         activationRelations = new HashMap<>();
     }
 
@@ -320,6 +327,19 @@ public class Level {
      */
     public void setComplete(boolean value) {
         complete = value;
+    }
+
+    /**
+     * Updates active checkpoints and cat respawning position
+     * @param c The most recent checkpoint the cat has come in contact with
+     */
+    public void updateCheckpoints(Checkpoint c){
+        if(currCheckpoint != null){
+            currCheckpoint.setActive(false);
+        }
+        currCheckpoint = c;
+        currCheckpoint.setActive(true);
+        respawnPos = currCheckpoint.getPosition();
     }
 
     /**
@@ -336,7 +356,7 @@ public class Level {
         this.levelJV = levelJV;
         // Add level goal
         dwidth  = tMap.get("goal").getRegionWidth()/scale.x;
-        dheight = tMap.get("goal").getRegionHeight()/scale.y;
+        dheight = tMap.get("goal").getRegionHeight()*5/scale.y; //TEMP FIX TO CAT GETTING LOST UPON JUMPING INTO NEXT LEVEL
 
         activationRelations = new HashMap<>();
         background = tMap.get("background").getTexture();
@@ -401,8 +421,6 @@ public class Level {
         // This world is heavier
         world.setGravity( new Vector2(0,defaults.getFloat("gravity",0)) );
 
-        JsonValue activatorConstants = constants.get("activators");
-        Activator.setConstants(activatorConstants);
         for (JsonValue activatorJV : levelJV.get("activators")){
             Activator activator;
             switch (activatorJV.getString("type")){
@@ -422,41 +440,36 @@ public class Level {
             addObject(activator);
         }
 
-        JsonValue spikesConstants = constants.get("spikes");
-        Spikes.setConstants(spikesConstants);
         for (JsonValue spikeJV : levelJV.get("spikes")){
             Spikes spike = new Spikes(tMap.get("spikes"), scale, spikeJV);
             loadActivatable(spike, spikeJV);
         }
 
-        JsonValue boxConstants = constants.get("boxes");
-        PushableBox.setConstants(boxConstants);
+        for (JsonValue checkpointJV : levelJV.get("checkpoints")){
+            Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint"), tMap.get("checkpointActive"));
+            addObject(checkpoint);
+        }
+
         for(JsonValue boxJV : levelJV.get("boxes")){
             PushableBox box = new PushableBox(tMap.get("steel"), scale, boxJV);
             loadActivatable(box, boxJV);
         }
 
-        JsonValue flamethrowerConstants = constants.get("flamethrowers");
-        Flamethrower.setConstants(flamethrowerConstants);
-        Flame.setConstants(flamethrowerConstants);
         for (JsonValue flamethrowerJV : levelJV.get("flamethrowers")){
             Flamethrower flamethrower = new Flamethrower(tMap.get("flamethrower"), tMap.get("flame_anim"),scale, flamethrowerJV);
             loadActivatable(flamethrower, flamethrowerJV);
         }
 
-        // Create Laser
-        JsonValue lasersJV = constants.get("laser");
-        for (JsonValue laserJV : levelJV.get("lasers")) {
-            float x = laserJV.get("pos").getFloat(0);
-            float y = laserJV.get("pos").getFloat(1);
-            LaserBeam laser = new LaserBeam(constants.get("laser"), x, y, 8, dwidth,dheight,"laserbeam");
-            laser.setTexture(tMap.get("laserBeam"));
-            laser.setDrawScale(scale);
-            addObject(laser);
+        for (JsonValue laserJV : levelJV.get("lasers")){
+            Laser laser = new Laser(tMap.get("laser"), scale, laserJV);
+            loadActivatable(laser, laserJV);
+            lasers.add(laser);
         }
 
-        JsonValue deadBodyConstants = constants.get("deadBody");
-        DeadBody.setConstants(deadBodyConstants);
+        for (JsonValue mirrorJV : levelJV.get("mirrors")){
+            Mirror mirror = new Mirror(tMap.get("steel"), scale, mirrorJV);
+            addObject(mirror);
+        }
 
         // Create cat
         dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
@@ -472,6 +485,17 @@ public class Level {
         addObject(cat);
     }
 
+    public static void setConstants(JsonValue constants){
+        DeadBody.setConstants(constants.get("deadBody"));
+        Flamethrower.setConstants(constants.get("flamethrowers"));
+        PushableBox.setConstants(constants.get("boxes"));
+        Spikes.setConstants(constants.get("spikes"));
+        Activator.setConstants(constants.get("activators"));
+        Laser.setConstants(constants.get("lasers"));
+        Checkpoint.setConstants(constants.get("checkpoint"));
+        Mirror.setConstants(constants.get("mirrors"));
+    }
+
     /**
      * Resets the status of the level.
      *
@@ -484,11 +508,15 @@ public class Level {
         }
         addQueue.clear();
         objects.clear();
+        activators.clear();
+        lasers.clear();
+        deadBodyArray.clear();
+        activatables.clear();
+        numLives = maxLives;
         if (world != null) {
             world.dispose();
             world = null;
         }
-
         setComplete(false);
         setFailure(false);
     }
@@ -623,12 +651,12 @@ public class Level {
             for (int x = 0; x < bounds.width; x++){
                 Vector2 p1 = new Vector2(x, 0);
                 Vector2 p2 = new Vector2(x, bounds.height);
-                canvas.drawLine(p1, p2, lineColor, scale.x, scale.y);
+                canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
             }
             for (int y = 0; y < bounds.height; y++){
                 Vector2 p1 = new Vector2(0, y);
                 Vector2 p2 = new Vector2(bounds.width, y);
-                canvas.drawLine(p1, p2, lineColor, scale.x, scale.y);
+                canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
             }
             for(Obstacle obj : objects) {
                 obj.drawDebug(canvas);

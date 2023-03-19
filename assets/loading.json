@@ -1,7 +1,13 @@
 {
 	"textures": {
         "background": "shared/loading.png",
+        "settingsBackground" : "shared/settingsBackground.png",
 		"play": "shared/play.png",
+        "playGame" : "shared/playGame.png",
+        "settings" : "shared/settings.png",
+        "levelSelect" : "shared/levelSelect.png",
+        "back" : "shared/back.png",
+        "exit" : "shared/exitGame.png",
         "progress": {
             "file":      "shared/progressbar.png",
             "atlas":     {

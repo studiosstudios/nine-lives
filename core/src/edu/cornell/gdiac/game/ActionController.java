@@ -134,6 +134,12 @@ public class ActionController {
         }
     }
 
+    /**
+     * Finds the points of a laser beam using raycasting. The beam will reflect off of mirrors and stop at any other
+     * obstacle (or the edge of the screen). The points are added to the <code>Laser</code> instance which will draw the
+     * beam. Also handles any collision logic involving laser beams.
+     * @param l The laser to raycast a beam out of
+     */
     private void rayCastLaser(Laser l){
         l.beginRayCast();
 

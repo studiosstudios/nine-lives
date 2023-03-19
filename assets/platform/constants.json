@@ -61,6 +61,10 @@
   },
   "mirrors": {
     "shape": [0, 0, 0, 1, 1, 0],
-    "offset": [0,0]
+    "offset": [0,0],
+    "alpha": 0.3,
+    "friction": 10,
+    "density" : 0.2,
+    "mass": 1
   }
 }

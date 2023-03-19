@@ -1,12 +1,11 @@
 package edu.cornell.gdiac.game.object;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
-import edu.cornell.gdiac.game.obstacle.BoxObstacle;
+import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.PolygonObstacle;
 
 public class Mirror extends PolygonObstacle {
@@ -15,13 +14,20 @@ public class Mirror extends PolygonObstacle {
 
     private Laser.Direction dir;
 
+    private static float alpha;
+
+    private Color color;
+
     private Vector2 endPointCache = new Vector2();
-    public static void setConstants(JsonValue constants) { objectConstants = constants; }
+    public static void setConstants(JsonValue constants) {
+        objectConstants = constants;
+        alpha = constants.getFloat("alpha");
+    }
 
     public Mirror(TextureRegion texture, Vector2 scale, JsonValue data){
         super(objectConstants.get("shape").asFloatArray());
 
-        setBodyType(BodyDef.BodyType.StaticBody);
+        setBodyType(data.getBoolean("pushable", false) ? BodyDef.BodyType.DynamicBody : BodyDef.BodyType.StaticBody);
         setFixedRotation(true);
         setName("mirror");
         setDrawScale(scale);
@@ -33,6 +39,7 @@ public class Mirror extends PolygonObstacle {
         setFriction(objectConstants.getFloat("friction", 0));
         setDensity(objectConstants.getFloat("density", 0));
         setMass(objectConstants.getFloat("mass", 0));
+        color = new Color(1, 1, 1, alpha);
 
         //this is ugly but it's easy
         float xOffset, yOffset;
@@ -79,7 +86,7 @@ public class Mirror extends PolygonObstacle {
                 return null;
             case DOWN:
                 if (dir == Laser.Direction.UP) {
-                    return Laser.Direction.LEFT;
+                    return Laser.Direction.RIGHT;
                 } else if (dir == Laser.Direction.LEFT) {
                     return Laser.Direction.LEFT;
                 }
@@ -88,7 +95,7 @@ public class Mirror extends PolygonObstacle {
                 if (dir == Laser.Direction.RIGHT) {
                     return Laser.Direction.DOWN;
                 } else if (dir == Laser.Direction.UP) {
-                    return Laser.Direction.RIGHT;
+                    return Laser.Direction.UP;
                 }
                 return null;
             case RIGHT:
@@ -100,6 +107,13 @@ public class Mirror extends PolygonObstacle {
                 return null;
         }
         return null;
+    }
+
+    @Override
+    public void draw(GameCanvas canvas){
+        if (region != null) {
+            canvas.draw(region, color,0,0,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1,1);
+        }
     }
 
 }

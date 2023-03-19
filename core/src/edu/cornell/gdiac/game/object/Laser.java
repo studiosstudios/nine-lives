@@ -23,6 +23,10 @@ public class Laser extends BoxObstacle implements Activatable{
     protected static JsonValue objectConstants;
     private boolean activated;
     private boolean initialActivation;
+    private Color color;
+
+    /** makes laser beams change color with time*/
+    private float totalTime;
     public enum Direction {UP, DOWN, LEFT, RIGHT}
 
     private Direction dir;
@@ -46,6 +50,8 @@ public class Laser extends BoxObstacle implements Activatable{
         setFixedRotation(true);
 
         dir = angleToDir(data.getInt("angle"));
+        totalTime = 0;
+        color = Color.RED;
         points = new Array<>();
         initActivations(data);
     }
@@ -81,12 +87,17 @@ public class Laser extends BoxObstacle implements Activatable{
     public void draw(GameCanvas canvas){
         if (activated) {
             if (points.size > 1) {
-                canvas.drawFactoryPath(points, thickness, Color.RED, drawScale.x, drawScale.y);
+                canvas.drawFactoryPath(points, thickness, color, drawScale.x, drawScale.y);
             }
         }
         super.draw(canvas);
     }
 
+    public void update(float dt){
+        super.update(dt);
+        totalTime += dt;
+        color.set(1, 0, 0, ((float) Math.cos((double) totalTime * 2)) * 0.2f + 0.8f);
+    }
 
     @Override
     public void activated(World world){
@@ -96,6 +107,7 @@ public class Laser extends BoxObstacle implements Activatable{
     public void deactivated(World world){
         points.clear();
         points.add(getPosition());
+        totalTime = 0;
     }
 
     @Override

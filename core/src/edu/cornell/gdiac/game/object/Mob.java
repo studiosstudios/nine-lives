@@ -261,7 +261,7 @@ public class Mob extends CapsuleObstacle {
 
         // Gameplay attributes
         isGrounded = false;
-        setFacingRight(true);
+        setFacingRight(false);
         isAggressive = data.getBoolean("aggressive");
         // setName("mob");
     }

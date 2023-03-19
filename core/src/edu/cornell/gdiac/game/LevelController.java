@@ -323,7 +323,6 @@ public class LevelController {
      * @param dt	Number of seconds since last animation frame
      */
     public void draw(float dt) {
-//        canvas.applyExtendViewport();
         level.draw(canvas, debug);
 
         // Final message

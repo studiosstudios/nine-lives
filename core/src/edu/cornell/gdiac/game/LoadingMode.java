@@ -1,34 +1,8 @@
-/*
- * LoadingMode.java
- *
- * Asset loading is a really tricky problem.  If you have a lot of sound or images,
- * it can take a long time to decompress them and load them into memory.  If you just
- * have code at the start to load all your assets, your game will look like it is hung
- * at the start.
- *
- * The alternative is asynchronous asset loading.  In asynchronous loading, you load a
- * little bit of the assets at a time, but still animate the game while you are loading.
- * This way the player knows the game is not hung, even though he or she cannot do 
- * anything until loading is complete. You know those loading screens with the inane tips 
- * that want to be helpful?  That is asynchronous loading.  
- *
- * This player mode provides a basic loading screen.  While you could adapt it for
- * between level loading, it is currently designed for loading all assets at the 
- * start of the game.
- *
- * Author: Walker M. White
- * Based on original PhysicsDemo Lab by Don Holden, 2007
- * Updated asset version, 2/6/2021
- */
 package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.controllers.Controller;
-import com.badlogic.gdx.controllers.ControllerListener;
-import com.badlogic.gdx.controllers.ControllerMapping;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
@@ -37,22 +11,18 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import edu.cornell.gdiac.assets.*;
 import edu.cornell.gdiac.util.*;
 
 /**
  * Class that provides a loading screen for the state of the game.
  *
- * You still DO NOT need to understand this class for this lab.  We will talk about this
- * class much later in the course.  This class provides a basic template for a loading
- * screen to be used at the start of the game or between levels.  Feel free to adopt
- * this to your needs.
+ * Adapted from CS 3152 Lab 4, this class now uses LibGDX's scene2d library to handle
+ * the UI of the main and accompanying menus for the game. This is done to dynamically handle
+ * resizing of the game window, along with streamlining the input handling for when buttons are clicked.
  *
- * You will note that this mode has some textures that are not loaded by the AssetManager.
- * You are never required to load through the AssetManager.  But doing this will block
- * the application.  That is why we try to have as few resources as possible for this
- * loading screen.
+ * TODO: Develop the rest of the game's menus using separate classes for each "Stage", such as a
+ * MainMenuStage, SettingsStage, and etc.
  */
 public class LoadingMode implements Screen {
 	// There are TWO asset managers.  One to load the loading screen.  The other to load the assets
@@ -82,10 +52,13 @@ public class LoadingMode implements Screen {
 	/** y-coordinate for top button */
 	private int buttonY;
 
+	/** The current stage being rendered on the screen */
 	private Stage stage;
 
+	/** The stage for the settings menu */
 	private Stage settingsStage;
 
+	/** The stage for the main menu */
 	private Stage mainMenuStage;
 	/** Background texture for start-up */
 	private Texture background;
@@ -106,21 +79,28 @@ public class LoadingMode implements Screen {
 	/** The current state of the exit game button */
 	private int exitButtonState;
 
+	/** The actor (Image) for the play button, which helps to handle the input listening for clicks */
 	private Actor playButtonActor;
+	/** The actor (Image) for the level select button, which helps to handle the input listening for clicks */
 	private Actor levelSelectButtonActor;
+	/** The actor (Image) for the settings button, which helps to handle the input listening for clicks */
 	private Actor settingsButtonActor;
+	/** The actor (Image) for the exit button, which helps to handle the input listening for clicks */
 	private Actor exitButtonActor;
 
+	/** Texture for the Main Menu Button FROM the settings menu. */
 	private Texture mainMenuButton;
+	/** State to keep track of whether the main menu button has been clicked */
 	private int mainMenuButtonState;
+	/** The actor (Image) for the main menu button, which helps to handle the input listening for clicks */
 	private Actor mainMenuButtonActor;
 
 	/**
 	 * Returns the budget for the asset loader.
 	 *
 	 * The budget is the number of milliseconds to spend loading assets each animation
-	 * frame.  This allows you to do something other than load assets.  An animation 
-	 * frame is ~16 milliseconds. So if the budget is 10, you have 6 milliseconds to 
+	 * frame.  This allows you to do something other than load assets.  An animation
+	 * frame is ~16 milliseconds. So if the budget is 10, you have 6 milliseconds to
 	 * do something else.  This is how game companies animate their loading screens.
 	 *
 	 * @return the budget in milliseconds
@@ -160,6 +140,8 @@ public class LoadingMode implements Screen {
 	public boolean isSettings() { return settingsButtonState == 2;}
 
 	public boolean isExit() { return exitButtonState == 2; }
+
+	public boolean isBack() { return mainMenuButtonState == 2; }
 
 	/**
 	 * Returns the asset directory produced by this loading screen
@@ -277,7 +259,10 @@ public class LoadingMode implements Screen {
 	 * prefer this in lecture.
 	 */
 	private void draw() {
+		Gdx.gl.glClearColor(0, 0, 0, 1.0f);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		canvas.begin();
+		stage.getViewport().apply();
 		stage.act();
 		stage.draw();
 		canvas.end();
@@ -300,12 +285,15 @@ public class LoadingMode implements Screen {
 			// We are are ready, notify our listener
 			if (isReady() && listener != null) {
 				listener.exitScreen(this, 0);
-			} else if (isSettings() && listener != null) {
+			} else if (isSettings()) {
 //				listener.exitScreen(this, 1);
 				settingsButtonState = 0;
-				stage = settingsStage;
-				Gdx.input.setInputProcessor( stage );
-			} else if (isExit() && listener != null) {
+				changeStage(settingsStage);
+			} else if (isBack()) {
+				mainMenuButtonState = 0;
+				changeStage(mainMenuStage);
+			}
+			else if (isExit() && listener != null) {
 				listener.exitScreen(this, 99);
 			}
 		}
@@ -373,6 +361,11 @@ public class LoadingMode implements Screen {
 
 	// HELPER FUNCTIONS / CLASSES
 
+	/**
+	 * Creates the actors for the main menu stage.
+	 *
+	 * TODO: Factor this out into an external `MainMenuStage` class.
+	 */
 	private void createMainMenuStageActors() {
 		playButton = internal.getEntry("playGame", Texture.class);
 		EventListener mainMenuButtonListener = new MainMenuButtonListener();
@@ -400,6 +393,10 @@ public class LoadingMode implements Screen {
 		mainMenuStage.addActor(exitButtonActor);
 	}
 
+	/**
+	 * Creates the actors for the settings stage.
+	 * TODO: Factor this out into an external `SettingsStage` class
+	 */
 	private void createSettingsStageActors() {
 		mainMenuButton = internal.getEntry("back", Texture.class);
 		mainMenuButtonActor = new Image(mainMenuButton);
@@ -408,10 +405,26 @@ public class LoadingMode implements Screen {
 		settingsStage.addActor(mainMenuButtonActor);
 	}
 
+	/**
+	 * Changes the currently active stage.
+	 *
+	 * Not only does this change the stage, but it also updates the InputProcessor to handle
+	 * that stage's actors, along with appropriately resizing to ensure the aspect ratio of the
+	 * new stage is correct.
+	 * @param s
+	 */
 	private void changeStage(Stage s) {
 		stage = s;
 		Gdx.input.setInputProcessor(s);
+		resize(canvas.getWidth(), canvas.getHeight());
 	}
+
+	/**
+	 * TEMPORARY Listener class to handle button listening.
+	 *
+	 * TODO: Factor this out with a separate `MainMenuScreen`
+	 * TODO: Separate these listeners with the `mainMenuButtonActor` listener, which is supposed to be with the SettingsScreen
+	 */
 
 	private class MainMenuButtonListener extends InputListener {
 		@Override
@@ -461,9 +474,8 @@ public class LoadingMode implements Screen {
 			//temp
 			else if (mainMenuButtonState == 1) {
 				//TODO: factor this out (CJ)
-				mainMenuButtonState = 0;
+				mainMenuButtonState = 2;
 				mainMenuButtonActor.setColor(Color.WHITE);
-				changeStage(mainMenuStage);
 			}
 		}
 	}

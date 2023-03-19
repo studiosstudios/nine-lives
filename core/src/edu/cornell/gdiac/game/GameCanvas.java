@@ -279,11 +279,6 @@ public class GameCanvas {
 		extendView.apply(true);
 	}
 
-	/** Activates the FitViewport for drawing to canvas */
-	public void applyFitViewport() {
-//		fitView.apply(true);
-	}
-	
 	/**
 	 * Resets the SpriteBatch camera when this canvas is resized.
 	 *
@@ -348,8 +343,8 @@ public class GameCanvas {
 	 * Clear the screen so we can start a new animation frame
 	 */
 	public void clear() {
-    	// Clear the screen
-		Gdx.gl.glClearColor(0, 0, 0, 1.0f);  // Homage to the XNA years
+    		// Clear the screen
+		Gdx.gl.glClearColor(0, 0, 0, 1.0f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	}
 

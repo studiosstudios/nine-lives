@@ -12,6 +12,7 @@
  */
 package edu.cornell.gdiac.game.desktop;
 
+import com.badlogic.gdx.graphics.Color;
 import edu.cornell.gdiac.backend.GDXApp;
 import edu.cornell.gdiac.backend.GDXAppSettings;
 import edu.cornell.gdiac.game.NineLives;
@@ -34,9 +35,9 @@ public class DesktopLauncher {
 	 */
 	public static void main (String[] arg) {
 		GDXAppSettings config = new GDXAppSettings();
+		config.title = "9 Lives";
 		config.width  = 1024;
 		config.height = 576;
-		config.resizable = true;
 		new GDXApp(new NineLives(), config);
 	}
 }

@@ -14,13 +14,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public abstract class Activator extends PolygonObstacle {
 
     protected static JsonValue objectConstants;
-    protected Animation<TextureRegion> animation;
+    private Animation<TextureRegion> animation;
 
     /** if the activator is activating objects*/
     protected boolean active;
     /** each activator has a unique string id specified in JSON*/
     protected String id;
-    protected SpriteBatch spriteBatch;
+    private SpriteBatch spriteBatch;
     private TextureRegion[][] spriteFrames;
     private float animationTime;
     private PolygonShape sensorShape;

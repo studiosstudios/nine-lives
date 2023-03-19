@@ -10,6 +10,10 @@
  */
 package edu.cornell.gdiac.game.object;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
@@ -35,6 +39,10 @@ public class Cat extends CapsuleObstacle {
     /** Whether we are actively dashing */
     private boolean isDashing;
     public boolean canDash;
+    private Animation<TextureRegion> animation;
+    private SpriteBatch spriteBatch;
+    private TextureRegion[][] spriteFrames;
+    private float animationTime;
     /** The amount to slow the character down */
     private final float damping;
     /** The maximum character speed */
@@ -70,6 +78,7 @@ public class Cat extends CapsuleObstacle {
     private boolean isClimbing;
     private Texture normal_texture;
     private Texture jumping_texture;
+    private boolean jump_animated;
 
     /** List of shapes corresponding to the sensors attached to this body */
     private Array<PolygonShape> sensorShapes;
@@ -218,6 +227,7 @@ public class Cat extends CapsuleObstacle {
         isGrounded = value;
         if (isGrounded) {
             canDash = true;
+            jump_animated = false;
             jumpMovement = jump_force;
             stoppedJumping = false;
         }
@@ -303,7 +313,7 @@ public class Cat extends CapsuleObstacle {
      * @param height	The object width in physics units
      */
     public Cat(JsonValue data, float width, float height, boolean ret, Vector2 prev_pos,
-               com.badlogic.gdx.graphics.g2d.TextureRegion catBody, com.badlogic.gdx.graphics.g2d.TextureRegion jumping) {
+               com.badlogic.gdx.graphics.Texture[] arr) {
         // The shrink factors fit the image to a tigher hitbox
         super(data.get(ret?"ret_pos":"pos").getFloat(0),
                 prev_pos == null ? data.get(ret?"ret_pos":"pos").getFloat(1) : prev_pos.y,
@@ -313,8 +323,8 @@ public class Cat extends CapsuleObstacle {
         setDensity(data.getFloat("density", 0));
         setFriction(data.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
         setFixedRotation(true);
-        normal_texture = catBody.getTexture();
-        jumping_texture = jumping.getTexture();
+        normal_texture = arr[0];
+        jumping_texture = arr[1];
         maxspeed = data.getFloat("maxspeed", 0);
         damping = data.getFloat("damping", 0);
         force = data.getFloat("force", 0);
@@ -325,6 +335,15 @@ public class Cat extends CapsuleObstacle {
         sideSensorName = "catSideSensor";
         sensorShapes = new Array<>();
         this.data = data;
+        jump_animated = false;
+        int spriteWidth = 50;
+        int spriteHeight = 50;
+        spriteFrames = TextureRegion.split(arr[2], spriteWidth, spriteHeight);
+        float frameDuration = 1f;
+        animation = new Animation<>(frameDuration, spriteFrames[0]);
+        animation.setPlayMode(Animation.PlayMode.REVERSED);
+        spriteBatch = new SpriteBatch();
+        animationTime = 0f;
 
         // Gameplay attributes
         isGrounded = false;
@@ -493,21 +512,28 @@ public class Cat extends CapsuleObstacle {
      */
     public void draw(GameCanvas canvas) {
         float effect = faceRight ? 1.0f : -1.0f;
-        if(isJumping){
-            if(faceRight){
-                canvas.draw(jumping_texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x-20,getY()*drawScale.y-15,getAngle(),effect,1.0f);
-            }
-            else{
-                canvas.draw(jumping_texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x+30,getY()*drawScale.y-15,getAngle(),effect,1.0f);
-            }
-
+        if(isJumping && !jump_animated){
+            animation.setPlayMode(Animation.PlayMode.NORMAL);
+            animationTime += Gdx.graphics.getDeltaTime();
+            System.out.println(animationTime);
+            TextureRegion currentFrame = animation.getKeyFrame(animationTime);
+            spriteBatch.begin();
+            spriteBatch.draw(currentFrame, getX()*drawScale.x-25,getY()*drawScale.y-25);
+            spriteBatch.end();
+            jump_animated = true;
         }
-        else{
-            if(faceRight){
-                canvas.draw(normal_texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x-20,getY()*drawScale.y-15,getAngle(),effect,1.0f);
+        else {
+            float x;
+            float y;
+            if (faceRight) {
+                x = getX() * drawScale.x - 20;
+            } else {
+                x = getX() * drawScale.x + 30;
             }
-            else{
-                canvas.draw(normal_texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x+30,getY()*drawScale.y-15,getAngle(),effect,1.0f);
+            if (isJumping) {
+                canvas.draw(jumping_texture, Color.WHITE, origin.x, origin.y, x, getY() * drawScale.y - 15, getAngle(), effect, 1.0f);
+            } else {
+                canvas.draw(normal_texture, Color.WHITE, origin.x, origin.y, x, getY() * drawScale.y - 15, getAngle(), effect, 1.0f);
             }
         }
     }

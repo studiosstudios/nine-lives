@@ -14,6 +14,7 @@
         "cat":  "platform/cat.png",
         "deadCat": "platform/deadCat.png",
       "jumpingCat": "platform/Jump.png",
+      "jump_anim": "platform/jump_cat.png",
         "rope":  "platform/ropebridge.png",
         "barrier": "platform/barrier.png",
         "bullet":  "platform/bullet.png",

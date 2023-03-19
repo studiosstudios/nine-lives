@@ -440,7 +440,7 @@ public class Level {
         Flamethrower.setConstants(flamethrowerConstants);
         Flame.setConstants(flamethrowerConstants);
         for (JsonValue flamethrowerJV : levelJV.get("flamethrowers")){
-            Flamethrower flamethrower = new Flamethrower(tMap.get("flamethrower"), tMap.get("flame"),scale, flamethrowerJV);
+            Flamethrower flamethrower = new Flamethrower(tMap.get("flamethrower"), tMap.get("flame_anim"),scale, flamethrowerJV);
             loadActivatable(flamethrower, flamethrowerJV);
         }
 
@@ -461,7 +461,11 @@ public class Level {
         // Create cat
         dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
         dheight = tMap.get("cat").getRegionHeight()/scale.y;
-        cat = new Cat(levelJV.get("cat"), dwidth, dheight, ret, prevCat == null? null : prevCat.getPosition(),tMap.get("cat"),tMap.get("jumpingCat"));
+        Texture[] arr = new Texture[3];
+        arr[0] = tMap.get("cat").getTexture();
+        arr[1] = tMap.get("jumpingCat").getTexture();
+        arr[2] = tMap.get("jump_anim").getTexture();
+        cat = new Cat(levelJV.get("cat"), dwidth, dheight, ret, prevCat == null? null : prevCat.getPosition(),arr);
         cat.setDrawScale(scale);
 //        cat.setTexture(tMap.get("cat"));
         respawnPos = cat.getPosition();

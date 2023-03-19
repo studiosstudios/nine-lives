@@ -83,6 +83,10 @@ public class LoadingMode implements Screen {
 	private int buttonY;
 
 	private Stage stage;
+
+	private Stage settingsStage;
+
+	private Stage mainMenuStage;
 	/** Background texture for start-up */
 	private Texture background;
 	/** Play button to display when done */
@@ -106,6 +110,10 @@ public class LoadingMode implements Screen {
 	private Actor levelSelectButtonActor;
 	private Actor settingsButtonActor;
 	private Actor exitButtonActor;
+
+	private Texture mainMenuButton;
+	private int mainMenuButtonState;
+	private Actor mainMenuButtonActor;
 
 	/**
 	 * Returns the budget for the asset loader.
@@ -214,9 +222,18 @@ public class LoadingMode implements Screen {
 		settingsButton = null;
 		exitButton = null;
 
-		stage = new Stage(new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT));
+		mainMenuStage = new Stage(new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT));
 		Image backgroundImage = new Image(background);
-		stage.addActor(backgroundImage);
+		mainMenuStage.addActor(backgroundImage);
+
+		mainMenuButtonState = 0;
+		mainMenuButtonActor = null;
+
+		settingsStage = new Stage(new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT));
+		settingsStage.addActor(new Image(internal.getEntry("settingsBackground", Texture.class)));
+		createSettingsStageActors();
+
+		stage = mainMenuStage;
 
 		Gdx.input.setInputProcessor( stage );
 
@@ -247,7 +264,7 @@ public class LoadingMode implements Screen {
 		if (playButton == null) {
 			assets.update(budget);
 			if (assets.getProgress() >= 1.0f) {
-				createMainMenuActors();
+				createMainMenuStageActors();
 			}
 		}
 	}
@@ -284,7 +301,10 @@ public class LoadingMode implements Screen {
 			if (isReady() && listener != null) {
 				listener.exitScreen(this, 0);
 			} else if (isSettings() && listener != null) {
-				listener.exitScreen(this, 1);
+//				listener.exitScreen(this, 1);
+				settingsButtonState = 0;
+				stage = settingsStage;
+				Gdx.input.setInputProcessor( stage );
 			} else if (isExit() && listener != null) {
 				listener.exitScreen(this, 99);
 			}
@@ -353,31 +373,44 @@ public class LoadingMode implements Screen {
 
 	// HELPER FUNCTIONS / CLASSES
 
-	private void createMainMenuActors() {
+	private void createMainMenuStageActors() {
 		playButton = internal.getEntry("playGame", Texture.class);
 		EventListener mainMenuButtonListener = new MainMenuButtonListener();
 		playButtonActor = new Image(playButton);
 		playButtonActor.setPosition(buttonX, buttonY);
 		playButtonActor.addListener(mainMenuButtonListener);
-		stage.addActor(playButtonActor);
+		mainMenuStage.addActor(playButtonActor);
 
 		settingsButton = internal.getEntry("settings", Texture.class);
 		settingsButtonActor = new Image(settingsButton);
 		settingsButtonActor.setPosition(buttonX, buttonY-75);
 		settingsButtonActor.addListener(mainMenuButtonListener);
-		stage.addActor(settingsButtonActor);
+		mainMenuStage.addActor(settingsButtonActor);
 
 		levelSelectButton = internal.getEntry("levelSelect", Texture.class);
 		levelSelectButtonActor = new Image(levelSelectButton);
 		levelSelectButtonActor.setPosition(buttonX, buttonY-150);
 		levelSelectButtonActor.addListener(mainMenuButtonListener);
-		stage.addActor(levelSelectButtonActor);
+		mainMenuStage.addActor(levelSelectButtonActor);
 
 		exitButton = internal.getEntry("exit", Texture.class);
 		exitButtonActor = new Image(exitButton);
 		exitButtonActor.setPosition(buttonX, buttonY-225);
 		exitButtonActor.addListener(mainMenuButtonListener);
-		stage.addActor(exitButtonActor);
+		mainMenuStage.addActor(exitButtonActor);
+	}
+
+	private void createSettingsStageActors() {
+		mainMenuButton = internal.getEntry("back", Texture.class);
+		mainMenuButtonActor = new Image(mainMenuButton);
+		mainMenuButtonActor.setPosition(buttonX, buttonY);
+		mainMenuButtonActor.addListener(new MainMenuButtonListener());
+		settingsStage.addActor(mainMenuButtonActor);
+	}
+
+	private void changeStage(Stage s) {
+		stage = s;
+		Gdx.input.setInputProcessor(s);
 	}
 
 	private class MainMenuButtonListener extends InputListener {
@@ -386,16 +419,24 @@ public class LoadingMode implements Screen {
 			Actor actor = event.getListenerActor();
 			if (actor == playButtonActor) {
 				playButtonState = 1;
-//				playButtonActor.setColor()
+				playButtonActor.setColor(Color.LIGHT_GRAY);
 			}
 			else if (actor == levelSelectButtonActor) {
 
 			}
 			else if (actor == settingsButtonActor) {
 				settingsButtonState = 1;
+				settingsButtonActor.setColor(Color.LIGHT_GRAY);
 			}
 			else if (actor == exitButtonActor) {
 				exitButtonState = 1;
+				exitButtonActor.setColor(Color.LIGHT_GRAY);
+			}
+			//temp
+			else if (actor == mainMenuButtonActor) {
+				//TODO: factor this out (CJ)
+				mainMenuButtonState = 1;
+				mainMenuButtonActor.setColor(Color.LIGHT_GRAY);
 			}
 			return true;
 		}
@@ -404,17 +445,26 @@ public class LoadingMode implements Screen {
 		public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 			if (playButtonState == 1) {
 				playButtonState = 2;
+				playButtonActor.setColor(Color.WHITE);
 			}
 			else if (levelSelectButtonState == 1) {
 
 			}
 			else if (settingsButtonState == 1) {
-
+				settingsButtonState = 2;
+				settingsButtonActor.setColor(Color.WHITE);
 			}
 			else if (exitButtonState == 1) {
 				exitButtonState = 2;
+				exitButtonActor.setColor(Color.WHITE);
 			}
-//						return false;
+			//temp
+			else if (mainMenuButtonState == 1) {
+				//TODO: factor this out (CJ)
+				mainMenuButtonState = 0;
+				mainMenuButtonActor.setColor(Color.WHITE);
+				changeStage(mainMenuStage);
+			}
 		}
 	}
 

@@ -65,6 +65,9 @@ public class Mob extends CapsuleObstacle {
     /** Whether the mob is an aggressive AI */
     private Boolean isAggressive;
 
+    private static final String sensorName = "mobsensor";
+
+
 
     /**
      * Returns left/right movement of this character.
@@ -236,7 +239,7 @@ public class Mob extends CapsuleObstacle {
         super(texture.getRegionWidth()/scale.x,
                 texture.getRegionHeight()/scale.y);
 
-        setBodyType(BodyDef.BodyType.DynamicBody);
+//        setBodyType(BodyDef.BodyType.DynamicBody);
         setFixedRotation(true);
         setName("mob");
         setX(data.get("pos").getFloat(0));
@@ -262,6 +265,11 @@ public class Mob extends CapsuleObstacle {
         isAggressive = data.getBoolean("aggressive");
         // setName("mob");
     }
+
+    public static String getSensorName() {
+        return sensorName;
+    }
+
 
     /**
      * Creates the physics Body(s) for this object, adding them to the world.

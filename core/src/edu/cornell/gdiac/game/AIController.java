@@ -30,15 +30,14 @@ public class AIController {
     private Level level;
     /** The target Cat (to chase). */
     private Cat target;
-    /** Current jump movement of the character */
-    private float horizontalMovement;
     /** How much did we move horizontally? */
     private float horizontal;
-
     /** The crosshair position (for raddoll) */
     private Vector2 crosshair;
     /** The crosshair cache (for using as a return value) */
     private Vector2 crosscache;
+
+    private static final float MOVE_CONSTANT = 0.02f;
 
 
 
@@ -57,50 +56,84 @@ public class AIController {
         target = null;
     }
 
-    private void changeStateIfApplicable() {
+    /* Returns mob of this AI Controller*/
+    public Mob getMob() {
+        return mob;
+    }
+
+    public float getAction() {
+        changeStateifApplicable();
+//        System.out.println(getHorizontal());
+        return getHorizontal();
+    }
+
+    public void changeStateifApplicable() {
         // Current mob coords
-        float pos_x = mob.getX();
-        float pos_y = mob.getY();
+//        float pos_x = mob.getX();
+//        float pos_y = mob.getY();
 
-        switch (state) {
-            case SPAWN:
-                // Should switch to wander immediately
-                this.state = FSMState.WANDER;
-                break;
-
-            case WANDER:
-                // Only switch out of WANDER if the mob is aggressive
-                // Otherwise it just goes back and forth
-                if (mob.isAggressive()) {
-                    // Get a target
-                    selectTarget();
-                    if (target != null) {
-                        this.state = FSMState.CHASE;
-                    }
-                }
-                // doesn't go into CHASE state, continues walking in same dir
-                // check if theres anything blocking it
-                if (horizontalMovement >= 0) { horizontalMovement += 1.0f;}
-                else { horizontalMovement -= 1.0f;}
-                break;
-
-            case CHASE:
-                // Should go back to wander if it killed the cat
-                if (mob.getX() <= target.getX()) {
-                    // target is right of mob, mob moves right
-                    horizontal += 1.0f;
-                }
-                else {
-                    // target is left of mob, mob moves lefts
-                    horizontal -= 1.0f;
-                }
-                break;
-            default:
-                // Unknown or unhandled state, should never get here
-                assert (false);
-                state = FSMState.WANDER; // If debugging is off
-                break;
+        if (state == FSMState.SPAWN) {
+            this.state = FSMState.WANDER;
         }
+        else if (state == FSMState.WANDER) {
+
+            if (mob.isAggressive()) {
+                // Get a target
+                selectTarget();
+                if (target != null) {
+                    this.state = FSMState.CHASE;
+                }
+            }
+            // doesn't go into CHASE state, continues walking in same dir
+            // check if there's anything blocking it in collision controller
+            if (horizontal >= 0) {
+                horizontal = MOVE_CONSTANT;
+            } else {
+                horizontal = -MOVE_CONSTANT;
+            }
+        }
+        else if (state == FSMState.CHASE) {
+//            System.out.println("CHASING!!!");
+
+            // Should go back to wander if it killed the cat
+            if (mob.getX() <= target.getX()) {
+                // target is right of mob, mob moves right a little faster
+                horizontal = MOVE_CONSTANT*2;
+            } else {
+                // target is left of mob, mob moves lefts a little faster
+                horizontal = -MOVE_CONSTANT*2;
+            }
+        } else {
+            state = FSMState.WANDER; // If debugging is off
+        }
+
+//
+//        switch (state) {
+//            case SPAWN:
+//                // Should switch to wander immediately
+//
+//
+//            case WANDER:
+//                // Only switch out of WANDER if the mob is aggressive
+//                // Otherwise it just goes back and forth
+//
+//
+//            case CHASE:
+//                // Should go back to wander if it killed the cat
+//                if (mob.getX() <= target.getX()) {
+//                    // target is right of mob, mob moves right a little faster
+//                    horizontal = 1.5f;
+//                } else {
+//                    // target is left of mob, mob moves lefts a little faster
+//                    horizontal = -1.5f;
+//                }
+//                break;
+//            default:
+//                // Unknown or unhandled state, should never get here
+//                assert (false);
+//                state = FSMState.WANDER; // If debugging is off
+//                break;
+//        }
     }
 
     private void selectTarget() {
@@ -158,15 +191,13 @@ public class AIController {
         target = targ;
     }
 
-
-
-        /**
-         * Returns the amount of sideways movement.
-         *
-         * -1 = left, 1 = right, 0 = still
-         *
-         * @return the amount of sideways movement.
-         */
+    /**
+     * Returns the amount of sideways movement.
+     *
+     * -1 = left, 1 = right, 0 = still
+     *
+     * @return the amount of sideways movement.
+     */
     public float getHorizontal() {
         return horizontal;
     }
@@ -196,6 +227,5 @@ public class AIController {
         crosshair.x = Math.max(bounds.x, Math.min(bounds.x+bounds.width, crosshair.x));
         crosshair.y = Math.max(bounds.y, Math.min(bounds.y+bounds.height, crosshair.y));
     }
-
 
 }

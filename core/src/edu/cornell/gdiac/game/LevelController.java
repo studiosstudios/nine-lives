@@ -101,10 +101,10 @@ public class LevelController {
 
         level = new Level(world, bounds, scale, MAX_NUM_LIVES);
 
-        actionController = new ActionController(bounds, scale, volume);
         collisionController = new CollisionController(actionController);
-        actionController.setLevel(level);
         collisionController.setLevel(level);
+        actionController = new ActionController(bounds, scale, volume);
+        actionController.setLevel(level);
     }
 
     /**
@@ -196,6 +196,7 @@ public class LevelController {
         world.setContactListener(collisionController);
 
         collisionController.setReturn(false);
+        actionController.setControllers(level);
 
         boolean tempRet = isRet();
         setRet(false);
@@ -217,6 +218,7 @@ public class LevelController {
      */
     public void populateLevel(boolean ret, Cat prevCat) {
         level.populateLevel(textureRegionAssetMap, fontAssetMap, soundAssetMap, JSONconstants, levelJV, ret, prevCat);
+        actionController.setControllers(level);
     }
 
     /**

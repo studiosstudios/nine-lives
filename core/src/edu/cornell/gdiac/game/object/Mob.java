@@ -36,10 +36,10 @@ public class Mob extends CapsuleObstacle {
     private final float damping;
     /** The maximum character speed */
     private final float maxspeed;
-    /** Identifier to allow us to track the sensor in ContactListener */
-    private final String groundSensorName;
-    /** Identifier to allow us to track side sensor in ContactListener */
-    private final String sideSensorName;
+//    /** Identifier to allow us to track the sensor in ContactListener */
+//    private final String groundSensorName;
+//    /** Identifier to allow us to track side sensor in ContactListener */
+//    private final String sideSensorName;
 
     /** The current horizontal movement of the character */
     private float   movement;
@@ -58,6 +58,8 @@ public class Mob extends CapsuleObstacle {
 
     /** List of shapes corresponding to the sensors attached to this body */
     private Array<PolygonShape> sensorShapes;
+    private PolygonShape sensorShape;
+
 
     /** Cache for internal force calculations */
     private final Vector2 forceCache = new Vector2();
@@ -179,27 +181,27 @@ public class Mob extends CapsuleObstacle {
         return maxspeed;
     }
 
-    /**
-     * Returns the name of the ground sensor
-     *
-     * This is used by ContactListener
-     *
-     * @return the name of the ground sensor
-     */
-    public String getGroundSensorName() {
-        return groundSensorName;
-    }
+//    /**
+//     * Returns the name of the ground sensor
+//     *
+//     * This is used by ContactListener
+//     *
+//     * @return the name of the ground sensor
+//     */
+//    public String getGroundSensorName() {
+//        return groundSensorName;
+//    }
 
-    /**
-     * Returns the name of the side sensor
-     *
-     * This is used by ContactListener
-     *
-     * @return the name of the side sensor
-     */
-    public String getSideSensorName() {
-        return sideSensorName;
-    }
+//    /**
+//     * Returns the name of the side sensor
+//     *
+//     * This is used by ContactListener
+//     *
+//     * @return the name of the side sensor
+//     */
+//    public String getSideSensorName() {
+//        return sideSensorName;
+//    }
 
 
     /**
@@ -254,10 +256,12 @@ public class Mob extends CapsuleObstacle {
         maxspeed = data.getFloat("maxspeed", 0);
         damping = data.getFloat("damping", 0);
         force = data.getFloat("force", 0);
-        groundSensorName = "catGroundSensor";
-        sideSensorName = "catSideSensor";
+//        groundSensorName = "catGroundSensor";
+//        sideSensorName = "catSideSensor";
         sensorShapes = new Array<>();
+
         this.data = data;
+
 
         // Gameplay attributes
         isGrounded = false;
@@ -285,6 +289,17 @@ public class Mob extends CapsuleObstacle {
         if (!super.activatePhysics(world)) {
             return false;
         }
+
+        FixtureDef sensorDef = new FixtureDef();
+        sensorDef.density = 0;
+        sensorDef.isSensor = true;
+        sensorShape = new PolygonShape();
+        // TODO: sensor shape
+//        sensorShape.set(new Vector2[0]);
+        sensorDef.shape = sensorShape;
+
+        Fixture sensorFixture = body.createFixture( sensorDef );
+        sensorFixture.setUserData(getSensorName());
 
         // Ground Sensor
         // -------------

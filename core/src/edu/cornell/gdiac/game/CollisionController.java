@@ -140,11 +140,9 @@ public class CollisionController implements ContactListener, ContactFilter {
             }
 
             // Mob changes direction when hits a wall
-            if (fd1 instanceof Mob) {
-                if (fd2 instanceof Obstacle) {
-                    System.out.println("mob and obstacle");
-                    ((Mob) fd1).setFacingRight(!((Mob) fd1).isFacingRight());
-                }
+            if (fd1 instanceof Mob || fd2 instanceof Mob) {
+                System.out.println("mob hit ");
+                ((Mob) fd1).setFacingRight(!((Mob) fd1).isFacingRight());
             }
 
             // Check for activator

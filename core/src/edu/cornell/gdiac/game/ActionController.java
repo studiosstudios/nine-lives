@@ -123,7 +123,8 @@ public class ActionController {
             DeadBody body = level.getNextBody();
             if (body != null){
                 level.spawnDeadBody();
-                level.getCat().setPosition(body.getPosition());
+                cat.setPosition(body.getPosition());
+                cat.setLinearVelocity(body.getLinearVelocity());
                 body.markRemoved(true);
                 level.removeDeadBody(body);
             }

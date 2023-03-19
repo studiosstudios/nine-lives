@@ -109,7 +109,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                 if (fd2 instanceof Spikes) {
                     actionController.die();
                 }
-                if (fd2 == Flame.getSensorName()){
+                if (fd2 == Flamethrower.getSensorName()){
                     actionController.die();
                 }
                 if (fd2 == LaserBeam.getSensorName()) {
@@ -124,14 +124,14 @@ public class CollisionController implements ContactListener, ContactFilter {
             if (fd1 instanceof DeadBody) {
                 if (fd2 instanceof Spikes) {
                     actionController.fixBodyToSpikes((DeadBody) fd1, (Spikes) fd2, contact.getWorldManifold().getPoints());
-                } else if (fd2 == Flame.getSensorName()) {
+                } else if (fd2 == Flamethrower.getSensorName()) {
                     ((DeadBody) fd1).setBurning(true);
                 }
 
             } else if (fd2 instanceof DeadBody) {
                 if (fd1 instanceof Spikes) {
                     actionController.fixBodyToSpikes((DeadBody) fd2, (Spikes) fd1, contact.getWorldManifold().getPoints());
-                } else if (fd1 == Flame.getSensorName()) {
+                } else if (fd1 == Flamethrower.getSensorName()) {
                     ((DeadBody) fd2).setBurning(true);
                 }
             }
@@ -183,12 +183,12 @@ public class CollisionController implements ContactListener, ContactFilter {
 
         //Check for body
         if (fd1 instanceof DeadBody) {
-            if (fd2 == Flame.getSensorName()) {
+            if (fd2 == Flamethrower.getSensorName()) {
                 ((DeadBody) fd1).setBurning(false);
             }
 
         } else if (fd2 instanceof DeadBody) {
-            if (fd1 == Flame.getSensorName()) {
+            if (fd1 == Flamethrower.getSensorName()) {
                 ((DeadBody) fd2).setBurning(false);
             }
         }

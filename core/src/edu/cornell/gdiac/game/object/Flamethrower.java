@@ -1,78 +1,77 @@
 package edu.cornell.gdiac.game.object;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Joint;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
 import edu.cornell.gdiac.game.obstacle.ComplexObstacle;
 
 public class Flamethrower extends ComplexObstacle implements Activatable {
-    protected static JsonValue objectConstants;
+    private static JsonValue objectConstants;
 
-    protected Flame flame;
+    private Flame flame;
+
+    private TextureRegion flameTexture;
 
     protected BoxObstacle flameBase;
-
-    /** Whether the flamethrower object is on and shooting a flame */
-    private boolean isShooting;
 
     private boolean activated;
 
     private boolean initialActivation;
 
-    /**
-     * Returns true if the flamethrower if shooting
-     *
-     * @return true if the flamethrower is shooting
-     */
-    public boolean getShooting() {
-        return isShooting;
-    }
-    /**
-     * Sets whether the flamethrower object is firing
-     *
-     * @param shooting whether the flamethrower is firing
-     */
-    public void setShooting(boolean shooting) {
-        isShooting = shooting;
-    }
+    private static final String sensorName = "flameSensor";
+
+    private final Vector2 flameOffset;
+
+    private final boolean pushable;
+
 
     public Flamethrower(TextureRegion flamethrowerTexture, TextureRegion flameTexture, Vector2 scale, JsonValue data) {
         super();
 //        setName("flamethrower");
 
-        this.setFixedRotation(false);
+        this.flameTexture = flameTexture;
+
         flameBase = new BoxObstacle(flamethrowerTexture.getRegionWidth()/scale.x, flamethrowerTexture.getRegionHeight()/scale.y);
         flameBase.setDrawScale(scale);
         flameBase.setTexture(flamethrowerTexture);
-        flameBase.setBodyType(BodyDef.BodyType.StaticBody);
-//        flameBase.setAngle((float) (angle * Math.PI/180));
-        flameBase.setFriction(0f);
-        flameBase.setRestitution(0f);
+        pushable = data.getBoolean("pushable", false);
+        flameBase.setFriction(objectConstants.getFloat("friction", 0));
+        flameBase.setRestitution(objectConstants.getFloat("restitution", 0));
+        flameBase.setDensity(objectConstants.getFloat("density", 0));
+        flameBase.setMass(objectConstants.getFloat("mass", 0));
         flameBase.setName("flamethrower");
-        flameBase.setDensity(0f);
+        float angle = (float) (data.getFloat("angle") * Math.PI/180);
+        flameBase.setAngle(angle);
+        flameBase.setX(data.get("pos").getFloat(0) + objectConstants.get("base_offset").getFloat(0));
+        flameBase.setY(data.get("pos").getFloat(1) + objectConstants.get("base_offset").getFloat(1));
 
-        flame = new Flame(flameTexture, scale, data);
+        flameOffset = new Vector2(objectConstants.get("flame_offset").getFloat(0)*(float)Math.cos(angle)-
+                objectConstants.get("flame_offset").getFloat(1)*(float)Math.sin(angle),
+                objectConstants.get("flame_offset").getFloat(1)*(float)Math.cos(angle)-
+                objectConstants.get("flame_offset").getFloat(0)*(float)Math.sin(angle));
+        flame = new Flame(flameTexture, scale, flameBase.getPosition(), flameBase.getAngle());
+
+        if (pushable){
+            flame.setBodyType(BodyDef.BodyType.DynamicBody);
+            flameBase.setBodyType(BodyDef.BodyType.DynamicBody);
+        } else {
+            flame.setBodyType(BodyDef.BodyType.StaticBody);
+            flameBase.setBodyType(BodyDef.BodyType.StaticBody);
+        }
+
         bodies.add(flameBase);
         bodies.add(flame);
-
-        flameBase.setX(data.get("pos").getFloat(0));
-        flameBase.setY(data.get("pos").getFloat(1) +
-                (flame.getHeight()*objectConstants.getFloat("base_y_offset_scale")));
         initActivations(data);
-//        this.setAngle((float) (angle * Math.PI/180));
     }
 
     /**
-     * Creates the joints for this object.
-     * <p>
-     * This method is executed as part of activePhysics. This is the primary method to
-     * override for custom physics objects.
+     * Welds the flame to the flamethrower base.
      *
      * @param world Box2D world to store joints
      * @return true if object allocation succeeded
@@ -85,8 +84,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
 
         jointDef.bodyA = flameBase.getBody();
         jointDef.bodyB = flame.getBody();
-        jointDef.localAnchorA.set(new Vector2());
-        jointDef.localAnchorB.set(new Vector2(0f, -flame.getHeight()*0.5f));
+        jointDef.localAnchorB.set(flame.getBody().getLocalPoint(flameBase.getPosition()));
         jointDef.collideConnected = false;
         Joint joint = world.createJoint(jointDef);
         joints.add(joint);
@@ -95,29 +93,42 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
     }
 
     /**
-     * Updates the object's physics state (NOT GAME LOGIC).
+     * Returns the name of the top sensor
      *
-     * We use this method to reset cooldowns.
+     * This is used by ContactListener
      *
-     * @param dt	Number of seconds since last animation frame
+     * @return the name of the ground sensor
      */
-    public void update(float dt) {
-
+    public static String getSensorName() {
+        return sensorName;
     }
 
-    /** TODO: turn on flames */
-    @Override
-    public void activated(World world){}
-
-    /** TODO: turn off flames */
-    @Override
-    public void deactivated(World world){}
-
-    @Override
-    public void draw(GameCanvas canvas){
-        if (activated){
-            super.draw(canvas);
+    public boolean activatePhysics(World world) {
+        if (!super.activatePhysics(world)) {
+            return false;
         }
+        if (!activated){
+            deactivated(world);
+        }
+        return true;
+    }
+
+    /** Turns on flames */
+    @Override
+    public void activated(World world){
+        flame.setActive(true);
+        flame.setPosition(flameBase.getX()+flameOffset.x, flameBase.getY()+flameOffset.y);
+        createJoints(world);
+    }
+
+    /** Turns off flames */
+    @Override
+    public void deactivated(World world){
+        flame.setActive(false);
+        for (Joint j : joints){
+            world.destroyJoint(j);
+        }
+        joints.clear();
     }
 
     @Override
@@ -133,4 +144,54 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
     public boolean getInitialActivation() { return initialActivation; }
 
     public static void setConstants(JsonValue constants) { objectConstants = constants; }
+
+    private class Flame extends BoxObstacle {
+
+        /** the shape of the hitbox that will kill the player */
+        private PolygonShape sensorShape;
+
+        public Flame(TextureRegion texture, Vector2 scale, Vector2 pos, float angle) {
+            super(texture.getRegionWidth()/scale.x, texture.getRegionHeight()/scale.y);
+            setAngle(angle);
+            setMass(0);
+            setName("flame");
+            setDrawScale(scale);
+            setTexture(texture);
+            setSensor(true);
+            setX(pos.x + flameOffset.x);
+            setY(pos.y + flameOffset.y);
+        }
+
+        /** creates sensor */
+        public boolean activatePhysics(World world) {
+            if (!super.activatePhysics(world)) {
+                return false;
+            }
+            FixtureDef sensorDef = new FixtureDef();
+            sensorDef.density = 0;
+            sensorDef.isSensor = true;
+            sensorShape = new PolygonShape();
+            sensorShape.set(objectConstants.get("sensor_shape").asFloatArray());
+            sensorDef.shape = sensorShape;
+
+            Fixture sensorFixture = body.createFixture( sensorDef );
+            sensorFixture.setUserData(getSensorName());
+            return true;
+        }
+
+        @Override
+        public void drawDebug(GameCanvas canvas) {
+            super.drawDebug(canvas);
+            canvas.drawPhysics(sensorShape,Color.RED,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
+        }
+
+        @Override
+        public void draw(GameCanvas canvas){
+            if (isActive()){
+                super.draw(canvas);
+            }
+        }
+
+    }
+
 }

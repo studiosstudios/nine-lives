@@ -172,10 +172,12 @@ public class LevelController {
         fontAssetMap = fMap;
         soundAssetMap = sMap;
         JSONconstants = constants;
+        level.setConstants(constants);
         this.levelJV = levelJV;
         displayFont = fMap.get("retro");
 
         //send the relevant assets to classes that need them
+        actionController.setVolume(JSONconstants.getFloat("volume", 0.5f));
         actionController.setAssets(sMap);
         level.setAssets(tMap);
     }
@@ -215,7 +217,6 @@ public class LevelController {
      */
     public void populateLevel(boolean ret, Cat prevCat) {
         level.populateLevel(textureRegionAssetMap, fontAssetMap, soundAssetMap, JSONconstants, levelJV, ret, prevCat);
-        volume = JSONconstants.getFloat("volume", 0.5f);
     }
 
     /**

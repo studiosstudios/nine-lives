@@ -39,12 +39,10 @@
 		{"pos" :  [7, 2]}
 	],
 	"flamethrowers" : [
-		{"pos" :  [24, 3.8], "angle" : 0, "active": true, "activatorID" : "button1"}
-	],
-	"lasers" : [
-		{"pos" :  [20, 12.5]}
+		{"pos" :  [24, 2], "angle" : 0, "active": false, "activatorID" : "button2"}
 	],
 	"checkpoints" : [{"pos" : [22, 2]}],
+	"lasers" : [{"pos" :  [27, 12], "angle" : 90}],
 	"goal" : {
 		"pos": [34.5, 13.5],
 		"density": 0.0,

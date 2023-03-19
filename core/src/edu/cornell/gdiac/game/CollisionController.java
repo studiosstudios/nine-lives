@@ -207,7 +207,21 @@ public class CollisionController implements ContactListener, ContactFilter {
     public void preSolve(Contact contact, Manifold oldManifold) {}
 
     /**Contact Filter method */
-    public boolean shouldCollide(Fixture fixtureA, Fixture fixtureB) {
+    public boolean shouldCollide(Fixture fix1, Fixture fix2) {
+        Body body1 = fix1.getBody();
+        Body body2 = fix2.getBody();
+
+        Object fd1 = fix1.getUserData();
+        Object fd2 = fix2.getUserData();
+
+        Object bd1 = body1.getUserData();
+        Object bd2 = body2.getUserData();
+
+        //flame does not turn on activators
+        if (fd1 instanceof Activator && bd2 instanceof Flamethrower.Flame ||
+                fd2 instanceof Activator && bd1 instanceof Flamethrower.Flame){
+            return false;
+        }
         return true;
     }
 }

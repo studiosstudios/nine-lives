@@ -290,16 +290,16 @@ public class Mob extends CapsuleObstacle {
             return false;
         }
 
-        FixtureDef sensorDef = new FixtureDef();
-        sensorDef.density = 0;
-        sensorDef.isSensor = true;
-        sensorShape = new PolygonShape();
-        // TODO: sensor shape
-//        sensorShape.set(new Vector2[0]);
-        sensorDef.shape = sensorShape;
-
-        Fixture sensorFixture = body.createFixture( sensorDef );
-        sensorFixture.setUserData(getSensorName());
+//        FixtureDef sensorDef = new FixtureDef();
+//        sensorDef.density = 0;
+//        sensorDef.isSensor = true;
+//        sensorShape = new PolygonShape();
+//        // TODO: sensor shape
+////        sensorShape.set(new Vector2[0]);
+//        sensorDef.shape = sensorShape;
+//
+//        Fixture sensorFixture = body.createFixture( sensorDef );
+//        sensorFixture.setUserData(getSensorName());
 
         // Ground Sensor
         // -------------

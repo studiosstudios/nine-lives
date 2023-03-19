@@ -300,14 +300,8 @@ public class GameCanvas {
 	 * weird scaling issues.
 	 */
 	 public void resize() {
-		// Resizing screws up the spriteBatch projection matrix
-		 System.out.println(getWidth() + " " + getHeight());
 		spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, getWidth(), getHeight());
-//		spriteBatch.setProjectionMatrix(camera.combined);
-//		 camera.position.set(STANDARD_WIDTH / 2, STANDARD_HEIGHT / 2, 0);
-//		 camera.update();
 		 extendView.update(getWidth(), getHeight(), true);
-//		 fitView.update(getWidth(), getHeight());
 	}
 	
 	/**

@@ -309,7 +309,6 @@ public class LoadingMode implements Screen {
 	 * @param height The new height in pixels
 	 */
 	public void resize(int width, int height) {
-//		System.out.println(playButt)
 		stage.getViewport().update(width, height, true);
 	}
 

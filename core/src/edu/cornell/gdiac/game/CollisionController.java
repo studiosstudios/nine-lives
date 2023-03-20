@@ -133,7 +133,6 @@ public class CollisionController implements ContactListener, ContactFilter {
                 if (fd2 instanceof Spikes) {
                     actionController.fixBodyToSpikes(db, (Spikes) fd2, contact.getWorldManifold().getPoints());
                     db.addHazard();
-                    System.out.println("touched spikes");
                 } else if (fd2 == Flamethrower.getSensorName()) {
                     db.setBurning(true);
                     db.addHazard();
@@ -199,7 +198,6 @@ public class CollisionController implements ContactListener, ContactFilter {
             }
             DeadBody db = (DeadBody) fd1;
             if (fd2 instanceof Spikes) {
-                System.out.println("stopped touched spikes");
                 db.removeHazard();
             } else if (fd2 == Flamethrower.getSensorName()) {
                 db.setBurning(false);

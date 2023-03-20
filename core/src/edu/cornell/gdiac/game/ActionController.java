@@ -123,8 +123,10 @@ public class ActionController {
             DeadBody body = level.getNextBody();
             if (body != null){
                 level.spawnDeadBody();
+                level.setBodySwitched(true);
                 cat.setPosition(body.getPosition());
                 cat.setLinearVelocity(body.getLinearVelocity());
+                cat.setFacingRight(body.isFacingRight());
                 body.markRemoved(true);
                 level.removeDeadBody(body);
             }
@@ -327,6 +329,9 @@ public class ActionController {
 
     private RayCastCallback LaserRayCastCallback = new RayCastCallback() {
         @Override
+        /**
+         * Gets closest raycasted fixture and stores collision point and the fixture itself
+         */
         public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
             if ( fraction < closestFraction ) {
                 closestFraction = fraction;

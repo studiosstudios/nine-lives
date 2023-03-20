@@ -98,6 +98,8 @@ public class Level {
 
     /** texture assets */
     private HashMap<String, TextureRegion> textureRegionAssetMap;
+
+    //region Spirit mode stuff
     /** if the player is in spirit mode */
     private boolean spiritMode;
     /** cache for efficiency */
@@ -107,6 +109,9 @@ public class Level {
     /** next dead body to switch into */
     private DeadBody nextDeadBody;
     private Vector2 spiritEndPos = new Vector2();
+    private Vector2 spiritStartPos = new Vector2();
+    private boolean bodySwitched;
+    //endregion
 
     /**
      * Returns the bounding rectangle for the physics world
@@ -325,7 +330,6 @@ public class Level {
         deadBodyArray = new Array<>();
         lasers = new Array<>();
         activationRelations = new HashMap<>();
-        spiritMode = false;
     }
 
     /**
@@ -489,6 +493,9 @@ public class Level {
         cat.setTexture(tMap.get("cat"));
         respawnPos = cat.getPosition();
         addObject(cat);
+
+        spiritMode = false;
+        bodySwitched = false;
     }
 
     public static void setConstants(JsonValue constants){
@@ -651,7 +658,7 @@ public class Level {
                 obj.draw(canvas);
             }
         }
-        canvas.drawFactoryLine(cat.getPosition(), spiritEndPos, 2, spiritLineColor, scale.x, scale.y);
+        canvas.drawFactoryLine(spiritStartPos, spiritEndPos, 2, spiritLineColor, scale.x, scale.y);
         for (DeadBody db : deadBodyArray){
             db.draw(canvas);
         }
@@ -720,6 +727,9 @@ public class Level {
      * @param next new spirit mode state of level
      */
     public void setSpiritMode(boolean next) {
+        if (next && !spiritMode){
+            spiritEndPos.set(cat.getPosition());
+        }
         spiritMode = next;
     }
 
@@ -728,19 +738,32 @@ public class Level {
      * @param dt Number of seconds since last animation frame
      */
     public void update(float dt){
-        if (spiritMode){
-            spiritModeTicks++;
-            spiritLineColor.set(1, 1, 1, spiritLineColor.a + (1-spiritLineColor.a)/20);
-            nextDeadBody = getNextBody();
-            if (nextDeadBody != null) {
-                spiritEndPos.add(nextDeadBody.getPosition().sub(spiritEndPos).scl(0.2f));
-            } else {
-                spiritEndPos.set(cat.getPosition());
+        if (bodySwitched) {
+            //fade out line if body was just switched
+            spiritLineColor.set(1, 1, 1, spiritLineColor.a - spiritLineColor.a / 5);
+            if (spiritLineColor.a < 0.01){
+                spiritLineColor.a = 0;
+                bodySwitched = false;
             }
         } else {
-            spiritModeTicks = 0;
-            spiritLineColor.set(1, 1, 1, spiritLineColor.a - spiritLineColor.a/5);
-            spiritEndPos.set(cat.getPosition());
+            spiritStartPos.set(cat.getPosition());
+            if (spiritMode) {
+                //extend line to target
+                spiritModeTicks++;
+                spiritLineColor.set(1, 1, 1, spiritLineColor.a + (1 - spiritLineColor.a) / 20);
+                nextDeadBody = getNextBody();
+                if (nextDeadBody != null) {
+                    spiritEndPos.add(nextDeadBody.getPosition().sub(spiritEndPos).scl(0.2f));
+                } else {
+                    spiritEndPos.set(cat.getPosition());
+                }
+            } else {
+                //fade out line if cancelled
+                spiritModeTicks = 0;
+                spiritLineColor.set(1, 1, 1, spiritLineColor.a - spiritLineColor.a / 5);
+            }
         }
     }
+
+    public void setBodySwitched(boolean bs) {bodySwitched = bs;}
 }

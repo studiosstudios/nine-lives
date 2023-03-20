@@ -9,7 +9,7 @@
 		"density": 1.0,
 		"friction": 0.0,
 		"maxspeed": 6.5,
-		"jump_force": 1.5,
+		"jump_force": 2.5,
 		"jump_damping": 0.8,
 		"dash_force": 1.5,
 		"sensor": {

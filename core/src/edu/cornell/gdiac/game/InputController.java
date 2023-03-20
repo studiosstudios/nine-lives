@@ -46,9 +46,9 @@ public class InputController {
 	/** Whether the reset button was pressed. */
 	private boolean resetPressed;
 	private boolean resetPrevious;
-	/** Whether the primary action button was pressed. */
-	private boolean primePressed;
-	private boolean primePrevious;
+	/** Whether the jump action button was pressed. */
+	private boolean jumpPressed;
+	private boolean jumpPrevious;
 	/** Whether the dash button was pressed. */
 	private boolean dashPressed;
 	/** Whether the meow button was pressed. */
@@ -144,9 +144,9 @@ public class InputController {
 	 *
 	 * @return true if the primary action button was pressed.
 	 */
-	public boolean didPrimary() {
-//		return primePressed && !primePrevious;
-		return primePressed;
+	public boolean didJump() {
+//		return jumpPressed && !jumpPrevious;
+		return jumpPressed;
 	}
 	/**
 	 * Returns true if the dash button was pressed.
@@ -296,7 +296,7 @@ public class InputController {
 	public void readInput(Rectangle bounds, Vector2 scale) {
 		// Copy state from last animation frame
 		// Helps us ignore buttons that are held down
-		primePrevious  = primePressed;
+		jumpPrevious  = jumpPressed;
 		dashPrevious = dashPressed;
 		secondPrevious = secondPressed;
 		resetPrevious  = resetPressed;
@@ -320,10 +320,9 @@ public class InputController {
 	 *
 	 */
 	private void readKeyboard(Rectangle bounds, Vector2 scale) {
-		// Give priority to gamepad results
 		resetPressed = (Gdx.input.isKeyPressed(Input.Keys.R));
 		debugPressed = (Gdx.input.isKeyPressed(Input.Keys.B));
-		primePressed = (Gdx.input.isKeyPressed(Input.Keys.UP));
+		jumpPressed = (Gdx.input.isKeyPressed(Input.Keys.SPACE));
 		secondPressed = (Gdx.input.isKeyPressed(Input.Keys.SPACE));
 		dashPressed = (Gdx.input.isKeyPressed(Input.Keys.D));
 		climbPressed = (Gdx.input.isKeyPressed(Input.Keys.A));

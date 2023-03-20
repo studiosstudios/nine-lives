@@ -30,6 +30,11 @@ import edu.cornell.gdiac.game.obstacle.*;
  * no other subclasses that we might loop through.
  */
 public class Cat extends CapsuleObstacle {
+    private enum State {
+        MOVING, JUMPING, CLIMBING, DASHING
+    }
+    private State state;
+
     /** The initializing data (to avoid magic numbers) */
     private final JsonValue data;
 
@@ -61,20 +66,20 @@ public class Cat extends CapsuleObstacle {
     /** Damping multiplier to slow down jump */
     private final float jumpDamping;
 
-    /** The current horizontal movement of the character */
-    private float   movement;
+
     /** The current vertical movement of the character */
     private float   verticalMovement;
-    /** Current jump movement of the character */
+    /** The current horizontal movement of the character */
     private float horizontalMovement;
+    /** Current jump movement of the character */
     private float   jumpMovement;
+
+    /** Whether the jump key is pressed*/
+    private boolean jumpPressed;
     /** Which direction is the character facing */
     private boolean faceRight;
     /** Whether we are actively jumping */
     private boolean isMeowing;
-    private boolean isJumping;
-    /** Whether we stopped jumping in air */
-    private boolean stoppedJumping;
     /** Whether our feet are on the ground */
     private boolean isGrounded;
 
@@ -87,54 +92,62 @@ public class Cat extends CapsuleObstacle {
     private Texture sit_texture;
     private boolean jump_animated;
 
+    private boolean climbingPressed;
+
+    private boolean dashPressed;
+
+
     /** List of shapes corresponding to the sensors attached to this body */
     private Array<PolygonShape> sensorShapes;
 
     /** Cache for internal force calculations */
     private final Vector2 forceCache = new Vector2();
 
+    private int dashTimer = 0;
+    private final Vector2 dashCache = new Vector2();
 
-    /**
-     * Returns left/right movement of this character.
-     *
-     * This is the result of input times cat force.
-     *
-     * @return left/right movement of this character.
-     */
-    public float getMovement() {
-        return movement;
-    }
 
-    /**
-     * Sets left/right movement of this character.
-     *
-     * This is the result of input times cat force.
-     *
-     * @param value left/right movement of this character.
+    /*
+        MOVEMENT SETTERS
      */
-    public void setMovement(float value) {
-        movement = value;
-        // Change facing if appropriate
-        if (movement < 0) {
+
+    // NORMAL MOVEMENT
+    public void setHorizontalMovement(float value) {
+        horizontalMovement = value * getForce();
+        if (horizontalMovement < 0) {
             faceRight = false;
-        } else if (movement > 0) {
+        } else if (horizontalMovement > 0) {
             faceRight = true;
         }
     }
 
+    // JUMPING MOVEMENT
     /**
-     * Returns up/down movement of this character.
+     * Sets whether the jump key is pressed
      *
-     * This is the result of input times cat force.
-     *
-     * @return up/down movement of this character.
+     * @param value whether the jump key is pressed
      */
-    public float getVerticalMovement() {
-        return verticalMovement;
+    public void setJumpPressed(boolean value) {
+        jumpPressed = value;
+//        if (isJumping) {
+//            jumpMovement *= jumpDamping;
+//        }
+//        if (!isJumping && !isGrounded()){
+//            stoppedJumping = true;
+//        }
     }
-    public float getHorizontalMovement() {
-        return horizontalMovement;
+    public void setMeowing(boolean value){ isMeowing = value;}
+
+    /**
+     * Returns true if the cat is actively jumping.
+     *
+     * @return true if the cat is actively jumping.
+     */
+    public boolean isJumping() {
+        return state == State.JUMPING;
     }
+
+    /////
     /**
      * Sets up/down movement of this character.
      *
@@ -143,46 +156,19 @@ public class Cat extends CapsuleObstacle {
      * @param value up/down movement of this character.
      */
     public void setVerticalMovement(float value) {
-        verticalMovement = value;
-    }
-    public void setHorizontalMovement(float value) {
-        horizontalMovement = value;
-    }
-    public void setDashing(boolean value){ isDashing = value; }
-    public void setMeowing(boolean value){ isMeowing = value;}
-
-    public boolean isDashing(){
-        return isDashing;
-    }
-    /**
-     * Returns true if the cat is actively jumping.
-     *
-     * @return true if the cat is actively jumping.
-     */
-    public boolean isJumping() {
-        return isJumping;
+        verticalMovement = value * getForce();
     }
 
-    /**
-     * Sets whether the cat is actively jumping.
-     *
-     * @param value whether the cat is actively jumping.
-     */
-    public void setJumping(boolean value) {
-        isJumping = value;
-        if (isJumping) {
-            jumpMovement *= jumpDamping;
-        }
-        if (!isJumping && !isGrounded()){
-            stoppedJumping = true;
-        }
+    public void setDashPressed(boolean value) {
+        dashPressed = value;
     }
+
+
 
     /**
      * Sets whether the cat is in contact with a wall
      */
     public void incrementWalled() {
-//        System.out.println("Walled: " + value);
         wallCount++;
     }
 
@@ -206,14 +192,19 @@ public class Cat extends CapsuleObstacle {
      */
     public void setClimbing(boolean value) {
         if (value && !isClimbing) {
-            System.out.println("Started climbing");
             body.setGravityScale(0);
         }
         else if (!value && isClimbing) {
-            System.out.println("Stopped climbing");
-            body.setGravityScale(1);
+            body.setGravityScale(2f);
         }
         isClimbing = value;
+    }
+
+    /**
+     *
+     */
+    public void setClimbingPressed(boolean value) {
+        climbingPressed = value;
     }
 
 
@@ -233,13 +224,14 @@ public class Cat extends CapsuleObstacle {
      */
     public void setGrounded(boolean value) {
         isGrounded = value;
+        // Cat has touched the ground. Reset relevant abilities.
         if (isGrounded) {
             canDash = true;
+            dashTimer = 0;
             jump_animated = false;
             animationTime = 0;
             animationTime2 = 0;
             jumpMovement = jump_force;
-            stoppedJumping = false;
         }
     }
 
@@ -275,6 +267,16 @@ public class Cat extends CapsuleObstacle {
     }
 
     /**
+     * Whether the cat is currently climbing
+     * @return Whether the cat is currently climbing
+     */
+    public boolean getIsClimbing() { return isClimbing; }
+
+    /*
+        PHYSICAL GETTERS
+     */
+
+    /**
      * Returns the name of the ground sensor
      *
      * This is used by ContactListener
@@ -296,11 +298,6 @@ public class Cat extends CapsuleObstacle {
         return sideSensorName;
     }
 
-    /**
-     * Whether the cat is currently climbing
-     * @return Whether the cat is currently climbing
-     */
-    public boolean getIsClimbing() { return isClimbing; }
 
     /**
      * Returns true if this character is facing right
@@ -368,15 +365,16 @@ public class Cat extends CapsuleObstacle {
         animationTime = 0f;
 
         // Gameplay attributes
+        state = State.MOVING;
+        setGravityScale(2f);
         isGrounded = false;
         canDash = true;
-        isJumping = false;
+        jumpPressed = false;
         isMeowing = false;
         if(ret)
             faceRight = false;
         else
             faceRight = true;
-        stoppedJumping = false;
         setName("cat");
     }
     /**
@@ -448,6 +446,73 @@ public class Cat extends CapsuleObstacle {
         return sensorFixture;
     }
 
+    /**
+     * Handles STATE of the cat
+     * All STATE transitions should be contained here
+     */
+    public void updateState() {
+        switch (state) {
+            case MOVING:
+                // MOVING -> JUMPING
+                if (isGrounded && jumpPressed) {
+                    state = State.JUMPING;
+                    return;
+                }
+                // MOVING -> CLIMBING
+                if (isWalled() && climbingPressed) {
+                    state = State.CLIMBING;
+                    setGravityScale(0);
+                    return;
+                }
+                // MOVING -> DASHING
+                if (dashTimer == 0 && dashPressed) {
+                    state = State.DASHING;
+                    setGravityScale(0);
+                    calculateDashVector();
+                    return;
+                }
+                break;
+            case JUMPING:
+                // JUMPING -> MOVING
+                if (!jumpPressed) {
+                    state = State.MOVING;
+                    return;
+                }
+                // JUMPING -> CLIMBING
+                if (isWalled() && climbingPressed) {
+                    state = State.CLIMBING;
+                    setGravityScale(0);
+                    return;
+                }
+                // JUMPING -> DASHING
+                if (dashTimer == 0 && dashPressed) {
+                    state = State.DASHING;
+                    setGravityScale(0);
+                    calculateDashVector();
+                    return;
+                }
+                break;
+            case CLIMBING:
+                // CLIMBING -> MOVING
+                if (!isWalled() || !climbingPressed) {
+                    state = State.MOVING;
+                    setGravityScale(2f);
+                    return;
+                }
+                break;
+            case DASHING:
+                // DASHING -> MOVING
+                dashTimer++;
+                if (dashTimer >= 10) {
+                    state = State.MOVING;
+                    setVX(0);
+                    setVY(0);
+                    setGravityScale(2f);
+                    return;
+                }
+                break;
+        }
+    }
 
     /**
      * Applies the force to the body of this cat
@@ -458,56 +523,103 @@ public class Cat extends CapsuleObstacle {
         if (!isActive()) {
             return;
         }
-        // Don't want to be moving. Damp out player motion
-        if (getMovement() == 0f) {
-            forceCache.set(-getDamping()*getVX(),0);
-            body.applyForce(forceCache,getPosition(),true);
-        }
-        if (getVerticalMovement() == 0f && getIsClimbing()) {
-            forceCache.set(0,-getDamping()*getVY());
-            body.applyForce(forceCache,getPosition(),true);
-        }
 
-        // Velocity too high, clamp it
-        if (Math.abs(getVX()) >= getMaxSpeed()) {
-            setVX(Math.signum(getMovement())*getMaxSpeed());
+        // RUNNING
+        switch (state) {
+            case JUMPING:
+                jumpMovement *= jumpDamping;
+                forceCache.set(0, jumpMovement);
+                body.applyLinearImpulse(forceCache,getPosition(),true);
+            case MOVING:
+                setVX(horizontalMovement * 0.25f);
+                break;
+            case CLIMBING:
+                setVX(0);
+                setVY(verticalMovement / 3f);
+                break;
+            case DASHING:
+                setVX(dashCache.x);
+                setVY(dashCache.y);
+                break;
+        }
+//        float speedTarget = getMovement() * getMaxSpeed();
+//        float speedDif    = speedTarget - getVX();
+//        float accelRate   = 5f;
+//        float movement    = speedDif * accelRate;
+//        forceCache.set(movement, 0);
+//        body.applyForce(forceCache, getPosition(), true);
+//        setVX(getMovement() * getMaxSpeed());
+
+        // DAMPENING
+//        if (getMovement() == 0f) {
+//            forceCache.set(-getDamping()*getVX(),0);
+//            body.applyForce(forceCache,getPosition(),true);
+//        }
+//        if (getVerticalMovement() == 0f && getIsClimbing()) {
+//            forceCache.set(0,-getDamping()*getVY());
+//            body.applyForce(forceCache,getPosition(),true);
+//        }
+//
+//        // Velocity too high, clamp it
+//        if (Math.abs(getVX()) >= getMaxSpeed()) {
+//            setVX(Math.signum(getMovement())*getMaxSpeed());
+//        } else {
+//            forceCache.set(getMovement() * 0.5f,0);
+//            body.applyForce(forceCache,getPosition(),true);
+//        }
+//
+//
+//        // JUMP
+//        if (isJumping() && !stoppedJumping) {
+//            forceCache.set(0, jumpMovement);
+//            body.applyLinearImpulse(forceCache,getPosition(),true);
+//        }
+//
+//        // DASH
+//        if (isDashing() && canDash){
+//            float jump = 0;
+//            if (isJumping()){
+//                jump = (dash_force);
+//            }
+//            if(movement > 0){
+//                forceCache.set((-dash_force),jump);
+//            }
+//            else if(movement < 0){
+//                forceCache.set((dash_force),jump);
+//            }
+//            else{
+//                forceCache.set(0,jump);
+//            }
+//            setVY(Math.signum(getVerticalMovement())*(getMaxSpeed()));
+//            setVX(Math.signum(getHorizontalMovement())*(getMaxSpeed()*4f));
+////            body.applyForce(forceCache,getPosition(),true);
+//            body.setGravityScale(0);
+//            canDash = false;
+//        }
+//
+//        // CLIMB
+//        if (getIsClimbing()) {
+//            setVY(Math.signum(getVerticalMovement())*getMaxSpeed());
+////            if (Math.abs(getVY()) >= getMaxSpeed()) {
+////
+////            } else {
+////                forceCache.set(0, getVerticalMovement());
+////                body.applyForce(forceCache,getPosition(),true);
+////            }
+//        }
+
+
+
+    }
+
+    private void calculateDashVector() {
+        float hMove = horizontalMovement / 2f;
+        float vMove = verticalMovement / 2f;
+        if (horizontalMovement != 0 && verticalMovement != 0) {
+            dashCache.set(hMove / (float)Math.sqrt(2), vMove / (float)Math.sqrt(2));
         } else {
-            forceCache.set(getMovement() * 0.5f,0);
-            body.applyForce(forceCache,getPosition(),true);
+            dashCache.set(hMove, vMove);
         }
-        // Jump!
-        if (isJumping() && !stoppedJumping) {
-            forceCache.set(0, jumpMovement);
-            body.applyLinearImpulse(forceCache,getPosition(),true);
-        }
-        if (isDashing() && canDash){
-            float jump = 0;
-            if (isJumping()){
-                jump = (dash_force);
-            }
-            if(movement > 0){
-                forceCache.set((-dash_force),jump);
-            }
-            else if(movement < 0){
-                forceCache.set((dash_force),jump);
-            }
-            else{
-                forceCache.set(0,jump);
-            }
-            setVY(Math.signum(getVerticalMovement())*(getMaxSpeed()*1.2f));
-            setVX(Math.signum(getHorizontalMovement())*(getMaxSpeed()*1.2f));
-            body.applyForce(forceCache,getPosition(),true);
-            canDash = false;
-        }
-        if (getIsClimbing()) {
-            if (Math.abs(getVY()) >= getMaxSpeed()) {
-                setVY(Math.signum(getVerticalMovement())*getMaxSpeed());
-            } else {
-                forceCache.set(0, getVerticalMovement());
-                body.applyForce(forceCache,getPosition(),true);
-            }
-        }
-
     }
 
     /**
@@ -518,13 +630,6 @@ public class Cat extends CapsuleObstacle {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt) {
-        // Apply cooldowns
-//        if (isJumping()) {
-//            jumpCooldown = jumpLimit;
-//        } else {
-//            jumpCooldown = Math.max(0, jumpCooldown - 1);
-//        }
-
         super.update(dt);
     }
 
@@ -541,14 +646,14 @@ public class Cat extends CapsuleObstacle {
         } else {
             x = getX() * drawScale.x + 40;
         }
-        if(isJumping && !jump_animated){
+        if(state == State.JUMPING && !jump_animated){
             animation.setPlayMode(Animation.PlayMode.REVERSED);
             animationTime += Gdx.graphics.getDeltaTime();
             TextureRegion currentFrame = animation.getKeyFrame(animationTime);
             canvas.draw(currentFrame,Color.WHITE, origin.x, origin.y,x-20,getY()*drawScale.y-25, getAngle(),effect,1.0f);
         }
-        else if((isMeowing && !isJumping) || animationTime2 != 0){
-            animation2.setPlayMode(Animation.PlayMode.REVERSED);
+        else if((isMeowing && !(state == State.JUMPING)) || animationTime2 != 0){
+            animation2.setPlayMode(Animation.PlayMode.NORMAL);
             animationTime2 += Gdx.graphics.getDeltaTime();
             TextureRegion currentFrame2 = animation2.getKeyFrame(animationTime2);
             canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x-5,getY()*drawScale.y-20, getAngle(),effect,1.0f);
@@ -557,23 +662,27 @@ public class Cat extends CapsuleObstacle {
                 isMeowing = false;
             }
         }
-        else if((!isJumping && horizontalMovement != 0)){
+        else if(!(state == State.JUMPING)&& horizontalMovement != 0){
             animation3.setPlayMode(Animation.PlayMode.LOOP);
             animationTime3 += Gdx.graphics.getDeltaTime();
             TextureRegion currentFrame3 = animation3.getKeyFrame(animationTime3);
             canvas.draw(currentFrame3,Color.WHITE, origin.x, origin.y,x-10,getY()*drawScale.y-28, getAngle(),effect,1.0f);
         }
-        else {
-            if (isJumping) {
+        else{
+            if ((state == State.JUMPING)) {
                 canvas.draw(jumping_texture, Color.WHITE, origin.x-10, origin.y, x, getY() * drawScale.y - 15, getAngle(), effect, 1.0f);
             }
             else if (horizontalMovement != 0 || verticalMovement != 0){
+            if (state == State.JUMPING) {
+                canvas.draw(jumping_texture, Color.WHITE, origin.x, origin.y, x, getY() * drawScale.y - 15, getAngle(), effect, 1.0f);
+            } else if (horizontalMovement != 0 || verticalMovement != 0){
                 canvas.draw(normal_texture, Color.WHITE, origin.x, origin.y, x, getY() * drawScale.y - 15, getAngle(), effect, 1.0f);
             }
             else{
                 canvas.draw(sit_texture, Color.WHITE, origin.x, origin.y, x, getY() * drawScale.y - 20, getAngle(), effect, 1.0f);
             }
         }
+    }
     }
 
     /**
@@ -588,6 +697,13 @@ public class Cat extends CapsuleObstacle {
         for (PolygonShape shape : sensorShapes) {
             canvas.drawPhysics(shape,Color.RED,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
         }
+        debugPrint();
 
+    }
+
+    public void debugPrint() {
+        System.out.println("STATE: "+state);
+        System.out.println("GROUNDED: "+isGrounded);
+        System.out.println("DASH TIMER: "+dashTimer);
     }
 }

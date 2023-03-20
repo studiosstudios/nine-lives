@@ -177,7 +177,7 @@ public class LevelController {
         displayFont = fMap.get("retro");
 
         //send the relevant assets to classes that need them
-        actionController.setVolume(JSONconstants.getFloat("volume", 0.5f));
+        actionController.setVolume(JSONconstants.get("defaults").getFloat("volume"));
         actionController.setAssets(sMap);
         level.setAssets(tMap);
     }

@@ -27,7 +27,7 @@ public class DeadBody extends BoxObstacle {
     private static JsonValue objectConstants;
     private int burnTicks;
     private boolean burning;
-    public static final int TOTAL_BURN_TICKS = 900;
+    public static final int TOTAL_BURN_TICKS = 300;
 
     /**
      * The amount to slow the model down

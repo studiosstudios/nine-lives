@@ -423,7 +423,8 @@ public class Level {
             obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
             obj.setDrawScale(scale);
             obj.setTexture(tMap.get("steel"));
-            obj.setName(wname+ii);
+//            obj.setName(wname+ii);
+            obj.setName(wname);
             addObject(obj);
         }
 

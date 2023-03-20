@@ -80,7 +80,9 @@ public abstract class Activator extends PolygonObstacle {
         if (!super.activatePhysics(world)) {
             return false;
         }
-
+        for (Fixture fd : body.getFixtureList()){
+            fd.setUserData(this);
+        }
         //create top sensor
         FixtureDef sensorDef = new FixtureDef();
         sensorDef.density = 0;

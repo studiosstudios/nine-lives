@@ -1,11 +1,15 @@
 {
 	"spikes": [{"pos" : [1, 4], "angle": 180, "active": false, "activatorID": "switch1"},
 		{"pos" : [28, 15], "angle": 0, "active": true, "activatorID": "button2"},
-		{"pos" : [28, 16], "angle": 180, "active": true, "activatorID": "button2"}],
+		{"pos" : [28, 16], "angle": 180, "active": true, "activatorID": "button2"},
+		{"pos" : [29, 15], "angle": 0, "active": true, "activatorID": "button2"},
+		{"pos" : [29, 16], "angle": 180, "active": true, "activatorID": "button2"},
+		{"pos" : [30, 15], "angle": 0, "active": true, "activatorID": "button2"},
+		{"pos" : [30, 16], "angle": 180, "active": true, "activatorID": "button2"}],
 	"activators": [
-		{"pos": [2, 12.8], "type": "switch", "id" : "switch1"},
+		{"pos": [1, 13], "type": "switch", "id" : "switch1"},
 		{"pos": [1, 2], "type": "button", "id" : "button1"},
-		{"pos": [27, 1.8], "type": "switch", "id" : "switch2"},
+		{"pos": [27, 2], "type": "switch", "id" : "switch2"},
 		{"pos": [11, 9], "type": "button", "id" : "button2"}],
 	"boxes" : [],
 	"flamethrowers" : [],
@@ -42,7 +46,7 @@
 		"restitution": 0.0
 	},
 	"cat" : {
-		"pos": [9, 15],
+		"pos": [1, 8],
 		"ret_pos": [31.5, 2.0],
 		"shrink": [0.7, 0.95],
 		"force": 30.0,
@@ -64,7 +68,7 @@
 	},
 	"walls": 		[
 						[0.0, 2.0, 0.0, 17.0, -1.0, 17.0, -1.0, 2], //invisible left side
-						[28.0, 12.0, 32.0, 12.0, 32.0, 15.0, 28.0, 15.0], //left
+						[28, 12, 31, 12, 31, 5, 32, 5,32,15, 28, 15], //left
 						[0, 17.0, 32.0, 17.0, 32.0, 18.0, 0, 18.0], //top
 						[7, 2, 7, 15, 10, 15, 10, 14, 8, 14, 8, 2], //center wall with checkpoint on top
 						[12, 14, 18, 14, 18, 15, 12, 15],

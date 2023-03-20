@@ -94,7 +94,8 @@ public class CollisionController implements ContactListener, ContactFilter {
                 }
 
                 // See if we are touching a wall
-                if (level.getCat().getSideSensorName().equals(fd1) && level.getCat() != bd2) {
+                if (level.getCat().getSideSensorName().equals(fd1) && level.getCat() != bd2
+                    && bd2.getName().equals("wall")) {
                     level.getCat().incrementWalled();
                 }
 
@@ -189,8 +190,8 @@ public class CollisionController implements ContactListener, ContactFilter {
         }
 
         // Not handling case where there may be multiple walls at once
-        if ((level.getCat().getSideSensorName().equals(fd2) && level.getCat() != bd1) ||
-                (level.getCat().getSideSensorName().equals(fd1) && level.getCat() != bd2)) {
+        if ((level.getCat().getSideSensorName().equals(fd2) && level.getCat() != bd1 && ((Obstacle)body1.getUserData()).getName().equals("wall")) ||
+                (level.getCat().getSideSensorName().equals(fd1) && level.getCat() != bd2) && ((Obstacle)body2.getUserData()).getName().equals("wall")) {
             level.getCat().decrementWalled();
         }
 

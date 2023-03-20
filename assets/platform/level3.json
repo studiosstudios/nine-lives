@@ -28,6 +28,7 @@
 	"activators": [],
 	"boxes" : [],
 	"flamethrowers" : [],
+	"mobs": [],
 	"lasers" : [{
 		"pos": [6, 17], "angle": 180
 	}],

@@ -9,10 +9,10 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.game.object.*;
 
-import java.lang.reflect.Array;
 import java.util.HashMap;
 
 public class ActionController {
@@ -36,6 +36,7 @@ public class ActionController {
     private long meowId = -1;
     /** The level */
     private Level level;
+    private Array<AIController> mobControllers;
 
     /** fields needed for raycasting */
     private Vector2 rayCastPoint = new Vector2();
@@ -54,6 +55,7 @@ public class ActionController {
         this.bounds = bounds;
         this.scale = scale;
         this.volume = volume;
+        mobControllers = new Array<>();
     }
 
     /** sets the volume */
@@ -66,6 +68,12 @@ public class ActionController {
      */
     public void setLevel(Level level){
         this.level = level;
+    }
+
+    public void setControllers(Level level) {
+        for (Mob mob : level.getMobArray()) {
+            mobControllers.add(new AIController(level, mob, mob.isAggressive()));
+        }
     }
 
     /**
@@ -99,6 +107,7 @@ public class ActionController {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt){
+
         //Raycast lasers
         for (Laser l : level.getLasers()){
             if (l.getActivated()) {
@@ -114,6 +123,13 @@ public class ActionController {
                     s.updateActivated(a.isActive(), level.getWorld());
                 }
             }
+        }
+
+        // Mob control:
+        for (AIController mobControl : mobControllers) {
+            Mob mob = mobControl.getMob();
+            mob.setPosition(mob.getX() + mobControl.getAction(), mob.getY());
+            mob.applyForce();
         }
 
         Cat cat = level.getCat();

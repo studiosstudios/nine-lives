@@ -100,11 +100,11 @@ public class LevelController {
         sensorFixtures = new ObjectSet<>();
 
         level = new Level(world, bounds, scale, MAX_NUM_LIVES);
-
         actionController = new ActionController(bounds, scale, volume);
+
         collisionController = new CollisionController(actionController);
-        actionController.setLevel(level);
         collisionController.setLevel(level);
+        actionController.setLevel(level);
     }
 
     /**
@@ -128,8 +128,8 @@ public class LevelController {
      */
     public void setCanvas(GameCanvas canvas) {
         this.canvas = canvas;
-        this.scale.x = canvas.getWidth()/bounds.getWidth();
-        this.scale.y = canvas.getHeight()/bounds.getHeight();
+        this.scale.x = 1024f/bounds.getWidth();
+        this.scale.y = 576f/bounds.getHeight();
     }
 
     /**
@@ -197,6 +197,7 @@ public class LevelController {
         world.setContactFilter(collisionController);
 
         collisionController.setReturn(false);
+        actionController.setControllers(level);
 
         boolean tempRet = isRet();
         setRet(false);
@@ -218,6 +219,7 @@ public class LevelController {
      */
     public void populateLevel(boolean ret, Cat prevCat) {
         level.populateLevel(textureRegionAssetMap, fontAssetMap, soundAssetMap, JSONconstants, levelJV, ret, prevCat);
+        actionController.setControllers(level);
     }
 
     /**

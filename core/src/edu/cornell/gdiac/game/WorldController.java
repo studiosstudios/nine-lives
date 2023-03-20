@@ -208,8 +208,10 @@ public class WorldController implements Screen {
 		soundAssetMap = new HashMap<>();
 		fontAssetMap = new HashMap<>();
 
-		String[] names = {"cat", "barrier", "rope", "spikes", "button", "flame", "flamethrower", "laser", "laserBeam",
-				"deadCat", "checkpoint", "checkpointActive", "background", "steel", "goal","flame_anim","button_anim"};
+		String[] names = {"cat", "jumpingCat","barrier", "rope", "spikes", "button", "flame", "flamethrower", "laser", "laserBeam",
+				"deadCat", "checkpoint", "checkpointActive", "roboMob", "background", "steel", "goal","flame_anim","button_anim", "jump_anim",
+		"meow_anim","sit"};
+
 		for (String n : names){
 			textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
 		}

@@ -105,7 +105,6 @@ public class CollisionController implements ContactListener, ContactFilter {
                 if (bd2 == level.getRetDoor()) {
                     setReturn(true);
                 }
-
                 if (fd2 instanceof Spikes) {
                     actionController.die();
                 }
@@ -114,6 +113,10 @@ public class CollisionController implements ContactListener, ContactFilter {
                 }
                 if (fd2 instanceof Checkpoint){
                     level.updateCheckpoints(((Checkpoint) fd2));
+                }
+                if (bd2 instanceof Mob){
+//                    System.out.println("hit a mob");
+                    actionController.die();
                 }
             }
 
@@ -137,6 +140,13 @@ public class CollisionController implements ContactListener, ContactFilter {
                     db.setBurning(true);
                     db.addHazard();
                 }
+            }
+
+            // Mob changes direction when hits a wall
+            if (bd1 instanceof Mob) {
+                ((Mob) bd1).setFacingRight(!((Mob) bd1).isFacingRight());
+            } else if (bd2 instanceof Mob) {
+                ((Mob) bd2).setFacingRight(!((Mob) bd2).isFacingRight());
             }
 
             // Check for activator
@@ -203,6 +213,13 @@ public class CollisionController implements ContactListener, ContactFilter {
                 db.setBurning(false);
                 db.removeHazard();
             }
+        }
+
+        // Check mobs
+        if (fd1 instanceof Mob) {
+            ((Mob) fd1).setFacingRight(!((Mob) fd1).isFacingRight());
+        } else if (fd2 instanceof Mob) {
+            ((Mob) fd1).setFacingRight(!((Mob) fd1).isFacingRight());
         }
 
         // Check for button

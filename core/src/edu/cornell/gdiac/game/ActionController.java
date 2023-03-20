@@ -160,6 +160,7 @@ public class ActionController {
             }
         }
         if (InputController.getInstance().didMeow()){
+            cat.setMeowing(true);
             meowId = playSound(soundAssetMap.get("meow"), meowId, volume);
         }
 

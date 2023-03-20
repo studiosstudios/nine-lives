@@ -1,7 +1,7 @@
 {
 	//TODO: factor constants out of level JSON and into constants JSON
 	"cat" : {
-		"pos": [0.5, 2.0],
+		"pos": [0.5, 15],
 		"ret_pos": [31.5,13],
 		"shrink": [0.7, 0.95],
 		"force": 30.0,
@@ -52,15 +52,15 @@
 		"restitution": 0.0
 	},
 	"ret_goal" : {
-		"pos": [-2.5, 3.5],
+		"pos": [-2.5, 15.5],
 		"density": 0.0,
 		"friction": 0.0,
 		"restitution": 0.0
 	},
 	"walls": 		[
 //						[0.0, 2.0, 0.0, 5.0, -1.0, 3.5], //invisible entrance wall
-			 			[32.0, 18.0, 32.0, 17.0,  2.0, 17.0, //top-left
-			 			  2.0,  7.0,  0.0,  7.0,  0.0, 18.0],
+			 			[32.0, 18.0, 32.0, 17.0,  0, 17.0,0,18],
+						[0, 15, 4, 15, 4, 2, 0, 2],
 						[30.0, 2.0, 32.0, 2.0, 32.0, 13.0, 30.0, 13.0] //right
 //						[32.0, 13.0, 33.0, 13.0, 33.0, 17.0, 32.0, 17.0]//invisible exit wall (don't want to loop this time around)
 			 		],

@@ -34,7 +34,7 @@
 	"mirrors": [],
 	//TODO: factor constants out of level JSON and into constants JSON
 	"goal" : {
-		"pos": [34.5, 13.5],
+		"pos": [34.5, 14.5],
 		"density": 0.0,
 		"friction": 0.0,
 		"restitution": 0.0
@@ -47,7 +47,7 @@
 	},
 	"cat" : {
 		"pos": [1, 8],
-		"ret_pos": [31.5, 2.0],
+		"ret_pos": [31.5, 15.0],
 		"shrink": [0.7, 0.95],
 		"force": 30.0,
 		"damping": 30.0,

@@ -1,7 +1,7 @@
 {
 	"spikes": [{"pos" : [1, 4], "angle": 180, "active": false, "activatorID": "switch1"}],
 	"activators": [
-		{"pos": [1, 13], "type": "switch", "id" : "switch1"},
+		{"pos": [2, 12.8], "type": "switch", "id" : "switch1"},
 		{"pos": [1, 2], "type": "button", "id" : "button1"} ],
 	"boxes" : [],
 	"flamethrowers" : [],
@@ -49,7 +49,7 @@
 						[30.0, 7.0, 32.0, 7.0, 32.0, 17.0, 30.0, 17.0], //left
 						[0, 17.0, 32.0, 17.0, 32.0, 18.0, 0, 18.0], //top
 						[7, 2, 7, 15, 10, 15, 10, 14, 8, 14, 8, 2], //center wall with checkpoint on top
-						[5, 14, 5, 17, 6, 17, 6, 14] 
+						[5, 14, 5, 17, 6, 17, 6, 14]
 			 		],
 	"platforms":	[
 						[0.0, 2.0, 35.0, 2.0, 35.0, 0.0, 0.0, 0.0], //main platform

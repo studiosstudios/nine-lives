@@ -650,7 +650,7 @@ public class Cat extends CapsuleObstacle {
             animation.setPlayMode(Animation.PlayMode.REVERSED);
             animationTime += Gdx.graphics.getDeltaTime();
             TextureRegion currentFrame = animation.getKeyFrame(animationTime);
-            canvas.draw(currentFrame,Color.WHITE, origin.x, origin.y,x-20,getY()*drawScale.y-25, getAngle(),effect,1.0f);
+            canvas.draw(currentFrame,Color.WHITE, origin.x, origin.y,x-10,getY()*drawScale.y-25, getAngle(),effect,1.0f);
         }
         else if((isMeowing && !(state == State.JUMPING)) || animationTime2 != 0){
             animation2.setPlayMode(Animation.PlayMode.REVERSED);
@@ -673,7 +673,7 @@ public class Cat extends CapsuleObstacle {
         }
         else{
             if ((state == State.JUMPING)) {
-                canvas.draw(jumping_texture, Color.WHITE, origin.x-10, origin.y, x, getY() * drawScale.y - 15, getAngle(), effect, 1.0f);
+                canvas.draw(jumping_texture, Color.WHITE, origin.x, origin.y, x+20, getY() * drawScale.y - 15, getAngle(), effect, 1.0f);
             }
             else if (horizontalMovement != 0 || verticalMovement != 0){
             if (state == State.JUMPING) {

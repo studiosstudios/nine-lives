@@ -118,7 +118,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                     level.updateCheckpoints(((Checkpoint) fd2));
                 }
                 if (bd2 instanceof Mob){
-                    System.out.println("hit a mob");
+//                    System.out.println("hit a mob");
                     actionController.die();
                 }
             }

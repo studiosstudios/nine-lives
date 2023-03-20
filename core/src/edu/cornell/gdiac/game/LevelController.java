@@ -100,10 +100,10 @@ public class LevelController {
         sensorFixtures = new ObjectSet<>();
 
         level = new Level(world, bounds, scale, MAX_NUM_LIVES);
+        actionController = new ActionController(bounds, scale, volume);
 
         collisionController = new CollisionController(actionController);
         collisionController.setLevel(level);
-        actionController = new ActionController(bounds, scale, volume);
         actionController.setLevel(level);
     }
 

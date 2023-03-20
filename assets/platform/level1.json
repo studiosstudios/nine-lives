@@ -8,7 +8,7 @@
 	"lasers" : [{"pos" :  [6, 16], "angle" : 180, "activatorID": "button1"}],
 	"checkpoints" : [{"pos" : [9, 15]}],
 	"lasers" : [],
-	"mobs" : [],
+	"mobs" : [{"pos" : [7, 15], "facingRight":  true, "aggressive":  true}],
 	"mirrors": [],
 	//TODO: factor constants out of level JSON and into constants JSON
 	"goal" : {
@@ -48,7 +48,10 @@
 						[0.0, 2.0, 0.0, 17.0, -1.0, 17.0, -1.0, 2], //invisible left side
 						[30.0, 7.0, 32.0, 7.0, 32.0, 17.0, 30.0, 17.0], //left
 						[0, 17.0, 32.0, 17.0, 32.0, 18.0, 0, 18.0], //top
-						[7, 2, 7, 15, 10, 15, 10, 14, 8, 14, 8, 2], //center wall with checkpoint on top
+//						[7, 2, 7, 15, 10, 15, 10, 14, 8, 14, 8, 2], //center wall with checkpoint on top
+						[7, 2, 7, 14, 8, 14, 8, 2], //center wall with checkpoint on top
+						[7, 14, 10, 14, 10, 15, 7, 15],
+
 						[5, 14, 5, 17, 6, 17, 6, 14]
 			 		],
 	"platforms":	[

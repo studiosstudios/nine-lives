@@ -144,9 +144,9 @@ public class CollisionController implements ContactListener, ContactFilter {
             }
 
             // Mob changes direction when hits a wall
-            if (bd1 instanceof Mob) {
+            if (bd1 instanceof Mob && !(fd2 instanceof Activator) && !(fd2 instanceof Checkpoint)) {
                 ((Mob) bd1).setFacingRight(!((Mob) bd1).isFacingRight());
-            } else if (bd2 instanceof Mob) {
+            } else if (bd2 instanceof Mob && !(fd1 instanceof Activator) && !(fd1 instanceof Checkpoint)) {
                 ((Mob) bd2).setFacingRight(!((Mob) bd2).isFacingRight());
             }
 
@@ -217,11 +217,11 @@ public class CollisionController implements ContactListener, ContactFilter {
         }
 
         // Check mobs
-        if (fd1 instanceof Mob) {
-            ((Mob) fd1).setFacingRight(!((Mob) fd1).isFacingRight());
-        } else if (fd2 instanceof Mob) {
-            ((Mob) fd1).setFacingRight(!((Mob) fd1).isFacingRight());
-        }
+//        if (fd1 instanceof Mob) {
+//            ((Mob) fd1).setFacingRight(!((Mob) fd1).isFacingRight());
+//        } else if (fd2 instanceof Mob) {
+//            ((Mob) fd1).setFacingRight(!((Mob) fd1).isFacingRight());
+//        }
 
         // Check for button
         if (fd2 instanceof Activator) {

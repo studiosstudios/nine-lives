@@ -75,6 +75,14 @@ public class ActionController {
         }
     }
 
+    public void setMobTarget(Mob mob, Cat cat) {
+        for (AIController mobc : mobControllers) {
+            if (mobc.getMob() == mob) {
+                mobc.setTarget(cat);
+            }
+        }
+    }
+
     /**
      * Sets the hashmaps for Texture Regions, Sounds, Fonts, and sets JSON value constants
      *

@@ -2,7 +2,6 @@ package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import edu.cornell.gdiac.game.object.Cat;
 import edu.cornell.gdiac.game.object.Mob;
 import edu.cornell.gdiac.game.obstacle.*;
@@ -101,10 +100,10 @@ public class AIController {
             // Should go back to wander if it killed the cat
             if (mob.getX() <= target.getX()) {
                 // target is right of mob, mob moves right a little faster
-                horizontal = MOVE_CONSTANT*5;
+                horizontal = MOVE_CONSTANT*3;
             } else {
                 // target is left of mob, mob moves lefts a little faster
-                horizontal = -MOVE_CONSTANT*5;
+                horizontal = -MOVE_CONSTANT*3;
             }
         } else {
             state = FSMState.WANDER; // If debugging is off

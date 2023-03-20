@@ -107,31 +107,6 @@ public class ActionController {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt){
-        Cat cat = level.getCat();
-        cat.setMovement(InputController.getInstance().getHorizontal() *cat.getForce() * (cat.getIsClimbing() ? 0 : 1));
-        cat.setVerticalMovement(InputController.getInstance().getVertical() * cat.getForce());
-        cat.setHorizontalMovement(InputController.getInstance().getHorizontal() * cat.getForce());
-        cat.setJumping(InputController.getInstance().didPrimary());
-        cat.setMeowing(InputController.getInstance().didMeow());
-        cat.setDashing(InputController.getInstance().didDash());
-        cat.setClimbing(InputController.getInstance().didClimb() && cat.isWalled());
-
-        cat.applyForce();
-        if (cat.isJumping()) {
-            jumpId = playSound(soundAssetMap.get("jump"), jumpId, volume);
-        }
-
-        if (InputController.getInstance().didMeow() && !cat.isJumping()){
-            meowId = playSound(soundAssetMap.get("meow"), meowId, volume);
-        }
-
-        // Mob control:
-        for (AIController mobControl : mobControllers) {
-            Mob mob = mobControl.getMob();
-            mob.setPosition(mob.getX() + mobControl.getAction(), mob.getY());
-            mob.applyForce();
-        }
-
 
         //Raycast lasers
         for (Laser l : level.getLasers()){
@@ -149,6 +124,45 @@ public class ActionController {
                 }
             }
         }
+
+        // Mob control:
+        for (AIController mobControl : mobControllers) {
+            Mob mob = mobControl.getMob();
+            mob.setPosition(mob.getX() + mobControl.getAction(), mob.getY());
+            mob.applyForce();
+        }
+
+        Cat cat = level.getCat();
+        level.setSpiritMode(InputController.getInstance().holdSwitch());
+        if (InputController.getInstance().didSwitch()){
+            //switch body
+            DeadBody body = level.getNextBody();
+            if (body != null){
+                level.spawnDeadBody();
+                level.setBodySwitched(true);
+                cat.setPosition(body.getPosition());
+                cat.setLinearVelocity(body.getLinearVelocity());
+                cat.setFacingRight(body.isFacingRight());
+                body.markRemoved(true);
+                level.removeDeadBody(body);
+            }
+        } else {
+            cat.setMovement(InputController.getInstance().getHorizontal() * cat.getForce() * (cat.getIsClimbing() ? 0 : 1));
+            cat.setVerticalMovement(InputController.getInstance().getVertical() * cat.getForce());
+            cat.setHorizontalMovement(InputController.getInstance().getHorizontal() * cat.getForce());
+            cat.setJumping(InputController.getInstance().didPrimary());
+            cat.setDashing(InputController.getInstance().didDash());
+            cat.setClimbing(InputController.getInstance().didClimb() && cat.isWalled());
+
+            cat.applyForce();
+            if (cat.isJumping()) {
+                jumpId = playSound(soundAssetMap.get("jump"), jumpId, volume);
+            }
+        }
+        if (InputController.getInstance().didMeow()){
+            meowId = playSound(soundAssetMap.get("meow"), meowId, volume);
+        }
+
     }
 
     /**
@@ -201,6 +215,9 @@ public class ActionController {
         if (level.getCat().getBody().getFixtureList().contains(rayCastFixture, true)){
             die();
         }
+        if (rayCastFixture != null && rayCastFixture.getBody().getUserData() instanceof DeadBody){
+            ((DeadBody) rayCastFixture.getBody().getUserData()).touchingLaser();
+        }
     }
 
     /**
@@ -244,7 +261,7 @@ public class ActionController {
                     wjoint.bodyB = spikes.getBody();
                     wjoint.localAnchorA.set(deadbody.getBody().getLocalPoint(contactPoint));
                     wjoint.localAnchorB.set(spikes.getBody().getLocalPoint(contactPoint));
-                    wjoint.collideConnected = false;
+                    wjoint.collideConnected = true;
                     level.queueJoint(wjoint);
                 }
                 break;
@@ -328,6 +345,9 @@ public class ActionController {
 
     private RayCastCallback LaserRayCastCallback = new RayCastCallback() {
         @Override
+        /**
+         * Gets closest raycasted fixture and stores collision point and the fixture itself
+         */
         public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
             if ( fraction < closestFraction ) {
                 closestFraction = fraction;

@@ -120,19 +120,25 @@ public class CollisionController implements ContactListener, ContactFilter {
                 }
             }
 
-            //Check for body
-            if (fd1 instanceof DeadBody) {
-                if (fd2 instanceof Spikes) {
-                    actionController.fixBodyToSpikes((DeadBody) fd1, (Spikes) fd2, contact.getWorldManifold().getPoints());
-                } else if (fd2 == Flamethrower.getSensorName()) {
-                    ((DeadBody) fd1).setBurning(true);
-                }
+            //dead body collisions
+            if (fd1 instanceof DeadBody ||fd2 instanceof DeadBody) {
 
-            } else if (fd2 instanceof DeadBody) {
-                if (fd1 instanceof Spikes) {
-                    actionController.fixBodyToSpikes((DeadBody) fd2, (Spikes) fd1, contact.getWorldManifold().getPoints());
-                } else if (fd1 == Flamethrower.getSensorName()) {
-                    ((DeadBody) fd2).setBurning(true);
+                //ensure fd1 is DeadBody
+                if (fd2 instanceof DeadBody) {
+                    //don't need to swap fd1 and fd2 because we are assuming fd1 is dead body
+                    bd2 = bd1;
+
+                    Object temp = fd1;
+                    fd1 = fd2;
+                    fd2 = temp;
+                }
+                DeadBody db = (DeadBody) fd1;
+                if (fd2 instanceof Spikes) {
+                    actionController.fixBodyToSpikes(db, (Spikes) fd2, contact.getWorldManifold().getPoints());
+                    db.addHazard();
+                } else if (fd2 == Flamethrower.getSensorName()) {
+                    db.setBurning(true);
+                    db.addHazard();
                 }
             }
 
@@ -188,15 +194,24 @@ public class CollisionController implements ContactListener, ContactFilter {
             level.getCat().decrementWalled();
         }
 
-        //Check for body
-        if (fd1 instanceof DeadBody) {
-            if (fd2 == Flamethrower.getSensorName()) {
-                ((DeadBody) fd1).setBurning(false);
-            }
+        //dead body collisions
+        if (fd1 instanceof DeadBody ||fd2 instanceof DeadBody) {
 
-        } else if (fd2 instanceof DeadBody) {
-            if (fd1 == Flamethrower.getSensorName()) {
-                ((DeadBody) fd2).setBurning(false);
+            //ensure fd1 is DeadBody
+            if (fd2 instanceof DeadBody) {
+                //don't need to swap fd1 and fd2 because we are assuming fd1 is dead body
+                bd2 = bd1;
+
+                Object temp = fd1;
+                fd1 = fd2;
+                fd2 = temp;
+            }
+            DeadBody db = (DeadBody) fd1;
+            if (fd2 instanceof Spikes) {
+                db.removeHazard();
+            } else if (fd2 == Flamethrower.getSensorName()) {
+                db.setBurning(false);
+                db.removeHazard();
             }
         }
 

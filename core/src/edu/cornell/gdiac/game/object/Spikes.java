@@ -62,13 +62,14 @@ public class Spikes extends BoxObstacle implements Activatable {
 
     @Override
     public void activated(World world){
-        createFixtures();
+        setActive(true);
     }
 
     @Override
     public void deactivated(World world){
-        releaseFixtures();
+
         destroyJoints(world);
+        setActive(false);
     }
 
     public boolean activatePhysics(World world){
@@ -76,7 +77,7 @@ public class Spikes extends BoxObstacle implements Activatable {
             return false;
         }
         if (!activated) {
-            releaseFixtures();
+            deactivated(world);
         }
         return true;
     }

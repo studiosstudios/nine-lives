@@ -100,19 +100,23 @@ public class ActionController {
      */
     public void update(float dt){
         Cat cat = level.getCat();
-        cat.setMovement(InputController.getInstance().getHorizontal() *cat.getForce() * (cat.getIsClimbing() ? 0 : 1));
-        cat.setVerticalMovement(InputController.getInstance().getVertical() * cat.getForce());
-        cat.setHorizontalMovement(InputController.getInstance().getHorizontal() * cat.getForce());
-        cat.setJumping(InputController.getInstance().didPrimary());
-        cat.setDashing(InputController.getInstance().didDash());
-        cat.setClimbing(InputController.getInstance().didClimb() && cat.isWalled());
+        InputController ic = InputController.getInstance();
 
+        cat.setHorizontalMovement(ic.getHorizontal());
+        cat.setVerticalMovement(ic.getVertical());
+        cat.setJumpPressed(ic.didJump());
+        cat.setClimbingPressed(ic.didClimb());
+        cat.setDashPressed(ic.didDash());
+//        cat.setClimbing(ic.didClimb());
+
+        cat.updateState();
         cat.applyForce();
+
         if (cat.isJumping()) {
             jumpId = playSound(soundAssetMap.get("jump"), jumpId, volume);
         }
 
-        if (InputController.getInstance().didMeow()){
+        if (ic.didMeow()){
             meowId = playSound(soundAssetMap.get("meow"), meowId, volume);
         }
 
@@ -243,7 +247,6 @@ public class ActionController {
      */
     public void die(){
         if (!level.getDied()) {
-            level.getCat().setJumping(false);
             level.setDied(true);
             // decrement lives
             level.setNumLives(level.getNumLives()-1);
@@ -267,6 +270,10 @@ public class ActionController {
         level.setDied(false);
         level.getCat().setPosition(level.getRespawnPos());
         level.getCat().setFacingRight(true);
+        level.getCat().setJumpPressed(false);
+        level.getCat().setGrounded(true);
+        System.out.println(level.getCat().isGrounded());
+//        level.getCat().update
     }
 
     /**

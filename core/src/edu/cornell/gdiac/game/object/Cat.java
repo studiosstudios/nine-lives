@@ -40,9 +40,11 @@ public class Cat extends CapsuleObstacle {
     private boolean isDashing;
     public boolean canDash;
     private Animation<TextureRegion> animation;
-    private SpriteBatch spriteBatch;
     private TextureRegion[][] spriteFrames;
     private float animationTime;
+    private Animation<TextureRegion> animation2;
+    private TextureRegion[][] spriteFrames2;
+    private float animationTime2;
     /** The amount to slow the character down */
     private final float damping;
     /** The maximum character speed */
@@ -66,6 +68,7 @@ public class Cat extends CapsuleObstacle {
     /** Which direction is the character facing */
     private boolean faceRight;
     /** Whether we are actively jumping */
+    private boolean isMeowing;
     private boolean isJumping;
     /** Whether we stopped jumping in air */
     private boolean stoppedJumping;
@@ -142,6 +145,7 @@ public class Cat extends CapsuleObstacle {
         horizontalMovement = value;
     }
     public void setDashing(boolean value){ isDashing = value; }
+    public void setMeowing(boolean value){ isMeowing = value;}
 
     public boolean isDashing(){
         return isDashing;
@@ -229,6 +233,7 @@ public class Cat extends CapsuleObstacle {
             canDash = true;
             jump_animated = false;
             animationTime = 0;
+            animationTime2 = 0;
             jumpMovement = jump_force;
             stoppedJumping = false;
         }
@@ -346,8 +351,11 @@ public class Cat extends CapsuleObstacle {
         int spriteWidth = 50;
         int spriteHeight = 50;
         spriteFrames = TextureRegion.split(arr[2], spriteWidth, spriteHeight);
+        spriteFrames2 = TextureRegion.split(arr[3], 32, 32);
         float frameDuration = 0.025f;
         animation = new Animation<>(frameDuration, spriteFrames[0]);
+        animation2 = new Animation<>(0.05f, spriteFrames2[0]);
+        animationTime2 = 0f;
         animation.setPlayMode(Animation.PlayMode.REVERSED);
         animationTime = 0f;
 
@@ -355,6 +363,7 @@ public class Cat extends CapsuleObstacle {
         isGrounded = false;
         canDash = true;
         isJumping = false;
+        isMeowing = false;
         if(ret)
             faceRight = false;
         else
@@ -530,6 +539,12 @@ public class Cat extends CapsuleObstacle {
             TextureRegion currentFrame = animation.getKeyFrame(animationTime);
             canvas.draw(currentFrame,Color.WHITE, origin.x, origin.y,x,getY()*drawScale.y-25, getAngle(),effect,1.0f);
         }
+//        else if(isMeowing && !isJumping){
+//            animation2.setPlayMode(Animation.PlayMode.NORMAL);
+//            animationTime2 += Gdx.graphics.getDeltaTime();
+//            TextureRegion currentFrame2 = animation2.getKeyFrame(animationTime);
+//            canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x,(getY()*drawScale.y-25)*2, getAngle(),effect,1.0f);
+//        }
         else {
             if (isJumping) {
                 canvas.draw(jumping_texture, Color.WHITE, origin.x, origin.y, x, getY() * drawScale.y - 15, getAngle(), effect, 1.0f);

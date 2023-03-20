@@ -1,6 +1,8 @@
 package edu.cornell.gdiac.game.object;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -149,14 +151,25 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
 
         /** the shape of the hitbox that will kill the player */
         private PolygonShape sensorShape;
+        private TextureRegion[][] spriteFrames;
+        private float animationTime;
+        protected Animation<TextureRegion> animation;
+        private float angle;
 
         public Flame(TextureRegion texture, Vector2 scale, Vector2 pos, float angle) {
             super(texture.getRegionWidth()/scale.x, texture.getRegionHeight()/scale.y);
+            int spriteWidth = 42;
+            int spriteHeight = 74;
+            spriteFrames = TextureRegion.split(texture.getTexture(), spriteWidth, spriteHeight);
+            float frameDuration = 0.1f;
+            animation = new Animation<>(frameDuration, spriteFrames[0]);
+            animation.setPlayMode(Animation.PlayMode.LOOP);
+            animationTime = 0f;
             setAngle(angle);
+            this.angle = angle;
             setMass(0);
             setName("flame");
             setDrawScale(scale);
-            setTexture(texture);
             setSensor(true);
             setX(pos.x + flameOffset.x);
             setY(pos.y + flameOffset.y);
@@ -190,6 +203,8 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
         @Override
         public void draw(GameCanvas canvas){
             if (isActive()){
+                animationTime += Gdx.graphics.getDeltaTime();
+                setTexture(animation.getKeyFrame(animationTime));
                 super.draw(canvas);
             }
         }

@@ -104,6 +104,7 @@ public class ActionController {
         cat.setVerticalMovement(InputController.getInstance().getVertical() * cat.getForce());
         cat.setHorizontalMovement(InputController.getInstance().getHorizontal() * cat.getForce());
         cat.setJumping(InputController.getInstance().didPrimary());
+        cat.setMeowing(InputController.getInstance().didMeow());
         cat.setDashing(InputController.getInstance().didDash());
         cat.setClimbing(InputController.getInstance().didClimb() && cat.isWalled());
 
@@ -112,7 +113,7 @@ public class ActionController {
             jumpId = playSound(soundAssetMap.get("jump"), jumpId, volume);
         }
 
-        if (InputController.getInstance().didMeow()){
+        if (InputController.getInstance().didMeow() && !cat.isJumping()){
             meowId = playSound(soundAssetMap.get("meow"), meowId, volume);
         }
 

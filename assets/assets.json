@@ -28,7 +28,8 @@
         "checkpoint": "platform/checkpoint.png",
         "checkpointActive": "platform/checkpointActive.png",
         "background": "platform/labBkg_concept.png",
-      "flame_anim": "platform/flame_anim.png"
+      "flame_anim": "platform/flame_anim.png",
+      "meow_anim": "platform/meow.png"
     },
     "jsons"  : {
         "constants": "platform/constants.json",

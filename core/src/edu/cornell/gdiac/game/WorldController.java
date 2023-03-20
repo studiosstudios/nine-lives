@@ -209,7 +209,8 @@ public class WorldController implements Screen {
 		fontAssetMap = new HashMap<>();
 
 		String[] names = {"cat", "jumpingCat","barrier", "rope", "spikes", "button", "flame", "flamethrower", "laser", "laserBeam",
-				"deadCat", "checkpoint", "checkpointActive", "background", "steel", "goal","flame_anim","button_anim", "jump_anim"};
+				"deadCat", "checkpoint", "checkpointActive", "background", "steel", "goal","flame_anim","button_anim", "jump_anim",
+		"meow_anim"};
 		for (String n : names){
 			textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
 		}

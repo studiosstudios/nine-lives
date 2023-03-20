@@ -289,7 +289,7 @@ public class Mob extends CapsuleObstacle {
         if (!super.activatePhysics(world)) {
             return false;
         }
-
+        body.setUserData(this);
 //        FixtureDef sensorDef = new FixtureDef();
 //        sensorDef.density = 0;
 //        sensorDef.isSensor = true;

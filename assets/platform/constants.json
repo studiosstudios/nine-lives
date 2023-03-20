@@ -41,7 +41,7 @@
   },
   "lasers": {
     "offset": [0.5, 0.5],
-    "thickness": 2,
+    "thickness": 3,
     "friction": 0.4,
     "density": 1,
     "mass": 1

@@ -89,6 +89,7 @@ public class Laser extends BoxObstacle implements Activatable{
         if (activated) {
             if (points.size > 1) {
                 canvas.drawFactoryPath(points, thickness, color, drawScale.x, drawScale.y);
+                canvas.drawFactoryPath(points, thickness*0.3f, Color.WHITE, drawScale.x, drawScale.y);
             }
         }
         super.draw(canvas);
@@ -97,7 +98,7 @@ public class Laser extends BoxObstacle implements Activatable{
     public void update(float dt){
         super.update(dt);
         totalTime += dt;
-        color.set(1, 0, 0, ((float) Math.cos((double) totalTime * 2)) * 0.2f + 0.8f);
+        color.set(1, 0, 0, ((float) Math.cos((double) totalTime * 2)) * 0.25f + 0.75f);
     }
 
     @Override

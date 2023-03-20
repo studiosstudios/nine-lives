@@ -46,6 +46,9 @@ public class InputController {
 	/** Whether the reset button was pressed. */
 	private boolean resetPressed;
 	private boolean resetPrevious;
+	/** INTERNAL: rereads updated json */
+	private boolean readJsonPressed;
+	private boolean readJsonPressedPrevious;
 	/** Whether the primary action button was pressed. */
 	private boolean primePressed;
 	private boolean primePrevious;
@@ -203,6 +206,13 @@ public class InputController {
 	public boolean didReset() {
 		return resetPressed && !resetPrevious;
 	}
+
+	/**
+	 * Returns true if developer wants to reload jsons.
+	 *
+	 * @return true if developer wants to reload jsons.
+	 */
+	public boolean didReadJson() { return readJsonPressed && !readJsonPressedPrevious; }
 	
 	/**
 	 * Returns true if the player wants to go toggle the debug mode.
@@ -260,6 +270,7 @@ public class InputController {
 		dashPrevious = dashPressed;
 		secondPrevious = secondPressed;
 		resetPrevious  = resetPressed;
+		readJsonPressedPrevious = readJsonPressed;
 		debugPrevious  = debugPressed;
 		exitPrevious = exitPressed;
 		meowPrevious = meowPressed;
@@ -280,6 +291,7 @@ public class InputController {
 	private void readKeyboard(Rectangle bounds, Vector2 scale) {
 		// Give priority to gamepad results
 		resetPressed = (Gdx.input.isKeyPressed(Input.Keys.R));
+		readJsonPressed = (Gdx.input.isKeyPressed(Input.Keys.J));
 		debugPressed = (Gdx.input.isKeyPressed(Input.Keys.B));
 		primePressed = (Gdx.input.isKeyPressed(Input.Keys.UP));
 		secondPressed = (Gdx.input.isKeyPressed(Input.Keys.SPACE));

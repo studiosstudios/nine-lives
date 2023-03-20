@@ -51,7 +51,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	/** Internal assets for this loading screen */
 	private AssetDirectory internal;
 	/** The actual assets to be loaded */
-	private AssetDirectory assets;
+	public static AssetDirectory assets;
 	
 	/** Background texture for start-up */
 	private Texture background;
@@ -180,7 +180,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 *
 	 * @return the asset directory produced by this loading screen
 	 */
-	public AssetDirectory getAssets() {
+	public static AssetDirectory getAssets() {
 		return assets;
 	}
 
@@ -255,7 +255,11 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		assets.loadAssets();
 		active = true;
 	}
-	
+
+	public AssetDirectory getAssetsDir(){
+		return assets;
+	}
+
 	/**
 	 * Called when this screen should release all resources.
 	 */

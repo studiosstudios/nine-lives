@@ -17,6 +17,7 @@ import com.badlogic.gdx.audio.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
+import edu.cornell.gdiac.assets.JsonValueParser;
 import edu.cornell.gdiac.game.object.*;
 
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -78,6 +79,8 @@ public class LevelController {
     private CollisionController collisionController;
     /** The Level model */
     private Level level;
+    public boolean refreshJson;
+    public AssetDirectory temp_assets;
 
     /**
      * Creates and initialize a new instance of a LevelController
@@ -105,6 +108,7 @@ public class LevelController {
         collisionController = new CollisionController(actionController);
         actionController.setLevel(level);
         collisionController.setLevel(level);
+        refreshJson = false;
     }
 
     /**
@@ -239,6 +243,33 @@ public class LevelController {
         // Toggle debug
         if (input.didDebug()) {
             debug = !debug;
+        }
+
+        if (input.didReadJson()){
+            //TODO:READJSON
+            LoadingMode.getAssets().unloadAssets();
+            AssetDirectory assets = new AssetDirectory("assets.json");
+            assets.loadAssets();
+            assets.finishLoading();
+            for(int i = 0; i < assets.getParsers().size; i++){
+                if(assets.getParsers().get(i).getType() == JsonValue.class){
+                    assets.removeParser(assets.getParsers().get(i));
+                    break;
+                }
+            }
+            assets.addParser(new JsonValueParser());
+            refreshJson = true;
+            temp_assets = assets;
+            System.out.println(assets.getLoadedAssets());
+
+//            System.out.println(LoadingMode.getAssets().getLoadedAssets());
+//            LoadingMode.getAssets().unloadAssets();
+//            LoadingMode.getAssets().addParser(new JsonValueParser());
+//            LoadingMode.getAssets().loadAssets();
+//            LoadingMode.getAssets().finishLoading();
+//            System.out.println(LoadingMode.getAssets().getLoadedAssets());
+//            refreshJson = true;
+//            System.out.println(LoadingMode.getAssets().getEntry("level1", JsonValue.class)); //for some reason, all of above code loads old assets (look into assetparser?))
         }
 
         // Handle resets

@@ -184,7 +184,9 @@ public class WorldController implements Screen {
 	 * @param levelNum the number associated with the level to be loaded in
 	 * @return JSON of the level
 	 */
-	private JsonValue levelJSON(int levelNum){ return directory.getEntry("level" + levelNum, JsonValue.class); }
+	private JsonValue levelJSON(int levelNum){
+		return directory.getEntry("level" + levelNum, JsonValue.class);
+	}
 	
 	/**
 	 * Dispose of all (non-static) resources allocated to this mode.
@@ -228,6 +230,8 @@ public class WorldController implements Screen {
 		this.directory = directory;
 
 		// Giving assets to levelController
+		System.out.println("resetting assets");
+//		System.out.println(levelJSON(1).get("checkpoints").get(0).get("pos"));
 		currLevel.setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants, levelJSON(1));
 		nextJSON = levelJSON(2);
 	}
@@ -247,7 +251,6 @@ public class WorldController implements Screen {
 		if (listener == null) {
 			return true;
 		}
-
 		// Now it is time to maybe switch screens.
 		if (currLevel.preUpdate(dt)) {
 			pause();
@@ -263,6 +266,12 @@ public class WorldController implements Screen {
 		} else if (currLevel.isRet() || InputController.getInstance().didPrev()) {
 			pause();
 			prevLevel(InputController.getInstance().didPrev());
+			return false;
+		}
+		if(currLevel.refreshJson){
+			gatherAssets(currLevel.temp_assets); //This gather assets not updating directory
+			currLevel.reset(null);
+			currLevel.refreshJson = false;
 			return false;
 		}
 		return true;

@@ -662,6 +662,9 @@ public class Cat extends CapsuleObstacle {
                 isMeowing = false;
             }
         }
+        else if(horizontalMovement == 0 && verticalMovement == 0){
+            canvas.draw(sit_texture, Color.WHITE, origin.x, origin.y, x, getY() * drawScale.y - 20, getAngle(), effect, 1.0f);
+        }
         else if(!(state == State.JUMPING)&& horizontalMovement != 0){
             animation3.setPlayMode(Animation.PlayMode.LOOP);
             animationTime3 += Gdx.graphics.getDeltaTime();

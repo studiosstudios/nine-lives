@@ -47,6 +47,7 @@ public class Laser extends BoxObstacle implements Activatable{
         setX(data.get("pos").getFloat(0)+objectConstants.get("offset").getFloat(0));
         setY(data.get("pos").getFloat(1)+objectConstants.get("offset").getFloat(1));
         setAngle((float) (data.getInt("angle") * Math.PI/180));
+        setSensor(true);
         setFixedRotation(true);
 
         dir = angleToDir(data.getInt("angle"));

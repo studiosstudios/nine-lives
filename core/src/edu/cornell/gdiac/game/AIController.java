@@ -77,7 +77,6 @@ public class AIController {
         }
         else if (state == FSMState.WANDER) {
             target = null;
-
             if (mob.isAggressive()) {
                 // Get a target
                 selectTarget();
@@ -94,8 +93,6 @@ public class AIController {
             }
         }
         else if (state == FSMState.CHASE) {
-            System.out.println("CHASING!!!");
-
             selectTarget();
             if (target == null) {
                 this.state = FSMState.WANDER;
@@ -125,7 +122,6 @@ public class AIController {
 
         // Check that the mob is on the same plane as the Cat (with some buffer)
         if (cat_pos_y <= mob_pos_y + buffer_y && cat_pos_y >= mob_pos_y - buffer_y) {
-//            System.out.println("cat is in line ");
 
             // Check that the object is on the same plane as the Cat and Mob (with some buffer)
             for (Obstacle obstacle : level.getObjects()) {
@@ -139,11 +135,9 @@ public class AIController {
                             // Check if obj is to the right of the Mob and to the left of the Cat
                             if (ob_pos_x >= mob_pos_x && ob_pos_x <= cat_pos_x) {
                                 // Object is in line of sight between the cat and the mob
-                                System.out.println("object blocking right ");
                                 target = null;
                                 return;
                             } else {
-                                System.out.println(" cat seen facing right");
                                 // the cat is in the line of sight
                                 targ = cat;
                             }
@@ -151,12 +145,10 @@ public class AIController {
                             // Facing left
                             if (cat_pos_x <= ob_pos_x && ob_pos_x <= mob_pos_x) {
                                 // Object is in line of sight between the cat and the mob
-                                System.out.println("object blocking left ");
                                 target = null;
                                 return;
                             } else {
                                 // the cat is in the line of sight
-                                System.out.println(" cat seen facing left ");
                                 targ = cat;
                             }
                         }
@@ -176,10 +168,6 @@ public class AIController {
      */
     public float getHorizontal() {
         return horizontal;
-    }
-
-    public void setTarget(Cat cat) {
-        target = cat;
     }
 
     /**

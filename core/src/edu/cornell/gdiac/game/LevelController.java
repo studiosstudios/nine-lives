@@ -128,8 +128,8 @@ public class LevelController {
      */
     public void setCanvas(GameCanvas canvas) {
         this.canvas = canvas;
-        this.scale.x = canvas.getWidth()/bounds.getWidth();
-        this.scale.y = canvas.getHeight()/bounds.getHeight();
+        this.scale.x = 1024f/bounds.getWidth();
+        this.scale.y = 576f/bounds.getHeight();
     }
 
     /**
@@ -172,10 +172,12 @@ public class LevelController {
         fontAssetMap = fMap;
         soundAssetMap = sMap;
         JSONconstants = constants;
+        level.setConstants(constants);
         this.levelJV = levelJV;
         displayFont = fMap.get("retro");
 
         //send the relevant assets to classes that need them
+        actionController.setVolume(JSONconstants.getFloat("volume", 0.5f));
         actionController.setAssets(sMap);
         level.setAssets(tMap);
     }
@@ -192,6 +194,7 @@ public class LevelController {
         world = new World(gravity,false);
         level.setWorld(world);
         world.setContactListener(collisionController);
+        world.setContactFilter(collisionController);
 
         collisionController.setReturn(false);
 
@@ -215,7 +218,6 @@ public class LevelController {
      */
     public void populateLevel(boolean ret, Cat prevCat) {
         level.populateLevel(textureRegionAssetMap, fontAssetMap, soundAssetMap, JSONconstants, levelJV, ret, prevCat);
-        volume = JSONconstants.getFloat("volume", 0.5f);
     }
 
     /**

@@ -13,8 +13,8 @@ import edu.cornell.gdiac.game.obstacle.*;
 public class Switch extends Activator {
 
     private boolean prevPressed;
-    public Switch(TextureRegion texture, Vector2 scale, JsonValue data){
-        super(texture, scale, data);
+    public Switch(TextureRegion texture, TextureRegion texture2, Vector2 scale, JsonValue data){
+        super(texture, texture2, scale, data);
         prevPressed = false;
         setName("switch");
     }

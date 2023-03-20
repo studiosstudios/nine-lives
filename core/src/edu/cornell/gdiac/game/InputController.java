@@ -70,6 +70,12 @@ public class InputController {
 	/** Whether the exit button was pressed. */
 	private boolean exitPressed;
 	private boolean exitPrevious;
+	/** Whether the next button was pressed. */
+	private boolean nextPressed;
+	private boolean nextPrevious;
+	/** Whether the previous button was pressed. */
+	private boolean prevPressed;
+	private boolean prevPrevious;
 	
 	/** How much did we move horizontally? */
 	private float horizontal;
@@ -129,6 +135,26 @@ public class InputController {
 //		return primePressed && !primePrevious;
 		return primePressed;
 	}
+	/**
+	 * Returns true if the dash button was pressed.
+	 *
+	 * This is a one-press button. It only returns true at the moment it was
+	 * pressed, and returns false at any frame afterwards.
+	 *
+	 * @return true if the dash button was pressed.
+	 */
+	public boolean didNext() { return nextPressed && !nextPrevious;}
+
+	/**
+	 * Returns true if the dash button was pressed.
+	 *
+	 * This is a one-press button. It only returns true at the moment it was
+	 * pressed, and returns false at any frame afterwards.
+	 *
+	 * @return true if the dash button was pressed.
+	 */
+	public boolean didPrev() { return prevPressed && !prevPrevious;}
+
 	/**
 	 * Returns true if the dash button was pressed.
 	 *
@@ -237,6 +263,8 @@ public class InputController {
 		debugPrevious  = debugPressed;
 		exitPrevious = exitPressed;
 		meowPrevious = meowPressed;
+		nextPrevious  = nextPressed;
+		prevPrevious = prevPressed;
 		
 		readKeyboard(bounds, scale);
 	}
@@ -259,6 +287,10 @@ public class InputController {
 		climbPressed = (Gdx.input.isKeyPressed(Input.Keys.A));
 		exitPressed  = (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
 		meowPressed = (Gdx.input.isKeyPressed(Input.Keys.M));
+
+		//useful keys for testing/debugging
+		nextPressed = (Gdx.input.isKeyPressed(Input.Keys.N));
+		prevPressed  = (Gdx.input.isKeyPressed(Input.Keys.P));
 
 		// Directional controls
 		horizontal = 0.0f;

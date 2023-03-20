@@ -138,15 +138,18 @@ public class WorldController implements Screen {
 	 * The previous level is set to the current level
 	 * The current level is set to the next level
 	 * The next level is loaded in
+	 *
+	 * @param resetSpawn whether the player spawns at the respawn point of the level or at the edge
+	 *                    (from previous level)
 	 */
-	public void nextLevel(){
+	public void nextLevel(boolean resetSpawn){
 		if (levelNum < TOTAL_LEVELS) {
 			levelNum++;
 
 			prevJSON = currLevel.getJSON();
 			currLevel.setJSON(nextJSON);
 			currLevel.setRet(false);
-			currLevel.reset(currLevel.getLevel().getCat());
+			currLevel.reset(resetSpawn ? null : currLevel.getLevel().getCat());
 			if (levelNum < TOTAL_LEVELS) {
 				nextJSON = levelJSON(levelNum + 1);
 			}
@@ -159,14 +162,17 @@ public class WorldController implements Screen {
 	 * The next level is set to the current level
 	 * The current level is set to the previous level
 	 * The previous level is loaded in
+	 *
+	 * @param resetSpawn whether the player spawns at the respawn point of the level or at the edge
+	 *                    (from previous level)
 	 */
-	public void prevLevel(){
+	public void prevLevel(boolean resetSpawn){
 		if (levelNum > 1) {
 			levelNum--;
 			nextJSON = currLevel.getJSON();
 			currLevel.setJSON(prevJSON);
-			currLevel.setRet(true);
-			currLevel.reset(currLevel.getLevel().getCat());
+			currLevel.setRet(!resetSpawn);
+			currLevel.reset(resetSpawn ? null : currLevel.getLevel().getCat());
 			if (levelNum > 1) {
 				prevJSON = levelJSON(levelNum - 1);
 			}
@@ -203,7 +209,7 @@ public class WorldController implements Screen {
 		fontAssetMap = new HashMap<>();
 
 		String[] names = {"cat", "barrier", "rope", "spikes", "button", "flame", "flamethrower", "laser", "laserBeam",
-				"deadCat", "checkpoint", "checkpointActive", "background", "steel", "goal"};
+				"deadCat", "checkpoint", "checkpointActive", "background", "steel", "goal","flame_anim","button_anim"};
 		for (String n : names){
 			textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
 		}
@@ -250,13 +256,13 @@ public class WorldController implements Screen {
 		}
 		if (currLevel.getLevel().isFailure()) {
 			currLevel.reset(null);
-		} else if (currLevel.getLevel().isComplete()) {
+		} else if (currLevel.getLevel().isComplete() || InputController.getInstance().didNext()) {
 			pause();
-			nextLevel();
+			nextLevel(InputController.getInstance().didNext());
 			return false;
-		} else if (currLevel.isRet()) {
+		} else if (currLevel.isRet() || InputController.getInstance().didPrev()) {
 			pause();
-			prevLevel();
+			prevLevel(InputController.getInstance().didPrev());
 			return false;
 		}
 		return true;

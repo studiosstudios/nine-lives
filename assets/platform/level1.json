@@ -3,9 +3,7 @@
 		{"pos" : [28, 15], "angle": 0, "active": true, "activatorID": "button2"},
 		{"pos" : [28, 16], "angle": 180, "active": true, "activatorID": "button2"},
 		{"pos" : [29, 15], "angle": 0, "active": true, "activatorID": "button2"},
-		{"pos" : [29, 16], "angle": 180, "active": true, "activatorID": "button2"},
-		{"pos" : [30, 15], "angle": 0, "active": true, "activatorID": "button2"},
-		{"pos" : [30, 16], "angle": 180, "active": true, "activatorID": "button2"}],
+		{"pos" : [29, 16], "angle": 180, "active": true, "activatorID": "button2"}],
 	"activators": [
 		{"pos": [1, 13], "type": "switch", "id" : "switch1"},
 		{"pos": [1, 2], "type": "button", "id" : "button1"},

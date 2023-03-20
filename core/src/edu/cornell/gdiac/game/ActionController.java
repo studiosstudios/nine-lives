@@ -13,7 +13,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.game.object.*;
 
-import java.lang.reflect.Array;
 import java.util.HashMap;
 
 public class ActionController {

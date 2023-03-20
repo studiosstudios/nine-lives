@@ -466,7 +466,7 @@ public class Level {
         }
 
         for (JsonValue flamethrowerJV : levelJV.get("flamethrowers")){
-            Flamethrower flamethrower = new Flamethrower(tMap.get("flamethrower"), tMap.get("flame"),scale, flamethrowerJV);
+            Flamethrower flamethrower = new Flamethrower(tMap.get("flamethrower"), tMap.get("flame_anim"),scale, flamethrowerJV);
             loadActivatable(flamethrower, flamethrowerJV);
         }
 
@@ -476,12 +476,23 @@ public class Level {
             lasers.add(laser);
         }
 
+        for (JsonValue mirrorJV : levelJV.get("mirrors")){
+            Mirror mirror = new Mirror(tMap.get("steel"), scale, mirrorJV);
+            addObject(mirror);
+        }
+
         // Create cat
         dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
         dheight = tMap.get("cat").getRegionHeight()/scale.y;
-        cat = new Cat(levelJV.get("cat"), dwidth, dheight, ret, prevCat == null? null : prevCat.getPosition());
+        Texture[] arr = new Texture[5];
+        arr[0] = tMap.get("cat").getTexture();
+        arr[1] = tMap.get("jumpingCat").getTexture();
+        arr[2] = tMap.get("jump_anim").getTexture();
+        arr[3] = tMap.get("meow_anim").getTexture();
+        arr[4] = tMap.get("sit").getTexture();
+        cat = new Cat(levelJV.get("cat"), dwidth, dheight, ret, prevCat == null? null : prevCat.getPosition(),arr);
         cat.setDrawScale(scale);
-        cat.setTexture(tMap.get("cat"));
+//        cat.setTexture(tMap.get("cat"));
         respawnPos = cat.getPosition();
         addObject(cat);
 
@@ -501,6 +512,7 @@ public class Level {
         Activator.setConstants(constants.get("activators"));
         Laser.setConstants(constants.get("lasers"));
         Checkpoint.setConstants(constants.get("checkpoint"));
+        Mirror.setConstants(constants.get("mirrors"));
     }
 
     /**
@@ -643,6 +655,7 @@ public class Level {
         canvas.clear();
 
         canvas.begin();
+        canvas.applyExtendViewport();
         if (background != null) {
             canvas.draw(background, 0, 0);
         }

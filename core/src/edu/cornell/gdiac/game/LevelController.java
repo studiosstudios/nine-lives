@@ -128,8 +128,8 @@ public class LevelController {
      */
     public void setCanvas(GameCanvas canvas) {
         this.canvas = canvas;
-        this.scale.x = canvas.getWidth()/bounds.getWidth();
-        this.scale.y = canvas.getHeight()/bounds.getHeight();
+        this.scale.x = 1024f/bounds.getWidth();
+        this.scale.y = 576f/bounds.getHeight();
     }
 
     /**
@@ -194,6 +194,7 @@ public class LevelController {
         world = new World(gravity,false);
         level.setWorld(world);
         world.setContactListener(collisionController);
+        world.setContactFilter(collisionController);
 
         collisionController.setReturn(false);
         actionController.setControllers(level);

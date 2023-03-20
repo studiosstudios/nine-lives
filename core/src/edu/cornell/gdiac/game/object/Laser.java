@@ -23,9 +23,13 @@ public class Laser extends BoxObstacle implements Activatable{
     protected static JsonValue objectConstants;
     private boolean activated;
     private boolean initialActivation;
+    private Color color;
 
-    /** storing the angle in degrees to prevent comparison errors*/
-    private int angle;
+    /** makes laser beams change color with time*/
+    private float totalTime;
+    public enum Direction {UP, DOWN, LEFT, RIGHT}
+
+    private Direction dir;
 
     public Laser(TextureRegion texture, Vector2 scale, JsonValue data){
         super(texture.getRegionWidth()/scale.x,
@@ -42,12 +46,30 @@ public class Laser extends BoxObstacle implements Activatable{
         setMass(objectConstants.getFloat("mass", 0));
         setX(data.get("pos").getFloat(0)+objectConstants.get("offset").getFloat(0));
         setY(data.get("pos").getFloat(1)+objectConstants.get("offset").getFloat(1));
-        angle = data.getInt("angle");
-        setAngle((float) (angle * Math.PI/180));
+        setAngle((float) (data.getInt("angle") * Math.PI/180));
         setFixedRotation(true);
 
+        dir = angleToDir(data.getInt("angle"));
+        totalTime = 0;
+        color = Color.RED;
         points = new Array<>();
         initActivations(data);
+    }
+
+    public Direction getDirection(){ return dir; }
+    public static Direction angleToDir(int angle){
+        switch (angle){
+            case 0:
+                return Direction.UP;
+            case 90:
+                return Direction.LEFT;
+            case 180:
+                return Direction.DOWN;
+            case 270:
+                return Direction.RIGHT;
+            default:
+                throw new RuntimeException("undefined angle");
+        }
     }
 
     public void addBeamPoint(Vector2 point){ points.add(point);}
@@ -61,35 +83,21 @@ public class Laser extends BoxObstacle implements Activatable{
         return getPosition();
     }
 
-    public Vector2 getRayCastEnd(Rectangle bounds){
-        switch (angle) {
-            case 0:
-                endPointCache.set(getX(),bounds.height);
-                break;
-            case 90:
-                endPointCache.set(0, getY());
-                break;
-            case 180:
-                endPointCache.set(getX(), 0);
-                break;
-            case 270:
-                endPointCache.set(bounds.width, getY());
-                break;
-            default:
-                throw new RuntimeException("undefined angle");
-        }
-        return endPointCache;
-    }
     @Override
     public void draw(GameCanvas canvas){
         if (activated) {
             if (points.size > 1) {
-                canvas.drawFactoryPath(points, thickness, Color.RED, drawScale.x, drawScale.y);
+                canvas.drawFactoryPath(points, thickness, color, drawScale.x, drawScale.y);
             }
         }
         super.draw(canvas);
     }
 
+    public void update(float dt){
+        super.update(dt);
+        totalTime += dt;
+        color.set(1, 0, 0, ((float) Math.cos((double) totalTime * 2)) * 0.2f + 0.8f);
+    }
 
     @Override
     public void activated(World world){
@@ -99,6 +107,7 @@ public class Laser extends BoxObstacle implements Activatable{
     public void deactivated(World world){
         points.clear();
         points.add(getPosition());
+        totalTime = 0;
     }
 
     @Override

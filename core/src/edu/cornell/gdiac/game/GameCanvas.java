@@ -23,13 +23,12 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.*;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.math.Path2;
 import edu.cornell.gdiac.math.PathExtruder;
 import edu.cornell.gdiac.math.PathFactory;
-
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
@@ -67,6 +66,8 @@ public class GameCanvas {
 		OPAQUE
 	}	
 
+	private float STANDARD_WIDTH = 1024f;
+	private float STANDARD_HEIGHT = 576f;
 	
 	/** Drawing context to handle textures AND POLYGONS as sprites */
 	private PolygonSpriteBatch spriteBatch;
@@ -91,7 +92,10 @@ public class GameCanvas {
 	
 	/** Camera for the underlying SpriteBatch */
 	private OrthographicCamera camera;
-	
+
+	/** ExtendViewport, used during gameplay */
+	private Viewport extendView;
+
 	/** Value to cache window width (if we are currently full screen) */
 	int width;
 	/** Value to cache window height (if we are currently full screen) */
@@ -122,8 +126,13 @@ public class GameCanvas {
 		region = new TextureRegion(new Texture("white.png"));
 		
 		// Set the projection matrix (for proper scaling)
-		camera = new OrthographicCamera(getWidth(),getHeight());
-		camera.setToOrtho(false);
+		camera = new OrthographicCamera(STANDARD_WIDTH, STANDARD_HEIGHT);
+		camera.setToOrtho(false, STANDARD_WIDTH, STANDARD_HEIGHT);
+//		camera.position.set(STANDARD_WIDTH / 2, STANDARD_HEIGHT / 2, 0);
+//		camera.update();
+//		extendView = new ExtendViewport(0, 0, STANDARD_WIDTH, STANDARD_HEIGHT, camera);
+		extendView = new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT, camera);
+		extendView.apply(true);
 		spriteBatch.setProjectionMatrix(camera.combined);
 		debugRender.setProjectionMatrix(camera.combined);
 
@@ -134,21 +143,21 @@ public class GameCanvas {
 		vertex = new Vector2();
 	}
 		
-    /**
-     * Eliminate any resources that should be garbage collected manually.
-     */
-    public void dispose() {
+	/**
+	* Eliminate any resources that should be garbage collected manually.
+	*/
+	public void dispose() {
 		if (active != DrawPass.INACTIVE) {
 			Gdx.app.error("GameCanvas", "Cannot dispose while drawing active", new IllegalStateException());
 			return;
 		}
 		spriteBatch.dispose();
-    	spriteBatch = null;
-    	local  = null;
-    	global = null;
-    	vertex = null;
-    	holder = null;
-    }
+		spriteBatch = null;
+		local  = null;
+		global = null;
+		vertex = null;
+		holder = null;
+	}
 
 	/**
 	 * Returns the width of this canvas
@@ -278,7 +287,12 @@ public class GameCanvas {
 			Gdx.graphics.setWindowedMode(width, height);
 		}
 	}
-	
+
+	/** Activates the ExtendViewport for drawing to canvas */
+	public void applyExtendViewport() {
+		extendView.apply(true);
+	}
+
 	/**
 	 * Resets the SpriteBatch camera when this canvas is resized.
 	 *
@@ -286,8 +300,8 @@ public class GameCanvas {
 	 * weird scaling issues.
 	 */
 	 public void resize() {
-		// Resizing screws up the spriteBatch projection matrix
 		spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, getWidth(), getHeight());
+		 extendView.update(getWidth(), getHeight(), true);
 	}
 	
 	/**
@@ -337,9 +351,9 @@ public class GameCanvas {
 	 * Clear the screen so we can start a new animation frame
 	 */
 	public void clear() {
-    	// Clear the screen
-		Gdx.gl.glClearColor(0.39f, 0.58f, 0.93f, 1.0f);  // Homage to the XNA years
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);		
+    		// Clear the screen
+		Gdx.gl.glClearColor(0, 0, 0, 1.0f);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	}
 
 	/**
@@ -349,15 +363,15 @@ public class GameCanvas {
 	 *
 	 * @param affine the global transform apply to the camera
 	 */
-    public void begin(Affine2 affine) {
+	public void begin(Affine2 affine) {
 		global.setAsAffine(affine);
-    	global.mulLeft(camera.combined);
+		global.mulLeft(camera.combined);
 		spriteBatch.setProjectionMatrix(global);
-		
+
 		setBlendState(BlendState.NO_PREMULT);
 		spriteBatch.begin();
-    	active = DrawPass.STANDARD;
-    }
+		active = DrawPass.STANDARD;
+	}
 
 	/**
 	 * Start a standard drawing sequence.
@@ -367,34 +381,34 @@ public class GameCanvas {
 	 * @param sx the amount to scale the x-axis
 	 * @param sy the amount to scale the y-axis
 	 */
-    public void begin(float sx, float sy) {
+	public void begin(float sx, float sy) {
 		global.idt();
 		global.scl(sx,sy,1.0f);
-    	global.mulLeft(camera.combined);
+		global.mulLeft(camera.combined);
 		spriteBatch.setProjectionMatrix(global);
-		
-    	spriteBatch.begin();
-    	active = DrawPass.STANDARD;
-    }
+
+		spriteBatch.begin();
+		active = DrawPass.STANDARD;
+	}
     
 	/**
 	 * Start a standard drawing sequence.
 	 *
 	 * Nothing is flushed to the graphics card until the method end() is called.
 	 */
-    public void begin() {
+	public void begin() {
 		spriteBatch.setProjectionMatrix(camera.combined);
-    	spriteBatch.begin();
-    	active = DrawPass.STANDARD;
-    }
+		spriteBatch.begin();
+		active = DrawPass.STANDARD;
+	}
 
 	/**
 	 * Ends a drawing sequence, flushing textures to the graphics card.
 	 */
-    public void end() {
-    	spriteBatch.end();
-    	active = DrawPass.INACTIVE;
-    }
+	public void end() {
+		spriteBatch.end();
+		active = DrawPass.INACTIVE;
+	}
 
 	/**
 	 * Draws the tinted texture at the given position.
@@ -416,9 +430,9 @@ public class GameCanvas {
 			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
 			return;
 		}
-		
+
 		// Unlike Lab 1, we can shortcut without a master drawing method
-    	spriteBatch.setColor(Color.WHITE);
+		spriteBatch.setColor(Color.WHITE);
 		spriteBatch.draw(image, x,  y);
 	}
 	
@@ -446,7 +460,7 @@ public class GameCanvas {
 		}
 		
 		// Unlike Lab 1, we can shortcut without a master drawing method
-    	spriteBatch.setColor(tint);
+    		spriteBatch.setColor(tint);
 		spriteBatch.draw(image, x,  y, width, height);
 	}
 	
@@ -571,7 +585,7 @@ public class GameCanvas {
 		}
 		
 		// Unlike Lab 1, we can shortcut without a master drawing method
-    	spriteBatch.setColor(Color.WHITE);
+    		spriteBatch.setColor(Color.WHITE);
 		spriteBatch.draw(region, x,  y);
 	}
 
@@ -599,7 +613,7 @@ public class GameCanvas {
 		}
 		
 		// Unlike Lab 1, we can shortcut without a master drawing method
-    	spriteBatch.setColor(tint);
+    		spriteBatch.setColor(tint);
 		spriteBatch.draw(region, x,  y, width, height);
 	}
 	
@@ -629,7 +643,7 @@ public class GameCanvas {
 		}
 		
 		// Unlike Lab 1, we can shortcut without a master drawing method
-    	spriteBatch.setColor(tint);
+    		spriteBatch.setColor(tint);
 		spriteBatch.draw(region, x-ox, y-oy, width, height);
 	}
 
@@ -733,7 +747,7 @@ public class GameCanvas {
 		}
 		
 		// Unlike Lab 1, we can shortcut without a master drawing method
-    	spriteBatch.setColor(Color.WHITE);
+    		spriteBatch.setColor(Color.WHITE);
 		spriteBatch.draw(region, x,  y);
 	}
 	
@@ -767,7 +781,7 @@ public class GameCanvas {
 		}
 		
 		// Unlike Lab 1, we can shortcut without a master drawing method
-    	spriteBatch.setColor(tint);
+    		spriteBatch.setColor(tint);
 		spriteBatch.draw(region, x,  y, width, height);
 	}
 	
@@ -803,7 +817,7 @@ public class GameCanvas {
 		}
 		
 		// Unlike Lab 1, we can shortcut without a master drawing method
-    	spriteBatch.setColor(tint);
+    		spriteBatch.setColor(tint);
 		spriteBatch.draw(region, x-ox, y-oy, width, height);
 	}
 	
@@ -843,8 +857,8 @@ public class GameCanvas {
 		TextureRegion bounds = region.getRegion();
 		spriteBatch.setColor(tint);
 		spriteBatch.draw(region, x, y, ox, oy, 
-						 bounds.getRegionWidth(), bounds.getRegionHeight(), 
-						 sx, sy, 180.0f*angle/(float)Math.PI);
+				 bounds.getRegionWidth(), bounds.getRegionHeight(),
+				 sx, sy, 180.0f*angle/(float)Math.PI);
 	}
 
 	/**
@@ -899,161 +913,161 @@ public class GameCanvas {
 		}
 	}
 
-    /**
-     * Draws text on the screen.
-     *
-     * @param text The string to draw
-     * @param font The font to use
-     * @param x The x-coordinate of the lower-left corner
-     * @param y The y-coordinate of the lower-left corner
-     */
-    public void drawText(String text, BitmapFont font, float x, float y) {
+	/**
+	* Draws text on the screen.
+	*
+	* @param text The string to draw
+	* @param font The font to use
+	* @param x The x-coordinate of the lower-left corner
+	* @param y The y-coordinate of the lower-left corner
+	*/
+	public void drawText(String text, BitmapFont font, float x, float y) {
 		if (active != DrawPass.STANDARD) {
 			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
 			return;
 		}
 		GlyphLayout layout = new GlyphLayout(font,text);
 		font.draw(spriteBatch, layout, x, y);
-    }
+	}
 
-    /**
-     * Draws text centered on the screen.
-     *
-     * @param text The string to draw
-     * @param font The font to use
-     * @param offset The y-value offset from the center of the screen.
-     */
-    public void drawTextCentered(String text, BitmapFont font, float offset) {
+	/**
+	* Draws text centered on the screen.
+	*
+	* @param text The string to draw
+	* @param font The font to use
+	* @param offset The y-value offset from the center of the screen.
+	*/
+	public void drawTextCentered(String text, BitmapFont font, float offset) {
 		if (active != DrawPass.STANDARD) {
 			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
 			return;
 		}
-		
+
 		GlyphLayout layout = new GlyphLayout(font,text);
 		float x = (getWidth()  - layout.width) / 2.0f;
 		float y = (getHeight() + layout.height) / 2.0f;
 		font.draw(spriteBatch, layout, x, y+offset);
-    }
+	}
     
 	/**
-	 * Start the debug drawing sequence.
-	 *
-	 * Nothing is flushed to the graphics card until the method end() is called.
-	 *
-	 * @param affine the global transform apply to the camera
-	 */
-    public void beginDebug(Affine2 affine) {
+	* Start the debug drawing sequence.
+	*
+	* Nothing is flushed to the graphics card until the method end() is called.
+	*
+	* @param affine the global transform apply to the camera
+	*/
+	public void beginDebug(Affine2 affine) {
 		global.setAsAffine(affine);
-    	global.mulLeft(camera.combined);
-    	debugRender.setProjectionMatrix(global);
-		
-    	debugRender.begin(ShapeRenderer.ShapeType.Line);
-    	active = DrawPass.DEBUG;
-    }
+		global.mulLeft(camera.combined);
+		debugRender.setProjectionMatrix(global);
+
+		debugRender.begin(ShapeRenderer.ShapeType.Line);
+		active = DrawPass.DEBUG;
+	}
     
 	/**
-	 * Start the debug drawing sequence.
-	 *
-	 * Nothing is flushed to the graphics card until the method end() is called.
-	 *
-	 * @param sx the amount to scale the x-axis
-	 * @param sy the amount to scale the y-axis
-	 */    
-    public void beginDebug(float sx, float sy) {
+	* Start the debug drawing sequence.
+	*
+	* Nothing is flushed to the graphics card until the method end() is called.
+	*
+	* @param sx the amount to scale the x-axis
+	* @param sy the amount to scale the y-axis
+	*/
+	public void beginDebug(float sx, float sy) {
 		global.idt();
 		global.scl(sx,sy,1.0f);
-    	global.mulLeft(camera.combined);
-    	debugRender.setProjectionMatrix(global);
-		
-    	debugRender.begin(ShapeRenderer.ShapeType.Line);
-    	active = DrawPass.DEBUG;
-    }
+		global.mulLeft(camera.combined);
+		debugRender.setProjectionMatrix(global);
+
+		debugRender.begin(ShapeRenderer.ShapeType.Line);
+		active = DrawPass.DEBUG;
+	}
 
 	/**
 	 * Start the debug drawing sequence.
 	 *
 	 * Nothing is flushed to the graphics card until the method end() is called.
 	 */
-    public void beginDebug() {
-    	debugRender.setProjectionMatrix(camera.combined);
-    	debugRender.begin(ShapeRenderer.ShapeType.Filled);
-    	debugRender.setColor(Color.RED);
-    	debugRender.circle(0, 0, 10);
-    	debugRender.end();
-    	
-    	debugRender.begin(ShapeRenderer.ShapeType.Line);
-    	active = DrawPass.DEBUG;
-    }
+	public void beginDebug() {
+		debugRender.setProjectionMatrix(camera.combined);
+		debugRender.begin(ShapeRenderer.ShapeType.Filled);
+		debugRender.setColor(Color.RED);
+		debugRender.circle(0, 0, 10);
+		debugRender.end();
+
+		debugRender.begin(ShapeRenderer.ShapeType.Line);
+		active = DrawPass.DEBUG;
+	}
 
 	/**
 	 * Ends the debug drawing sequence, flushing textures to the graphics card.
 	 */
-    public void endDebug() {
-    	debugRender.end();
-    	active = DrawPass.INACTIVE;
-    }
+	public void endDebug() {
+		debugRender.end();
+		active = DrawPass.INACTIVE;
+	}
     
-    /**
-     * Draws the outline of the given shape in the specified color
-     *
-     * @param shape The Box2d shape
-     * @param color The outline color
-     * @param x  The x-coordinate of the shape position
-     * @param y  The y-coordinate of the shape position
-     */
-    public void drawPhysics(PolygonShape shape, Color color, float x, float y) {
+	/**
+	* Draws the outline of the given shape in the specified color
+	*
+	* @param shape The Box2d shape
+	* @param color The outline color
+	* @param x  The x-coordinate of the shape position
+	* @param y  The y-coordinate of the shape position
+	*/
+	public void drawPhysics(PolygonShape shape, Color color, float x, float y) {
 		if (active != DrawPass.DEBUG) {
 			Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()", new IllegalStateException());
 			return;
 		}
-		
-    	float x0, y0, x1, y1;
-    	debugRender.setColor(color);
-    	for(int ii = 0; ii < shape.getVertexCount()-1; ii++) {
-    		shape.getVertex(ii  ,vertex);
-    		x0 = x+vertex.x; y0 = y+vertex.y;
-    		shape.getVertex(ii+1,vertex);
-    		x1 = x+vertex.x; y1 = y+vertex.y;
-    		debugRender.line(x0, y0, x1, y1);
-    	}
-    	// Close the loop
+
+		float x0, y0, x1, y1;
+		debugRender.setColor(color);
+		for(int ii = 0; ii < shape.getVertexCount()-1; ii++) {
+			shape.getVertex(ii  ,vertex);
+			x0 = x+vertex.x; y0 = y+vertex.y;
+			shape.getVertex(ii+1,vertex);
+			x1 = x+vertex.x; y1 = y+vertex.y;
+			debugRender.line(x0, y0, x1, y1);
+		}
+		// Close the loop
 		shape.getVertex(shape.getVertexCount()-1,vertex);
 		x0 = x+vertex.x; y0 = y+vertex.y;
 		shape.getVertex(0,vertex);
 		x1 = x+vertex.x; y1 = y+vertex.y;
 		debugRender.line(x0, y0, x1, y1);
-    }
+	}
 
-    /**
-     * Draws the outline of the given shape in the specified color
-     *
-     * @param shape The Box2d shape
-     * @param color The outline color
-     * @param x  The x-coordinate of the shape position
-     * @param y  The y-coordinate of the shape position
-     * @param angle  The shape angle of rotation
-     */
-    public void drawPhysics(PolygonShape shape, Color color, float x, float y, float angle) {
+	/**
+	* Draws the outline of the given shape in the specified color
+	*
+	* @param shape The Box2d shape
+	* @param color The outline color
+	* @param x  The x-coordinate of the shape position
+	* @param y  The y-coordinate of the shape position
+	* @param angle  The shape angle of rotation
+	*/
+	public void drawPhysics(PolygonShape shape, Color color, float x, float y, float angle) {
 		if (active != DrawPass.DEBUG) {
 			Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()", new IllegalStateException());
 			return;
 		}
-		
+
 		local.setToTranslation(x,y);
 		local.rotateRad(angle);
-		
-    	float x0, y0, x1, y1;
-    	debugRender.setColor(color);
-    	for(int ii = 0; ii < shape.getVertexCount()-1; ii++) {
-    		shape.getVertex(ii  ,vertex);
-    		local.applyTo(vertex);
-    		x0 = vertex.x; y0 = vertex.y;
-    		shape.getVertex(ii+1,vertex);
-    		local.applyTo(vertex);
-    		x1 = vertex.x; y1 = vertex.y;
-    		debugRender.line(x0, y0, x1, y1);
-    	}
-    	// Close the loop
+
+		float x0, y0, x1, y1;
+		debugRender.setColor(color);
+		for(int ii = 0; ii < shape.getVertexCount()-1; ii++) {
+			shape.getVertex(ii  ,vertex);
+			local.applyTo(vertex);
+			x0 = vertex.x; y0 = vertex.y;
+			shape.getVertex(ii+1,vertex);
+			local.applyTo(vertex);
+			x1 = vertex.x; y1 = vertex.y;
+			debugRender.line(x0, y0, x1, y1);
+		}
+		// Close the loop
 		shape.getVertex(shape.getVertexCount()-1,vertex);
 		local.applyTo(vertex);
 		x0 = vertex.x; y0 = vertex.y;
@@ -1061,41 +1075,41 @@ public class GameCanvas {
 		local.applyTo(vertex);
 		x1 = vertex.x; y1 = vertex.y;
 		debugRender.line(x0, y0, x1, y1);
-    }
+	}
 
-    /**
-     * Draws the outline of the given shape in the specified color
-     *
-     * @param shape The Box2d shape
-     * @param color The outline color
-     * @param x  The x-coordinate of the shape position
-     * @param y  The y-coordinate of the shape position
-     * @param angle  The shape angle of rotation
-     * @param sx The amount to scale the x-axis
-     * @param sx The amount to scale the y-axis
-     */
-    public void drawPhysics(PolygonShape shape, Color color, float x, float y, float angle, float sx, float sy) {
+	/**
+	* Draws the outline of the given shape in the specified color
+	*
+	* @param shape The Box2d shape
+	* @param color The outline color
+	* @param x  The x-coordinate of the shape position
+	* @param y  The y-coordinate of the shape position
+	* @param angle  The shape angle of rotation
+	* @param sx The amount to scale the x-axis
+	* @param sx The amount to scale the y-axis
+	*/
+	public void drawPhysics(PolygonShape shape, Color color, float x, float y, float angle, float sx, float sy) {
 		if (active != DrawPass.DEBUG) {
 			Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()", new IllegalStateException());
 			return;
 		}
-		
+
 		local.setToScaling(sx,sy);
 		local.translate(x,y);
 		local.rotateRad(angle);
-		
-    	float x0, y0, x1, y1;
-    	debugRender.setColor(color);
-    	for(int ii = 0; ii < shape.getVertexCount()-1; ii++) {
-    		shape.getVertex(ii  ,vertex);
-    		local.applyTo(vertex);
-    		x0 = vertex.x; y0 = vertex.y;
-    		shape.getVertex(ii+1,vertex);
-    		local.applyTo(vertex);
-    		x1 = vertex.x; y1 = vertex.y;
-    		debugRender.line(x0, y0, x1, y1);
-    	}
-    	// Close the loop
+
+		float x0, y0, x1, y1;
+		debugRender.setColor(color);
+		for(int ii = 0; ii < shape.getVertexCount()-1; ii++) {
+			shape.getVertex(ii  ,vertex);
+			local.applyTo(vertex);
+			x0 = vertex.x; y0 = vertex.y;
+			shape.getVertex(ii+1,vertex);
+			local.applyTo(vertex);
+			x1 = vertex.x; y1 = vertex.y;
+			debugRender.line(x0, y0, x1, y1);
+		}
+		// Close the loop
 		shape.getVertex(shape.getVertexCount()-1,vertex);
 		local.applyTo(vertex);
 		x0 = vertex.x; y0 = vertex.y;
@@ -1103,55 +1117,55 @@ public class GameCanvas {
 		local.applyTo(vertex);
 		x1 = vertex.x; y1 = vertex.y;
 		debugRender.line(x0, y0, x1, y1);
-    }
+	}
     
-    /** 
-     * Draws the outline of the given shape in the specified color
-     *
-     * The position of the circle is ignored.  Only the radius is used. To move the
-     * circle, change the x and y parameters.
-     * 
-     * @param shape The Box2d shape
-     * @param color The outline color
-     * @param x  The x-coordinate of the shape position
-     * @param y  The y-coordinate of the shape position
-     */
-    public void drawPhysics(CircleShape shape, Color color, float x, float y) {
+	/**
+	* Draws the outline of the given shape in the specified color
+	*
+	* The position of the circle is ignored.  Only the radius is used. To move the
+	* circle, change the x and y parameters.
+	*
+	* @param shape The Box2d shape
+	* @param color The outline color
+	* @param x  The x-coordinate of the shape position
+	* @param y  The y-coordinate of the shape position
+	*/
+	public void drawPhysics(CircleShape shape, Color color, float x, float y) {
 		if (active != DrawPass.DEBUG) {
 			Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()", new IllegalStateException());
 			return;
 		}
-		
-    	debugRender.setColor(color);
-    	debugRender.circle(x, y, shape.getRadius(),12);
-    }
+
+		debugRender.setColor(color);
+		debugRender.circle(x, y, shape.getRadius(),12);
+	}
     
-    /** 
-     * Draws the outline of the given shape in the specified color
-     *
-     * The position of the circle is ignored.  Only the radius is used. To move the
-     * circle, change the x and y parameters.
-     * 
-     * @param shape The Box2d shape
-     * @param color The outline color
-     * @param x  The x-coordinate of the shape position
-     * @param y  The y-coordinate of the shape position
-     * @param sx The amount to scale the x-axis
-     * @param sx The amount to scale the y-axis
-     */
-    public void drawPhysics(CircleShape shape, Color color, float x, float y, float sx, float sy) {
+	/**
+	* Draws the outline of the given shape in the specified color
+	*
+	* The position of the circle is ignored.  Only the radius is used. To move the
+	* circle, change the x and y parameters.
+	*
+	* @param shape The Box2d shape
+	* @param color The outline color
+	* @param x  The x-coordinate of the shape position
+	* @param y  The y-coordinate of the shape position
+	* @param sx The amount to scale the x-axis
+	* @param sx The amount to scale the y-axis
+	*/
+	public void drawPhysics(CircleShape shape, Color color, float x, float y, float sx, float sy) {
 		if (active != DrawPass.DEBUG) {
 			Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()", new IllegalStateException());
 			return;
 		}
-		
+
 		float x0 = x*sx;
 		float y0 = y*sy;
 		float w = shape.getRadius()*sx;
 		float h = shape.getRadius()*sy;
-    	debugRender.setColor(color);
-    	debugRender.ellipse(x0-w, y0-h, 2*w, 2*h, 12);
-    }
+		debugRender.setColor(color);
+		debugRender.ellipse(x0-w, y0-h, 2*w, 2*h, 12);
+	}
 
 	/**
 	 * Draws a line of a specific color between two points in the debug pass.

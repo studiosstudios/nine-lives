@@ -256,16 +256,13 @@ public class Mob extends CapsuleObstacle {
         maxspeed = data.getFloat("maxspeed", 0);
         damping = data.getFloat("damping", 0);
         force = data.getFloat("force", 0);
-//        groundSensorName = "catGroundSensor";
-//        sideSensorName = "catSideSensor";
         sensorShapes = new Array<>();
 
         this.data = data;
 
-
         // Gameplay attributes
         isGrounded = false;
-        setFacingRight(false);
+        setFacingRight(!data.getBoolean("facingRight"));
         isAggressive = data.getBoolean("aggressive");
         // setName("mob");
     }

@@ -86,6 +86,7 @@ public class AIController {
             // doesn't go into CHASE state, continues walking in same dir
             // check if there's anything blocking it in collision controller
             if (mob.isFacingRight()) {
+                System.out.println("moving right");
                 horizontal = MOVE_CONSTANT;
             } else {
                 horizontal = -MOVE_CONSTANT;

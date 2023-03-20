@@ -548,6 +548,7 @@ public class Cat extends CapsuleObstacle {
             canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x-10,getY()*drawScale.y-15, getAngle(),effect,1.0f);
             if (animationTime2 >= (0.05*5)){
                 animationTime2 = 0;
+                isMeowing = false;
             }
         }
         else {

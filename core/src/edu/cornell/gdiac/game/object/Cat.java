@@ -45,6 +45,9 @@ public class Cat extends CapsuleObstacle {
     private Animation<TextureRegion> animation2;
     private TextureRegion[][] spriteFrames2;
     private float animationTime2;
+    private Animation<TextureRegion> animation3;
+    private TextureRegion[][] spriteFrames3;
+    private float animationTime3;
     /** The amount to slow the character down */
     private final float damping;
     /** The maximum character speed */
@@ -350,14 +353,17 @@ public class Cat extends CapsuleObstacle {
         sensorShapes = new Array<>();
         this.data = data;
         jump_animated = false;
-        int spriteWidth = 50;
-        int spriteHeight = 50;
+        int spriteWidth = 65;
+        int spriteHeight = 65;
         spriteFrames = TextureRegion.split(arr[2], spriteWidth, spriteHeight);
-        spriteFrames2 = TextureRegion.split(arr[3], 47, 32);
+        spriteFrames2 = TextureRegion.split(arr[3], 62, 42);
+        spriteFrames3 = TextureRegion.split(arr[5], 62, 62);
         float frameDuration = 0.025f;
         animation = new Animation<>(frameDuration, spriteFrames[0]);
         animation2 = new Animation<>(0.05f, spriteFrames2[0]);
+        animation3 = new Animation<>(0.05f, spriteFrames3[0]);
         animationTime2 = 0f;
+        animationTime3 = 0f;
         animation.setPlayMode(Animation.PlayMode.REVERSED);
         animationTime = 0f;
 
@@ -533,32 +539,39 @@ public class Cat extends CapsuleObstacle {
         if (faceRight) {
             x = getX() * drawScale.x - 20;
         } else {
-            x = getX() * drawScale.x + 30;
+            x = getX() * drawScale.x + 40;
         }
         if(isJumping && !jump_animated){
             animation.setPlayMode(Animation.PlayMode.REVERSED);
             animationTime += Gdx.graphics.getDeltaTime();
             TextureRegion currentFrame = animation.getKeyFrame(animationTime);
-            canvas.draw(currentFrame,Color.WHITE, origin.x, origin.y,x,getY()*drawScale.y-25, getAngle(),effect,1.0f);
+            canvas.draw(currentFrame,Color.WHITE, origin.x, origin.y,x-20,getY()*drawScale.y-25, getAngle(),effect,1.0f);
         }
         else if((isMeowing && !isJumping) || animationTime2 != 0){
-            animation2.setPlayMode(Animation.PlayMode.NORMAL);
+            animation2.setPlayMode(Animation.PlayMode.REVERSED);
             animationTime2 += Gdx.graphics.getDeltaTime();
-            TextureRegion currentFrame2 = animation2.getKeyFrame(animationTime);
-            canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x-10,getY()*drawScale.y-15, getAngle(),effect,1.0f);
+            TextureRegion currentFrame2 = animation2.getKeyFrame(animationTime2);
+            canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x-5,getY()*drawScale.y-20, getAngle(),effect,1.0f);
             if (animationTime2 >= (0.05*5)){
                 animationTime2 = 0;
                 isMeowing = false;
             }
         }
+        else if((!isJumping && horizontalMovement != 0)){
+            animation3.setPlayMode(Animation.PlayMode.LOOP);
+            animationTime3 += Gdx.graphics.getDeltaTime();
+            TextureRegion currentFrame3 = animation3.getKeyFrame(animationTime3);
+            canvas.draw(currentFrame3,Color.WHITE, origin.x, origin.y,x-10,getY()*drawScale.y-28, getAngle(),effect,1.0f);
+        }
         else {
             if (isJumping) {
-                canvas.draw(jumping_texture, Color.WHITE, origin.x, origin.y, x, getY() * drawScale.y - 15, getAngle(), effect, 1.0f);
-            } else if (horizontalMovement != 0 || verticalMovement != 0){
+                canvas.draw(jumping_texture, Color.WHITE, origin.x-10, origin.y, x, getY() * drawScale.y - 15, getAngle(), effect, 1.0f);
+            }
+            else if (horizontalMovement != 0 || verticalMovement != 0){
                 canvas.draw(normal_texture, Color.WHITE, origin.x, origin.y, x, getY() * drawScale.y - 15, getAngle(), effect, 1.0f);
             }
             else{
-                canvas.draw(sit_texture, Color.WHITE, origin.x, origin.y, x, getY() * drawScale.y - 15, getAngle(), effect, 1.0f);
+                canvas.draw(sit_texture, Color.WHITE, origin.x, origin.y, x, getY() * drawScale.y - 20, getAngle(), effect, 1.0f);
             }
         }
     }

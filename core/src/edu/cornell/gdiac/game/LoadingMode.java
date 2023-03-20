@@ -4,6 +4,8 @@ import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -31,6 +33,7 @@ public class LoadingMode implements Screen {
 	/** The actual assets to be loaded */
 	private AssetDirectory assets;
 
+	private float animationTime;
 	/** Standard window size (for scaling) */
 	private static int STANDARD_WIDTH  = 1024;
 	/** Standard window height (for scaling) */
@@ -61,6 +64,9 @@ public class LoadingMode implements Screen {
 	/** The stage for the main menu */
 	private Stage mainMenuStage;
 	/** Background texture for start-up */
+	private boolean jump_animated;
+	private TextureRegion[][] spriteFrames;
+	private Animation<TextureRegion> animation;
 	private Texture background;
 	/** Play button to display when done */
 	private Texture playButton;
@@ -71,6 +77,7 @@ public class LoadingMode implements Screen {
 	/** Exit game button to display when done */
 	private Texture exitButton;
 	/** The current state of the play button */
+	private Texture jump_texture;
 	private int playButtonState;
 	/** The current state of the level select button */
 	private int levelSelectButtonState;
@@ -193,7 +200,14 @@ public class LoadingMode implements Screen {
 		// Load the next two images immediately.
 		background = internal.getEntry( "background", Texture.class );
 		background.setFilter( TextureFilter.Linear, TextureFilter.Linear );
-
+		jump_texture = internal.getEntry( "jump", Texture.class );
+		jump_animated = false;
+		int spriteWidth = 250;
+		int spriteHeight = 250;
+		spriteFrames = TextureRegion.split(jump_texture,spriteWidth, spriteHeight);
+		float frameDuration = 0.05f;
+		animation = new Animation<>(frameDuration, spriteFrames[0]);
+		animationTime = 0f;
 		// No progress so far.
 		playButtonState = 0;
 		levelSelectButtonState = 0;
@@ -261,10 +275,14 @@ public class LoadingMode implements Screen {
 	private void draw() {
 		Gdx.gl.glClearColor(0, 0, 0, 1.0f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		animation.setPlayMode(Animation.PlayMode.LOOP);
+		animationTime += Gdx.graphics.getDeltaTime();
+		TextureRegion currentFrame = animation.getKeyFrame(animationTime);
 		canvas.begin();
 		stage.getViewport().apply();
 		stage.act();
 		stage.draw();
+//		canvas.draw(jump_texture, Color.WHITE, 100,100,500,500);
 		canvas.end();
 	}
 

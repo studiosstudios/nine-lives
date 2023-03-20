@@ -653,7 +653,7 @@ public class Cat extends CapsuleObstacle {
             canvas.draw(currentFrame,Color.WHITE, origin.x, origin.y,x-20,getY()*drawScale.y-25, getAngle(),effect,1.0f);
         }
         else if((isMeowing && !(state == State.JUMPING)) || animationTime2 != 0){
-            animation2.setPlayMode(Animation.PlayMode.NORMAL);
+            animation2.setPlayMode(Animation.PlayMode.REVERSED);
             animationTime2 += Gdx.graphics.getDeltaTime();
             TextureRegion currentFrame2 = animation2.getKeyFrame(animationTime2);
             canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x-5,getY()*drawScale.y-20, getAngle(),effect,1.0f);

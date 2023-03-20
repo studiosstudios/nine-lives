@@ -12,6 +12,7 @@
         },
         "goal":   "shared/goaldoor.png",
         "cat":  "platform/cat.png",
+      "sit": "platform/Sit_Idle.png",
         "deadCat": "platform/deadCat.png",
       "jumpingCat": "platform/Jump.png",
       "jump_anim": "platform/jump_cat.png",

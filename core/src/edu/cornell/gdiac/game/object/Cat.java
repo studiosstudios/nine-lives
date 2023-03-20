@@ -81,6 +81,7 @@ public class Cat extends CapsuleObstacle {
     private boolean isClimbing;
     private Texture normal_texture;
     private Texture jumping_texture;
+    private Texture sit_texture;
     private boolean jump_animated;
 
     /** List of shapes corresponding to the sensors attached to this body */
@@ -337,6 +338,7 @@ public class Cat extends CapsuleObstacle {
         setFixedRotation(true);
         normal_texture = arr[0];
         jumping_texture = arr[1];
+        sit_texture = arr[4];
         maxspeed = data.getFloat("maxspeed", 0);
         damping = data.getFloat("damping", 0);
         force = data.getFloat("force", 0);
@@ -548,8 +550,11 @@ public class Cat extends CapsuleObstacle {
         else {
             if (isJumping) {
                 canvas.draw(jumping_texture, Color.WHITE, origin.x, origin.y, x, getY() * drawScale.y - 15, getAngle(), effect, 1.0f);
-            } else {
+            } else if (horizontalMovement != 0 || verticalMovement != 0){
                 canvas.draw(normal_texture, Color.WHITE, origin.x, origin.y, x, getY() * drawScale.y - 15, getAngle(), effect, 1.0f);
+            }
+            else{
+                canvas.draw(sit_texture, Color.WHITE, origin.x, origin.y, x, getY() * drawScale.y - 15, getAngle(), effect, 1.0f);
             }
         }
     }

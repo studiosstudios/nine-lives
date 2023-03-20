@@ -38,7 +38,7 @@ public class DesktopLauncher {
 		config.title = "9 Lives";
 		config.width  = 1024;
 		config.height = 576;
-//		config.fullscreen = true;
+		config.fullscreen = true;
 		new GDXApp(new NineLives(), config);
 	}
 }

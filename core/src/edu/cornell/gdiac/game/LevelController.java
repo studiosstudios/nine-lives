@@ -61,7 +61,7 @@ public class LevelController {
     /** Reference to the game canvas */
     protected GameCanvas canvas;
     /** The maximum number of lives in the game */
-    private static final int MAX_NUM_LIVES = 4;
+    private static final int MAX_NUM_LIVES = 9;
     /** The hashmap for texture regions */
     private HashMap<String, TextureRegion> textureRegionAssetMap;
     /** The hashmap for sounds */
@@ -100,11 +100,11 @@ public class LevelController {
         sensorFixtures = new ObjectSet<>();
 
         level = new Level(world, bounds, scale, MAX_NUM_LIVES);
-
         actionController = new ActionController(bounds, scale, volume);
+
         collisionController = new CollisionController(actionController);
-        actionController.setLevel(level);
         collisionController.setLevel(level);
+        actionController.setLevel(level);
     }
 
     /**
@@ -197,6 +197,7 @@ public class LevelController {
         world.setContactFilter(collisionController);
 
         collisionController.setReturn(false);
+        actionController.setControllers(level);
 
         boolean tempRet = isRet();
         setRet(false);
@@ -218,6 +219,7 @@ public class LevelController {
      */
     public void populateLevel(boolean ret, Cat prevCat) {
         level.populateLevel(textureRegionAssetMap, fontAssetMap, soundAssetMap, JSONconstants, levelJV, ret, prevCat);
+        actionController.setControllers(level);
     }
 
     /**
@@ -268,6 +270,7 @@ public class LevelController {
             setRet(true);
         }
         actionController.update(dt);
+        level.update(dt);
     }
 
     /**
@@ -295,6 +298,9 @@ public class LevelController {
             PooledList<Obstacle>.Entry entry = iterator.next();
             Obstacle obj = entry.getValue();
             if (obj.isRemoved()) {
+                if (obj instanceof DeadBody){
+                  level.removeDeadBody((DeadBody) obj);
+                }
                 obj.deactivatePhysics(world);
                 entry.remove();
             } else {

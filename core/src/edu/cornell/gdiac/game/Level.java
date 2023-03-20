@@ -83,6 +83,7 @@ public class Level {
     private Array<Activator> activators;
     private Array<Activatable> activatables;
     private Array<DeadBody> deadBodyArray;
+    private Array<Mob> mobArray;
     private Checkpoint currCheckpoint;
     private Array<Laser> lasers;
     /** The respawn position of the player */
@@ -98,6 +99,20 @@ public class Level {
 
     /** texture assets */
     private HashMap<String, TextureRegion> textureRegionAssetMap;
+
+    //region Spirit mode stuff
+    /** if the player is in spirit mode */
+    private boolean spiritMode;
+    /** cache for efficiency */
+    private Color spiritLineColor = new Color();
+    /** counter of total ticks in spirit mode */
+    private int spiritModeTicks;
+    /** next dead body to switch into */
+    private DeadBody nextDeadBody;
+    private Vector2 spiritEndPos = new Vector2();
+    private Vector2 spiritStartPos = new Vector2();
+    private boolean bodySwitched;
+    //endregion
 
     /**
      * Returns the bounding rectangle for the physics world
@@ -137,6 +152,7 @@ public class Level {
         return cat;
     }
 
+
     /**
      * Returns a reference to the exit door
      *
@@ -174,6 +190,13 @@ public class Level {
      * @return a reference to the dead body array
      */
     public Array<DeadBody> getdeadBodyArray() { return deadBodyArray; }
+
+    /**
+     * Returns a reference to the array of mobs
+     *
+     * @return a reference to the mob array
+     */
+    public Array<Mob> getMobArray() { return mobArray; }
 
     /**
      * Returns a reference to the respawn position
@@ -315,6 +338,7 @@ public class Level {
         activatables = new Array<>();
         deadBodyArray = new Array<>();
         lasers = new Array<>();
+        mobArray = new Array<>();
         activationRelations = new HashMap<>();
     }
 
@@ -457,7 +481,7 @@ public class Level {
         }
 
         for (JsonValue flamethrowerJV : levelJV.get("flamethrowers")){
-            Flamethrower flamethrower = new Flamethrower(tMap.get("flamethrower"), tMap.get("flame"),scale, flamethrowerJV);
+            Flamethrower flamethrower = new Flamethrower(tMap.get("flamethrower"), tMap.get("flame_anim"),scale, flamethrowerJV);
             loadActivatable(flamethrower, flamethrowerJV);
         }
 
@@ -475,11 +499,26 @@ public class Level {
         // Create cat
         dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
         dheight = tMap.get("cat").getRegionHeight()/scale.y;
-        cat = new Cat(levelJV.get("cat"), dwidth, dheight, ret, prevCat == null? null : prevCat.getPosition());
+        Texture[] arr = new Texture[5];
+        arr[0] = tMap.get("cat").getTexture();
+        arr[1] = tMap.get("jumpingCat").getTexture();
+        arr[2] = tMap.get("jump_anim").getTexture();
+        arr[3] = tMap.get("meow_anim").getTexture();
+        arr[4] = tMap.get("sit").getTexture();
+        cat = new Cat(levelJV.get("cat"), dwidth, dheight, ret, prevCat == null? null : prevCat.getPosition(),arr);
         cat.setDrawScale(scale);
-        cat.setTexture(tMap.get("cat"));
+//        cat.setTexture(tMap.get("cat"));
         respawnPos = cat.getPosition();
         addObject(cat);
+
+        spiritMode = false;
+        bodySwitched = false;
+        // Create mobs
+        for (JsonValue mobJV : levelJV.get("mobs")){
+            Mob mob = new Mob(tMap.get("roboMob"), scale, mobJV);
+            mobArray.add(mob);
+            addObject(mob);
+        }
     }
 
     public static void setConstants(JsonValue constants){
@@ -637,9 +676,17 @@ public class Level {
         if (background != null) {
             canvas.draw(background, 0, 0);
         }
+        //draw everything except cat and dead bodies
         for(Obstacle obj : objects) {
-            obj.draw(canvas);
+            if (obj != cat && !(obj instanceof DeadBody)){
+                obj.draw(canvas);
+            }
         }
+        canvas.drawFactoryLine(spiritStartPos, spiritEndPos, 2, spiritLineColor, scale.x, scale.y);
+        for (DeadBody db : deadBodyArray){
+            db.draw(canvas);
+        }
+        cat.draw(canvas);
         canvas.end();
 
         if (debug) {
@@ -674,5 +721,73 @@ public class Level {
         deadBodyArray.add(deadBody);
     }
 
+    /** removes a DeadBody from the dead body array */
+    public void removeDeadBody(DeadBody db){
+        deadBodyArray.removeValue(db, true);
+    }
 
+    /**
+     * Gets the next dead body to switch into. Currently selects the closest valid body.
+     * @return Dead body to switch into, null if there are none.
+     */
+    public DeadBody getNextBody(){
+        float minDist = Float.MAX_VALUE;
+        DeadBody nextdb = null;
+        for (DeadBody db : deadBodyArray){
+            if (db.isSwitchable()){
+                float dist = cat.getPosition().dst(db.getPosition());
+                if (dist < minDist){
+                    minDist = dist;
+                    nextdb = db;
+                }
+            }
+        }
+        return nextdb;
+    }
+
+    /**
+     * Sets if the level is in spirit mode or not. Currently all spirit mode does is draw a line
+     * from the cat to the closest valid dead body.
+     * @param next new spirit mode state of level
+     */
+    public void setSpiritMode(boolean next) {
+        if (next && !spiritMode){
+            spiritEndPos.set(cat.getPosition());
+        }
+        spiritMode = next;
+    }
+
+    /**
+     * Updates spirit mode logic
+     * @param dt Number of seconds since last animation frame
+     */
+    public void update(float dt){
+        if (bodySwitched) {
+            //fade out line if body was just switched
+            spiritLineColor.set(1, 1, 1, spiritLineColor.a - spiritLineColor.a / 5);
+            if (spiritLineColor.a < 0.01){
+                spiritLineColor.a = 0;
+                bodySwitched = false;
+            }
+        } else {
+            spiritStartPos.set(cat.getPosition());
+            if (spiritMode) {
+                //extend line to target
+                spiritModeTicks++;
+                spiritLineColor.set(1, 1, 1, spiritLineColor.a + (1 - spiritLineColor.a) / 20);
+                nextDeadBody = getNextBody();
+                if (nextDeadBody != null) {
+                    spiritEndPos.add(nextDeadBody.getPosition().sub(spiritEndPos).scl(0.2f));
+                } else {
+                    spiritEndPos.set(cat.getPosition());
+                }
+            } else {
+                //fade out line if cancelled
+                spiritModeTicks = 0;
+                spiritLineColor.set(1, 1, 1, spiritLineColor.a - spiritLineColor.a / 5);
+            }
+        }
+    }
+
+    public void setBodySwitched(boolean bs) {bodySwitched = bs;}
 }

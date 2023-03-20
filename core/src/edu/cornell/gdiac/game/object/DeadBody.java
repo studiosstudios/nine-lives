@@ -45,6 +45,11 @@ public class DeadBody extends BoxObstacle {
      * The physics shape of this object
      */
     private CircleShape sensorShape;
+    /** The number of hazards that the body is touching */
+    private int hazardsTouching;
+    /** If dead body is currently being hit by a laser.
+     * This is necessary because laser collisions are done with raycasting.*/
+    private boolean touchingLaser;
 
     /**
      * Returns ow hard the brakes are applied to get a dead body to stop moving
@@ -83,6 +88,29 @@ public class DeadBody extends BoxObstacle {
     }
 
     /**
+     * If the dead body is safe to be switched into.
+     * @return true if the dead body can be switched into
+     */
+    public boolean isSwitchable(){
+        return hazardsTouching == 0 && !touchingLaser;
+    }
+
+    /**
+     * Sets the dead body state to be touching a laser.
+     */
+    public void touchingLaser(){ touchingLaser = true; }
+
+    /**
+     * A new hazard has started touching this dead body.
+     */
+    public void addHazard(){ hazardsTouching++; }
+
+    /**
+     * A hazard has stopped touching this dead body.
+     */
+    public void removeHazard(){ hazardsTouching--; }
+
+    /**
      * Creates a new dead body model with the given physics data
      * <p>
      * The size is expressed in physics units NOT pixels.  In order for
@@ -113,7 +141,6 @@ public class DeadBody extends BoxObstacle {
         burnTicks = 0;
         burning = false;
         faceRight = true;
-
         //create centre sensor (for fixing to spikes)
 
         setName("deadBody");
@@ -145,7 +172,7 @@ public class DeadBody extends BoxObstacle {
         // Ground sensor to represent our feet
         Fixture sensorFixture = body.createFixture(sensorDef);
         sensorFixture.setUserData(this);
-
+        body.setUserData(this);
         return true;
     }
 
@@ -161,6 +188,7 @@ public class DeadBody extends BoxObstacle {
         // Apply cooldowns
 
         super.update(dt);
+        touchingLaser = false;
         if (burning) {
             burnTicks++;
             if (burnTicks >= TOTAL_BURN_TICKS){

@@ -10,6 +10,10 @@
  */
 package edu.cornell.gdiac.game.object;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
@@ -40,6 +44,12 @@ public class Cat extends CapsuleObstacle {
     /** Whether we are actively dashing */
     private boolean isDashing;
     public boolean canDash;
+    private Animation<TextureRegion> animation;
+    private TextureRegion[][] spriteFrames;
+    private float animationTime;
+    private Animation<TextureRegion> animation2;
+    private TextureRegion[][] spriteFrames2;
+    private float animationTime2;
     /** The amount to slow the character down */
     private final float damping;
     /** The maximum character speed */
@@ -63,6 +73,10 @@ public class Cat extends CapsuleObstacle {
 
     /** Whether the jump key is pressed*/
     private boolean jumpPressed;
+    /** Which direction is the character facing */
+    private boolean faceRight;
+    /** Whether we are actively jumping */
+    private boolean isMeowing;
     /** Whether our feet are on the ground */
     private boolean isGrounded;
 
@@ -70,13 +84,15 @@ public class Cat extends CapsuleObstacle {
     private int wallCount;
     /** Whether we are climbing on a wall */
     private boolean isClimbing;
+    private Texture normal_texture;
+    private Texture jumping_texture;
+    private Texture sit_texture;
+    private boolean jump_animated;
 
     private boolean climbingPressed;
 
     private boolean dashPressed;
 
-    /** Which direction is the character facing */
-    private boolean faceRight;
 
     /** List of shapes corresponding to the sensors attached to this body */
     private Array<PolygonShape> sensorShapes;
@@ -117,6 +133,7 @@ public class Cat extends CapsuleObstacle {
 //            stoppedJumping = true;
 //        }
     }
+    public void setMeowing(boolean value){ isMeowing = value;}
 
     /**
      * Returns true if the cat is actively jumping.
@@ -139,7 +156,6 @@ public class Cat extends CapsuleObstacle {
         verticalMovement = value * getForce();
     }
 
-    public void setDashing(boolean value){ isDashing = value; }
     public void setDashPressed(boolean value) {
         dashPressed = value;
     }
@@ -209,6 +225,9 @@ public class Cat extends CapsuleObstacle {
         if (isGrounded) {
             canDash = true;
             dashTimer = 0;
+            jump_animated = false;
+            animationTime = 0;
+            animationTime2 = 0;
             jumpMovement = jump_force;
         }
     }
@@ -303,7 +322,8 @@ public class Cat extends CapsuleObstacle {
      * @param width		The object width in physics units
      * @param height	The object width in physics units
      */
-    public Cat(JsonValue data, float width, float height, boolean ret, Vector2 prev_pos) {
+    public Cat(JsonValue data, float width, float height, boolean ret, Vector2 prev_pos,
+               com.badlogic.gdx.graphics.Texture[] arr) {
         // The shrink factors fit the image to a tigher hitbox
         super(data.get(ret?"ret_pos":"pos").getFloat(0),
                 prev_pos == null ? data.get(ret?"ret_pos":"pos").getFloat(1) : prev_pos.y,
@@ -313,7 +333,9 @@ public class Cat extends CapsuleObstacle {
         setDensity(data.getFloat("density", 0));
         setFriction(data.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
         setFixedRotation(true);
-
+        normal_texture = arr[0];
+        jumping_texture = arr[1];
+        sit_texture = arr[4];
         maxspeed = data.getFloat("maxspeed", 0);
         damping = data.getFloat("damping", 0);
         force = data.getFloat("force", 0);
@@ -324,6 +346,17 @@ public class Cat extends CapsuleObstacle {
         sideSensorName = "catSideSensor";
         sensorShapes = new Array<>();
         this.data = data;
+        jump_animated = false;
+        int spriteWidth = 50;
+        int spriteHeight = 50;
+        spriteFrames = TextureRegion.split(arr[2], spriteWidth, spriteHeight);
+        spriteFrames2 = TextureRegion.split(arr[3], 47, 32);
+        float frameDuration = 0.025f;
+        animation = new Animation<>(frameDuration, spriteFrames[0]);
+        animation2 = new Animation<>(0.05f, spriteFrames2[0]);
+        animationTime2 = 0f;
+        animation.setPlayMode(Animation.PlayMode.REVERSED);
+        animationTime = 0f;
 
         // Gameplay attributes
         state = State.MOVING;
@@ -331,10 +364,13 @@ public class Cat extends CapsuleObstacle {
         isGrounded = false;
         canDash = true;
         jumpPressed = false;
-        faceRight = !ret;
+        isMeowing = false;
+        if(ret)
+            faceRight = false;
+        else
+            faceRight = true;
         setName("cat");
     }
-
     /**
      * Creates the physics Body(s) for this object, adding them to the world.
      *
@@ -598,7 +634,38 @@ public class Cat extends CapsuleObstacle {
      */
     public void draw(GameCanvas canvas) {
         float effect = faceRight ? 1.0f : -1.0f;
-        canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),effect,1.0f);
+        float x;
+        if (faceRight) {
+            x = getX() * drawScale.x - 20;
+        } else {
+            x = getX() * drawScale.x + 30;
+        }
+        if(state == State.JUMPING && !jump_animated){
+            animation.setPlayMode(Animation.PlayMode.REVERSED);
+            animationTime += Gdx.graphics.getDeltaTime();
+            TextureRegion currentFrame = animation.getKeyFrame(animationTime);
+            canvas.draw(currentFrame,Color.WHITE, origin.x, origin.y,x,getY()*drawScale.y-25, getAngle(),effect,1.0f);
+        }
+        else if((isMeowing && !(state == State.JUMPING)) || animationTime2 != 0){
+            animation2.setPlayMode(Animation.PlayMode.NORMAL);
+            animationTime2 += Gdx.graphics.getDeltaTime();
+            TextureRegion currentFrame2 = animation2.getKeyFrame(animationTime);
+            canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x-10,getY()*drawScale.y-15, getAngle(),effect,1.0f);
+            if (animationTime2 >= (0.05*5)){
+                animationTime2 = 0;
+                isMeowing = false;
+            }
+        }
+        else {
+            if (state == State.JUMPING) {
+                canvas.draw(jumping_texture, Color.WHITE, origin.x, origin.y, x, getY() * drawScale.y - 15, getAngle(), effect, 1.0f);
+            } else if (horizontalMovement != 0 || verticalMovement != 0){
+                canvas.draw(normal_texture, Color.WHITE, origin.x, origin.y, x, getY() * drawScale.y - 15, getAngle(), effect, 1.0f);
+            }
+            else{
+                canvas.draw(sit_texture, Color.WHITE, origin.x, origin.y, x, getY() * drawScale.y - 15, getAngle(), effect, 1.0f);
+            }
+        }
     }
 
     /**

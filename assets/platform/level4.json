@@ -29,6 +29,7 @@
 	"boxes" : [],
 	"flamethrowers" : [],
 	"lasers" : [],
+	"mobs": [],
 	"mirrors": [],
 	"checkpoints" : [{"pos" : [1, 13]}],
 	"goal" : {

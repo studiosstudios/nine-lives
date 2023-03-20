@@ -76,6 +76,19 @@ public class InputController {
 	/** Whether the previous button was pressed. */
 	private boolean prevPressed;
 	private boolean prevPrevious;
+
+	/** Whether the body switch button was pressed. */
+	private boolean switchPressed;
+	private boolean switchPrevious;
+
+	/** Whether the cancel button was pressed. */
+	private boolean cancelPressed;
+	private boolean cancelPrevious;
+
+	/** if the cancel button was pressed */
+	private boolean didCancel;
+	/** if the switch has been cancelled */
+	private boolean cancelled;
 	
 	/** How much did we move horizontally? */
 	private float horizontal;
@@ -212,7 +225,7 @@ public class InputController {
 	public boolean didDebug() {
 		return debugPressed && !debugPrevious;
 	}
-	
+
 	/**
 	 * Returns true if the exit button was pressed.
 	 *
@@ -230,7 +243,34 @@ public class InputController {
 	public boolean didMeow() {
 		return meowPressed && !meowPrevious;
 	}
-	
+
+	/**
+	 * Returns true if the switch button was released.
+	 *
+	 * @return true if the switch button was released.
+	 */
+	public boolean didSwitch() {
+		if (!switchPressed && switchPrevious){
+			if (cancelled){
+				cancelled = false;
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Returns true if the switch button is being held.
+	 *
+	 * @return true if the switch button is being held.
+	 */
+	public boolean holdSwitch() {
+		didCancel = cancelPressed && !cancelPrevious;
+		cancelled = cancelled || didCancel;
+		return switchPressed & !cancelled;
+	}
+
 	/**
 	 * Creates a new input controller
 	 * 
@@ -250,7 +290,7 @@ public class InputController {
 	 * the drawing scale to convert screen coordinates to world coordinates.  The
 	 * bounds are for the crosshair.  They cannot go outside of this zone.
 	 *
-	 * @param bounds The input bounds for the crosshair.  
+	 * @param bounds The input bound/s for the crosshair.
 	 * @param scale  The drawing scale
 	 */
 	public void readInput(Rectangle bounds, Vector2 scale) {
@@ -265,6 +305,8 @@ public class InputController {
 		meowPrevious = meowPressed;
 		nextPrevious  = nextPressed;
 		prevPrevious = prevPressed;
+		switchPrevious = switchPressed;
+		cancelPressed = cancelPrevious;
 		
 		readKeyboard(bounds, scale);
 	}
@@ -286,10 +328,14 @@ public class InputController {
 		climbPressed = (Gdx.input.isKeyPressed(Input.Keys.A));
 		exitPressed  = (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
 		meowPressed = (Gdx.input.isKeyPressed(Input.Keys.M));
+		switchPressed = (Gdx.input.isKeyPressed(Input.Keys.S));
+		cancelPressed = (Gdx.input.isKeyPressed(Input.Keys.C));
 
 		//useful keys for testing/debugging
 		nextPressed = (Gdx.input.isKeyPressed(Input.Keys.N));
 		prevPressed  = (Gdx.input.isKeyPressed(Input.Keys.P));
+
+
 
 		// Directional controls
 		horizontal = 0.0f;

@@ -106,7 +106,6 @@ public class CollisionController implements ContactListener, ContactFilter {
                 if (bd2 == level.getRetDoor()) {
                     setReturn(true);
                 }
-
                 if (fd2 instanceof Spikes) {
                     actionController.die();
                 }
@@ -116,22 +115,39 @@ public class CollisionController implements ContactListener, ContactFilter {
                 if (fd2 instanceof Checkpoint){
                     level.updateCheckpoints(((Checkpoint) fd2));
                 }
+                if (bd2 instanceof Mob){
+//                    System.out.println("hit a mob");
+                    actionController.die();
+                }
             }
 
-            //Check for body
-            if (fd1 instanceof DeadBody) {
-                if (fd2 instanceof Spikes) {
-                    actionController.fixBodyToSpikes((DeadBody) fd1, (Spikes) fd2, contact.getWorldManifold().getPoints());
-                } else if (fd2 == Flamethrower.getSensorName()) {
-                    ((DeadBody) fd1).setBurning(true);
-                }
+            //dead body collisions
+            if (fd1 instanceof DeadBody ||fd2 instanceof DeadBody) {
 
-            } else if (fd2 instanceof DeadBody) {
-                if (fd1 instanceof Spikes) {
-                    actionController.fixBodyToSpikes((DeadBody) fd2, (Spikes) fd1, contact.getWorldManifold().getPoints());
-                } else if (fd1 == Flamethrower.getSensorName()) {
-                    ((DeadBody) fd2).setBurning(true);
+                //ensure fd1 is DeadBody
+                if (fd2 instanceof DeadBody) {
+                    //don't need to swap fd1 and fd2 because we are assuming fd1 is dead body
+                    bd2 = bd1;
+
+                    Object temp = fd1;
+                    fd1 = fd2;
+                    fd2 = temp;
                 }
+                DeadBody db = (DeadBody) fd1;
+                if (fd2 instanceof Spikes) {
+                    actionController.fixBodyToSpikes(db, (Spikes) fd2, contact.getWorldManifold().getPoints());
+                    db.addHazard();
+                } else if (fd2 == Flamethrower.getSensorName()) {
+                    db.setBurning(true);
+                    db.addHazard();
+                }
+            }
+
+            // Mob changes direction when hits a wall
+            if (bd1 instanceof Mob) {
+                ((Mob) bd1).setFacingRight(!((Mob) bd1).isFacingRight());
+            } else if (bd2 instanceof Mob) {
+                ((Mob) bd2).setFacingRight(!((Mob) bd2).isFacingRight());
             }
 
             // Check for activator
@@ -179,16 +195,32 @@ public class CollisionController implements ContactListener, ContactFilter {
             level.getCat().decrementWalled();
         }
 
-        //Check for body
-        if (fd1 instanceof DeadBody) {
-            if (fd2 == Flamethrower.getSensorName()) {
-                ((DeadBody) fd1).setBurning(false);
-            }
+        //dead body collisions
+        if (fd1 instanceof DeadBody ||fd2 instanceof DeadBody) {
 
-        } else if (fd2 instanceof DeadBody) {
-            if (fd1 == Flamethrower.getSensorName()) {
-                ((DeadBody) fd2).setBurning(false);
+            //ensure fd1 is DeadBody
+            if (fd2 instanceof DeadBody) {
+                //don't need to swap fd1 and fd2 because we are assuming fd1 is dead body
+                bd2 = bd1;
+
+                Object temp = fd1;
+                fd1 = fd2;
+                fd2 = temp;
             }
+            DeadBody db = (DeadBody) fd1;
+            if (fd2 instanceof Spikes) {
+                db.removeHazard();
+            } else if (fd2 == Flamethrower.getSensorName()) {
+                db.setBurning(false);
+                db.removeHazard();
+            }
+        }
+
+        // Check mobs
+        if (fd1 instanceof Mob) {
+            ((Mob) fd1).setFacingRight(!((Mob) fd1).isFacingRight());
+        } else if (fd2 instanceof Mob) {
+            ((Mob) fd1).setFacingRight(!((Mob) fd1).isFacingRight());
         }
 
         // Check for button

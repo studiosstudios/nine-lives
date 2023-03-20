@@ -353,7 +353,7 @@ public class Cat extends CapsuleObstacle {
         int spriteWidth = 50;
         int spriteHeight = 50;
         spriteFrames = TextureRegion.split(arr[2], spriteWidth, spriteHeight);
-        spriteFrames2 = TextureRegion.split(arr[3], 32, 32);
+        spriteFrames2 = TextureRegion.split(arr[3], 47, 32);
         float frameDuration = 0.025f;
         animation = new Animation<>(frameDuration, spriteFrames[0]);
         animation2 = new Animation<>(0.05f, spriteFrames2[0]);
@@ -541,12 +541,15 @@ public class Cat extends CapsuleObstacle {
             TextureRegion currentFrame = animation.getKeyFrame(animationTime);
             canvas.draw(currentFrame,Color.WHITE, origin.x, origin.y,x,getY()*drawScale.y-25, getAngle(),effect,1.0f);
         }
-//        else if(isMeowing && !isJumping){
-//            animation2.setPlayMode(Animation.PlayMode.NORMAL);
-//            animationTime2 += Gdx.graphics.getDeltaTime();
-//            TextureRegion currentFrame2 = animation2.getKeyFrame(animationTime);
-//            canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x,(getY()*drawScale.y-25)*2, getAngle(),effect,1.0f);
-//        }
+        else if((isMeowing && !isJumping) || animationTime2 != 0){
+            animation2.setPlayMode(Animation.PlayMode.NORMAL);
+            animationTime2 += Gdx.graphics.getDeltaTime();
+            TextureRegion currentFrame2 = animation2.getKeyFrame(animationTime);
+            canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x-10,getY()*drawScale.y-15, getAngle(),effect,1.0f);
+            if (animationTime2 >= (0.05*5)){
+                animationTime2 = 0;
+            }
+        }
         else {
             if (isJumping) {
                 canvas.draw(jumping_texture, Color.WHITE, origin.x, origin.y, x, getY() * drawScale.y - 15, getAngle(), effect, 1.0f);

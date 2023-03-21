@@ -1,28 +1,7 @@
 {
-	//TODO: factor constants out of level JSON and into constants JSON
 	"cat" : {
 		"pos": [0.5, 15],
-		"ret_pos": [31.5,13],
-		"shrink": [0.7, 0.95],
-		"force": 30.0,
-		"damping": 30.0,
-		"density": 1.0,
-		"friction": 0.0,
-		"maxspeed": 6.5,
-		"jump_force": 2.5,
-		"jump_damping": 0.8,
-		"dash_force": 1.5,
-		"sensor": {
-			"shrink": 0.9
-		},
-		"ground_sensor": {
-			"shrink" : 0.6,
-			"height" : 0.05
-		},
-		"side_sensor": {
-			"shrink" : 0.6,
-			"width": 0.2
-		}
+		"ret_pos": [31.5,13]
 	},
 	"spikes": [
 		{"pos" : [24, 13], "angle": 0, "active": true, "activatorID": "button1"},
@@ -34,28 +13,13 @@
 		{"pos" : [28, 15], "angle": 0, "active": false, "activatorID": "button1"},
 		{"pos" : [28, 16], "angle": 180, "active": false, "activatorID": "button1"}],
 	"activators": [{"pos": [14, 12], "type": "button", "id" : "button1"}],
-	"boxes" : [],
 	"flamethrowers" : [{"pos": [5, 14], "pushable": true, "angle": 270}],
-	"checkpoints" : [],
 	"lasers" : [{"pos" :  [17, 12], "angle" : 90, "active":true}],
-	"mobs": [],
-	"mirrors": [],
-	"goal" : {
-		"pos": [34.5, 13.5],
-		"density": 0.0,
-		"friction": 0.0,
-		"restitution": 0.0
-	},
-	"ret_goal" : {
-		"pos": [-2.5, 15.5],
-		"density": 0.0,
-		"friction": 0.0,
-		"restitution": 0.0
-	},
+	"exits" : [{"type":  "return", "height": 18, "pos": [0, 9]},
+		{"type":  "goal", "height": 18, "pos": [32, 9]}],
 	"walls": 		[
-			 			[32.0, 18.0, 32.0, 17.0,  0, 17.0,0,18],
-						[0, 15, 4, 15, 4, 0, 0, 0],
-						[4, 13, 10, 13, 11, 12, 18, 12, 18, 13, 32, 13, 32, 0, 4, 0]
-			 		],
-	"platforms": []
+		{"shape":[32.0, 18.0, 32.0, 17.0,  0, 17.0,0,18]},
+		{"shape":[0, 15, 4, 15, 4, 0, 0, 0]},
+		{"shape":[4, 13, 10, 13, 11, 12, 18, 12, 18, 13, 32, 13, 32, 0, 4, 0]}
+			 		]
 }

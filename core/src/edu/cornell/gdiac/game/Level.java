@@ -381,120 +381,109 @@ public class Level {
         // Add level goal
         dwidth  = tMap.get("goal").getRegionWidth()/scale.x;
         dheight = tMap.get("goal").getRegionHeight()*5/scale.y; //TEMP FIX TO CAT GETTING LOST UPON JUMPING INTO NEXT LEVEL
+        System.out.println(dwidth);
+        System.out.println(dheight);
 
         activationRelations = new HashMap<>();
         background = tMap.get("background").getTexture();
 
-        JsonValue goal = levelJV.get("goal");
-        JsonValue goalpos = goal.get("pos");
-        goalDoor = new BoxObstacle(goalpos.getFloat(0),goalpos.getFloat(1),dwidth,dheight);
-        goalDoor.setBodyType(BodyDef.BodyType.StaticBody);
-        goalDoor.setDensity(goal.getFloat("density", 0));
-        goalDoor.setFriction(goal.getFloat("friction", 0));
-        goalDoor.setRestitution(goal.getFloat("restitution", 0));
-//        goalDoor.setSensor(true);
-        goalDoor.setDrawScale(scale);
-        goalDoor.setTexture(tMap.get("goal"));
-        goalDoor.setName("goal");
-        addObject(goalDoor);
+        try {
+            for (JsonValue exitJV : levelJV.get("exits")){
+                Exit exit = new Exit(scale, exitJV);
+                addObject(exit);
+            }
+        } catch (NullPointerException e) {}
 
-        JsonValue retgoal = levelJV.get("ret_goal");
-        JsonValue retgoalpos = retgoal.get("pos");
-        retDoor = new BoxObstacle(retgoalpos.getFloat(0),retgoalpos.getFloat(1),dwidth,dheight);
-        retDoor.setBodyType(BodyDef.BodyType.StaticBody);
-        retDoor.setDensity(retgoal.getFloat("density", 0));
-        retDoor.setFriction(retgoal.getFloat("friction", 0));
-        retDoor.setRestitution(retgoal.getFloat("restitution", 0));
-//        goalDoor.setSensor(true);
-        retDoor.setDrawScale(scale);
-        retDoor.setTexture(tMap.get("goal"));
-        retDoor.setName("ret_goal");
-        addObject(retDoor);
-
-        String wname = "wall";
-        JsonValue walljv = levelJV.get("walls");
         JsonValue defaults = constants.get("defaults");
-        for (int ii = 0; ii < walljv.size; ii++) {
-            PolygonObstacle obj;
-            obj = new PolygonObstacle(walljv.get(ii).asFloatArray(), 0, 0);
-            obj.setBodyType(BodyDef.BodyType.StaticBody);
-            obj.setDensity(defaults.getFloat( "density", 0.0f ));
-            obj.setFriction(defaults.getFloat( "friction", 0.0f ));
-            obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
-            obj.setDrawScale(scale);
-            obj.setTexture(tMap.get("steel"));
-//            obj.setName(wname+ii);
-            obj.setName(wname);
-            addObject(obj);
-        }
-
-        String pname = "platform";
-        JsonValue platjv = levelJV.get("platforms");
-        for (int ii = 0; ii < platjv.size; ii++) {
-            PolygonObstacle obj;
-            obj = new PolygonObstacle(platjv.get(ii).asFloatArray(), 0, 0);
-            obj.setBodyType(BodyDef.BodyType.StaticBody);
-            obj.setDensity(defaults.getFloat( "density", 0.0f ));
-            obj.setFriction(defaults.getFloat( "friction", 0.0f ));
-            obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
-            obj.setDrawScale(scale);
-            obj.setTexture(tMap.get("steel"));
-            obj.setName(pname+ii);
-            addObject(obj);
-        }
-
         // This world is heavier
         world.setGravity( new Vector2(0,defaults.getFloat("gravity",0)) );
 
-        for (JsonValue activatorJV : levelJV.get("activators")){
-            Activator activator;
-            switch (activatorJV.getString("type")){
-                case "button":
-                    activator = new Button(tMap.get("button_anim"), tMap.get("button"), scale, activatorJV);
-                    break;
-                case "switch":
-                    activator = new Switch(tMap.get("button_anim"), tMap.get("button"),scale, activatorJV);
-                    break;
-                case "timed":
-                    activator = new TimedButton(tMap.get("button_anim"), tMap.get("button"),scale, activatorJV);
-                    break;
-                default:
-                    throw new RuntimeException("unrecognised activator type");
+        try {
+            for (JsonValue wallJV : levelJV.get("walls")){
+                Wall wall = new Wall(tMap.get("steel"), scale, wallJV);
+                addObject(wall);
             }
-            activators.add(activator);
-            addObject(activator);
-        }
+        } catch (NullPointerException e) {}
 
-        for (JsonValue spikeJV : levelJV.get("spikes")){
-            Spikes spike = new Spikes(tMap.get("spikes"), scale, spikeJV);
-            loadActivatable(spike, spikeJV);
-        }
+        try {
+            for (JsonValue wallJV : levelJV.get("platforms")){
+                Wall wall = new Wall(tMap.get("steel"), scale, wallJV);
+                addObject(wall);
+            }
+        } catch (NullPointerException e) {}
 
-        for (JsonValue checkpointJV : levelJV.get("checkpoints")){
-            Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint"), tMap.get("checkpointActive"));
-            addObject(checkpoint);
-        }
+        try {
+            for (JsonValue activatorJV : levelJV.get("activators")){
+                Activator activator;
+                switch (activatorJV.getString("type")){
+                    case "button":
+                        activator = new Button(tMap.get("button_anim"), tMap.get("button"), scale, activatorJV);
+                        break;
+                    case "switch":
+                        activator = new Switch(tMap.get("button_anim"), tMap.get("button"),scale, activatorJV);
+                        break;
+                    case "timed":
+                        activator = new TimedButton(tMap.get("button_anim"), tMap.get("button"),scale, activatorJV);
+                        break;
+                    default:
+                        throw new RuntimeException("unrecognised activator type");
+                }
+                activators.add(activator);
+                addObject(activator);
+            }
+        } catch (NullPointerException e) {}
 
-        for(JsonValue boxJV : levelJV.get("boxes")){
-            PushableBox box = new PushableBox(tMap.get("steel"), scale, boxJV);
-            loadActivatable(box, boxJV);
-        }
+        try {
+            for (JsonValue spikeJV : levelJV.get("spikes")) {
+                Spikes spike = new Spikes(tMap.get("spikes"), scale, spikeJV);
+                loadActivatable(spike, spikeJV);
+            }
+        } catch (NullPointerException e) {}
 
-        for (JsonValue flamethrowerJV : levelJV.get("flamethrowers")){
-            Flamethrower flamethrower = new Flamethrower(tMap.get("flamethrower"), tMap.get("flame_anim"),scale, flamethrowerJV);
-            loadActivatable(flamethrower, flamethrowerJV);
-        }
+        try {
+            for (JsonValue checkpointJV : levelJV.get("checkpoints")){
+                Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint"), tMap.get("checkpointActive"));
+                addObject(checkpoint);
+            }
+        } catch (NullPointerException e) {}
 
-        for (JsonValue laserJV : levelJV.get("lasers")){
-            Laser laser = new Laser(tMap.get("laser"), scale, laserJV);
-            loadActivatable(laser, laserJV);
-            lasers.add(laser);
-        }
+        try {
+            for(JsonValue boxJV : levelJV.get("boxes")){
+                PushableBox box = new PushableBox(tMap.get("steel"), scale, boxJV);
+                loadActivatable(box, boxJV);
+            }
+        } catch (NullPointerException e) {}
 
-        for (JsonValue mirrorJV : levelJV.get("mirrors")){
-            Mirror mirror = new Mirror(tMap.get("steel"), scale, mirrorJV);
-            addObject(mirror);
-        }
+        try {
+            for (JsonValue flamethrowerJV : levelJV.get("flamethrowers")){
+                Flamethrower flamethrower = new Flamethrower(tMap.get("flamethrower"), tMap.get("flame_anim"),scale, flamethrowerJV);
+                loadActivatable(flamethrower, flamethrowerJV);
+            }
+        } catch (NullPointerException e) {}
+
+        try {
+            for (JsonValue laserJV : levelJV.get("lasers")){
+                Laser laser = new Laser(tMap.get("laser"), scale, laserJV);
+                loadActivatable(laser, laserJV);
+                lasers.add(laser);
+            }
+        } catch (NullPointerException e) {}
+
+        try {
+            for (JsonValue mirrorJV : levelJV.get("mirrors")){
+                Mirror mirror = new Mirror(tMap.get("steel"), scale, mirrorJV);
+                addObject(mirror);
+            }
+        } catch (NullPointerException e) {}
+
+        // Create mobs
+        try {
+            for (JsonValue mobJV : levelJV.get("mobs")){
+                Mob mob = new Mob(tMap.get("roboMob"), scale, mobJV);
+                mobArray.add(mob);
+                addObject(mob);
+            }
+        } catch (NullPointerException e) {}
 
         // Create cat
         dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
@@ -513,12 +502,6 @@ public class Level {
 
         spiritMode = false;
         bodySwitched = false;
-        // Create mobs
-        for (JsonValue mobJV : levelJV.get("mobs")){
-            Mob mob = new Mob(tMap.get("roboMob"), scale, mobJV);
-            mobArray.add(mob);
-            addObject(mob);
-        }
     }
 
     public static void setConstants(JsonValue constants){
@@ -530,6 +513,10 @@ public class Level {
         Laser.setConstants(constants.get("lasers"));
         Checkpoint.setConstants(constants.get("checkpoint"));
         Mirror.setConstants(constants.get("mirrors"));
+        Wall.setConstants(constants.get("walls"));
+        Platform.setConstants(constants.get("platforms"));
+        Cat.setConstants(constants.get("cat"));
+        Exit.setConstants(constants.get("exits"));
     }
 
     /**

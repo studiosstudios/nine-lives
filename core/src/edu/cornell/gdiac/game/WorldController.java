@@ -230,7 +230,7 @@ public class WorldController implements Screen {
 		this.directory = directory;
 
 		// Giving assets to levelController
-		System.out.println("resetting assets");
+//		System.out.println("resetting assets");
 //		System.out.println(levelJSON(1).get("checkpoints").get(0).get("pos"));
 		currLevel.setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants, levelJSON(1));
 		nextJSON = levelJSON(2);
@@ -268,10 +268,10 @@ public class WorldController implements Screen {
 			prevLevel(InputController.getInstance().didPrev());
 			return false;
 		}
-		if(currLevel.refreshJson){
-			gatherAssets(currLevel.temp_assets); //This gather assets not updating directory
+		if(currLevel.isRefreshJson()){
+			gatherAssets(currLevel.getTempAssets());
 			currLevel.reset(null);
-			currLevel.refreshJson = false;
+			currLevel.setRefreshJson(false);
 			return false;
 		}
 		return true;

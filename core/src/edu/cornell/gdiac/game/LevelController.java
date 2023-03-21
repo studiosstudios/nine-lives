@@ -79,8 +79,11 @@ public class LevelController {
     private CollisionController collisionController;
     /** The Level model */
     private Level level;
-    public boolean refreshJson;
-    public AssetDirectory temp_assets;
+
+    /** Only used for internal tool (rereading jsons) **/
+    private boolean refreshJson;
+    /** Only used for internal tool (rereading jsons) **/
+    private AssetDirectory temp_assets;
 
     /**
      * Creates and initialize a new instance of a LevelController
@@ -151,6 +154,22 @@ public class LevelController {
      */
     public boolean isRet() { return ret; }
 
+    /**
+     * Sets whether to reload jsons
+     *
+     * @param value to set refreshJson to
+     */
+    public void setRefreshJson(boolean value) {
+        refreshJson = value;
+    }
+
+    /** Returns true if user requests to reload jsons
+     *
+     * @return true if user requests to reload jsons
+     */
+    public boolean isRefreshJson() {
+        return refreshJson;
+    }
     /** Returns the level model
      *
      * @return level
@@ -225,6 +244,14 @@ public class LevelController {
     }
 
     /**
+     * Used only for the purpose of refreshing json (internal tool)
+     * @return
+     */
+    public AssetDirectory getTempAssets(){
+        return temp_assets;
+    }
+
+    /**
      * Returns whether to process the update loop
      *
      * At the start of the update loop, we check if it is time
@@ -260,15 +287,6 @@ public class LevelController {
             assets.addParser(new JsonValueParser());
             refreshJson = true;
             temp_assets = assets;
-            System.out.println(assets.getLoadedAssets());
-
-//            System.out.println(LoadingMode.getAssets().getLoadedAssets());
-//            LoadingMode.getAssets().unloadAssets();
-//            LoadingMode.getAssets().addParser(new JsonValueParser());
-//            LoadingMode.getAssets().loadAssets();
-//            LoadingMode.getAssets().finishLoading();
-//            System.out.println(LoadingMode.getAssets().getLoadedAssets());
-//            refreshJson = true;
 //            System.out.println(LoadingMode.getAssets().getEntry("level1", JsonValue.class)); //for some reason, all of above code loads old assets (look into assetparser?))
         }
 

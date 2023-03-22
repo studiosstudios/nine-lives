@@ -237,16 +237,17 @@ public class Mob extends CapsuleObstacle {
      *
      * @param data  	The physics constants for this cat
      */
-    public Mob(TextureRegion texture, Vector2 scale, JsonValue data) {
-        super(texture.getRegionWidth()/scale.x,
-                texture.getRegionHeight()/scale.y);
+    public Mob(TextureRegion texture, Vector2 drawScale, Vector2 textureScale, JsonValue data) {
+        super(texture.getRegionWidth()/drawScale.x*textureScale.x/2f,
+                texture.getRegionHeight()/drawScale.y*textureScale.y);
 
 //        setBodyType(BodyDef.BodyType.DynamicBody);
         setFixedRotation(true);
         setName("mob");
         setX(data.get("pos").getFloat(0));
         setY(data.get("pos").getFloat(1));
-        setDrawScale(scale);
+        setDrawScale(drawScale);
+        setTextureScale(textureScale);
         setTexture(texture);
 
         setDensity(data.getFloat("density", 0));
@@ -402,7 +403,7 @@ public class Mob extends CapsuleObstacle {
      */
     public void draw(GameCanvas canvas) {
         float effect = faceRight ? 1.0f : -1.0f;
-        canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),effect,1.0f);
+        canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),effect * textureScale.x, textureScale.y);
     }
 
     /**

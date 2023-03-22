@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.PolygonObstacle;
@@ -24,6 +25,14 @@ public class Wall extends PolygonObstacle  {
         setDrawScale(scale);
         setTexture(texture);
         setName("wall");
+    }
+
+    public boolean activatePhysics(World world){
+        if (!super.activatePhysics(world)) {
+            return false;
+        }
+        body.setUserData(this);
+        return true;
     }
 
     public boolean isClimbable(){return isClimbable;}

@@ -75,10 +75,11 @@ public class CollisionController implements ContactListener, ContactFilter {
             Obstacle bd2 = (Obstacle) body2.getUserData();
 
             //cat collisions
-            if (bd1 == level.getCat() || bd2 == level.getCat()) {
+            Cat cat = level.getCat();
+            if (bd1 == cat || bd2 == cat) {
 
                 //ensure bd1 and fd1 are cat body and fixtures
-                if (bd2 == level.getCat()) {
+                if (bd2 == cat) {
                     //don't need to swap bd1 and bd2 because we are assuming bd1 == cat
                     bd2 = bd1;
 
@@ -88,15 +89,16 @@ public class CollisionController implements ContactListener, ContactFilter {
                 }
 
                 // See if we have landed on the ground.
-                if (!bd2.isSensor() && level.getCat().getGroundSensorName().equals(fd1)) {
-                    level.getCat().setGrounded(true);
+                if (!bd2.isSensor() && cat.getGroundSensorName().equals(fd1)) {
+                    cat.setGrounded(true);
                     sensorFixtures.add(fix2); // Could have more than one ground
                 }
 
                 // See if we are touching a wall
-                if (level.getCat().getSideSensorName().equals(fd1) && level.getCat() != bd2
-                    && bd2.getName().equals("wall")) {
-                    level.getCat().incrementWalled();
+                if (cat.getSideSensorName().equals(fd1) && bd2 instanceof Wall) {
+                    if (((Wall) bd2).isClimbable()){
+                        cat.incrementWalled();
+                    }
                 }
 
                 // Check for win condition
@@ -185,18 +187,33 @@ public class CollisionController implements ContactListener, ContactFilter {
 
         Object bd1 = body1.getUserData();
         Object bd2 = body2.getUserData();
-        if ((level.getCat().getGroundSensorName().equals(fd2) && level.getCat() != bd1) ||
-                (level.getCat().getGroundSensorName().equals(fd1) && level.getCat() != bd2)) {
-            sensorFixtures.remove(level.getCat() == bd1 ? fix2 : fix1);
-            if (sensorFixtures.size == 0) {
-                level.getCat().setGrounded(false);
-            }
-        }
 
-        // Not handling case where there may be multiple walls at once
-        if ((level.getCat().getSideSensorName().equals(fd2) && level.getCat() != bd1 && ((Obstacle)body1.getUserData()).getName().equals("wall")) ||
-                (level.getCat().getSideSensorName().equals(fd1) && level.getCat() != bd2) && ((Obstacle)body2.getUserData()).getName().equals("wall")) {
-            level.getCat().decrementWalled();
+
+        //cat collisions
+        Cat cat = level.getCat();
+        if (bd1 == cat || bd2 == cat) {
+
+            //ensure bd1 and fd1 are cat body and fixtures
+            if (bd2 == cat) {
+                //don't need to swap bd1 and bd2 because we are assuming bd1 == cat
+                bd2 = bd1;
+
+                Object temp = fd1;
+                fd1 = fd2;
+                fd2 = temp;
+            }
+
+            if (cat.getGroundSensorName().equals(fd1) && cat != bd2) {
+                sensorFixtures.remove(fix2);
+                if (sensorFixtures.size == 0) {
+                    cat.setGrounded(false);
+                }
+            }
+
+            // Not handling case where there may be multiple walls at once
+            if ((cat.getSideSensorName().equals(fd1) && cat != bd2) && (bd2 instanceof Wall) && ((Wall) bd2).isClimbable()) {
+                cat.decrementWalled();
+            }
         }
 
         //dead body collisions

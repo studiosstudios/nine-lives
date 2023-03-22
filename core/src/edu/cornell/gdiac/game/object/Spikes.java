@@ -27,15 +27,16 @@ public class Spikes extends BoxObstacle implements Activatable {
 
     private boolean initialActivation;
 
-    public Spikes(TextureRegion texture, Vector2 scale, JsonValue data){
-        super(texture.getRegionWidth()/scale.x,
-                texture.getRegionHeight()/scale.y);
+    public Spikes(TextureRegion texture, Vector2 drawScale, Vector2 textureScale, JsonValue data){
+        super(texture.getRegionWidth()/drawScale.x*textureScale.x,
+                texture.getRegionHeight()/drawScale.y*textureScale.y);
 
         setBodyType(BodyDef.BodyType.StaticBody);
         setSensor(true);
         setFixedRotation(true);
         setName("spikes");
-        setDrawScale(scale);
+        setDrawScale(drawScale);
+        setTextureScale(textureScale);
         setTexture(texture);
 
         Vector2 sensorCenter = new Vector2(objectConstants.get("sensor_offset").getFloat(0),
@@ -135,6 +136,7 @@ public class Spikes extends BoxObstacle implements Activatable {
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
         if (activated) {
+            System.out.println(drawScale);
             canvas.drawPhysics(solidShape, Color.YELLOW, getX(), getY(), getAngle(), drawScale.x, drawScale.y);
             canvas.drawPhysics(sensorShape, Color.RED, getX(), getY(), getAngle(), drawScale.x, drawScale.y);
         }

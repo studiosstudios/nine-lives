@@ -378,11 +378,6 @@ public class Level {
     public void populateLevel(HashMap<String, TextureRegion> tMap, HashMap<String, BitmapFont> fMap,
                                HashMap<String, Sound> sMap, JsonValue constants, JsonValue levelJV, boolean ret, Cat prevCat) {
         this.levelJV = levelJV;
-        // Add level goal
-        dwidth  = tMap.get("goal").getRegionWidth()/scale.x;
-        dheight = tMap.get("goal").getRegionHeight()*5/scale.y; //TEMP FIX TO CAT GETTING LOST UPON JUMPING INTO NEXT LEVEL
-        System.out.println(dwidth);
-        System.out.println(dheight);
 
         activationRelations = new HashMap<>();
         background = tMap.get("background").getTexture();
@@ -435,7 +430,7 @@ public class Level {
 
         try {
             for (JsonValue spikeJV : levelJV.get("spikes")) {
-                Spikes spike = new Spikes(tMap.get("spikes"), scale, spikeJV);
+                Spikes spike = new Spikes(tMap.get("spikes"), scale, new Vector2(1f/64, 1f/64), spikeJV);
                 loadActivatable(spike, spikeJV);
             }
         } catch (NullPointerException e) {}
@@ -456,7 +451,8 @@ public class Level {
 
         try {
             for (JsonValue flamethrowerJV : levelJV.get("flamethrowers")){
-                Flamethrower flamethrower = new Flamethrower(tMap.get("flamethrower"), tMap.get("flame_anim"),scale, flamethrowerJV);
+                Flamethrower flamethrower = new Flamethrower(tMap.get("flamethrower"), new Vector2(1f/64, 1f/64),
+                        tMap.get("flame_anim"), new Vector2(1, 1), scale, flamethrowerJV);
                 loadActivatable(flamethrower, flamethrowerJV);
             }
         } catch (NullPointerException e) {}
@@ -479,7 +475,7 @@ public class Level {
         // Create mobs
         try {
             for (JsonValue mobJV : levelJV.get("mobs")){
-                Mob mob = new Mob(tMap.get("roboMob"), scale, mobJV);
+                Mob mob = new Mob(tMap.get("roboMob"), scale, new Vector2(1f/32, 1f/32), mobJV);
                 mobArray.add(mob);
                 addObject(mob);
             }

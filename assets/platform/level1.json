@@ -36,9 +36,9 @@
 		{"shape":[0.0, 2.0, 0.0, 17.0, -1.0, 17.0, -1.0, 2]}, //invisible left side
 		{"shape":[28, 12, 31, 12, 31, 5, 32, 5,32,15, 28, 15]}, //left
 		{"shape":[0, 17.0, 32.0, 17.0, 32.0, 18.0, 0, 18.0]}, //top
-		{"shape":[7, 2, 7, 15, 10, 15, 10, 14, 8, 14, 8, 2]}, //center wall with checkpoint on top
-		{"shape":[12, 14, 18, 14, 18, 15, 12, 15]},
-		{"shape":[18, 15, 18, 2, 17, 2, 17, 15]},
+		{"shape":[7, 2, 7, 15, 10, 15, 10, 14, 8, 14, 8, 2], "climbable": true}, //center wall with checkpoint on top
+		{"shape":[12, 14, 18, 14, 18, 15, 12, 15],"climbable":true},
+		{"shape":[18, 15, 18, 2, 17, 2, 17, 15],"climbable":true},
 		{"shape":[19, 17, 19, 4, 20, 4, 20, 17]},
 		{"shape":[24,2,24,4,31,4,31,2,32,2,32,5,23,5,23,2]} //jail
 			 		],
@@ -49,6 +49,6 @@
 		{"shape":[10, 8, 13, 8, 13, 9, 10, 9]}, // platform on left laser side
 		{"shape":[22, 8, 25, 8, 25, 9, 22, 9]}, // platform on right laser side
 		{"shape":[27, 6, 30, 6, 30, 7, 27, 7]},
-		{"shape":[23, 12, 23, 13, 26, 13, 26, 12]},
+		{"shape":[23, 12, 23, 13, 26, 13, 26, 12],"climbable":true},
 					]
 }

@@ -33,15 +33,16 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
     private final boolean pushable;
 
 
-    public Flamethrower(TextureRegion flamethrowerTexture, TextureRegion flameTexture, Vector2 scale, JsonValue data) {
+    public Flamethrower(TextureRegion flamebaseTexture, Vector2 flameBaseScale, TextureRegion flameTexture, Vector2 flameScale, Vector2 drawScale, JsonValue data) {
         super();
 //        setName("flamethrower");
 
         this.flameTexture = flameTexture;
 
-        flameBase = new BoxObstacle(flamethrowerTexture.getRegionWidth()/scale.x, flamethrowerTexture.getRegionHeight()/scale.y);
-        flameBase.setDrawScale(scale);
-        flameBase.setTexture(flamethrowerTexture);
+        flameBase = new BoxObstacle(flamebaseTexture.getRegionWidth()/drawScale.x*flameBaseScale.x, flamebaseTexture.getRegionHeight()/drawScale.y*flameBaseScale.y);
+        flameBase.setDrawScale(drawScale);
+        flameBase.setTextureScale(flameBaseScale);
+        flameBase.setTexture(flamebaseTexture);
         pushable = data.getBoolean("pushable", false);
         flameBase.setFriction(objectConstants.getFloat("friction", 0));
         flameBase.setRestitution(objectConstants.getFloat("restitution", 0));
@@ -57,7 +58,8 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
                 objectConstants.get("flame_offset").getFloat(1)*(float)Math.sin(angle),
                 objectConstants.get("flame_offset").getFloat(1)*(float)Math.cos(angle)-
                 objectConstants.get("flame_offset").getFloat(0)*(float)Math.sin(angle));
-        flame = new Flame(flameTexture, scale, flameBase.getPosition(), flameBase.getAngle());
+        flame = new Flame(flameTexture, drawScale, flameBase.getPosition(), flameBase.getAngle());
+        flame.setTextureScale(flameScale);
 
         if (pushable){
             flame.setBodyType(BodyDef.BodyType.DynamicBody);
@@ -131,6 +133,11 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
             world.destroyJoint(j);
         }
         joints.clear();
+    }
+
+    public void draw(GameCanvas canvas) {
+        flameBase.draw(canvas);
+        flame.draw(canvas);
     }
 
     @Override

@@ -50,6 +50,8 @@ public abstract class Obstacle {
     private String nametag;
 	/** Drawing scale to convert physics units to pixels */
 	protected Vector2 drawScale;
+	/** Texture scale to scale the texture to the correct size */
+	protected Vector2 textureScale = new Vector2(1, 1);
 
 	/// Track garbage collection status
 	/** Whether the object should be removed from the world on next pass */
@@ -853,6 +855,24 @@ public abstract class Obstacle {
     	scaleCache.set(drawScale);
     	return scaleCache; 
     }
+
+	/**
+	 * Returns the texture scale for this physics object
+	 *
+	 * The texture scale is how much textures are shrunk down when drawing.
+	 *
+	 * This method does NOT return a reference to the drawing scale. Changes to this
+	 * vector will not affect the body.  However, it returns the same vector each time
+	 * its is called, and so cannot be used as an allocator.
+
+	 * We allow for the scaling factor to be non-uniform.
+	 *
+	 * @return the texture scale for this physics object
+	 */
+	public Vector2 getTextureScale() {
+		scaleCache.set(textureScale);
+		return scaleCache;
+	}
     
     /**
      * Sets the drawing scale for this physics object
@@ -869,6 +889,17 @@ public abstract class Obstacle {
     public void setDrawScale(Vector2 value) { 
     	setDrawScale(value.x,value.y); 
 	}
+
+	/**
+	 * Sets the texture scale for this physics object
+	 *
+	 * The texture scale is how much textures are shrunk down when drawing.
+	 *
+	 * We allow for the scaling factor to be non-uniform.
+	 *
+	 * @param value  the texture scale for this physics object
+	 */
+	public void setTextureScale(Vector2 value) {setTextureScale(value.x,value.y);}
     
     /**
      * Sets the drawing scale for this physics object
@@ -886,6 +917,18 @@ public abstract class Obstacle {
     public void setDrawScale(float x, float y) {
     	drawScale.set(x,y);
     }
+
+	/**
+	 * Sets the texture scale for this physics object
+	 *
+	 * The texture scale is how much textures are shrunk down when drawing.
+	 *
+	 * We allow for the scaling factor to be non-uniform.
+	 *
+	 * @param x  the x-axis scale for the texture
+	 * @param y  the y-axis scale for the texture
+	 */
+	public void setTextureScale(float x, float y) { textureScale.set(x, y); }
     	
 	/// DEBUG METHODS
 	/**

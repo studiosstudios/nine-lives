@@ -69,7 +69,8 @@ public class AIController {
         // Select an initial target
         target = null;
 
-        detectorRay = new MobDetector(mob);
+//        detectorRay = new MobDetector(mob);
+        detectorRay = mob.getDetectorRay();
     }
 
     /* Returns mob of this AI Controller*/

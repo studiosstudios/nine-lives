@@ -43,9 +43,13 @@ public class MobDetector {
         return mob.getPosition();
     }
 
+    public Array<Vector2> getPoints() { return points; }
+
+    public float getThickness() { return thickness; }
+
 
     // Temp Draw for Detector ray so that we can see it
-    public void draw(GameCanvas canvas) {
+    public void drawDebug(GameCanvas canvas) {
         if (points.size > 1) {
             canvas.drawFactoryPath(points, thickness, Color.BLUE, mob.getDrawScale().x, mob.getDrawScale().y);
         }

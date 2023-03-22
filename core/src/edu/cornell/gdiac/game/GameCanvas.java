@@ -232,11 +232,27 @@ public class GameCanvas {
 	}
 
 	/**
-	 * Returns the camera
-	 * @return the camera
+	 * Updates camera positioning based on cat's current position (in pixels)
+	 * @param x_pos x coordinate of cat's current location in pixels
+	 * @param y_pos y coordinate of cat's current location in pixels
 	 */
-	public OrthographicCamera getCamera(){
-		return camera;
+	public void updateCamera(float x_pos, float y_pos){
+		float width_scaled = STANDARD_WIDTH*camera.zoom;
+		if(x_pos > STANDARD_WIDTH - width_scaled + width_scaled/2){
+			x_pos = STANDARD_WIDTH - width_scaled + width_scaled/2;
+		}
+		if(x_pos < width_scaled/2){
+			x_pos = width_scaled/2;
+		}
+		float height_scaled = STANDARD_HEIGHT*camera.zoom;
+		if(y_pos > STANDARD_HEIGHT - height_scaled + height_scaled/2){
+			y_pos = STANDARD_HEIGHT - height_scaled + height_scaled/2;
+		}
+		if(y_pos < height_scaled/2){
+			y_pos = height_scaled/2;
+		}
+		camera.position.set(x_pos, y_pos, 0);
+		camera.update();
 	}
 	/**
 	 * Changes the width and height of this canvas

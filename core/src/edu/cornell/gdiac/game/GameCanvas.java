@@ -128,13 +128,13 @@ public class GameCanvas {
 		// Set the projection matrix (for proper scaling)
 		camera = new OrthographicCamera(STANDARD_WIDTH, STANDARD_HEIGHT);
 		camera.setToOrtho(false, STANDARD_WIDTH, STANDARD_HEIGHT);
-		camera.zoom -= 0.1;
+		camera.zoom -= 0.15;
 //		camera.position.set(STANDARD_WIDTH/3, STANDARD_HEIGHT/2, 0); //NEED TO SET THIS RELATIVE TO CAT
 //		camera.position.set(STANDARD_WIDTH / 2, STANDARD_HEIGHT / 2, 0);
 //		camera.update();
 //		extendView = new ExtendViewport(0, 0, STANDARD_WIDTH, STANDARD_HEIGHT, camera);
-//		extendView = new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT, camera);
-//		extendView.apply(true);
+		extendView = new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT, camera);
+		extendView.apply(true);
 		spriteBatch.setProjectionMatrix(camera.combined);
 		debugRender.setProjectionMatrix(camera.combined);
 
@@ -309,7 +309,7 @@ public class GameCanvas {
 	 */
 	 public void resize() {
 		spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, getWidth(), getHeight());
-//		 extendView.update(getWidth(), getHeight(), true);
+		 extendView.update(getWidth(), getHeight(), true);
 	}
 	
 	/**

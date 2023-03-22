@@ -421,9 +421,10 @@ public class Mob extends CapsuleObstacle {
         super.drawDebug(canvas);
         // Draw detectorRay
         if (detectorRay.getPoints().size > 1) {
-            canvas.begin();
-            canvas.drawFactoryPath(detectorRay.getPoints(), detectorRay.getThickness(), Color.BLUE, getDrawScale().x, getDrawScale().y);
-            canvas.end();
+//            canvas.begin();
+//            canvas.drawFactoryPath(detectorRay.getPoints(), detectorRay.getThickness(), Color.BLUE, getDrawScale().x, getDrawScale().y);
+//            canvas.end();
+            canvas.drawLineDebug(detectorRay.getPoints().get(0), detectorRay.getEndPointCache(), Color.BLUE, getDrawScale().x, getDrawScale().y);
         }
 
         for (PolygonShape shape : sensorShapes) {

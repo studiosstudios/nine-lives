@@ -277,6 +277,7 @@ public class AIController {
             } else {
                 target = null;
             }
+            detector.setEndPoint(rayCastFixture.getBody().getPosition());
         }
 
         detector.addBeamPoint(new Vector2(rayCastPoint));

@@ -677,27 +677,28 @@ public class Level {
         cat.draw(canvas);
         canvas.end();
 
+        canvas.begin();
         if (debug) {
             canvas.beginDebug();
             //draw grid
             Color lineColor = new Color(0.8f, 0.8f, 0.8f, 1);
-            for (int x = 0; x < bounds.width; x++){
+            for (int x = 0; x < bounds.width; x++) {
                 Vector2 p1 = new Vector2(x, 0);
                 Vector2 p2 = new Vector2(x, bounds.height);
                 canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
             }
-            for (int y = 0; y < bounds.height; y++){
+            for (int y = 0; y < bounds.height; y++) {
                 Vector2 p1 = new Vector2(0, y);
                 Vector2 p2 = new Vector2(bounds.width, y);
                 canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
             }
-            for(Obstacle obj : objects) {
+            for (Obstacle obj : objects) {
+                System.out.println(obj);
                 obj.drawDebug(canvas);
             }
-
             canvas.endDebug();
-
         }
+        canvas.end();
     }
 
     /** spawns a dead body at the location of the cat */

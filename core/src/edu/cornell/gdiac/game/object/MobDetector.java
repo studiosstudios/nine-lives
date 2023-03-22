@@ -11,7 +11,7 @@ public class MobDetector {
     /** Detector Beam */
     /** points of the beam */
     private Array<Vector2> points;
-    private Vector2 endPointCache = new Vector2();
+    private Vector2 endPointCache;
     private float thickness;
     private Color color;
     private Boolean pointingRight;
@@ -47,6 +47,11 @@ public class MobDetector {
 
     public float getThickness() { return thickness; }
 
+    /*End point of mob detector is position of first object it hits,
+    * (but under assumption that the laser is guaranteed to hit something */
+    public void setEndPoint(Vector2 endPoint) {endPointCache = endPoint;}
+
+    public Vector2 getEndPointCache() {return endPointCache;}
 
     // Temp Draw for Detector ray so that we can see it
     public void drawDebug(GameCanvas canvas) {

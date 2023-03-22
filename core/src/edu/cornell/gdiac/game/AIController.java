@@ -69,7 +69,7 @@ public class AIController {
         // Select an initial target
         target = null;
 
-//        detectorRay = new MobDetector(mob);
+        // Mob Detector Ray
         detectorRay = mob.getDetectorRay();
     }
 
@@ -81,46 +81,23 @@ public class AIController {
     public float getAction() {
         detectRayCast(detectorRay);
         changeStateifApplicable();
-//        System.out.println(getHorizontal());
         return getHorizontal();
     }
 
     public MobDetector getDetectorRay() { return detectorRay; }
 
     public void changeStateifApplicable() {
-        // Current mob coords
-//        float pos_x = mob.getX();
-//        float pos_y = mob.getY();
 
         if (state == FSMState.SPAWN) {
             this.state = FSMState.WANDER;
         }
         else if (state == FSMState.WANDER) {
-
-//            if (level.getCat().getBody().getFixtureList().contains(rayCastFixture, true)){
-//                die();
-//            }
-//            if (rayCastFixture != null && rayCastFixture.getBody().getUserData() instanceof DeadBody){
-//                ((DeadBody) rayCastFixture.getBody().getUserData()).touchingLaser();
-//            }
-//            if (target.getBody().getFixtureList().contains(detectorRay.))
-
             if (target != null) {
                 if (mob.isAggressive()) {
                     this.state = FSMState.CHASE;
                 }
             }
 
-//            if (mob.isAggressive()) {
-//                // TODO: check if detector beam hit the cat
-//
-//                }
-////                // Get a target
-////                selectTarget();
-////                if (target != null) {
-////                    this.state = FSMState.CHASE;
-////                }
-//            }
             // doesn't go into CHASE state, continues walking in same dir
             // check if there's anything blocking it in collision controller
             if (mob.isFacingRight()) {
@@ -130,12 +107,11 @@ public class AIController {
             }
         }
         else if (state == FSMState.CHASE) {
-//            selectTarget();
             if (target == null) {
                 this.state = FSMState.WANDER;
                 return;
             }
-            // Should go back to wander if it killed the cat
+            // Target is in the detector ray
             if (mob.getX() <= target.getX()) {
                 // target is right of mob, mob moves right a little faster
                 horizontal = MOVE_CONSTANT*3;
@@ -144,57 +120,57 @@ public class AIController {
                 horizontal = -MOVE_CONSTANT*3;
             }
         } else {
-            state = FSMState.WANDER; // If debugging is off
+            state = FSMState.WANDER;
         }
     }
 
-    private void selectTarget() {
-        Cat targ = null;
-        Cat cat = level.getCat();
-        float cat_pos_x = level.getCat().getX();
-        float cat_pos_y = level.getCat().getY();
-        float mob_pos_x = mob.getX();
-        float mob_pos_y = mob.getY();
-        float buffer_y = level.getCat().getHeight();
-
-        // Check that the mob is on the same plane as the Cat (with some buffer)
-        if (cat_pos_y <= mob_pos_y + buffer_y && cat_pos_y >= mob_pos_y - buffer_y) {
-
-            // Check that the object is on the same plane as the Cat and Mob (with some buffer)
-            for (Obstacle obstacle : level.getObjects()) {
-                // Make sure obj is not Cat
-                if (obstacle != cat && obstacle != mob) {
-                    float ob_pos_x = obstacle.getX();
-                    float ob_pos_y = obstacle.getY();
-                    if (ob_pos_y <= mob_pos_y + buffer_y && ob_pos_y >= mob_pos_y - buffer_y) {
-                        // Check direction that mob is facing
-                        if (mob.isFacingRight() && mob_pos_x <= cat_pos_x) {
-                            // Check if obj is to the right of the Mob and to the left of the Cat
-                            if (ob_pos_x >= mob_pos_x && ob_pos_x <= cat_pos_x) {
-                                // Object is in line of sight between the cat and the mob
-                                target = null;
-                                return;
-                            } else {
-                                // the cat is in the line of sight
-                                targ = cat;
-                            }
-                        } else if (!mob.isFacingRight() && mob_pos_x >= cat_pos_x) {
-                            // Facing left
-                            if (cat_pos_x <= ob_pos_x && ob_pos_x <= mob_pos_x) {
-                                // Object is in line of sight between the cat and the mob
-                                target = null;
-                                return;
-                            } else {
-                                // the cat is in the line of sight
-                                targ = cat;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        target = targ;
-    }
+//    private void selectTarget() {
+//        Cat targ = null;
+//        Cat cat = level.getCat();
+//        float cat_pos_x = level.getCat().getX();
+//        float cat_pos_y = level.getCat().getY();
+//        float mob_pos_x = mob.getX();
+//        float mob_pos_y = mob.getY();
+//        float buffer_y = level.getCat().getHeight();
+//
+//        // Check that the mob is on the same plane as the Cat (with some buffer)
+//        if (cat_pos_y <= mob_pos_y + buffer_y && cat_pos_y >= mob_pos_y - buffer_y) {
+//
+//            // Check that the object is on the same plane as the Cat and Mob (with some buffer)
+//            for (Obstacle obstacle : level.getObjects()) {
+//                // Make sure obj is not Cat
+//                if (obstacle != cat && obstacle != mob) {
+//                    float ob_pos_x = obstacle.getX();
+//                    float ob_pos_y = obstacle.getY();
+//                    if (ob_pos_y <= mob_pos_y + buffer_y && ob_pos_y >= mob_pos_y - buffer_y) {
+//                        // Check direction that mob is facing
+//                        if (mob.isFacingRight() && mob_pos_x <= cat_pos_x) {
+//                            // Check if obj is to the right of the Mob and to the left of the Cat
+//                            if (ob_pos_x >= mob_pos_x && ob_pos_x <= cat_pos_x) {
+//                                // Object is in line of sight between the cat and the mob
+//                                target = null;
+//                                return;
+//                            } else {
+//                                // the cat is in the line of sight
+//                                targ = cat;
+//                            }
+//                        } else if (!mob.isFacingRight() && mob_pos_x >= cat_pos_x) {
+//                            // Facing left
+//                            if (cat_pos_x <= ob_pos_x && ob_pos_x <= mob_pos_x) {
+//                                // Object is in line of sight between the cat and the mob
+//                                target = null;
+//                                return;
+//                            } else {
+//                                // the cat is in the line of sight
+//                                targ = cat;
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        target = targ;
+//    }
 
     /**
      * Returns the amount of sideways movement.
@@ -252,7 +228,6 @@ public class AIController {
                 rayCastPoint.set(point);
                 rayCastFixture = fixture;
             }
-
             return 1;
         }
     };
@@ -279,16 +254,6 @@ public class AIController {
             }
             detector.setEndPoint(rayCastFixture.getBody().getPosition());
         }
-
         detector.addBeamPoint(new Vector2(rayCastPoint));
-
-//        if (level.getCat().getBody().getFixtureList().contains(rayCastFixture, true)){
-//            die();
-//        }
-//        if (rayCastFixture != null && rayCastFixture.getBody().getUserData() instanceof DeadBody){
-//            ((DeadBody) rayCastFixture.getBody().getUserData()).touchingLaser();
-//        }
-
     }
-
 }

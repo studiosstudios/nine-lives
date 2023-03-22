@@ -297,7 +297,6 @@ public class WorldController implements Screen {
 			currLevel.postUpdate(delta);
 		}
 		currLevel.draw(delta);
-
 	}
 
 	/**

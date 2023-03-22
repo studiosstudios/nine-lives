@@ -66,8 +66,8 @@ public class GameCanvas {
 		OPAQUE
 	}	
 
-	private float STANDARD_WIDTH = 1024f;
-	private float STANDARD_HEIGHT = 576f;
+	public static float STANDARD_WIDTH = 1024f;
+	public static float STANDARD_HEIGHT = 576f;
 	
 	/** Drawing context to handle textures AND POLYGONS as sprites */
 	private PolygonSpriteBatch spriteBatch;
@@ -128,11 +128,13 @@ public class GameCanvas {
 		// Set the projection matrix (for proper scaling)
 		camera = new OrthographicCamera(STANDARD_WIDTH, STANDARD_HEIGHT);
 		camera.setToOrtho(false, STANDARD_WIDTH, STANDARD_HEIGHT);
+		camera.zoom -= 0.1;
+//		camera.position.set(STANDARD_WIDTH/3, STANDARD_HEIGHT/2, 0); //NEED TO SET THIS RELATIVE TO CAT
 //		camera.position.set(STANDARD_WIDTH / 2, STANDARD_HEIGHT / 2, 0);
 //		camera.update();
 //		extendView = new ExtendViewport(0, 0, STANDARD_WIDTH, STANDARD_HEIGHT, camera);
-		extendView = new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT, camera);
-		extendView.apply(true);
+//		extendView = new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT, camera);
+//		extendView.apply(true);
 		spriteBatch.setProjectionMatrix(camera.combined);
 		debugRender.setProjectionMatrix(camera.combined);
 
@@ -142,7 +144,6 @@ public class GameCanvas {
 		global = new Matrix4();
 		vertex = new Vector2();
 	}
-		
 	/**
 	* Eliminate any resources that should be garbage collected manually.
 	*/
@@ -229,7 +230,14 @@ public class GameCanvas {
 	public Vector2 getSize() {
 		return new Vector2(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 	}
-	
+
+	/**
+	 * Returns the camera
+	 * @return the camera
+	 */
+	public OrthographicCamera getCamera(){
+		return camera;
+	}
 	/**
 	 * Changes the width and height of this canvas
 	 *
@@ -301,7 +309,7 @@ public class GameCanvas {
 	 */
 	 public void resize() {
 		spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, getWidth(), getHeight());
-		 extendView.update(getWidth(), getHeight(), true);
+//		 extendView.update(getWidth(), getHeight(), true);
 	}
 	
 	/**

@@ -271,6 +271,9 @@ public class LevelController {
         }
         actionController.update(dt);
         level.update(dt);
+        Cat temp_cat = level.getCat();
+        canvas.getCamera().position.set(temp_cat.getPosition().x*temp_cat.getDrawScale().x, temp_cat.getPosition().y*temp_cat.getDrawScale().y, 0);
+        canvas.getCamera().update();
     }
 
     /**

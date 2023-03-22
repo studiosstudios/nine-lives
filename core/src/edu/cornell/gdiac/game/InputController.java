@@ -341,9 +341,15 @@ public class InputController {
 		horizontal = 0.0f;
 		if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
 			horizontal += 1.0f;
+//			System.out.println("Before:" + GameCanvas.camera.position);
+//			GameCanvas.camera.translate(3, 0, 0);
+//			System.out.println("After:" + GameCanvas.camera.position);
+//			GameCanvas.camera.update();
 		}
 		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
 			horizontal -= 1.0f;
+//			GameCanvas.camera.translate(-3,0,0);
+//			GameCanvas.camera.update();
 		}
 
 		vertical = 0.0f;

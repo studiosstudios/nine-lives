@@ -1,11 +1,13 @@
 package edu.cornell.gdiac.game;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import edu.cornell.gdiac.game.object.Cat;
-import edu.cornell.gdiac.game.object.Mob;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.RayCastCallback;
+import com.badlogic.gdx.utils.Array;
+import edu.cornell.gdiac.game.object.*;
 import edu.cornell.gdiac.game.obstacle.*;
-
 
 public class AIController {
     /**
@@ -38,6 +40,18 @@ public class AIController {
 
     private static final float MOVE_CONSTANT = 0.02f;
 
+    private MobDetector detectorRay;
+
+    /** fields needed for raycasting */
+    private Vector2 rayCastPoint = new Vector2();
+    private Fixture rayCastFixture;
+    private float closestFraction;
+    private Vector2 startPointCache = new Vector2();
+    private Vector2 endPointCache = new Vector2();
+
+    private Rectangle bounds;
+
+//    private Boolean dete
 
 
     /**
@@ -45,7 +59,8 @@ public class AIController {
      *
      * @param level The level model (for pathfinding)
      */
-    public AIController(Level level, Mob mob, Boolean aggressive) {
+    public AIController(Rectangle bounds, Level level, Mob mob, Boolean aggressive) {
+        this.bounds = bounds;
         this.level = level;
         this.mob = mob;
 
@@ -53,6 +68,8 @@ public class AIController {
 
         // Select an initial target
         target = null;
+
+        detectorRay = new MobDetector(mob);
     }
 
     /* Returns mob of this AI Controller*/
@@ -61,10 +78,13 @@ public class AIController {
     }
 
     public float getAction() {
+        detectRayCast(detectorRay);
         changeStateifApplicable();
 //        System.out.println(getHorizontal());
         return getHorizontal();
     }
+
+    public MobDetector getDetectorRay() { return detectorRay; }
 
     public void changeStateifApplicable() {
         // Current mob coords
@@ -75,14 +95,31 @@ public class AIController {
             this.state = FSMState.WANDER;
         }
         else if (state == FSMState.WANDER) {
-            target = null;
-            if (mob.isAggressive()) {
-                // Get a target
-                selectTarget();
-                if (target != null) {
+
+//            if (level.getCat().getBody().getFixtureList().contains(rayCastFixture, true)){
+//                die();
+//            }
+//            if (rayCastFixture != null && rayCastFixture.getBody().getUserData() instanceof DeadBody){
+//                ((DeadBody) rayCastFixture.getBody().getUserData()).touchingLaser();
+//            }
+//            if (target.getBody().getFixtureList().contains(detectorRay.))
+
+            if (target != null) {
+                if (mob.isAggressive()) {
                     this.state = FSMState.CHASE;
                 }
             }
+
+//            if (mob.isAggressive()) {
+//                // TODO: check if detector beam hit the cat
+//
+//                }
+////                // Get a target
+////                selectTarget();
+////                if (target != null) {
+////                    this.state = FSMState.CHASE;
+////                }
+//            }
             // doesn't go into CHASE state, continues walking in same dir
             // check if there's anything blocking it in collision controller
             if (mob.isFacingRight()) {
@@ -92,7 +129,7 @@ public class AIController {
             }
         }
         else if (state == FSMState.CHASE) {
-            selectTarget();
+//            selectTarget();
             if (target == null) {
                 this.state = FSMState.WANDER;
                 return;
@@ -193,6 +230,63 @@ public class AIController {
     private void clampPosition(Rectangle bounds) {
         crosshair.x = Math.max(bounds.x, Math.min(bounds.x+bounds.width, crosshair.x));
         crosshair.y = Math.max(bounds.y, Math.min(bounds.y+bounds.height, crosshair.y));
+    }
+
+    private void getRayCastEnd(Vector2 start, Boolean isRight){
+        if (isRight) {
+            endPointCache.set(bounds.width, start.y);
+        } else {
+            endPointCache.set(0, start.y);
+        }
+    }
+
+    private RayCastCallback DetectorRayCastCallback = new RayCastCallback() {
+        @Override
+        /**
+         * Gets closest raycasted fixture and stores collision point and the fixture itself
+         */
+        public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
+            if ( fraction < closestFraction ) {
+                closestFraction = fraction;
+                rayCastPoint.set(point);
+                rayCastFixture = fixture;
+            }
+
+            return 1;
+        }
+    };
+
+    public void detectRayCast(MobDetector detector) {
+        detector.beginRayCast();
+
+        //initial beam
+        closestFraction = 1;
+        startPointCache.set(detector.getRayCastStart());
+        detector.setPointingRight(mob.isFacingRight());
+        getRayCastEnd(startPointCache, mob.isFacingRight());
+        level.world.rayCast(DetectorRayCastCallback, startPointCache, endPointCache);
+
+        if (closestFraction == 1) {
+            rayCastPoint = endPointCache;
+            rayCastFixture = null;
+        } else {
+            Boolean detected = rayCastFixture.getBody().getUserData() instanceof Cat;
+            if (detected) {
+                target = level.getCat();
+            } else {
+                target = null;
+            }
+        }
+
+        detector.addBeamPoint(new Vector2(rayCastPoint));
+
+//        if (level.getCat().getBody().getFixtureList().contains(rayCastFixture, true)){
+//            die();
+//        }
+//        if (rayCastFixture != null && rayCastFixture.getBody().getUserData() instanceof DeadBody){
+//            ((DeadBody) rayCastFixture.getBody().getUserData()).touchingLaser();
+//        }
+
     }
 
 }

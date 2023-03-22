@@ -339,6 +339,10 @@ public class LevelController {
             canvas.begin(); // DO NOT SCALE
             canvas.end();
         }
+
+        for (AIController c : actionController.getMobControllers()) {
+            c.getDetectorRay().draw(canvas);
+        }
     }
 
     public void setJSON(JsonValue level) { levelJV = level; }

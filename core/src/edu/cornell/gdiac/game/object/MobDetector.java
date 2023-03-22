@@ -12,7 +12,7 @@ public class MobDetector {
     /** points of the beam */
     private Array<Vector2> points;
     private Vector2 endPointCache = new Vector2();
-    private float thickness ;
+    private float thickness;
     private Color color;
     private Boolean pointingRight;
 
@@ -22,6 +22,7 @@ public class MobDetector {
         this.mob = mob;
         // Detector Beam
         pointingRight = mob.isFacingRight();
+        thickness = 5f;
         color = Color.BLUE;
         points = new Array<>();
     }
@@ -46,7 +47,7 @@ public class MobDetector {
     // Temp Draw for Detector ray so that we can see it
     public void draw(GameCanvas canvas) {
         if (points.size > 1) {
-            canvas.drawFactoryPath(points, thickness, color, mob.getDrawScale().x, mob.getDrawScale().y);
+            canvas.drawFactoryPath(points, thickness, Color.BLUE, mob.getDrawScale().x, mob.getDrawScale().y);
         }
     }
 }

@@ -332,7 +332,11 @@ public class LevelController {
      */
     public void draw(float dt) {
         level.draw(canvas, debug);
-
+        canvas.begin();
+        for (AIController c : actionController.getMobControllers()) {
+            c.getDetectorRay().draw(canvas);
+        }
+        canvas.end();
         // Final message
         if (level.isComplete() && !level.isFailure()) {
             displayFont.setColor(Color.YELLOW);
@@ -340,9 +344,6 @@ public class LevelController {
             canvas.end();
         }
 
-        for (AIController c : actionController.getMobControllers()) {
-            c.getDetectorRay().draw(canvas);
-        }
     }
 
     public void setJSON(JsonValue level) { levelJV = level; }

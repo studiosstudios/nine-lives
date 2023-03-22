@@ -66,8 +66,8 @@ public class GameCanvas {
 		OPAQUE
 	}	
 
-	public static float STANDARD_WIDTH = 1024f;
-	public static float STANDARD_HEIGHT = 576f;
+	private float STANDARD_WIDTH = 1024f;
+	private float STANDARD_HEIGHT = 576f;
 	
 	/** Drawing context to handle textures AND POLYGONS as sprites */
 	private PolygonSpriteBatch spriteBatch;

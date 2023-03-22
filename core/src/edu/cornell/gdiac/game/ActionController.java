@@ -35,7 +35,7 @@ public class ActionController {
     /** The meow sound */
     private long meowId = -1;
     /** The level */
-    public static Level level;
+    private Level level;
     private Array<AIController> mobControllers;
 
     /** fields needed for raycasting */

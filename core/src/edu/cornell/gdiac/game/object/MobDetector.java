@@ -53,10 +53,10 @@ public class MobDetector {
 
     public Vector2 getEndPointCache() {return endPointCache;}
 
-    // Temp Draw for Detector ray so that we can see it
-    public void drawDebug(GameCanvas canvas) {
-        if (points.size > 1) {
-            canvas.drawFactoryPath(points, thickness, Color.BLUE, mob.getDrawScale().x, mob.getDrawScale().y);
-        }
-    }
+//    // Temp Draw for Detector ray so that we can see it
+//    public void drawDebug(GameCanvas canvas) {
+//        if (points.size > 1) {
+//            canvas.drawFactoryPath(points, thickness, Color.BLUE, mob.getDrawScale().x, mob.getDrawScale().y);
+//        }
+//    }
 }

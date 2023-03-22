@@ -26,7 +26,7 @@
 		{"pos" :  [20, 13], "angle" : 270, "active":true, "activatorID": "switch2"},
 	],
 	"checkpoints" : [{"pos" : [9, 15]}],
-	"mobs" : [{"pos" : [2, 11], "facingRight":  true, "aggressive":  true}],
+	"mobs" : [{"pos" : [28, 2], "facingRight":  true, "aggressive":  true}],
 	"exits" : [{"type":  "goal", "height": 18, "pos": [32, 9]}],
 	"cat" : {
 		"pos": [1, 8],
@@ -49,6 +49,6 @@
 		{"shape":[10, 8, 13, 8, 13, 9, 10, 9]}, // platform on left laser side
 		{"shape":[22, 8, 25, 8, 25, 9, 22, 9]}, // platform on right laser side
 		{"shape":[27, 6, 30, 6, 30, 7, 27, 7]},
-		{"shape":[23, 12, 23, 13, 26, 13, 26, 12]},
+		{"shape":[23, 12, 23, 13, 26, 13, 26, 12]}
 					]
 }

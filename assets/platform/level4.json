@@ -3,9 +3,12 @@
 		"pos": [0.5, 13],
 		"ret_pos": [31.5,13], //temp impossible
 	},
+	"mobs" : [{"pos" : [28, 14], "facingRight":  false, "aggressive":  true}],
 	"exits" : [{"type":  "return", "height": 18, "pos": [0, 9]}],
 	"walls": 		[
-		{"shape":[32.0, 13.0, 33.0, 13.0, 33.0, 17.0, 32.0, 17.0]}//invisible exit wall (don't want to loop this time around)
+		{"shape":[32.0, 13.0, 33.0, 13.0, 33.0, 17.0, 32.0, 17.0]} //invisible exit wall (don't want to loop this time around)
 			 		],
-	"platforms":	[{"shape":[-2.5, 13, 32, 13, 32, 10, -2.5, 10]}]
+	"platforms":	[
+		{"shape":[-2.5, 13, 32, 13, 32, 10, -2.5, 10]},
+		{"shape":[15, 13, 16, 13, 16, 15, 15, 15]}]
 }

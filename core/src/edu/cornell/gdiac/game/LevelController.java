@@ -270,7 +270,6 @@ public class LevelController {
             setRet(true);
         }
         actionController.update(dt);
-        level.update(dt);
     }
 
     /**
@@ -344,17 +343,5 @@ public class LevelController {
     public void setJSON(JsonValue level) { levelJV = level; }
     public JsonValue getJSON() { return levelJV; }
 
-
-    public enum State {
-        STANDARD, SPIRITMODE, ENTERING, EXITING, SWITCHING
-    }
-    private class SpiritLine {
-        public Vector2 start;
-        public Vector2 end;
-        private Color outerColor;
-        private Color innerColor;
-        private float alpha;
-
-    }
 
 }

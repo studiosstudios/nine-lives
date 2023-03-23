@@ -26,6 +26,7 @@ import edu.cornell.gdiac.game.object.*;
 
 import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.util.PooledList;
+import sun.security.provider.ConfigFile;
 
 import java.util.HashMap;
 
@@ -101,17 +102,10 @@ public class Level {
     private HashMap<String, TextureRegion> textureRegionAssetMap;
 
     //region Spirit mode stuff
-    /** if the player is in spirit mode */
-    private boolean spiritMode;
-    /** cache for efficiency */
-    private Color spiritLineColor = new Color();
-    /** counter of total ticks in spirit mode */
-    private int spiritModeTicks;
     /** next dead body to switch into */
     private DeadBody nextDeadBody;
-    private Vector2 spiritEndPos = new Vector2();
-    private Vector2 spiritStartPos = new Vector2();
-    private boolean bodySwitched;
+    private boolean spiritMode;
+    private SpiritLine spiritLine;
     //endregion
 
     /**
@@ -142,6 +136,7 @@ public class Level {
     public World getWorld() {
         return world;
     }
+
 
     /**
      * Returns a reference to the player cat
@@ -498,7 +493,7 @@ public class Level {
         addObject(cat);
 
         spiritMode = false;
-        bodySwitched = false;
+        spiritLine = new SpiritLine(Color.WHITE, Color.CYAN);
     }
 
     public static void setConstants(JsonValue constants){
@@ -666,7 +661,9 @@ public class Level {
                 obj.draw(canvas);
             }
         }
-        canvas.drawFactoryLine(spiritStartPos, spiritEndPos, 2, spiritLineColor, scale.x, scale.y);
+
+        spiritLine.draw(canvas);
+
         for (DeadBody db : deadBodyArray){
             db.draw(canvas);
         }
@@ -729,49 +726,68 @@ public class Level {
         return nextdb;
     }
 
-    /**
-     * Sets if the level is in spirit mode or not. Currently all spirit mode does is draw a line
-     * from the cat to the closest valid dead body.
-     * @param next new spirit mode state of level
-     */
-    public void setSpiritMode(boolean next) {
-        if (next && !spiritMode){
-            spiritEndPos.set(cat.getPosition());
-        }
-        spiritMode = next;
-    }
+    public void update(float dt, boolean spiritMode){
 
-    /**
-     * Updates spirit mode logic
-     * @param dt Number of seconds since last animation frame
-     */
-    public void update(float dt){
-        if (bodySwitched) {
-            //fade out line if body was just switched
-            spiritLineColor.set(1, 1, 1, spiritLineColor.a - spiritLineColor.a / 5);
-            if (spiritLineColor.a < 0.01){
-                spiritLineColor.a = 0;
-                bodySwitched = false;
-            }
-        } else {
-            spiritStartPos.set(cat.getPosition());
-            if (spiritMode) {
-                //extend line to target
-                spiritModeTicks++;
-                spiritLineColor.set(1, 1, 1, spiritLineColor.a + (1 - spiritLineColor.a) / 20);
+        if (this.spiritMode){
+            if (!spiritMode) {
+                //switch out of spirit mode
+                spiritLine.start.set(cat.getPosition());
+            } else {
+                spiritLine.startTarget.set(cat.getPosition());
+                spiritLine.start.set(cat.getPosition());
                 nextDeadBody = getNextBody();
                 if (nextDeadBody != null) {
-                    spiritEndPos.add(nextDeadBody.getPosition().sub(spiritEndPos).scl(0.2f));
-                } else {
-                    spiritEndPos.set(cat.getPosition());
+                    spiritLine.endTarget.set(nextDeadBody.getPosition());
                 }
+            }
+        } else {
+            if (spiritMode){
+                //switch into spirit mode
+                spiritLine.end.set(cat.getPosition());
+                spiritLine.start.set(cat.getPosition());
             } else {
-                //fade out line if cancelled
-                spiritModeTicks = 0;
-                spiritLineColor.set(1, 1, 1, spiritLineColor.a - spiritLineColor.a / 5);
+                spiritLine.endTarget.set(cat.getPosition());
+                spiritLine.startTarget.set(cat.getPosition());
             }
         }
+        this.spiritMode = spiritMode;
+
+        spiritLine.update(dt);
     }
 
-    public void setBodySwitched(boolean bs) {bodySwitched = bs;}
+
+
+    private class SpiritLine {
+        public Vector2 start = new Vector2();
+        public Vector2 end = new Vector2();
+        public Vector2 startTarget = new Vector2();
+        public Vector2 endTarget = new Vector2();
+        private Color outerColor = new Color();
+        private Color innerColor = new Color();
+        private float alpha;
+
+        public SpiritLine(Color ic, Color oc){
+            innerColor.set(ic);
+            outerColor.set(oc);
+            alpha = 0;
+        }
+
+        public void update(float dt){
+            if (spiritMode) {
+                alpha = alpha + (0.6f - alpha) / 20f;
+            } else {
+                alpha = alpha - alpha / 5f;
+            }
+            start.add((startTarget.x-start.x)*0.2f, (startTarget.y-start.y)*0.2f);
+            end.add((endTarget.x-end.x)*0.2f, (endTarget.y-end.y)*0.2f);
+            outerColor.set(outerColor.r, outerColor.g, outerColor.b, alpha);
+            innerColor.set(innerColor.r, innerColor.g, innerColor.b, alpha);
+        }
+        public void draw(GameCanvas canvas){
+            canvas.drawFactoryLine(start, end, 1, innerColor, scale.x, scale.y);
+            canvas.drawFactoryLine(start, end, 4, outerColor, scale.x, scale.y);
+        }
+
+    }
+
 }

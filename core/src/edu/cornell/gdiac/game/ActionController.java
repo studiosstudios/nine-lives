@@ -132,14 +132,15 @@ public class ActionController {
             mob.applyForce();
         }
 
+        InputController ic = InputController.getInstance();
+        level.update(dt, ic.holdSwitch() && !ic.didSwitch());
         Cat cat = level.getCat();
-        level.setSpiritMode(InputController.getInstance().holdSwitch());
-        if (InputController.getInstance().didSwitch()){
+
+        if (ic.didSwitch()){
             //switch body
             DeadBody body = level.getNextBody();
             if (body != null){
                 level.spawnDeadBody();
-                level.setBodySwitched(true);
                 cat.setPosition(body.getPosition());
                 cat.setLinearVelocity(body.getLinearVelocity());
                 cat.setFacingRight(body.isFacingRight());
@@ -147,7 +148,6 @@ public class ActionController {
                 level.removeDeadBody(body);
             }
         } else {
-            InputController ic = InputController.getInstance();
             cat.setHorizontalMovement(ic.getHorizontal());
             cat.setVerticalMovement(ic.getVertical());
             cat.setJumpPressed(ic.didJump());
@@ -164,6 +164,7 @@ public class ActionController {
             cat.setMeowing(true);
             meowId = playSound(soundAssetMap.get("meow"), meowId, volume);
         }
+
 
     }
 

@@ -69,6 +69,7 @@ public class Mob extends CapsuleObstacle {
 
     private static final String sensorName = "mobsensor";
 
+    public MobDetector detectorRay;
 
 
     /**
@@ -265,11 +266,15 @@ public class Mob extends CapsuleObstacle {
         setFacingRight(!data.getBoolean("facingRight"));
         isAggressive = data.getBoolean("aggressive");
         // setName("mob");
+
+        detectorRay = new MobDetector(this);
     }
 
     public static String getSensorName() {
         return sensorName;
     }
+
+    public MobDetector getDetectorRay() { return detectorRay; }
 
 
     /**
@@ -414,9 +419,13 @@ public class Mob extends CapsuleObstacle {
      */
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
+        // Draw detectorRay
+        if (detectorRay.getPoints().size > 1) {
+            canvas.drawLineDebug(detectorRay.getPoints().get(0), detectorRay.getPoints().get(detectorRay.getPoints().size-1), Color.BLUE, getDrawScale().x, getDrawScale().y);
+        }
+
         for (PolygonShape shape : sensorShapes) {
             canvas.drawPhysics(shape,Color.RED,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
         }
-
     }
 }

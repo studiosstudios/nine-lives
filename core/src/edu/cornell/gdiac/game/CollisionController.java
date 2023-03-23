@@ -100,11 +100,15 @@ public class CollisionController implements ContactListener, ContactFilter {
                 }
 
                 // Check for win condition
-                if (bd2 == level.getGoalDoor()) {
-                    level.setComplete(true);
-                }
-                if (bd2 == level.getRetDoor()) {
-                    setReturn(true);
+                if (bd2 instanceof Exit) {
+                    switch (((Exit) bd2).exitType()) {
+                        case GOAL:
+                            level.setComplete(true);
+                            break;
+                        case RETURN:
+                            setReturn(true);
+                            break;
+                    }
                 }
                 if (fd2 instanceof Spikes) {
                     actionController.die();
@@ -143,6 +147,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                 }
             }
 
+            // TODO: fix collisions when obstacles collide with top and bottom
             // Mob changes direction when hits a wall
             if (bd1 instanceof Mob && !(fd2 instanceof Activator) && !(fd2 instanceof Checkpoint)) {
                 ((Mob) bd1).setFacingRight(!((Mob) bd1).isFacingRight());

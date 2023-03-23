@@ -46,15 +46,19 @@ public class Cat extends CapsuleObstacle {
     /** Whether we are actively dashing */
     private boolean isDashing;
     public boolean canDash;
-    private Animation<TextureRegion> animation;
+    private Animation<TextureRegion> jump_animation;
+    private Animation<TextureRegion> meow_animation;
+    private Animation<TextureRegion> walk_animation;
     private TextureRegion[][] spriteFrames;
-    private float animationTime;
-    private Animation<TextureRegion> animation2;
     private TextureRegion[][] spriteFrames2;
-    private float animationTime2;
-    private Animation<TextureRegion> animation3;
     private TextureRegion[][] spriteFrames3;
-    private float animationTime3;
+    private float jumpTime;
+    private float meowTime;
+    private float walkTime;
+    private Texture normal_texture;
+    private Texture jumping_texture;
+    private Texture sit_texture;
+    private boolean jump_animated;
     /** The amount to slow the character down */
     private final float damping;
     /** The maximum character speed */
@@ -89,10 +93,6 @@ public class Cat extends CapsuleObstacle {
     private int wallCount;
     /** Whether we are climbing on a wall */
     private boolean isClimbing;
-    private Texture normal_texture;
-    private Texture jumping_texture;
-    private Texture sit_texture;
-    private boolean jump_animated;
 
     private boolean climbingPressed;
 
@@ -231,8 +231,8 @@ public class Cat extends CapsuleObstacle {
             canDash = true;
             dashTimer = 0;
             jump_animated = false;
-            animationTime = 0;
-            animationTime2 = 0;
+            jumpTime = 0;
+            meowTime = 0;
             jumpMovement = jump_force;
         }
     }
@@ -351,20 +351,23 @@ public class Cat extends CapsuleObstacle {
         sideSensorName = "catSideSensor";
         sensorShapes = new Array<>();
         this.data = data;
+
         jump_animated = false;
-        int spriteWidth = 65;
-        int spriteHeight = 65;
-        spriteFrames = TextureRegion.split(arr[2], spriteWidth, spriteHeight);
+        normal_texture = arr[0];
+        jumping_texture = arr[1];
+        sit_texture = arr[4];
+
+        spriteFrames = TextureRegion.split(arr[2], 65, 65);
         spriteFrames2 = TextureRegion.split(arr[3], 62, 42);
         spriteFrames3 = TextureRegion.split(arr[5], 62, 62);
-        float frameDuration = 0.025f;
-        animation = new Animation<>(frameDuration, spriteFrames[0]);
-        animation2 = new Animation<>(0.05f, spriteFrames2[0]);
-        animation3 = new Animation<>(0.05f, spriteFrames3[0]);
-        animationTime2 = 0f;
-        animationTime3 = 0f;
-        animation.setPlayMode(Animation.PlayMode.REVERSED);
-        animationTime = 0f;
+
+        jump_animation = new Animation<>(0.025f, spriteFrames[0]);
+        meow_animation = new Animation<>(0.05f, spriteFrames2[0]);
+        walk_animation = new Animation<>(0.15f, spriteFrames3[0]);
+
+        jumpTime = 0f;
+        meowTime = 0f;
+        walkTime = 0f;
 
         // Gameplay attributes
         state = State.MOVING;
@@ -642,50 +645,43 @@ public class Cat extends CapsuleObstacle {
      */
     public void draw(GameCanvas canvas) {
         float effect = faceRight ? 1.0f : -1.0f;
-        float x;
-        if (faceRight) {
-            x = getX() * drawScale.x - 20;
-        } else {
-            x = getX() * drawScale.x + 40;
+        float x = getX() * drawScale.x - effect*25;
+        float y = getY()*drawScale.y-20;
+        //walking animation
+        if(!(state == State.JUMPING)&& horizontalMovement != 0){
+            walk_animation.setPlayMode(Animation.PlayMode.LOOP_REVERSED);
+            walkTime += Gdx.graphics.getDeltaTime();
+            TextureRegion currentFrame3 = walk_animation.getKeyFrame(walkTime);
+            canvas.draw(currentFrame3,Color.WHITE, origin.x, origin.y,x,y-10, getAngle(),effect,1.0f);
         }
-        if(state == State.JUMPING && !jump_animated){
-            animation.setPlayMode(Animation.PlayMode.REVERSED);
-            animationTime += Gdx.graphics.getDeltaTime();
-            TextureRegion currentFrame = animation.getKeyFrame(animationTime);
-            canvas.draw(currentFrame,Color.WHITE, origin.x, origin.y,x-10,getY()*drawScale.y-25, getAngle(),effect,1.0f);
+        //jump animation
+        else if(state == State.JUMPING && !jump_animated){
+            jump_animation.setPlayMode(Animation.PlayMode.REVERSED);
+            jumpTime += Gdx.graphics.getDeltaTime();
+            TextureRegion currentFrame = jump_animation.getKeyFrame(jumpTime);
+            canvas.draw(currentFrame,Color.WHITE, origin.x, origin.y,x,y-15, getAngle(),effect,1.0f);
         }
-        else if((isMeowing && !(state == State.JUMPING)) || animationTime2 != 0){
-            animation2.setPlayMode(Animation.PlayMode.REVERSED);
-            animationTime2 += Gdx.graphics.getDeltaTime();
-            TextureRegion currentFrame2 = animation2.getKeyFrame(animationTime2);
-            canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x-5,getY()*drawScale.y-20, getAngle(),effect,1.0f);
-            if (animationTime2 >= (0.05*5)){
-                animationTime2 = 0;
+        //meow animation
+        else if((isMeowing && !(state == State.JUMPING)) || meowTime != 0){
+            meow_animation.setPlayMode(Animation.PlayMode.REVERSED);
+            meowTime += Gdx.graphics.getDeltaTime();
+            TextureRegion currentFrame2 = meow_animation.getKeyFrame(meowTime);
+            canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x,y, getAngle(),effect,1.0f);
+            if (meowTime >= (0.05*5)){
+                meowTime = 0;
                 isMeowing = false;
             }
         }
+        //sit
         else if(horizontalMovement == 0 && verticalMovement == 0){
-            canvas.draw(sit_texture, Color.WHITE, origin.x, origin.y, x, getY() * drawScale.y - 20, getAngle(), effect, 1.0f);
-        }
-        else if(!(state == State.JUMPING)&& horizontalMovement != 0){
-            animation3.setPlayMode(Animation.PlayMode.LOOP);
-            animationTime3 += Gdx.graphics.getDeltaTime();
-            TextureRegion currentFrame3 = animation3.getKeyFrame(animationTime3);
-            canvas.draw(currentFrame3,Color.WHITE, origin.x, origin.y,x-10,getY()*drawScale.y-28, getAngle(),effect,1.0f);
+            canvas.draw(sit_texture, Color.WHITE, origin.x, origin.y, x,y, getAngle(), effect, 1.0f);
         }
         else{
             if ((state == State.JUMPING)) {
-                canvas.draw(jumping_texture, Color.WHITE, origin.x, origin.y, x+20, getY() * drawScale.y - 15, getAngle(), effect, 1.0f);
+                canvas.draw(jumping_texture, Color.WHITE, origin.x, origin.y, x,y, getAngle(), effect, 1.0f);
             }
             else if (horizontalMovement != 0 || verticalMovement != 0){
-            if (state == State.JUMPING) {
-                canvas.draw(jumping_texture, Color.WHITE, origin.x, origin.y, x, getY() * drawScale.y - 15, getAngle(), effect, 1.0f);
-            } else if (horizontalMovement != 0 || verticalMovement != 0){
-                canvas.draw(normal_texture, Color.WHITE, origin.x, origin.y, x, getY() * drawScale.y - 15, getAngle(), effect, 1.0f);
-            }
-            else{
-                canvas.draw(sit_texture, Color.WHITE, origin.x, origin.y, x, getY() * drawScale.y - 20, getAngle(), effect, 1.0f);
-            }
+                canvas.draw(jumping_texture, Color.WHITE, origin.x, origin.y, x,y, getAngle(), effect, 1.0f);
         }
     }
     }

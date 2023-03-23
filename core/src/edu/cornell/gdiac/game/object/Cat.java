@@ -681,9 +681,7 @@ public class Cat extends CapsuleObstacle {
                 canvas.draw(jumping_texture, Color.WHITE, origin.x, origin.y, x,y, getAngle(), effect, 1.0f);
             }
             else if (horizontalMovement != 0 || verticalMovement != 0){
-            if (state == State.JUMPING) {
                 canvas.draw(jumping_texture, Color.WHITE, origin.x, origin.y, x,y, getAngle(), effect, 1.0f);
-            }
         }
     }
     }

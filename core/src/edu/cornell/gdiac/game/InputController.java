@@ -14,6 +14,7 @@
 package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.*;
 
 import com.badlogic.gdx.utils.Array;
@@ -322,14 +323,14 @@ public class InputController {
 	private void readKeyboard(Rectangle bounds, Vector2 scale) {
 		resetPressed = (Gdx.input.isKeyPressed(Input.Keys.R));
 		debugPressed = (Gdx.input.isKeyPressed(Input.Keys.B));
-		jumpPressed = (Gdx.input.isKeyPressed(Input.Keys.SPACE));
+		jumpPressed = (Gdx.input.isKeyPressed(Keys.C));
 		secondPressed = (Gdx.input.isKeyPressed(Input.Keys.SPACE));
-		dashPressed = (Gdx.input.isKeyPressed(Input.Keys.D));
-		climbPressed = (Gdx.input.isKeyPressed(Input.Keys.A));
+		dashPressed = (Gdx.input.isKeyPressed(Keys.X));
+		climbPressed = (Gdx.input.isKeyPressed(Keys.Z));
 		exitPressed  = (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
 		meowPressed = (Gdx.input.isKeyPressed(Input.Keys.M));
-		switchPressed = (Gdx.input.isKeyPressed(Input.Keys.S));
-		cancelPressed = (Gdx.input.isKeyPressed(Input.Keys.C));
+		switchPressed = (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT));
+		cancelPressed = (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT));
 
 		//useful keys for testing/debugging
 		nextPressed = (Gdx.input.isKeyPressed(Input.Keys.N));

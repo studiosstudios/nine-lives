@@ -36,7 +36,6 @@ public class MobDetector {
 
     public void beginRayCast(){
         points.clear();
-        System.out.println(mob.getPosition());
         points.add(mob.getPosition());
     }
 

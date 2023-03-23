@@ -223,7 +223,7 @@ public class AIController {
          * Gets closest raycasted fixture and stores collision point and the fixture itself
          */
         public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-            if ( fraction < closestFraction ) {
+            if ( fraction < closestFraction && fixture.getBody() != mob.getBody()) {
                 closestFraction = fraction;
                 rayCastPoint.set(point);
                 rayCastFixture = fixture;
@@ -255,8 +255,6 @@ public class AIController {
             detector.setEndPoint(rayCastFixture.getBody().getPosition());
 
         }
-//        System.out.println("start" + startPointCache);
-//        System.out.println("end" + endPointCache);
         detector.addBeamPoint(new Vector2(rayCastPoint));
     }
 }

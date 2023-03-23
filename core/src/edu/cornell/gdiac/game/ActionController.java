@@ -71,6 +71,7 @@ public class ActionController {
     }
 
     public void setControllers(Level level) {
+        mobControllers.clear();
         for (Mob mob : level.getMobArray()) {
             mobControllers.add(new AIController(bounds, level, mob, mob.isAggressive()));
         }

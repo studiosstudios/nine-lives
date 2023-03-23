@@ -527,6 +527,7 @@ public class Level {
         lasers.clear();
         deadBodyArray.clear();
         activatables.clear();
+        mobArray.clear();
         numLives = maxLives;
         if (world != null) {
             world.dispose();

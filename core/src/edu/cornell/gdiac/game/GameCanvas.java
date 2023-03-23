@@ -110,6 +110,11 @@ public class GameCanvas {
 	/** Cache object to handle raw textures */
 	private TextureRegion holder;
 
+	private float cameraX;
+	private float cameraY;
+
+	private final float CAMERA_GLIDE_RATE = 0.075f;
+
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
 	 * 
@@ -129,6 +134,8 @@ public class GameCanvas {
 		camera = new OrthographicCamera(STANDARD_WIDTH, STANDARD_HEIGHT);
 		camera.setToOrtho(false, STANDARD_WIDTH, STANDARD_HEIGHT);
 		camera.zoom -= 0.15;
+		cameraX = camera.position.x;
+		cameraY = camera.position.y;
 //		camera.position.set(STANDARD_WIDTH/3, STANDARD_HEIGHT/2, 0); //NEED TO SET THIS RELATIVE TO CAT
 //		camera.position.set(STANDARD_WIDTH / 2, STANDARD_HEIGHT / 2, 0);
 //		camera.update();
@@ -231,6 +238,7 @@ public class GameCanvas {
 		return new Vector2(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 	}
 
+
 	/**
 	 * Updates camera positioning based on cat's current position (in pixels)
 	 * @param x_pos x coordinate of cat's current location in pixels
@@ -251,7 +259,30 @@ public class GameCanvas {
 		if(y_pos < height_scaled/2){
 			y_pos = height_scaled/2;
 		}
-		camera.position.set(x_pos, y_pos, 0);
+		cameraX += (x_pos - cameraX) * CAMERA_GLIDE_RATE;
+		cameraY += (y_pos - cameraY) * CAMERA_GLIDE_RATE;
+		camera.position.set(cameraX, cameraY, 0);
+		camera.update();
+	}
+
+	public void setCamera(float x_pos, float y_pos){
+		float width_scaled = STANDARD_WIDTH*camera.zoom;
+		if(x_pos > STANDARD_WIDTH - width_scaled + width_scaled/2){
+			x_pos = STANDARD_WIDTH - width_scaled + width_scaled/2;
+		}
+		if(x_pos < width_scaled/2){
+			x_pos = width_scaled/2;
+		}
+		float height_scaled = STANDARD_HEIGHT*camera.zoom;
+		if(y_pos > STANDARD_HEIGHT - height_scaled + height_scaled/2){
+			y_pos = STANDARD_HEIGHT - height_scaled + height_scaled/2;
+		}
+		if(y_pos < height_scaled/2){
+			y_pos = height_scaled/2;
+		}
+		cameraX = x_pos;
+		cameraY = y_pos;
+		camera.position.set(cameraX, cameraY, 0);
 		camera.update();
 	}
 	/**

@@ -5,10 +5,10 @@ import com.badlogic.gdx.graphics.*;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import edu.cornell.gdiac.assets.*;
 import edu.cornell.gdiac.game.stage.MainMenuStage;
 import edu.cornell.gdiac.game.stage.SettingsStage;
+import edu.cornell.gdiac.game.stage.StageWrapper;
 import edu.cornell.gdiac.util.*;
 
 /**
@@ -18,41 +18,41 @@ import edu.cornell.gdiac.util.*;
  * the UI of the main and accompanying menus for the game. This is done to dynamically handle
  * resizing of the game window, along with streamlining the input handling for when buttons are clicked.
  *
- * TODO: Develop the rest of the game's menus using separate classes for each "Stage", such as a
- * MainMenuStage, SettingsStage, and etc.
+ * TODO: Develop the rest of the game's menus using separate classes for each "Stage", such as a MainMenuStage, SettingsStage, and etc.
+ * Adapted from Walker M. White's LoadingMode.java in Cornell CS 3152, Spring 2023.
  */
 public class StageController implements Screen {
 	// There are TWO asset managers.  One to load the loading screen.  The other to load the assets
 	/** Internal assets for this loading screen */
-	private AssetDirectory internal;
+	private final AssetDirectory internal;
 	/** The actual assets to be loaded */
-	private AssetDirectory assets;
-
-	private float animationTime;
+	private final AssetDirectory assets;
 	/** Standard window size (for scaling) */
 	private static int STANDARD_WIDTH  = 1024;
 	/** Standard window height (for scaling) */
 	private static int STANDARD_HEIGHT = 576;
 	/** Default budget for asset loader (do nothing but load 60 fps) */
 	private static int DEFAULT_BUDGET = 15;
-	/** The amount of time to devote to loading assets (as opposed to on screen hints, etc.) */
+	/** The amount of time to devote to loading assets (as opposed to onscreen hints, etc.) */
 	private int   budget;
 
 	/** Reference to GameCanvas created by the root */
 	private GameCanvas canvas;
 	/** Listener that will update the player mode when we are done */
 	private ScreenListener listener;
-	/** Whether or not this player mode is still active */
+	/** Whether this player mode is still active */
 	private boolean active;
 
 	/** The current stage being rendered on the screen */
-	private Stage stage;
+	private StageWrapper stage;
 
 	/** The stage for the settings menu */
 	private SettingsStage settingsStage;
 
 	/** The stage for the main menu */
 	private MainMenuStage mainMenuStage;
+
+	private float animationTime;
 	/** Background texture for start-up */
 	private boolean jump_animated;
 	private TextureRegion[][] spriteFrames;
@@ -61,7 +61,7 @@ public class StageController implements Screen {
 
 	/**
 	 * Returns the budget for the asset loader.
-	 *
+	 * <br><br>
 	 * The budget is the number of milliseconds to spend loading assets each animation
 	 * frame.  This allows you to do something other than load assets.  An animation
 	 * frame is ~16 milliseconds. So if the budget is 10, you have 6 milliseconds to
@@ -75,7 +75,7 @@ public class StageController implements Screen {
 
 	/**
 	 * Sets the budget for the asset loader.
-	 *
+	 * <br><br>
 	 * The budget is the number of milliseconds to spend loading assets each animation
 	 * frame.  This allows you to do something other than load assets.  An animation 
 	 * frame is ~16 milliseconds. So if the budget is 10, you have 6 milliseconds to 
@@ -89,10 +89,6 @@ public class StageController implements Screen {
 
 	/**
 	 * Returns the asset directory produced by this loading screen
-	 *
-	 * This asset loader is NOT owned by this loading scene, so it persists even
-	 * after the scene is disposed.  It is your responsbility to unload the
-	 * assets in this directory.
 	 *
 	 * @return the asset directory produced by this loading screen
 	 */
@@ -112,7 +108,7 @@ public class StageController implements Screen {
 
 	/**
 	 * Creates a LoadingMode with the default size and position.
-	 *
+	 * <br><br>
 	 * The budget is the number of milliseconds to spend loading assets each animation
 	 * frame.  This allows you to do something other than load assets.  An animation 
 	 * frame is ~16 milliseconds. So if the budget is 10, you have 6 milliseconds to 
@@ -141,9 +137,8 @@ public class StageController implements Screen {
 		animation = new Animation<>(frameDuration, spriteFrames[0]);
 		animationTime = 0f;
 
-		mainMenuStage = new MainMenuStage();
-
-		settingsStage = new SettingsStage();
+		mainMenuStage = new MainMenuStage(internal, false);
+		settingsStage = new SettingsStage(internal, true);
 
 		stage = mainMenuStage;
 
@@ -165,7 +160,7 @@ public class StageController implements Screen {
 	
 	/**
 	 * Update the status of this player mode.
-	 *
+	 * <br><br>
 	 * We prefer to separate update and draw from one another as separate methods, instead
 	 * of using the single render() method that LibGDX does.  We will talk about why we
 	 * prefer this in lecture.
@@ -175,12 +170,15 @@ public class StageController implements Screen {
 	private void update(float delta) {
 		if(!assets.isFinished()) {
 			assets.update(budget);
+			if (assets.getProgress() >= 1.0f) {
+				stage.createActors();
+			}
 		}
 	}
 
 	/**
 	 * Draw the status of this player mode.
-	 *
+	 * <br><br>
 	 * We prefer to separate update and draw from one another as separate methods, instead
 	 * of using the single render() method that LibGDX does.  We will talk about why we
 	 * prefer this in lecture.
@@ -202,7 +200,7 @@ public class StageController implements Screen {
 	// ADDITIONAL SCREEN METHODS
 	/**
 	 * Called when the Screen should render itself.
-	 *
+	 * <br><br>
 	 * We defer to the other methods update() and draw().  However, it is VERY important
 	 * that we only quit AFTER a draw.
 	 *
@@ -231,7 +229,7 @@ public class StageController implements Screen {
 
 	/**
 	 * Called when the Screen is resized. 
-	 *
+	 * <br><br>
 	 * This can happen at any point during a non-paused state but will never happen 
 	 * before a call to show().
 	 *
@@ -244,7 +242,7 @@ public class StageController implements Screen {
 
 	/**
 	 * Called when the Screen is paused.
-	 * 
+	 *  <br><br>
 	 * This is usually when it's not active or visible on screen. An Application is 
 	 * also paused before it is destroyed.
 	 */
@@ -255,7 +253,7 @@ public class StageController implements Screen {
 
 	/**
 	 * Called when the Screen is resumed from a paused state.
-	 *
+	 * <br><br>
 	 * This is usually when it regains focus.
 	 */
 	public void resume() {
@@ -281,7 +279,7 @@ public class StageController implements Screen {
 
 	/**
 	 * Sets the ScreenListener for this mode
-	 *
+	 * <br><br>
 	 * The ScreenListener will respond to requests to quit.
 	 */
 	public void setScreenListener(ScreenListener listener) {
@@ -292,13 +290,14 @@ public class StageController implements Screen {
 
 	/**
 	 * Changes the currently active stage.
-	 *
+	 * <br><br>
 	 * Not only does this change the stage, but it also updates the InputProcessor to handle
 	 * that stage's actors, along with appropriately resizing to ensure the aspect ratio of the
 	 * new stage is correct.
-	 * @param s
+	 *
+	 * @param s The new stage
 	 */
-	private void changeStage(Stage s) {
+	private void changeStage(StageWrapper s) {
 		stage = s;
 		Gdx.input.setInputProcessor(s);
 		resize(canvas.getWidth(), canvas.getHeight());

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import edu.cornell.gdiac.assets.AssetDirectory;
 
 public class MainMenuStage extends StageWrapper{
     private Actor PlayButtonActor;
@@ -15,6 +16,7 @@ public class MainMenuStage extends StageWrapper{
     private int levelSelectState;
     private int settingsState;
     private int exitButtonState;
+
     public int getPlayButtonState() { return playButtonState; }
     public void setPlayButtonState(int state) { playButtonState = state; }
     public int getLevelSelectState() { return levelSelectState; }
@@ -27,6 +29,10 @@ public class MainMenuStage extends StageWrapper{
     public boolean isPlay() { return playButtonState == 2; }
     public boolean isSettings() { return settingsState == 2; }
     public boolean isExit() { return exitButtonState == 2; }
+
+    public MainMenuStage(AssetDirectory internal, boolean createActors) {
+        super(internal, createActors);
+    }
 
     /**
      *

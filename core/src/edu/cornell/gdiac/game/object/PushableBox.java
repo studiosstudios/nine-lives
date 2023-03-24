@@ -50,7 +50,7 @@ public class PushableBox extends BoxObstacle implements Activatable {
     public void setActivated(boolean activated) {this.activated = activated;}
 
     @Override
-    public boolean getActivated() { return activated; }
+    public boolean isActivated() { return activated; }
 
     @Override
     public void setInitialActivation(boolean initialActivation){ this.initialActivation = initialActivation; }

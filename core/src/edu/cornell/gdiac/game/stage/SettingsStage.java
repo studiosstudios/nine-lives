@@ -5,14 +5,21 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import edu.cornell.gdiac.assets.AssetDirectory;
 
 public class SettingsStage extends StageWrapper {
     private Actor BackButtonActor;
     /** State to keep track of whether the main menu button has been clicked */
     private int backButtonState;
+
     public boolean isBack() { return backButtonState == 2; }
     public int getBackButtonState() { return backButtonState; }
     public void setBackButtonState(int state) { backButtonState = state; }
+
+    public SettingsStage(AssetDirectory internal, boolean createActors) {
+        super(internal, createActors);
+    }
+
     /**
      *
      */

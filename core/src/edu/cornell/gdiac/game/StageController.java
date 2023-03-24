@@ -2,18 +2,13 @@ package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import edu.cornell.gdiac.assets.*;
+import edu.cornell.gdiac.game.stage.MainMenuStage;
+import edu.cornell.gdiac.game.stage.SettingsStage;
 import edu.cornell.gdiac.util.*;
 
 /**
@@ -26,7 +21,7 @@ import edu.cornell.gdiac.util.*;
  * TODO: Develop the rest of the game's menus using separate classes for each "Stage", such as a
  * MainMenuStage, SettingsStage, and etc.
  */
-public class LoadingMode implements Screen {
+public class StageController implements Screen {
 	// There are TWO asset managers.  One to load the loading screen.  The other to load the assets
 	/** Internal assets for this loading screen */
 	private AssetDirectory internal;
@@ -50,11 +45,6 @@ public class LoadingMode implements Screen {
 	/** Whether or not this player mode is still active */
 	private boolean active;
 
-	/** x-coordinate for center of button list */
-	private int buttonX;
-	/** y-coordinate for top button */
-	private int buttonY;
-
 	/** The current stage being rendered on the screen */
 	private Stage stage;
 
@@ -62,38 +52,12 @@ public class LoadingMode implements Screen {
 	private SettingsStage settingsStage;
 
 	/** The stage for the main menu */
-	private Stage mainMenuStage;
+	private MainMenuStage mainMenuStage;
 	/** Background texture for start-up */
 	private boolean jump_animated;
 	private TextureRegion[][] spriteFrames;
 	private Animation<TextureRegion> animation;
-	private Texture background;
-	/** Play button to display when done */
-	private Texture playButton;
-	/** Level Select button to display when done */
-	private Texture levelSelectButton;
-	/** Settings button to display when done */
-	private Texture settingsButton;
-	/** Exit game button to display when done */
-	private Texture exitButton;
-	/** The current state of the play button */
 	private Texture jump_texture;
-	private int playButtonState;
-	/** The current state of the level select button */
-	private int levelSelectButtonState;
-	/** The current state of the settings button */
-	private int settingsButtonState;
-	/** The current state of the exit game button */
-	private int exitButtonState;
-
-	/** The actor (Image) for the play button, which helps to handle the input listening for clicks */
-	private Actor playButtonActor;
-	/** The actor (Image) for the level select button, which helps to handle the input listening for clicks */
-	private Actor levelSelectButtonActor;
-	/** The actor (Image) for the settings button, which helps to handle the input listening for clicks */
-	private Actor settingsButtonActor;
-	/** The actor (Image) for the exit button, which helps to handle the input listening for clicks */
-	private Actor exitButtonActor;
 
 	/**
 	 * Returns the budget for the asset loader.
@@ -122,24 +86,6 @@ public class LoadingMode implements Screen {
 	public void setBudget(int millis) {
 		budget = millis;
 	}
-	
-	/**
-	 * Returns true if all assets are loaded and the player is ready to go.
-	 *
-	 * @return true if the player is ready to go
-	 */
-	public boolean isReady() {
-		return playButtonState == 2;
-	}
-
-	/**
-	 * Return true if all assets are loaded and the player wants to go to the settings screen.
-	 *
-	 * @return true if the player wants to go to the settings screen
-	 */
-	public boolean isSettings() { return settingsButtonState == 2;}
-
-	public boolean isExit() { return exitButtonState == 2; }
 
 	/**
 	 * Returns the asset directory produced by this loading screen
@@ -160,7 +106,7 @@ public class LoadingMode implements Screen {
 	 * @param file  	The asset directory to load in the background
 	 * @param canvas 	The game canvas to draw to
 	 */
-	public LoadingMode(String file, GameCanvas canvas) {
+	public StageController(String file, GameCanvas canvas) {
 		this(file, canvas, DEFAULT_BUDGET);
 	}
 
@@ -176,12 +122,9 @@ public class LoadingMode implements Screen {
 	 * @param canvas 	The game canvas to draw to
 	 * @param millis 	The loading budget in milliseconds
 	 */
-	public LoadingMode(String file, GameCanvas canvas, int millis) {
+	public StageController(String file, GameCanvas canvas, int millis) {
 		this.canvas  = canvas;
 		budget = millis;
-		
-		buttonX = (int)(3f/5 * STANDARD_WIDTH);
-		buttonY = (int)(1f/2 * STANDARD_HEIGHT);
 
 		// We need these files loaded immediately
 		internal = new AssetDirectory( "loading.json" );
@@ -189,8 +132,6 @@ public class LoadingMode implements Screen {
 		internal.finishLoading();
 
 		// Load the next two images immediately.
-		background = internal.getEntry( "background", Texture.class );
-		background.setFilter( TextureFilter.Linear, TextureFilter.Linear );
 		jump_texture = internal.getEntry( "jump", Texture.class );
 		jump_animated = false;
 		int spriteWidth = 250;
@@ -199,19 +140,8 @@ public class LoadingMode implements Screen {
 		float frameDuration = 0.05f;
 		animation = new Animation<>(frameDuration, spriteFrames[0]);
 		animationTime = 0f;
-		// No progress so far.
-		playButtonState = 0;
-		levelSelectButtonState = 0;
-		settingsButtonState = 0;
-		exitButtonState = 0;
-		playButton = null;
-		levelSelectButton = null;
-		settingsButton = null;
-		exitButton = null;
 
-		mainMenuStage = new Stage(new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT));
-		Image backgroundImage = new Image(background);
-		mainMenuStage.addActor(backgroundImage);
+		mainMenuStage = new MainMenuStage();
 
 		settingsStage = new SettingsStage();
 
@@ -243,11 +173,8 @@ public class LoadingMode implements Screen {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	private void update(float delta) {
-		if (playButton == null) {
+		if(!assets.isFinished()) {
 			assets.update(budget);
-			if (assets.getProgress() >= 1.0f) {
-				createMainMenuStageActors();
-			}
 		}
 	}
 
@@ -286,18 +213,17 @@ public class LoadingMode implements Screen {
 			update(delta);
 			draw();
 
-			// We are are ready, notify our listener
-			if (isReady() && listener != null) {
+			// We are ready, notify our listener
+			if (mainMenuStage.isPlay() && listener != null) {
 				listener.exitScreen(this, 0);
-			} else if (isSettings()) {
-//				listener.exitScreen(this, 1);
-				settingsButtonState = 0;
+			} else if (mainMenuStage.isSettings()) {
+				mainMenuStage.setSettingsState(0);
 				changeStage(settingsStage);
 			} else if (settingsStage.isBack()) {
 				settingsStage.setBackButtonState(0);
 				changeStage(mainMenuStage);
 			}
-			else if (isExit() && listener != null) {
+			else if (mainMenuStage.isExit() && listener != null) {
 				listener.exitScreen(this, 99);
 			}
 		}
@@ -365,38 +291,6 @@ public class LoadingMode implements Screen {
 	// HELPER FUNCTIONS / CLASSES
 
 	/**
-	 * Creates the actors for the main menu stage.
-	 *
-	 * TODO: Factor this out into an external `MainMenuStage` class.
-	 */
-	private void createMainMenuStageActors() {
-		playButton = internal.getEntry("playGame", Texture.class);
-		EventListener mainMenuButtonListener = new MainMenuButtonListener();
-		playButtonActor = new Image(playButton);
-		playButtonActor.setPosition(buttonX, buttonY);
-		playButtonActor.addListener(mainMenuButtonListener);
-		mainMenuStage.addActor(playButtonActor);
-
-		settingsButton = internal.getEntry("settings", Texture.class);
-		settingsButtonActor = new Image(settingsButton);
-		settingsButtonActor.setPosition(buttonX, buttonY-75);
-		settingsButtonActor.addListener(mainMenuButtonListener);
-		mainMenuStage.addActor(settingsButtonActor);
-
-		levelSelectButton = internal.getEntry("levelSelect", Texture.class);
-		levelSelectButtonActor = new Image(levelSelectButton);
-		levelSelectButtonActor.setPosition(buttonX, buttonY-150);
-		levelSelectButtonActor.addListener(mainMenuButtonListener);
-		mainMenuStage.addActor(levelSelectButtonActor);
-
-		exitButton = internal.getEntry("exit", Texture.class);
-		exitButtonActor = new Image(exitButton);
-		exitButtonActor.setPosition(buttonX, buttonY-225);
-		exitButtonActor.addListener(mainMenuButtonListener);
-		mainMenuStage.addActor(exitButtonActor);
-	}
-
-	/**
 	 * Changes the currently active stage.
 	 *
 	 * Not only does this change the stage, but it also updates the InputProcessor to handle
@@ -409,54 +303,4 @@ public class LoadingMode implements Screen {
 		Gdx.input.setInputProcessor(s);
 		resize(canvas.getWidth(), canvas.getHeight());
 	}
-
-	/**
-	 * TEMPORARY Listener class to handle button listening.
-	 *
-	 * TODO: Factor this out with a separate `MainMenuScreen`
-	 * TODO: Separate these listeners with the `mainMenuButtonActor` listener, which is supposed to be with the SettingsScreen
-	 */
-
-	private class MainMenuButtonListener extends InputListener {
-		@Override
-		public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-			Actor actor = event.getListenerActor();
-			if (actor == playButtonActor) {
-				playButtonState = 1;
-				playButtonActor.setColor(Color.LIGHT_GRAY);
-			}
-			else if (actor == levelSelectButtonActor) {
-
-			}
-			else if (actor == settingsButtonActor) {
-				settingsButtonState = 1;
-				settingsButtonActor.setColor(Color.LIGHT_GRAY);
-			}
-			else if (actor == exitButtonActor) {
-				exitButtonState = 1;
-				exitButtonActor.setColor(Color.LIGHT_GRAY);
-			}
-			return true;
-		}
-
-		@Override
-		public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-			if (playButtonState == 1) {
-				playButtonState = 2;
-				playButtonActor.setColor(Color.WHITE);
-			}
-			else if (levelSelectButtonState == 1) {
-
-			}
-			else if (settingsButtonState == 1) {
-				settingsButtonState = 2;
-				settingsButtonActor.setColor(Color.WHITE);
-			}
-			else if (exitButtonState == 1) {
-				exitButtonState = 2;
-				exitButtonActor.setColor(Color.WHITE);
-			}
-		}
-	}
-
 }

@@ -32,7 +32,7 @@ public class NineLives extends Game implements ScreenListener {
 	/** Drawing context to display graphics (VIEW CLASS) */
 	private GameCanvas canvas; 
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
-	private LoadingMode loading;
+	private StageController loading;
 	/** Player mode for the the game proper (CONTROLLER CLASS) */
 	private int current;
 	/** List of all WorldControllers */
@@ -56,7 +56,7 @@ public class NineLives extends Game implements ScreenListener {
 	 */
 	public void create() {
 		canvas  = new GameCanvas();
-		loading = new LoadingMode("assets.json",canvas,1);
+		loading = new StageController("assets.json",canvas,1);
 
 		controller = new WorldController(4);
 		current = 0;

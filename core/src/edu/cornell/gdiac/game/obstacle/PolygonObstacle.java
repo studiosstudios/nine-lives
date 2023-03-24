@@ -53,6 +53,10 @@ public class PolygonObstacle extends SimpleObstacle {
 	private Vector2 sizeCache;
 	/** Cache of the polygon vertices (for resizing) */
 	private float[] vertices;
+	/** max x coordinate in vertices array */
+	private float maxX;
+	/** max y coordinate in vertices array */
+	private float maxY;
 	
 	/** 
 	 * Returns the dimensions of this box
@@ -95,6 +99,20 @@ public class PolygonObstacle extends SimpleObstacle {
 	 */
 	public void setDimension(float width, float height, boolean clip) {
 		resize(width, height, clip);
+		markDirty(true);
+	}
+
+	/**
+	 * Sets the dimensions of this box, scaling from a given (local) point
+	 *
+	 * @param width   The width of this box
+	 * @param height  The height of this box
+	 * @param clip	  If the texture is clipped or scaled
+	 * @param x		  Local x coordinate of scaling center
+	 * @param y		  Local y coordinate of scaling center
+	 */
+	public void setDimension(float width, float height, boolean clip, float x, float y) {
+		resizeFromPoint(width, height, clip, x, y);
 		markDirty(true);
 	}
 	
@@ -265,7 +283,43 @@ public class PolygonObstacle extends SimpleObstacle {
 		indices.size -= 3*colinear;
 		indices.shrink();
 	}
-	
+
+	/**
+	 * Resize this polygon (stretching uniformly out from a point)
+	 *
+	 * @param width The new width
+	 * @param height The new height
+	 * @param clip   If the texture is clipped or scaled
+	 * @param x	     Local x coordinate of scaling origin
+	 * @param y      Local y coordinate of scaling origin
+	 */
+	private void resizeFromPoint(float width, float height, boolean clip, float x, float y) {
+		//NOTE: this method has not been fully tested but it works for the doors
+		//      it also makes sense in my mind
+		float scalex = width/dimension.x;
+		float scaley = height/dimension.y;
+
+		for(int ii = 0; ii < shapes.length; ii++) {
+			for(int jj = 0; jj < 3; jj++) {
+				vertices[6 * ii + 2 * jj] += (scalex - 1) * (vertices[6 * ii + 2 * jj] - x);
+				vertices[6 * ii + 2 * jj + 1] += (scaley - 1) * (vertices[6 * ii + 2 * jj + 1] - y);
+			}
+			shapes[ii].set(vertices,6*ii,6);
+		}
+
+
+		// Reset the drawing shape as well
+		for(int ii = 0; ii < scaled.length; ii+= 2) {
+			scaled[ii] += (scalex - 1) * (scaled[ii] - x*drawScale.x);
+			scaled[ii+1] += (scaley - 1) * (scaled[ii+1] - y*drawScale.y);
+		}
+		if (clip && texture != null) {
+			region = new PolygonRegion(texture,scaled,tridx);
+		}
+
+		dimension.set(width,height);
+	}
+
 	/**
 	 * Resize this polygon (stretching uniformly out from origin)
 	 *
@@ -275,7 +329,7 @@ public class PolygonObstacle extends SimpleObstacle {
 	private void resize(float width, float height, boolean clip) {
 		float scalex = width/dimension.x;
 		float scaley = height/dimension.y;
-		
+
 		for(int ii = 0; ii < shapes.length; ii++) {
 			for(int jj = 0; jj < 3; jj++) {
 				vertices[6*ii+2*jj  ] *= scalex;
@@ -283,7 +337,7 @@ public class PolygonObstacle extends SimpleObstacle {
 			}
 			shapes[ii].set(vertices,6*ii,6);
 		}
-		
+
 		// Reset the drawing shape as well
 		for(int ii = 0; ii < scaled.length; ii+= 2) {
 			scaled[ii  ] *= scalex;

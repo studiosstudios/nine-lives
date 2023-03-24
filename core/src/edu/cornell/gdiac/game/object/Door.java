@@ -62,13 +62,19 @@ public class Door extends PolygonObstacle implements Activatable {
                 switch (angle) {
                     case DOWN:
                         setY(getY() - height / totalTicks);
+                        setDimension(width, getHeight() + height / totalTicks, true, width, 0);
+                        break;
                     case UP:
-                        setDimension(width, getHeight() + height / totalTicks, true);
+                        setY(getY() + height / totalTicks);
+                        setDimension(width, getHeight() + height / totalTicks, true, width, height);
                         break;
                     case LEFT:
                         setX(getX() - width / totalTicks);
+                        setDimension(getWidth() + width / totalTicks, height, true, 0, height);
+                        break;
                     case RIGHT:
-                        setDimension(getWidth() + width / totalTicks, height, true);
+                        setX(getX() + width / totalTicks);
+                        setDimension(getWidth() + width / totalTicks, height, true, width, height);
                         break;
                 }
             }
@@ -81,13 +87,19 @@ public class Door extends PolygonObstacle implements Activatable {
                 switch (angle) {
                     case DOWN:
                         setY(getY() + height / totalTicks);
+                        setDimension(width, getHeight() - height / totalTicks, true, width, 0);
+                        break;
                     case UP:
-                        setDimension(width, getHeight() - height / totalTicks, true);
+                        setY(getY() - height / totalTicks);
+                        setDimension(width, getHeight() - height / totalTicks, true, width, height);
                         break;
                     case LEFT:
                         setX(getX() + width / totalTicks);
+                        setDimension(getWidth() - width / totalTicks, height, true, 0, height);
+                        break;
                     case RIGHT:
-                        setDimension(getWidth() - width / totalTicks, height, true);
+                        setX(getX() - width / totalTicks);
+                        setDimension(getWidth() - width / totalTicks, height, true, width, height);
                         break;
                 }
             }

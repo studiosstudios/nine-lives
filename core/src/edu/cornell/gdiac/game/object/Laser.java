@@ -2,10 +2,8 @@ package edu.cornell.gdiac.game.object;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.game.GameCanvas;
@@ -19,6 +17,7 @@ public class Laser extends BoxObstacle implements Activatable{
 
     private Vector2 endPointCache = new Vector2();
 
+    private Vector2 beamOffset;
     private static float thickness;
     protected static JsonValue objectConstants;
     private boolean activated;
@@ -47,9 +46,24 @@ public class Laser extends BoxObstacle implements Activatable{
         setX(data.get("pos").getFloat(0)+objectConstants.get("offset").getFloat(0));
         setY(data.get("pos").getFloat(1)+objectConstants.get("offset").getFloat(1));
         setAngle((float) (data.getInt("angle") * Math.PI/180));
+        setSensor(true);
         setFixedRotation(true);
 
         dir = angleToDir(data.getInt("angle"));
+        switch (dir){
+            case UP:
+                beamOffset = new Vector2(objectConstants.get("beamOffset").getFloat(0), objectConstants.get("beamOffset").getFloat(1));
+                break;
+            case DOWN:
+                beamOffset = new Vector2(objectConstants.get("beamOffset").getFloat(0), -objectConstants.get("beamOffset").getFloat(1));
+                break;
+            case LEFT:
+                beamOffset = new Vector2(-objectConstants.get("beamOffset").getFloat(1), objectConstants.get("beamOffset").getFloat(0));
+                break;
+            case RIGHT:
+                beamOffset = new Vector2(objectConstants.get("beamOffset").getFloat(1), -objectConstants.get("beamOffset").getFloat(0));
+                break;
+        }
         totalTime = 0;
         color = Color.RED;
         points = new Array<>();
@@ -76,11 +90,12 @@ public class Laser extends BoxObstacle implements Activatable{
 
     public void beginRayCast(){
         points.clear();
-        points.add(getPosition());
+        points.add(getRayCastStart());
     }
 
+
     public Vector2 getRayCastStart(){
-        return getPosition();
+        return getPosition().add(beamOffset);
     }
 
     @Override
@@ -88,6 +103,7 @@ public class Laser extends BoxObstacle implements Activatable{
         if (activated) {
             if (points.size > 1) {
                 canvas.drawFactoryPath(points, thickness, color, drawScale.x, drawScale.y);
+                canvas.drawFactoryPath(points, thickness*0.3f, Color.WHITE, drawScale.x, drawScale.y);
             }
         }
         super.draw(canvas);
@@ -96,7 +112,7 @@ public class Laser extends BoxObstacle implements Activatable{
     public void update(float dt){
         super.update(dt);
         totalTime += dt;
-        color.set(1, 0, 0, ((float) Math.cos((double) totalTime * 2)) * 0.2f + 0.8f);
+        color.set(1, 0, 0, ((float) Math.cos((double) totalTime * 2)) * 0.25f + 0.75f);
     }
 
     @Override

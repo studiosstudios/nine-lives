@@ -4,7 +4,7 @@
     "friction": 0.4,
     "density" : 0.0,
     "restitution": 0.1,
-    "volume": 0.8
+    "volume": 0.1
   },
   "spikes" : {
     "sensor_height_scale": 1,
@@ -19,10 +19,10 @@
     ]
   },
   "activators": {
-    "body_shape" : [-0.03125, 0.2, 0.96875, 0.2, 0.66875, 0.5, 0.26875, 0.5],
+    "body_shape" : [-0.03125, 0.2, 0.96875, 0.2, 0.66875, 0.4, 0.26875, 0.4],
     "sensor_shape" : [-0.03125, 0.2, 0.96875, 0.2, 0.96875, 0.6, -0.03125, 0.6],
     "friction" : 0.4,
-    "offset": [0.03125, -0.2]
+    "offset": [0.03125, -0.4]
   },
   "boxes": {
     "friction" : 0.9,
@@ -41,7 +41,8 @@
   },
   "lasers": {
     "offset": [0.5, 0.5],
-    "thickness": 2,
+    "beamOffset": [0, -0.2],
+    "thickness": 3,
     "friction": 0.4,
     "density": 1,
     "mass": 1
@@ -66,5 +67,40 @@
     "friction": 10,
     "density" : 0.2,
     "mass": 1
+  },
+  "walls": {
+    "friction": 0.4,
+    "density" : 0.0,
+    "restitution": 0.1
+  },
+  "platforms": {
+    "friction": 0.4,
+    "density" : 0.0,
+    "restitution": 0.1
+  },
+  "cat": {
+    "shrink": [0.7, 0.95],
+    "force": 30.0,
+    "damping": 30.0,
+    "density": 1.0,
+    "friction": 0.0,
+    "maxspeed": 6.5,
+    "jump_force": 2.5,
+    "jump_damping": 0.8,
+    "dash_force": 1.5,
+    "sensor": {
+      "shrink": 0.9
+    },
+    "ground_sensor": {
+      "shrink" : 0.6,
+      "height" : 0.05
+    },
+    "side_sensor": {
+      "shrink" : 0.6,
+      "width": 0.2
+    }
+  },
+  "exits": {
+    "width": 1
   }
 }

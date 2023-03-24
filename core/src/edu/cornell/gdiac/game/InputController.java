@@ -14,6 +14,7 @@
 package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.*;
 
 import com.badlogic.gdx.utils.Array;
@@ -46,9 +47,9 @@ public class InputController {
 	/** Whether the reset button was pressed. */
 	private boolean resetPressed;
 	private boolean resetPrevious;
-	/** Whether the primary action button was pressed. */
-	private boolean primePressed;
-	private boolean primePrevious;
+	/** Whether the jump action button was pressed. */
+	private boolean jumpPressed;
+	private boolean jumpPrevious;
 	/** Whether the dash button was pressed. */
 	private boolean dashPressed;
 	/** Whether the meow button was pressed. */
@@ -76,6 +77,19 @@ public class InputController {
 	/** Whether the previous button was pressed. */
 	private boolean prevPressed;
 	private boolean prevPrevious;
+
+	/** Whether the body switch button was pressed. */
+	private boolean switchPressed;
+	private boolean switchPrevious;
+
+	/** Whether the cancel button was pressed. */
+	private boolean cancelPressed;
+	private boolean cancelPrevious;
+
+	/** if the cancel button was pressed */
+	private boolean didCancel;
+	/** if the switch has been cancelled */
+	private boolean cancelled;
 	
 	/** How much did we move horizontally? */
 	private float horizontal;
@@ -131,9 +145,9 @@ public class InputController {
 	 *
 	 * @return true if the primary action button was pressed.
 	 */
-	public boolean didPrimary() {
-//		return primePressed && !primePrevious;
-		return primePressed;
+	public boolean didJump() {
+//		return jumpPressed && !jumpPrevious;
+		return jumpPressed;
 	}
 	/**
 	 * Returns true if the dash button was pressed.
@@ -212,7 +226,7 @@ public class InputController {
 	public boolean didDebug() {
 		return debugPressed && !debugPrevious;
 	}
-	
+
 	/**
 	 * Returns true if the exit button was pressed.
 	 *
@@ -230,7 +244,34 @@ public class InputController {
 	public boolean didMeow() {
 		return meowPressed && !meowPrevious;
 	}
-	
+
+	/**
+	 * Returns true if the switch button was released.
+	 *
+	 * @return true if the switch button was released.
+	 */
+	public boolean didSwitch() {
+		if (!switchPressed && switchPrevious){
+			if (cancelled){
+				cancelled = false;
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Returns true if the switch button is being held.
+	 *
+	 * @return true if the switch button is being held.
+	 */
+	public boolean holdSwitch() {
+		didCancel = cancelPressed && !cancelPrevious;
+		cancelled = cancelled || didCancel;
+		return switchPressed & !cancelled;
+	}
+
 	/**
 	 * Creates a new input controller
 	 * 
@@ -250,13 +291,13 @@ public class InputController {
 	 * the drawing scale to convert screen coordinates to world coordinates.  The
 	 * bounds are for the crosshair.  They cannot go outside of this zone.
 	 *
-	 * @param bounds The input bounds for the crosshair.  
+	 * @param bounds The input bound/s for the crosshair.
 	 * @param scale  The drawing scale
 	 */
 	public void readInput(Rectangle bounds, Vector2 scale) {
 		// Copy state from last animation frame
 		// Helps us ignore buttons that are held down
-		primePrevious  = primePressed;
+		jumpPrevious  = jumpPressed;
 		dashPrevious = dashPressed;
 		secondPrevious = secondPressed;
 		resetPrevious  = resetPressed;
@@ -265,6 +306,8 @@ public class InputController {
 		meowPrevious = meowPressed;
 		nextPrevious  = nextPressed;
 		prevPrevious = prevPressed;
+		switchPrevious = switchPressed;
+		cancelPressed = cancelPrevious;
 		
 		readKeyboard(bounds, scale);
 	}
@@ -278,19 +321,22 @@ public class InputController {
 	 *
 	 */
 	private void readKeyboard(Rectangle bounds, Vector2 scale) {
-		// Give priority to gamepad results
 		resetPressed = (Gdx.input.isKeyPressed(Input.Keys.R));
 		debugPressed = (Gdx.input.isKeyPressed(Input.Keys.B));
-		primePressed = (Gdx.input.isKeyPressed(Input.Keys.UP));
+		jumpPressed = (Gdx.input.isKeyPressed(Keys.C));
 		secondPressed = (Gdx.input.isKeyPressed(Input.Keys.SPACE));
-		dashPressed = (Gdx.input.isKeyPressed(Input.Keys.D));
-		climbPressed = (Gdx.input.isKeyPressed(Input.Keys.A));
+		dashPressed = (Gdx.input.isKeyPressed(Keys.X));
+		climbPressed = (Gdx.input.isKeyPressed(Keys.Z));
 		exitPressed  = (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
 		meowPressed = (Gdx.input.isKeyPressed(Input.Keys.M));
+		switchPressed = (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT));
+		cancelPressed = (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT));
 
 		//useful keys for testing/debugging
 		nextPressed = (Gdx.input.isKeyPressed(Input.Keys.N));
 		prevPressed  = (Gdx.input.isKeyPressed(Input.Keys.P));
+
+
 
 		// Directional controls
 		horizontal = 0.0f;

@@ -12,7 +12,7 @@ public class Mirror extends PolygonObstacle {
 
     protected static JsonValue objectConstants;
 
-    private Laser.Direction dir;
+    private Direction dir;
 
     private static float alpha;
 
@@ -33,7 +33,7 @@ public class Mirror extends PolygonObstacle {
         setDrawScale(scale);
         setTexture(texture);
         setAngle((float) (data.getInt("angle") * Math.PI/180));
-        dir = Laser.angleToDir(data.getInt("angle"));
+        dir = Direction.angleToDir(data.getInt("angle"));
 
         setRestitution(objectConstants.getFloat("restitution", 0));
         setFriction(objectConstants.getFloat("friction", 0));
@@ -74,35 +74,35 @@ public class Mirror extends PolygonObstacle {
      * @return <code>null</code> if the beam does not reflect, otherwise the direction
      *         of the reflection
      */
-    public Laser.Direction reflect(Laser.Direction beamDir){
+    public Direction reflect(Direction beamDir){
         //do not attempt to understand any logic here, this was done case-by-case
         switch (beamDir) {
             case UP:
-                if (dir == Laser.Direction.DOWN) {
-                    return Laser.Direction.LEFT;
-                } else if (dir == Laser.Direction.RIGHT) {
-                    return Laser.Direction.RIGHT;
+                if (dir == Direction.DOWN) {
+                    return Direction.LEFT;
+                } else if (dir == Direction.RIGHT) {
+                    return Direction.RIGHT;
                 }
                 return null;
             case DOWN:
-                if (dir == Laser.Direction.UP) {
-                    return Laser.Direction.RIGHT;
-                } else if (dir == Laser.Direction.LEFT) {
-                    return Laser.Direction.LEFT;
+                if (dir == Direction.UP) {
+                    return Direction.RIGHT;
+                } else if (dir == Direction.LEFT) {
+                    return Direction.LEFT;
                 }
                 return null;
             case LEFT:
-                if (dir == Laser.Direction.RIGHT) {
-                    return Laser.Direction.DOWN;
-                } else if (dir == Laser.Direction.UP) {
-                    return Laser.Direction.UP;
+                if (dir == Direction.RIGHT) {
+                    return Direction.DOWN;
+                } else if (dir == Direction.UP) {
+                    return Direction.UP;
                 }
                 return null;
             case RIGHT:
-                if (dir == Laser.Direction.LEFT) {
-                    return Laser.Direction.UP;
-                } else if (dir == Laser.Direction.DOWN) {
-                    return Laser.Direction.DOWN;
+                if (dir == Direction.LEFT) {
+                    return Direction.UP;
+                } else if (dir == Direction.DOWN) {
+                    return Direction.DOWN;
                 }
                 return null;
         }

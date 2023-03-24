@@ -1,9 +1,7 @@
 {
-	"spikes": [{"pos" : [1, 4], "angle": 180, "active": false, "activatorID": "switch1"},
-		{"pos" : [28, 15], "angle": 0, "active": true, "activatorID": "button2"},
-		{"pos" : [28, 16], "angle": 180, "active": true, "activatorID": "button2"},
-		{"pos" : [29, 15], "angle": 0, "active": true, "activatorID": "button2"},
-		{"pos" : [29, 16], "angle": 180, "active": true, "activatorID": "button2"}],
+	"spikes": [{"pos" : [1, 4], "angle": 180, "active": false, "activatorID": "switch1"}],
+	"doors": [{"width": 2, "height": 2, "pos": [28, 15], "angle": 180,
+		"totalTicks": 45, "activatorID": "button2", "active": true}],
 	"activators": [
 		{"pos": [1, 11], "type": "switch", "id" : "switch1"},
 		{"pos": [1, 2], "type": "button", "id" : "button1"},

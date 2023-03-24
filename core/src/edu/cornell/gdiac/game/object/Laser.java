@@ -26,7 +26,6 @@ public class Laser extends BoxObstacle implements Activatable{
 
     /** makes laser beams change color with time*/
     private float totalTime;
-    public enum Direction {UP, DOWN, LEFT, RIGHT}
 
     private Direction dir;
 
@@ -49,7 +48,7 @@ public class Laser extends BoxObstacle implements Activatable{
         setSensor(true);
         setFixedRotation(true);
 
-        dir = angleToDir(data.getInt("angle"));
+        dir = Direction.angleToDir(data.getInt("angle"));
         switch (dir){
             case UP:
                 beamOffset = new Vector2(objectConstants.get("beamOffset").getFloat(0), objectConstants.get("beamOffset").getFloat(1));
@@ -71,20 +70,6 @@ public class Laser extends BoxObstacle implements Activatable{
     }
 
     public Direction getDirection(){ return dir; }
-    public static Direction angleToDir(int angle){
-        switch (angle){
-            case 0:
-                return Direction.UP;
-            case 90:
-                return Direction.LEFT;
-            case 180:
-                return Direction.DOWN;
-            case 270:
-                return Direction.RIGHT;
-            default:
-                throw new RuntimeException("undefined angle");
-        }
-    }
 
     public void addBeamPoint(Vector2 point){ points.add(point);}
 

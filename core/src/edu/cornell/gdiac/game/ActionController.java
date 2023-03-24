@@ -185,7 +185,7 @@ public class ActionController {
         //initial beam
         closestFraction = 1;
         startPointCache.set(l.getRayCastStart());
-        Laser.Direction dir = l.getDirection();
+        Direction dir = l.getDirection();
         getRayCastEnd(startPointCache, dir);
         level.world.rayCast(LaserRayCastCallback, startPointCache, endPointCache);
         boolean reflect = false;
@@ -234,7 +234,7 @@ public class ActionController {
      * @param start
      * @param dir
      */
-    private void getRayCastEnd(Vector2 start, Laser.Direction dir){
+    private void getRayCastEnd(Vector2 start, Direction dir){
         switch (dir) {
             case UP:
                 endPointCache.set(start.x,bounds.height);

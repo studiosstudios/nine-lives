@@ -476,6 +476,13 @@ public class Level {
             }
         } catch (NullPointerException e) {}
 
+        try {
+            for (JsonValue doorJV : levelJV.get("doors")){
+                Door door = new Door(tMap.get("steel"), scale, doorJV);
+                loadActivatable(door,doorJV);
+            }
+        } catch (NullPointerException e) {}
+
         // Create cat
         dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
         dheight = tMap.get("cat").getRegionHeight()/scale.y;
@@ -509,6 +516,7 @@ public class Level {
         Platform.setConstants(constants.get("platforms"));
         Cat.setConstants(constants.get("cat"));
         Exit.setConstants(constants.get("exits"));
+        Door.setConstants(constants.get("doors"));
     }
 
     /**

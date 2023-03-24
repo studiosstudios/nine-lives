@@ -11,7 +11,6 @@
 package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.audio.*;
 import com.badlogic.gdx.graphics.*;
@@ -19,7 +18,6 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.game.object.*;
 
-import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.util.PooledList;
 
@@ -249,6 +247,7 @@ public class LevelController {
         }
 
         if (!level.isFailure() && level.getDied()) {
+//            InputController.getInstance().pause();
             actionController.died();
         }
 

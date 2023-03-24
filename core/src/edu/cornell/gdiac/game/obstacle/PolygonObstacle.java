@@ -74,8 +74,16 @@ public class PolygonObstacle extends SimpleObstacle {
 	 *
 	 * @param value  the dimensions of this box
 	 */
+	public void setDimension(Vector2 value, boolean clip) {
+		setDimension(value.x, value.y, clip);
+	}
+
 	public void setDimension(Vector2 value) {
-		setDimension(value.x, value.y);
+		setDimension(value.x, value.y, false);
+	}
+
+	public void setDimension(float width, float height) {
+		setDimension(width, height, false);
 	}
 	
 	/** 
@@ -83,9 +91,10 @@ public class PolygonObstacle extends SimpleObstacle {
 	 *
 	 * @param width   The width of this box
 	 * @param height  The height of this box
+	 * @param clip	  If the texture is clipped or scaled
 	 */
-	public void setDimension(float width, float height) {
-		resize(width, height);
+	public void setDimension(float width, float height, boolean clip) {
+		resize(width, height, clip);
 		markDirty(true);
 	}
 	
@@ -263,7 +272,7 @@ public class PolygonObstacle extends SimpleObstacle {
 	 * @param width The new width
 	 * @param height The new height
 	 */
-	private void resize(float width, float height) {
+	private void resize(float width, float height, boolean clip) {
 		float scalex = width/dimension.x;
 		float scaley = height/dimension.y;
 		
@@ -279,6 +288,9 @@ public class PolygonObstacle extends SimpleObstacle {
 		for(int ii = 0; ii < scaled.length; ii+= 2) {
 			scaled[ii  ] *= scalex;
 			scaled[ii+1] *= scaley;
+		}
+		if (clip && texture != null) {
+			region = new PolygonRegion(texture,scaled,tridx);
 		}
 
 		dimension.set(width,height);

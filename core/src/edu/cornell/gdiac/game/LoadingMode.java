@@ -59,7 +59,7 @@ public class LoadingMode implements Screen {
 	private Stage stage;
 
 	/** The stage for the settings menu */
-	private Stage settingsStage;
+	private SettingsStage settingsStage;
 
 	/** The stage for the main menu */
 	private Stage mainMenuStage;
@@ -94,13 +94,6 @@ public class LoadingMode implements Screen {
 	private Actor settingsButtonActor;
 	/** The actor (Image) for the exit button, which helps to handle the input listening for clicks */
 	private Actor exitButtonActor;
-
-	/** Texture for the Main Menu Button FROM the settings menu. */
-	private Texture mainMenuButton;
-	/** State to keep track of whether the main menu button has been clicked */
-	private int mainMenuButtonState;
-	/** The actor (Image) for the main menu button, which helps to handle the input listening for clicks */
-	private Actor mainMenuButtonActor;
 
 	/**
 	 * Returns the budget for the asset loader.
@@ -147,8 +140,6 @@ public class LoadingMode implements Screen {
 	public boolean isSettings() { return settingsButtonState == 2;}
 
 	public boolean isExit() { return exitButtonState == 2; }
-
-	public boolean isBack() { return mainMenuButtonState == 2; }
 
 	/**
 	 * Returns the asset directory produced by this loading screen
@@ -222,12 +213,7 @@ public class LoadingMode implements Screen {
 		Image backgroundImage = new Image(background);
 		mainMenuStage.addActor(backgroundImage);
 
-		mainMenuButtonState = 0;
-		mainMenuButtonActor = null;
-
-		settingsStage = new Stage(new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT));
-		settingsStage.addActor(new Image(internal.getEntry("settingsBackground", Texture.class)));
-		createSettingsStageActors();
+		settingsStage = new SettingsStage();
 
 		stage = mainMenuStage;
 
@@ -307,8 +293,8 @@ public class LoadingMode implements Screen {
 //				listener.exitScreen(this, 1);
 				settingsButtonState = 0;
 				changeStage(settingsStage);
-			} else if (isBack()) {
-				mainMenuButtonState = 0;
+			} else if (settingsStage.isBack()) {
+				settingsStage.setBackButtonState(0);
 				changeStage(mainMenuStage);
 			}
 			else if (isExit() && listener != null) {
@@ -411,18 +397,6 @@ public class LoadingMode implements Screen {
 	}
 
 	/**
-	 * Creates the actors for the settings stage.
-	 * TODO: Factor this out into an external `SettingsStage` class
-	 */
-	private void createSettingsStageActors() {
-		mainMenuButton = internal.getEntry("back", Texture.class);
-		mainMenuButtonActor = new Image(mainMenuButton);
-		mainMenuButtonActor.setPosition(buttonX, buttonY);
-		mainMenuButtonActor.addListener(new MainMenuButtonListener());
-		settingsStage.addActor(mainMenuButtonActor);
-	}
-
-	/**
 	 * Changes the currently active stage.
 	 *
 	 * Not only does this change the stage, but it also updates the InputProcessor to handle
@@ -462,12 +436,6 @@ public class LoadingMode implements Screen {
 				exitButtonState = 1;
 				exitButtonActor.setColor(Color.LIGHT_GRAY);
 			}
-			//temp
-			else if (actor == mainMenuButtonActor) {
-				//TODO: factor this out (CJ)
-				mainMenuButtonState = 1;
-				mainMenuButtonActor.setColor(Color.LIGHT_GRAY);
-			}
 			return true;
 		}
 
@@ -487,12 +455,6 @@ public class LoadingMode implements Screen {
 			else if (exitButtonState == 1) {
 				exitButtonState = 2;
 				exitButtonActor.setColor(Color.WHITE);
-			}
-			//temp
-			else if (mainMenuButtonState == 1) {
-				//TODO: factor this out (CJ)
-				mainMenuButtonState = 2;
-				mainMenuButtonActor.setColor(Color.WHITE);
 			}
 		}
 	}

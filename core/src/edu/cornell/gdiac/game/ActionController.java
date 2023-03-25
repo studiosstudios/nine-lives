@@ -131,6 +131,8 @@ public class ActionController {
         InputController ic = InputController.getInstance();
         Cat cat = level.getCat();
 
+        updateSpiritLine(dt, ic.holdSwitch() && !ic.didSwitch());
+
         if (ic.didSwitch()){
             //switch body
             DeadBody body = level.getNextBody();
@@ -189,12 +191,13 @@ public class ActionController {
             mob.applyForce();
         }
 
-        updateSpiritLine(dt, ic.holdSwitch() && !ic.didSwitch());
     }
 
     /**
      * Updates the start target and end target of the spirit line based on current
-     * level state, then updates spirit line.
+     * level state, then updates spirit line. Note that this MUST be called before
+     * the player switches body, otherwise the targets will not be updated properly
+     * after switching.
      *
      * @param dt           Number of seconds since last animation frame
      * @param spiritMode   true if level is in spirit mode

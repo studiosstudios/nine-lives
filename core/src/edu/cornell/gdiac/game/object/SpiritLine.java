@@ -32,7 +32,7 @@ public class SpiritLine {
     /** The alpha target value when in spirit mode */
     private static final float TARGET_ALPHA = 0.6f;
     /** How fast line fades in when exiting spirit mode */
-    private static final float FADE_IN_SPEED = 0.01f;
+    private static final float FADE_IN_SPEED = 0.05f;
     /** How fast line fades out when exiting spirit mode */
     private static final float FADE_OUT_SPEED = 0.2f;
     /** The thickness of the line */

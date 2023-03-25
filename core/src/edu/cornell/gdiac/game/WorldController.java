@@ -1,19 +1,3 @@
-/*
- * WorldController.java
- *
- * This is the most important new class in this lab.  This class serves as a combination 
- * of the CollisionController and GameplayController from the previous lab.  There is not 
- * much to do for collisions; Box2d takes care of all of that for us.  This controller 
- * invokes Box2d and then performs any after the fact modifications to the data 
- * (e.g. gameplay).
- *
- * If you study this class, and the contents of the edu.cornell.cs3152.physics.obstacles
- * package, you should be able to understand how the Physics engine works.
- *
- * Author: Walker M. White
- * Based on original PhysicsDemo Lab by Don Holden, 2007
- * LibGDX version, 2/6/2015
- */
 package edu.cornell.gdiac.game;
 
 import java.util.HashMap;
@@ -28,32 +12,31 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.*;
 
 /**
- * Base class for a world-specific controller.
- *
- *
+ * Controller for the active world, along with the associated set of levels contained within that world.
+ * <br><br>
  * A world has its own objects, assets, and input controller.  Thus this is 
  * really a mini-GameEngine in its own right.  The only thing that it does
  * not do is create a GameCanvas; that is shared with the main application.
- *
+ * <br><br>
  * You will notice that asset loading is not done with static methods this time.  
  * Instance asset loading makes it easier to process our game modes in a loop, which 
  * is much more scalable. However, we still want the assets themselves to be static.
  * This is the purpose of our AssetState variable; it ensures that multiple instances
  * place nicely with the static assets.
+ * <br><br>
+ * Adapted from Walker M. White's WorldController.java in Cornell CS 3152, Spring 2023.
  */
 public class WorldController implements Screen {
 
 	/** Exit code for quitting the game */
 	public static final int EXIT_QUIT = 0;
-	/** Width of the game world in Box2d units */
+	/** Width of the game world in Box2D units */
 	protected static final float DEFAULT_WIDTH  = 32.0f;
-	/** Height of the game world in Box2d units */
+	/** Height of the game world in Box2D units */
 	protected static final float DEFAULT_HEIGHT = 18.0f;
 	/** The default value of gravity (going down) */
 	protected static final float DEFAULT_GRAVITY = -4.9f;
-	
-	/** Reference to the game canvas */
-	protected GameCanvas canvas;
+
 	/** Listener that will update the player mode when we are done */
 	private ScreenListener listener;
 
@@ -65,10 +48,11 @@ public class WorldController implements Screen {
 	private HashMap<String, BitmapFont> fontAssetMap;
 	/** The JSON value constants */
 	private JsonValue constants;
+
 	/** Level number **/
 	private int levelNum;
-	/** Total number of levels */
-	private final int TOTAL_LEVELS;
+	/** Number of levels in this world */
+	private final int numLevels;
 	/** JSON for the previous level */
 	private JsonValue prevJSON;
 	/** LevelController for the current level */
@@ -79,8 +63,8 @@ public class WorldController implements Screen {
 	private AssetDirectory directory;
 
 	/**
-	 * Returns the canvas associated with this controller
-	 *
+	 * Returns the canvas associated with the current LevelController
+	 * <br>
 	 * The canvas is shared across all controllers
 	 *
 	 * @return the canvas associated with this controller
@@ -91,7 +75,7 @@ public class WorldController implements Screen {
 
 	/**
 	 * Sets the canvas associated with this controller
-	 *
+	 * <br><br>
 	 * The canvas is shared across all controllers.  Setting this value will compute
 	 * the drawing scale from the canvas size.
 	 *
@@ -102,10 +86,19 @@ public class WorldController implements Screen {
 	}
 
 	/**
+	 * Sets the ScreenListener for this mode
+	 * <br><br>
+	 * The ScreenListener will respond to requests to quit.
+	 */
+	public void setScreenListener(ScreenListener listener) {
+		this.listener = listener;
+	}
+
+	/**
 	 * Creates a new game world with the default values.
-	 *
+	 * <br><br>
 	 * The game world is scaled so that the screen coordinates do not agree
-	 * with the Box2d coordinates.  The bounds are in terms of the Box2d
+	 * with the Box2D coordinates.  The bounds are in terms of the Box2d
 	 * world, not the screen.
 	 */
 	protected WorldController(int numLevels) {
@@ -116,41 +109,41 @@ public class WorldController implements Screen {
 	/**
 	 * Creates a new controller for the game world
 	 *
-	 * @param bounds	The game bounds in Box2d coordinates
-	 * @param gravity	The gravitational force on this Box2d world
+	 * @param bounds	The game bounds in Box2D coordinates
+	 * @param gravity	The gravitational force on this Box2D world
 	 */
 	protected WorldController(Rectangle bounds, Vector2 gravity, int numLevels) {
 		currLevel = new LevelController(bounds, gravity);
-		TOTAL_LEVELS = numLevels;
+		this.numLevels = numLevels;
 		levelNum = 1;
 	}
 
 	/**
 	 * Returns the current LevelController
 	 *
-	 * @return currLevel the LevelController for the current level
+	 * @return The current LevelController for the current level
 	 */
 	public LevelController getCurrLevel() { return currLevel; }
 
 	/**
 	 * Steps the level
-	 *
-	 * The previous level is set to the current level
-	 * The current level is set to the next level
-	 * The next level is loaded in
+	 * <br><br>
+	 * The previous level is set to the current level<br>
+	 * The current level is set to the next level<br>
+	 * The next level is loaded in<br>
 	 *
 	 * @param resetSpawn whether the player spawns at the respawn point of the level or at the edge
 	 *                    (from previous level)
 	 */
 	public void nextLevel(boolean resetSpawn){
-		if (levelNum < TOTAL_LEVELS) {
+		if (levelNum < numLevels) {
 			levelNum++;
 
 			prevJSON = currLevel.getJSON();
 			currLevel.setJSON(nextJSON);
 			currLevel.setRet(false);
 			currLevel.reset(resetSpawn ? null : currLevel.getLevel().getCat());
-			if (levelNum < TOTAL_LEVELS) {
+			if (levelNum < numLevels) {
 				nextJSON = levelJSON(levelNum + 1);
 			}
 		}
@@ -158,10 +151,10 @@ public class WorldController implements Screen {
 
 	/**
 	 * Steps the level
-	 *
-	 * The next level is set to the current level
-	 * The current level is set to the previous level
-	 * The previous level is loaded in
+	 * <br><br>
+	 * The next level is set to the current level<br>
+	 * The current level is set to the previous level<br>
+	 * The previous level is loaded in<br>
 	 *
 	 * @param resetSpawn whether the player spawns at the respawn point of the level or at the edge
 	 *                    (from previous level)
@@ -195,7 +188,7 @@ public class WorldController implements Screen {
 
 	/**
 	 * Gather the assets for this controller.
-	 *
+	 * <br><br>
 	 * This method extracts the asset variables from the given asset directory. It
 	 * should only be called after the asset directory is completed.
 	 *
@@ -236,7 +229,7 @@ public class WorldController implements Screen {
 
 	/**
 	 * Returns whether to process the update loop
-	 *
+	 * <br><br>
 	 * At the start of the update loop, we check if it is time
 	 * to switch to a new game mode.  If not, the update proceeds
 	 * normally.
@@ -272,7 +265,7 @@ public class WorldController implements Screen {
 
 	/**
 	 * Called when the Screen is resized. 
-	 *
+	 * <br><br>
 	 * This can happen at any point during a non-paused state but will never happen 
 	 * before a call to show().
 	 *
@@ -285,7 +278,7 @@ public class WorldController implements Screen {
 
 	/**
 	 * Called when the Screen should render itself.
-	 *
+	 * <br><br>
 	 * We defer to the other methods update() and draw().  However, it is VERY important
 	 * that we only quit AFTER a draw.
 	 *
@@ -301,7 +294,7 @@ public class WorldController implements Screen {
 
 	/**
 	 * Called when the Screen is paused.
-	 * 
+	 * <br><br>
 	 * This is usually when it's not active or visible on screen. An Application is 
 	 * also paused before it is destroyed.
 	 */
@@ -311,7 +304,7 @@ public class WorldController implements Screen {
 
 	/**
 	 * Called when the Screen is resumed from a paused state.
-	 *
+	 * <br><br>
 	 * This is usually when it regains focus.
 	 */
 	public void resume() {
@@ -331,14 +324,4 @@ public class WorldController implements Screen {
 	public void hide() {
 		// Useless if called in outside animation loop
 	}
-
-	/**
-	 * Sets the ScreenListener for this mode
-	 *
-	 * The ScreenListener will respond to requests to quit.
-	 */
-	public void setScreenListener(ScreenListener listener) {
-		this.listener = listener;
-	}
-
 }

@@ -41,5 +41,4 @@ public class PushableBox extends BoxObstacle {
         setY(data.get("pos").getFloat(1)+objectConstants.get("offset").getFloat(1));
 
     }
-
 }

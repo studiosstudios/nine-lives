@@ -1,17 +1,3 @@
-/*
- * LevelMode.java
- *
- * This stores all of the information to define a level in our simple platform game.
- * We have an cat, some walls, some platforms, and an exit.  This is a refactoring
- * of WorldController in Lab 4 that separates the level data from the level control.
- *
- * Note that most of the methods are getters and setters, as is common with models.
- * The gameplay behavior is defined by GameController.
- *
- * Author: Walker M. White
- * Based on original PhysicsDemo Lab by Don Holden, 2007
- * JSON version, 3/2/2016
- */
 package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.audio.Sound;
@@ -32,14 +18,11 @@ import java.util.HashMap;
 
 /**
  * Represents a single level in our game
- *
+ * <br><br>
  * Note that the constructor does very little.  The true initialization happens
  * by reading the JSON value.  To reset a level, dispose it and reread the JSON.
- *
- * The level contains its own Box2d World, as the World settings are defined by the
- * JSON file.  However, there is absolutely no controller code in this class, as
- * the majority of the methods are getters and setters.  The getters allow the
- * GameController class to modify the level elements.
+ * <br><br>
+ * Adapted from Walker M. White's LevelMode.java in Cornell CS 3152, Spring 2023.
  */
 public class Level {
 
@@ -59,11 +42,11 @@ public class Level {
     private BoxObstacle retDoor;
 
     /** All the objects in the world. */
-    protected PooledList<Obstacle> objects  = new PooledList<Obstacle>();
+    protected PooledList<Obstacle> objects  = new PooledList<>();
     /** Queue for adding objects */
-    protected PooledList<Obstacle> addQueue = new PooledList<Obstacle>();
+    protected PooledList<Obstacle> addQueue = new PooledList<>();
     /** queue to add joints to the world created in beginContact() */
-    protected PooledList<JointDef> jointQueue = new PooledList<JointDef>();
+    protected PooledList<JointDef> jointQueue = new PooledList<>();
 
     /** Whether we have completed this level */
     private boolean complete;
@@ -74,19 +57,19 @@ public class Level {
     /** The number of lives remaining */
     private int numLives;
     /** The max lives allowed */
-    private int maxLives;
+    private final int maxLives;
 
     /** hashmap to represent activator-spike relationships:
      *   keys are activator ids specified in JSON*/
     private HashMap<String, Array<Activatable>> activationRelations;
 
     /** object lists - in the future this will be one list maybe */
-    private Array<Activator> activators;
-    private Array<Activatable> activatables;
-    private Array<DeadBody> deadBodyArray;
-    private Array<Mob> mobArray;
+    private final Array<Activator> activators;
+    private final Array<Activatable> activatables;
+    private final Array<DeadBody> deadBodyArray;
+    private final Array<Mob> mobArray;
     private Checkpoint currCheckpoint;
-    private Array<Laser> lasers;
+    private final Array<Laser> lasers;
     /** The respawn position of the player */
     private Vector2 respawnPos;
     /** Float value to scale width */
@@ -110,7 +93,7 @@ public class Level {
 
     /**
      * Returns the bounding rectangle for the physics world
-     *
+     * <br><br>
      * The size of the rectangle is in physics, coordinates, not screen coordinates
      *
      * @return the bounding rectangle for the physics world
@@ -163,6 +146,7 @@ public class Level {
      * @return a reference to the activators
      */
     public Array<Activator> getActivators() { return activators; }
+
     public Array<Laser> getLasers() { return lasers; }
 
     /**
@@ -223,7 +207,7 @@ public class Level {
 
     /**
      * Returns true if the level is completed.
-     *
+     * <br><br>
      * If true, the level will advance after a countdown
      *
      * @return true if the level is completed.
@@ -234,7 +218,7 @@ public class Level {
 
     /**
      * Returns true if the level is failed.
-     *
+     * <br><br>
      * If true, the level will reset after a countdown
      *
      * @return true if the level is failed.
@@ -245,7 +229,7 @@ public class Level {
 
     /**
      * Sets whether the level is failed.
-     *
+     * <br><br>
      * If true, the level will reset after a countdown
      *
      * @param value whether the level is failed.
@@ -277,6 +261,7 @@ public class Level {
 
     /**
      * Sets whether the player died in the level
+     *
      * @param died the value to set died to
      */
     public void setDied(boolean died){ this.died = died; }
@@ -309,25 +294,32 @@ public class Level {
 
 
     /**
-     * Allows level to have access to textures for creating new objects
+     * Stores textures for creating new objects in the level
+     *
+     * @param tMap Texture map for objects
      */
     public void setAssets(HashMap<String, TextureRegion> tMap){ textureRegionAssetMap = tMap; }
 
     /**
      * Creates a new LevelModel
-     *
+     * <br><br>
      * The level is empty and there is no active physics world.  You must read
      * the JSON file to initialize the level
+     *
+     * @param world Box2D world containing all game simulations
+     * @param bounds World boundary
+     * @param scale Drawing scale
+     * @param numLives Number of lives
      */
     public Level(World world, Rectangle bounds, Vector2 scale, int numLives) {
         this.world  = world;
         this.bounds = bounds;
         this.scale = scale;
+        this.numLives = numLives;
+        maxLives = numLives;
         complete = false;
         failed = false;
         died = false;
-        this.numLives = numLives;
-        maxLives = numLives;
 
         activators = new Array<>();
         activatables = new Array<>();
@@ -339,7 +331,7 @@ public class Level {
 
     /**
      * Sets whether the level is completed.
-     *
+     * <br><br>
      * If true, the level will advance after a countdown
      *
      * @param value whether the level is completed.
@@ -350,6 +342,7 @@ public class Level {
 
     /**
      * Updates active checkpoints and cat respawning position
+     *
      * @param c The most recent checkpoint the cat has come in contact with
      */
     public void updateCheckpoints(Checkpoint c){
@@ -361,14 +354,16 @@ public class Level {
         respawnPos = currCheckpoint.getPosition();
     }
 
+
     /**
      * Lays out the game geography from the given JSON file
-     *
-     * @param directory 	the asset manager
-     * @param levelFormat	the JSON file defining the level
-     */
-    /**
-     * Lays out the game geography.
+     * @param tMap Texture map for game objects
+     * @param fMap Texture map for fonts
+     * @param sMap Texture map for sounds
+     * @param constants JSON file for constants
+     * @param levelJV JSON file for current level
+     * @param ret Whether we are returning to this level
+     * @param prevCat The Cat on the previous level, to help inform the switch-over
      */
     public void populateLevel(HashMap<String, TextureRegion> tMap, HashMap<String, BitmapFont> fMap,
                                HashMap<String, Sound> sMap, JsonValue constants, JsonValue levelJV, boolean ret, Cat prevCat) {
@@ -377,6 +372,13 @@ public class Level {
         activationRelations = new HashMap<>();
         background = tMap.get("background").getTexture();
 
+        /*
+        TODO: Remove try-catches
+        We use try-catches here so that the level JSONs don't need to contain empty fields for objects that they don't have.
+        However, once we start using the level editor, we will probably make it required that the JSONs have a key for
+        every object in the game, even if they're empty. At that point, we should remove these try-catches
+        so that we can enforce a stronger format for our level JSONs.
+         */
         try {
             for (JsonValue exitJV : levelJV.get("exits")){
                 Exit exit = new Exit(scale, exitJV);
@@ -503,6 +505,10 @@ public class Level {
         spiritLine = new SpiritLine(Color.WHITE, Color.CYAN);
     }
 
+    /**
+     * TODO: MOVE TO LEVELCONTROLLER
+     * @param constants
+     */
     public static void setConstants(JsonValue constants){
         DeadBody.setConstants(constants.get("deadBody"));
         Flamethrower.setConstants(constants.get("flamethrowers"));
@@ -521,7 +527,7 @@ public class Level {
 
     /**
      * Resets the status of the level.
-     *
+     * <br><br>
      * This method clears objects, disposes world,
      * and sets the level to not completed and not failed.
      */
@@ -558,7 +564,7 @@ public class Level {
 
     /**
      * Adds a physics object in to the insertion queue.
-     *
+     * <br><br>
      * Objects on the queue are added just before collision processing.  We do this to
      * control object creation.
      *
@@ -571,17 +577,17 @@ public class Level {
 
     /**
      * Adds a jointDef to the joint queue.
-     *
+     * <br><br>
      * Joints on the queue are added just before collision processing.  We do this to
      * control joint creation.
      *
      * @param j The jointDef to add
      */
-    public void queueJoint(JointDef j){ jointQueue.add(j); }
+    public void queueJoint(JointDef j) { jointQueue.add(j); }
 
     /**
      * Returns true if the object is in bounds.
-     *
+     * <br><br>
      * This assertion is useful for debugging the physics.
      *
      * @param obj The object to check.
@@ -596,7 +602,6 @@ public class Level {
 
     /**
      * Adds the queued objects to the list of objects
-     *
      */
     public void addQueuedObjects() {
         while (!addQueue.isEmpty()) {
@@ -606,7 +611,6 @@ public class Level {
 
     /**
      * Adds the queued joints to the list of joints
-     *
      */
     public void addQueuedJoints(){
         while (!jointQueue.isEmpty()) {
@@ -625,7 +629,7 @@ public class Level {
 
     /**
      * Loads an activatable object from a JSON
-     *
+     * <br><br>
      * Adds the object to the list of objects
      * Adds the object to the list of activatables
      *
@@ -650,7 +654,7 @@ public class Level {
 
     /**
      * Draws the level to the given game canvas
-     *
+     * <br><br>
      * If debug mode is true, it will outline all physics bodies as wireframes. Otherwise
      * it will only draw the sprite representations.
      *
@@ -660,7 +664,7 @@ public class Level {
         canvas.clear();
 
         canvas.begin();
-        canvas.applyExtendViewport();
+        canvas.applyViewport();
         if (background != null) {
             canvas.draw(background, 0, 0);
         }
@@ -703,7 +707,9 @@ public class Level {
         canvas.end();
     }
 
-    /** spawns a dead body at the location of the cat */
+    /**
+     * Spawns a dead body at the location of the cat
+     * */
     public void spawnDeadBody(){
         DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat"), scale, cat.getPosition());
         deadBody.setLinearVelocity(cat.getLinearVelocity());
@@ -712,13 +718,16 @@ public class Level {
         deadBodyArray.add(deadBody);
     }
 
-    /** removes a DeadBody from the dead body array */
+    /**
+     * Removes a DeadBody from the dead body array
+     * */
     public void removeDeadBody(DeadBody db){
         deadBodyArray.removeValue(db, true);
     }
 
     /**
      * Gets the next dead body to switch into. Currently selects the closest valid body.
+     *
      * @return Dead body to switch into, null if there are none.
      */
     public DeadBody getNextBody(){
@@ -736,8 +745,12 @@ public class Level {
         return nextdb;
     }
 
+    /**
+     * TODO: FACTOR THIS OUT INTO THE ACTIONCONTROLLER UPDATE
+     * @param dt
+     * @param spiritMode
+     */
     public void update(float dt, boolean spiritMode){
-
         if (this.spiritMode){
             if (!spiritMode) {
                 //switch out of spirit mode
@@ -766,7 +779,9 @@ public class Level {
     }
 
 
-
+    /**
+     * TODO: THIS SHOULD BE A SEPARATE MODEL CLASS
+     */
     private class SpiritLine {
         public Vector2 start = new Vector2();
         public Vector2 end = new Vector2();

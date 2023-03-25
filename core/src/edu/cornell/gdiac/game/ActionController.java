@@ -304,7 +304,7 @@ public class ActionController {
         level.getCat().setFacingRight(true);
         level.getCat().setJumpPressed(false);
         level.getCat().setGrounded(true);
-        System.out.println(level.getCat().isGrounded());
+//        System.out.println(level.getCat().isGrounded());
 //        level.getCat().update
     }
 

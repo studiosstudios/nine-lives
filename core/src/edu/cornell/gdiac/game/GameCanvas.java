@@ -113,6 +113,7 @@ public class GameCanvas {
 	private float cameraX;
 	private float cameraY;
 
+	private final float CAMERA_ZOOM = 0.85f;
 	private final float CAMERA_GLIDE_RATE = 0.075f;
 
 	/**
@@ -133,7 +134,7 @@ public class GameCanvas {
 		// Set the projection matrix (for proper scaling)
 		camera = new OrthographicCamera(STANDARD_WIDTH, STANDARD_HEIGHT);
 		camera.setToOrtho(false, STANDARD_WIDTH, STANDARD_HEIGHT);
-		camera.zoom -= 0.15;
+		camera.zoom = CAMERA_ZOOM;
 		cameraX = camera.position.x;
 		cameraY = camera.position.y;
 //		camera.position.set(STANDARD_WIDTH/3, STANDARD_HEIGHT/2, 0); //NEED TO SET THIS RELATIVE TO CAT
@@ -241,50 +242,49 @@ public class GameCanvas {
 
 	/**
 	 * Updates camera positioning based on cat's current position (in pixels)
-	 * @param x_pos x coordinate of cat's current location in pixels
-	 * @param y_pos y coordinate of cat's current location in pixels
+	 * @param xPos x coordinate of cat's current location in pixels
+	 * @param yPos y coordinate of cat's current location in pixels
+	 * @param glide smoothed camera movement
 	 */
-	public void updateCamera(float x_pos, float y_pos){
+	public void updateCamera(float xPos, float yPos, boolean glide){
 		float width_scaled = STANDARD_WIDTH*camera.zoom;
-		if(x_pos > STANDARD_WIDTH - width_scaled + width_scaled/2){
-			x_pos = STANDARD_WIDTH - width_scaled + width_scaled/2;
+		if(xPos > STANDARD_WIDTH - width_scaled + width_scaled/2){
+			xPos = STANDARD_WIDTH - width_scaled + width_scaled/2;
 		}
-		if(x_pos < width_scaled/2){
-			x_pos = width_scaled/2;
+		if(xPos < width_scaled/2){
+			xPos = width_scaled/2;
 		}
 		float height_scaled = STANDARD_HEIGHT*camera.zoom;
-		if(y_pos > STANDARD_HEIGHT - height_scaled + height_scaled/2){
-			y_pos = STANDARD_HEIGHT - height_scaled + height_scaled/2;
+		if(yPos > STANDARD_HEIGHT - height_scaled + height_scaled/2){
+			yPos = STANDARD_HEIGHT - height_scaled + height_scaled/2;
 		}
-		if(y_pos < height_scaled/2){
-			y_pos = height_scaled/2;
+		if(yPos < height_scaled/2){
+			yPos = height_scaled/2;
 		}
-		cameraX += (x_pos - cameraX) * CAMERA_GLIDE_RATE;
-		cameraY += (y_pos - cameraY) * CAMERA_GLIDE_RATE;
+		if(glide) {
+			cameraX += (xPos - cameraX) * CAMERA_GLIDE_RATE;
+			cameraY += (yPos - cameraY) * CAMERA_GLIDE_RATE;
+		}
+		else{
+			cameraX = xPos;
+			cameraY = yPos;
+		}
 		camera.position.set(cameraX, cameraY, 0);
 		camera.update();
 	}
 
-	public void setCamera(float x_pos, float y_pos){
-		float width_scaled = STANDARD_WIDTH*camera.zoom;
-		if(x_pos > STANDARD_WIDTH - width_scaled + width_scaled/2){
-			x_pos = STANDARD_WIDTH - width_scaled + width_scaled/2;
-		}
-		if(x_pos < width_scaled/2){
-			x_pos = width_scaled/2;
-		}
-		float height_scaled = STANDARD_HEIGHT*camera.zoom;
-		if(y_pos > STANDARD_HEIGHT - height_scaled + height_scaled/2){
-			y_pos = STANDARD_HEIGHT - height_scaled + height_scaled/2;
-		}
-		if(y_pos < height_scaled/2){
-			y_pos = height_scaled/2;
-		}
-		cameraX = x_pos;
-		cameraY = y_pos;
-		camera.position.set(cameraX, cameraY, 0);
-		camera.update();
+	/**
+	 * For internal uses
+	 * Camera either zooms out for debugging or returns to original zoom for gameplay
+	 * @param debug Whether debug mode is active
+	 */
+	public void debugCamera(boolean debug){
+		if (debug)
+			camera.zoom = 1;
+		else
+			camera.zoom = CAMERA_ZOOM;
 	}
+
 	/**
 	 * Changes the width and height of this canvas
 	 *
@@ -328,7 +328,7 @@ public class GameCanvas {
 	 * This method raises an IllegalStateException if called while drawing is
 	 * active (e.g. in-between a begin-end pair).
 	 *
-	 * @param fullscreen Whether this canvas should change to fullscreen.
+	 * @param value Whether this canvas should change to fullscreen.
 	 * @param desktop 	 Whether to use the current desktop resolution
 	 */	 
 	public void setFullscreen(boolean value, boolean desktop) {

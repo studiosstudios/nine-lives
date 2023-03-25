@@ -440,7 +440,7 @@ public class Level {
         try {
             for(JsonValue boxJV : levelJV.get("boxes")){
                 PushableBox box = new PushableBox(tMap.get("steel"), scale, boxJV);
-                loadActivatable(box, boxJV);
+                addObject(box);
             }
         } catch (NullPointerException e) {}
 

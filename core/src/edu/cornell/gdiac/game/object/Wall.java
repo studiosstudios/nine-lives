@@ -10,11 +10,17 @@ import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.PolygonObstacle;
 
 public class Wall extends PolygonObstacle  {
-
+    /** Constants that are shared between all instances of this class */
     private static JsonValue objectConstants;
-
+    /** If this wall is climbable */
     private boolean isClimbable;
 
+    /**
+     * Creates a new wall object.
+     * @param texture  TextureRegion for drawing.
+     * @param scale    Draw scale for drawing.
+     * @param data     JSON for loading.
+     */
     public Wall(TextureRegion texture, Vector2 scale, JsonValue data){
         super(data.get("shape").asFloatArray());
         setBodyType(BodyDef.BodyType.StaticBody);
@@ -27,14 +33,9 @@ public class Wall extends PolygonObstacle  {
         setName("wall");
     }
 
-    public boolean activatePhysics(World world){
-        if (!super.activatePhysics(world)) {
-            return false;
-        }
-        body.setUserData(this);
-        return true;
-    }
-
+    /**
+     * @return If this wall is climbable.
+     */
     public boolean isClimbable(){return isClimbable;}
 
     public void draw(GameCanvas canvas){
@@ -45,6 +46,10 @@ public class Wall extends PolygonObstacle  {
         }
     }
 
+    /**
+     * Sets the shared constants for all instances of this class.
+     * @param constants JSON storing the shared constants.
+     */
     public static void setConstants(JsonValue constants) {objectConstants = constants;}
 
 

@@ -23,11 +23,14 @@ import edu.cornell.gdiac.game.obstacle.*;
  * no other subclasses that we might loop through.
  */
 public class DeadBody extends BoxObstacle {
-
+    /** Constants that are shared between all instances of this class */
     private static JsonValue objectConstants;
+    /** How long the body has been burning */
     private int burnTicks;
+    /** If the body is currently burning */
     private boolean burning;
-    public static final int TOTAL_BURN_TICKS = 300;
+    /** The total number ticks a body burns for */
+    private static int totalBurnTicks;
 
     /**
      * The amount to slow the model down
@@ -117,9 +120,9 @@ public class DeadBody extends BoxObstacle {
      * drawing to work properly, you MUST set the drawScale. The drawScale
      * converts the physics units to pixels.
      *
-     * @param texture
+     * @param texture      the texture
      * @param scale        the draw scale
-     * @param position
+     * @param position     position
      */
     public DeadBody(TextureRegion texture, Vector2 scale, Vector2 position) {
         super(texture.getRegionWidth()/scale.x*objectConstants.get("shrink").getFloat(0),
@@ -191,12 +194,15 @@ public class DeadBody extends BoxObstacle {
         touchingLaser = false;
         if (burning) {
             burnTicks++;
-            if (burnTicks >= TOTAL_BURN_TICKS){
+            if (burnTicks >= totalBurnTicks){
                 markRemoved(true);
             }
         }
     }
 
+    /**
+     * @param burning the new burning state of this dead body
+     */
     public void setBurning(boolean burning){
         this.burning = burning;
     }
@@ -208,7 +214,7 @@ public class DeadBody extends BoxObstacle {
      */
     public void draw(GameCanvas canvas) {
         float effect = faceRight ? 1.0f : -1.0f;
-        Color color = new Color(1, 1, 1, 1f - ((float)burnTicks)/((float)TOTAL_BURN_TICKS));
+        Color color = new Color(1, 1, 1, 1f - ((float)burnTicks)/((float)totalBurnTicks));
         canvas.draw(texture, color, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), effect, 1.0f);
     }
 
@@ -224,5 +230,12 @@ public class DeadBody extends BoxObstacle {
         canvas.drawPhysics(sensorShape, Color.RED, getX(), getY(), drawScale.x, drawScale.y);
     }
 
-    public static void setConstants(JsonValue constants) { objectConstants = constants; }
+    /**
+     * Sets the shared constants for all instances of this class
+     * @param constants JSON storing the shared constants.
+     */
+    public static void setConstants(JsonValue constants) {
+        objectConstants = constants;
+        totalBurnTicks = constants.getInt("burnTicks");
+    }
 }

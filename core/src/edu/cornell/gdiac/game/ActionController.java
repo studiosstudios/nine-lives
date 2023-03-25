@@ -1,17 +1,15 @@
 package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.game.object.*;
+import edu.cornell.gdiac.util.Direction;
 
 import java.util.HashMap;
 
@@ -125,7 +123,7 @@ public class ActionController {
             a.updateActivated();
             if (level.getActivationRelations().containsKey(a.getID())){
                 for (Activatable s : level.getActivationRelations().get(a.getID())){
-                    s.updateActivated(a.isActive(), level.getWorld());
+                    s.updateActivated(a.isActivating(), level.getWorld());
                 }
             }
         }
@@ -184,7 +182,7 @@ public class ActionController {
 
         //initial beam
         closestFraction = 1;
-        startPointCache.set(l.getRayCastStart());
+        startPointCache.set(l.getBeamStart());
         Direction dir = l.getDirection();
         getRayCastEnd(startPointCache, dir);
         level.world.rayCast(LaserRayCastCallback, startPointCache, endPointCache);

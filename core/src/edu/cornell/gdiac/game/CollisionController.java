@@ -120,7 +120,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                 if (fd2 instanceof Spikes) {
                     actionController.die();
                 }
-                if (fd2 == Flamethrower.getSensorName()){
+                if (fd2 instanceof Flamethrower.Flame){
                     actionController.die();
                 }
                 if (fd2 instanceof Checkpoint){
@@ -152,7 +152,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                 if (fd2 instanceof Spikes) {
                     actionController.fixBodyToSpikes(db, (Spikes) fd2, contact.getWorldManifold().getPoints());
                     db.addHazard();
-                } else if (fd2 == Flamethrower.getSensorName()) {
+                } else if (fd2 instanceof Flamethrower.Flame) {
                     db.setBurning(true);
                     db.addHazard();
                 }
@@ -248,7 +248,7 @@ public class CollisionController implements ContactListener, ContactFilter {
             DeadBody db = (DeadBody) fd1;
             if (fd2 instanceof Spikes) {
                 db.removeHazard();
-            } else if (fd2 == Flamethrower.getSensorName()) {
+            } else if (fd2 instanceof Flamethrower.Flame) {
                 db.setBurning(false);
                 db.removeHazard();
             }

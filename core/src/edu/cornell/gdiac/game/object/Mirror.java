@@ -7,23 +7,32 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.PolygonObstacle;
+import edu.cornell.gdiac.util.Direction;
 
 public class Mirror extends PolygonObstacle {
-
-    protected static JsonValue objectConstants;
-
+    /** Constants that are shared between all instances of this class*/
+    private static JsonValue objectConstants;
+    /** Direction of the mirror.
+     *  Up is defined as the sloped side being normal to the vector (1, 1). */
     private Direction dir;
+    /** The color of all mirrors */
+    private static Color color;
 
-    private static float alpha;
-
-    private Color color;
-
-    private Vector2 endPointCache = new Vector2();
+    /**
+     * Sets the shared constants for all instances of this class/
+     * @param constants JSON storing the shared constants.
+     */
     public static void setConstants(JsonValue constants) {
         objectConstants = constants;
-        alpha = constants.getFloat("alpha");
+        color = new Color(1, 1, 1, constants.getFloat("alpha"));
     }
 
+    /**
+     * Creates a new Mirror object.
+     * @param texture  TextureRegion for drawing.
+     * @param scale    Draw scale for drawing.
+     * @param data     JSON data for loading.
+     */
     public Mirror(TextureRegion texture, Vector2 scale, JsonValue data){
         super(objectConstants.get("shape").asFloatArray());
 
@@ -39,7 +48,6 @@ public class Mirror extends PolygonObstacle {
         setFriction(objectConstants.getFloat("friction", 0));
         setDensity(objectConstants.getFloat("density", 0));
         setMass(objectConstants.getFloat("mass", 0));
-        color = new Color(1, 1, 1, alpha);
 
         //this is ugly but it's easy
         float xOffset, yOffset;
@@ -61,7 +69,7 @@ public class Mirror extends PolygonObstacle {
                 yOffset = 1;
                 break;
             default:
-                throw new RuntimeException("undefined angle");
+                throw new IllegalArgumentException("undefined angle");
         }
         setX(data.get("pos").getFloat(0)+xOffset);
         setY(data.get("pos").getFloat(1)+yOffset);

@@ -502,7 +502,7 @@ public class Level {
         addObject(cat);
 
         spiritMode = false;
-        spiritLine = new SpiritLine(Color.WHITE, Color.CYAN);
+        spiritLine = new SpiritLine(Color.WHITE, Color.CYAN, scale);
     }
 
     /**
@@ -746,73 +746,19 @@ public class Level {
     }
 
     /**
-     * TODO: FACTOR THIS OUT INTO THE ACTIONCONTROLLER UPDATE
-     * @param dt
-     * @param spiritMode
+     * @return The spirit line instance of this level.
      */
-    public void update(float dt, boolean spiritMode){
-        if (this.spiritMode){
-            if (!spiritMode) {
-                //switch out of spirit mode
-                spiritLine.start.set(cat.getPosition());
-            } else {
-                spiritLine.startTarget.set(cat.getPosition());
-                spiritLine.start.set(cat.getPosition());
-                nextDeadBody = getNextBody();
-                if (nextDeadBody != null) {
-                    spiritLine.endTarget.set(nextDeadBody.getPosition());
-                }
-            }
-        } else {
-            if (spiritMode){
-                //switch into spirit mode
-                spiritLine.end.set(cat.getPosition());
-                spiritLine.start.set(cat.getPosition());
-            } else {
-                spiritLine.endTarget.set(cat.getPosition());
-                spiritLine.startTarget.set(cat.getPosition());
-            }
-        }
-        this.spiritMode = spiritMode;
-
-        spiritLine.update(dt);
-    }
-
+    public SpiritLine getSpiritLine(){ return spiritLine; }
 
     /**
-     * TODO: THIS SHOULD BE A SEPARATE MODEL CLASS
+     * @return If the level is in spirit mode.
      */
-    private class SpiritLine {
-        public Vector2 start = new Vector2();
-        public Vector2 end = new Vector2();
-        public Vector2 startTarget = new Vector2();
-        public Vector2 endTarget = new Vector2();
-        private Color outerColor = new Color();
-        private Color innerColor = new Color();
-        private float alpha;
+    public boolean isSpiritMode(){ return spiritMode; }
 
-        public SpiritLine(Color ic, Color oc){
-            innerColor.set(ic);
-            outerColor.set(oc);
-            alpha = 0;
-        }
-
-        public void update(float dt){
-            if (spiritMode) {
-                alpha = alpha + (0.6f - alpha) / 20f;
-            } else {
-                alpha = alpha - alpha / 5f;
-            }
-            start.add((startTarget.x-start.x)*0.2f, (startTarget.y-start.y)*0.2f);
-            end.add((endTarget.x-end.x)*0.2f, (endTarget.y-end.y)*0.2f);
-            outerColor.set(outerColor.r, outerColor.g, outerColor.b, alpha);
-            innerColor.set(innerColor.r, innerColor.g, innerColor.b, alpha);
-        }
-        public void draw(GameCanvas canvas){
-            canvas.drawFactoryLine(start, end, 1, innerColor, scale.x, scale.y);
-            canvas.drawFactoryLine(start, end, 4, outerColor, scale.x, scale.y);
-        }
-
-    }
+    /**
+     * Sets the spirit mode of this level.
+     * @param spiritMode   Next spirit mode state
+     */
+    public void setSpiritMode(boolean spiritMode){ this.spiritMode = spiritMode; }
 
 }

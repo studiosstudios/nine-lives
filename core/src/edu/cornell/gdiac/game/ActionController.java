@@ -129,7 +129,6 @@ public class ActionController {
      */
     public void update(float dt){
         InputController ic = InputController.getInstance();
-        level.update(dt, ic.holdSwitch() && !ic.didSwitch());
         Cat cat = level.getCat();
 
         if (ic.didSwitch()){
@@ -189,6 +188,44 @@ public class ActionController {
             mob.setPosition(mob.getX() + mobControl.getAction(), mob.getY());
             mob.applyForce();
         }
+
+        updateSpiritLine(dt, ic.holdSwitch() && !ic.didSwitch());
+    }
+
+    /**
+     * Updates the start target and end target of the spirit line based on current
+     * level state, then updates spirit line.
+     *
+     * @param dt           Number of seconds since last animation frame
+     * @param spiritMode   true if level is in spirit mode
+     */
+    public void updateSpiritLine(float dt, boolean spiritMode){
+        SpiritLine spiritLine = level.getSpiritLine();
+        Cat cat = level.getCat();
+        if (level.isSpiritMode()){
+            if (!spiritMode) {
+                //switch out of spirit mode
+                spiritLine.setStart(cat.getPosition());
+            } else {
+                spiritLine.startTarget.set(cat.getPosition());
+                spiritLine.setStart(cat.getPosition());
+                DeadBody nextDeadBody = level.getNextBody();
+                if (nextDeadBody != null) {
+                    spiritLine.endTarget.set(nextDeadBody.getPosition());
+                }
+            }
+        } else {
+            if (spiritMode){
+                //switch into spirit mode
+                spiritLine.setEnd(cat.getPosition());
+                spiritLine.setStart(cat.getPosition());
+            } else {
+                spiritLine.endTarget.set(cat.getPosition());
+                spiritLine.startTarget.set(cat.getPosition());
+            }
+        }
+        level.setSpiritMode(spiritMode);
+        spiritLine.update(dt, spiritMode);
     }
 
     /**
@@ -358,12 +395,19 @@ public class ActionController {
         return sound.play(volume);
     }
 
-    // TODO: Documentation
+
+    /**
+     * A RayCastCallback for lasers. Stores the closest fixture hit into <code>rayCastFixture</code>, and
+     * the fraction between the start and end of the ray for that fixture into <code>closestFraction</code>.
+     * A <code>closestFraction</code> of 1 means that the raycast hit the end of the world, thus no
+     * fixture was found.
+     */
     private RayCastCallback LaserRayCastCallback = new RayCastCallback() {
-        @Override
+
         /**
-         * Gets closest raycasted fixture and stores collision point and the fixture itself
+         * Gets closest raycasted fixture and stores collision point and the fixture itself.
          */
+        @Override
         public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
             if ( fraction < closestFraction ) {
                 closestFraction = fraction;

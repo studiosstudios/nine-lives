@@ -161,6 +161,11 @@ public class ActionController {
             meowId = playSound(soundAssetMap.get("meow"), meowId, volume);
         }
 
+        //Prepare dead bodies for raycasting
+        for (DeadBody d: level.getdeadBodyArray()){
+            d.setTouchingLaser(false);
+        }
+
         //Raycast lasers
         for (Laser l : level.getLasers()){
             if (l.isActivated()) {
@@ -173,7 +178,7 @@ public class ActionController {
             a.updateActivated();
             if (level.getActivationRelations().containsKey(a.getID())){
                 for (Activatable s : level.getActivationRelations().get(a.getID())){
-                    s.updateActivated(a.isActive(), level.getWorld());
+                    s.updateActivated(a.isActivating(), level.getWorld());
                 }
             }
         }
@@ -237,7 +242,7 @@ public class ActionController {
             die();
         }
         if (rayCastFixture != null && rayCastFixture.getBody().getUserData() instanceof DeadBody){
-            ((DeadBody) rayCastFixture.getBody().getUserData()).touchingLaser();
+            ((DeadBody) rayCastFixture.getBody().getUserData()).setTouchingLaser(true);
         }
     }
 

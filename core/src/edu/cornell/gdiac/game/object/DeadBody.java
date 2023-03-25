@@ -99,9 +99,9 @@ public class DeadBody extends BoxObstacle {
     }
 
     /**
-     * Sets the dead body state to be touching a laser.
+     * Sets if the dead body is being hit by a laser.
      */
-    public void touchingLaser(){ touchingLaser = true; }
+    public void setTouchingLaser(boolean touching){ touchingLaser = touching; }
 
     /**
      * A new hazard has started touching this dead body.
@@ -191,7 +191,6 @@ public class DeadBody extends BoxObstacle {
         // Apply cooldowns
 
         super.update(dt);
-        touchingLaser = false;
         if (burning) {
             burnTicks++;
             if (burnTicks >= totalBurnTicks){

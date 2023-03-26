@@ -8,7 +8,7 @@ Movement | Key
 Move Left  | ← 
 Move Right  | → 
 Jump  | 	C 
-Dash  | 	X
+Dash  | 	↑,↓,←,→  +  X
 Attach to Wall  | 	Z
 Climb  | 	↑ and ↓
 Switch Body  | 	⇧ (SHIFT)

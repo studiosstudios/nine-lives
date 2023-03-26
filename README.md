@@ -7,9 +7,12 @@ Movement | Key
 | ---- | ---- 
 Move Left  | ← 
 Move Right  | → 
-Jump  | 	↑ 
-Dash  | 	D
-Climb  | 	A
+Jump  | 	C 
+Dash  | 	X
+Attach to Wall  | 	Z
+Climb  | 	↑ and ↓
+Switch Body  | 	⇧ (SHIFT)
+Cancel Switch  | 	CTRL
 Meow  | 	M 
 
 

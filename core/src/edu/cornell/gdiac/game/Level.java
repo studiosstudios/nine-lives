@@ -12,7 +12,6 @@ import edu.cornell.gdiac.game.object.*;
 
 import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.util.PooledList;
-import sun.security.provider.ConfigFile;
 
 import java.util.HashMap;
 

@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import sun.jvm.hotspot.utilities.Assert;
 
 public abstract class StageWrapper extends Stage {
 

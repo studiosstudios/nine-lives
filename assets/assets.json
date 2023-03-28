@@ -39,7 +39,8 @@
         "level1": "platform/level1.json",
         "level2": "platform/level2.json",
         "level3": "platform/level3.json",
-        "level4": "platform/level4.json"
+        "level4": "platform/level4.json",
+        "level5": "platform/level_testplayground.json"
     },
     "sounds" : {
         "jump" : "platform/jump.mp3",

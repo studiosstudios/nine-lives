@@ -397,9 +397,9 @@ public class Level {
         } catch (NullPointerException e) {}
 
         try {
-            for (JsonValue wallJV : levelJV.get("platforms")){
-                Wall wall = new Wall(tMap.get("steel"), scale, wallJV);
-                addObject(wall);
+            for (JsonValue platformJV : levelJV.get("platforms")){
+                Platform platform = new Platform(tMap.get("steel"), scale, platformJV);
+                loadActivatable(platform, platformJV);
             }
         } catch (NullPointerException e) {}
 
@@ -698,7 +698,6 @@ public class Level {
                 canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
             }
             for (Obstacle obj : objects) {
-                System.out.println(obj);
                 obj.drawDebug(canvas);
             }
             canvas.endDebug();

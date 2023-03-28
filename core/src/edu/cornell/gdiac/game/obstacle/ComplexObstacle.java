@@ -318,7 +318,96 @@ public abstract class ComplexObstacle extends Obstacle {
 			super.setVY(value);
 		}
 	}
-	
+
+	/**
+	 * Sets the base velocity for this physics body. Note that this does not change the total linear velocity,
+	 * instead it subtracts the relative velocity.
+	 *
+	 * @param value  the base velocity for this physics body
+	 */
+	public void setBaseVelocity(Vector2 value){
+		if (body != null) {
+			baseVelocity.set(value);
+			relativeVelocity.set(getLinearVelocity().sub(baseVelocity));
+		} else {
+			super.setLinearVelocity(value);
+		}
+	}
+
+	/**
+	 * Sets the relative velocity for this physics body, and then updates linear velocity accordingly.
+	 *
+	 * @param value  the relative velocity for this physics body
+	 */
+	public void setRelativeVelocity(Vector2 value){
+		if (body != null) {
+			relativeVelocity.set(value);
+			body.setLinearVelocity(value.add(baseVelocity));
+		} else {
+			super.setLinearVelocity(value);
+		}
+	}
+
+	/**
+	 * Sets the base x velocity for this physics body. Note that this does not change the total linear velocity,
+	 * instead it subtracts the relative velocity.
+	 *
+	 * @param value  the base x velocity for this physics body
+	 */
+	public void setBaseVX(float value){
+		if (body != null) {
+			baseVelocity.x = value;
+			relativeVelocity.x -= value;
+		} else {
+			super.setBaseVX(value);
+		}
+	}
+
+	/**
+	 * Sets the base y velocity for this physics body. Note that this does not change the total linear velocity,
+	 * instead it subtracts the relative velocity.
+	 *
+	 * @param value  the base y velocity for this physics body
+	 */
+	public void setBaseVY(float value){
+		if (body != null) {
+			baseVelocity.y = value;
+			relativeVelocity.y -= value;
+		} else {
+			super.setBaseVY(value);
+		}
+	}
+
+	/**
+	 * Sets the relative x velocity for this physics body, and then updates linear velocity accordingly.
+	 *
+	 * @param value  the relative x velocity for this physics body
+	 */
+	public void setRelativeVX(float value){
+		if (body != null) {
+			relativeVelocity.x = value;
+			velocityCache.set(value + baseVelocity.x,body.getLinearVelocity().y);
+			body.setLinearVelocity(velocityCache);
+		} else {
+			super.setRelativeVX(value);
+		}
+	}
+
+	/**
+	 * Sets the relative y velocity for this physics body, and then updates linear velocity accordingly.
+	 *
+	 * @param value  the relative x velocity for this physics body
+	 */
+	public void setRelativeVY(float value){
+		if (body != null) {
+			relativeVelocity.y = value;
+			velocityCache.set(body.getLinearVelocity().x, value + baseVelocity.y);
+			body.setLinearVelocity(velocityCache);
+		} else {
+			super.setRelativeVY(value);
+		}
+	}
+
 	/**
 	 * Returns the angular velocity for this physics body
 	 *

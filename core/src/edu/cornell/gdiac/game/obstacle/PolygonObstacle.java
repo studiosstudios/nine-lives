@@ -53,10 +53,6 @@ public class PolygonObstacle extends SimpleObstacle {
 	private Vector2 sizeCache;
 	/** Cache of the polygon vertices (for resizing) */
 	private float[] vertices;
-	/** max x coordinate in vertices array */
-	private float maxX;
-	/** max y coordinate in vertices array */
-	private float maxY;
 	
 	/** 
 	 * Returns the dimensions of this box

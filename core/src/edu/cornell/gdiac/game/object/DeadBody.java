@@ -7,6 +7,7 @@
  */
 package edu.cornell.gdiac.game.object;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
@@ -21,119 +22,37 @@ import edu.cornell.gdiac.game.obstacle.*;
  * Note that this class returns to static loading.  That is because there are
  * no other subclasses that we might loop through.
  */
-public class DeadBody extends CapsuleObstacle {
-
+public class DeadBody extends BoxObstacle {
+    /** Constants that are shared between all instances of this class */
+    private static JsonValue objectConstants;
+    /** How long the body has been burning */
     private int burnTicks;
+    /** If the body is currently burning */
     private boolean burning;
-    public static final int TOTAL_BURN_TICKS = 900;
-    /**
-     * The initializing data (to avoid magic numbers)
-     */
-    private final JsonValue data;
+    /** The total number ticks a body burns for */
+    private static int totalBurnTicks;
 
-    /**
-     * The factor to multiply by the input
-     */
-    private final float force;
-    private final float dash_force;
-    /**
-     * Whether we are actively dashing
-     */
-    private boolean isDashing;
-    public boolean canDash;
     /**
      * The amount to slow the model down
      */
     private final float damping;
     /**
-     * The maximum model speed
-     */
-    private final float maxspeed;
-    /**
      * Identifier to allow us to track the sensor in ContactListener
      */
     private final String sensorName;
-
-    /**
-     * The current horizontal movement of the model
-     */
-    private float movement;
     /**
      * Which direction is the model facing
      */
     private boolean faceRight;
     /**
-     * Whether our feet are on the ground
-     */
-    private boolean isGrounded;
-    /**
      * The physics shape of this object
      */
     private CircleShape sensorShape;
-
-    /**
-     * Cache for internal force calculations
-     */
-    private final Vector2 forceCache = new Vector2();
-
-
-    /**
-     * Returns left/right movement of this model.
-     * <p>
-     * This is the result of input times dead body force.
-     *
-     * @return left/right movement of this model.
-     */
-    public float getMovement() {
-        return movement;
-    }
-
-    /**
-     * Sets left/right movement of this model.
-     * <p>
-     * This is the result of input times dead body force.
-     *
-     * @param value left/right movement of this model.
-     */
-    public void setMovement(float value) {
-        movement = value;
-        // Change facing if appropriate
-        if (movement < 0) {
-            faceRight = false;
-        } else if (movement > 0) {
-            faceRight = true;
-        }
-    }
-
-
-    /**
-     * Returns true if the dead body is on the ground.
-     *
-     * @return true if the dead body is on the ground.
-     */
-    public boolean isGrounded() {
-        return isGrounded;
-    }
-
-    /**
-     * Sets whether the dead body is on the ground.
-     *
-     * @param value whether the dead body is on the ground.
-     */
-    public void setGrounded(boolean value) {
-        isGrounded = value;
-    }
-
-    /**
-     * Returns how much force to apply to get the dead body moving
-     * <p>
-     * Multiply this by the input to get the movement value.
-     *
-     * @return how much force to apply to get the dead body moving
-     */
-    public float getForce() {
-        return force;
-    }
+    /** The number of hazards that the body is touching */
+    private int hazardsTouching;
+    /** If dead body is currently being hit by a laser.
+     * This is necessary because laser collisions are done with raycasting.*/
+    private boolean touchingLaser;
 
     /**
      * Returns ow hard the brakes are applied to get a dead body to stop moving
@@ -142,17 +61,6 @@ public class DeadBody extends CapsuleObstacle {
      */
     public float getDamping() {
         return damping;
-    }
-
-    /**
-     * Returns the upper limit on dead body left-right movement.
-     * <p>
-     * This does NOT apply to vertical movement.
-     *
-     * @return the upper limit on dead body left-right movement.
-     */
-    public float getMaxSpeed() {
-        return maxspeed;
     }
 
     /**
@@ -183,40 +91,60 @@ public class DeadBody extends CapsuleObstacle {
     }
 
     /**
+     * If the dead body is safe to be switched into.
+     * @return true if the dead body can be switched into
+     */
+    public boolean isSwitchable(){
+        return hazardsTouching == 0 && !touchingLaser;
+    }
+
+    /**
+     * Sets if the dead body is being hit by a laser.
+     */
+    public void setTouchingLaser(boolean touching){ touchingLaser = touching; }
+
+    /**
+     * A new hazard has started touching this dead body.
+     */
+    public void addHazard(){ hazardsTouching++; }
+
+    /**
+     * A hazard has stopped touching this dead body.
+     */
+    public void removeHazard(){ hazardsTouching--; }
+
+    /**
      * Creates a new dead body model with the given physics data
      * <p>
      * The size is expressed in physics units NOT pixels.  In order for
      * drawing to work properly, you MUST set the drawScale. The drawScale
      * converts the physics units to pixels.
      *
-     * @param data   The physics constants for this dead body
-     * @param width  The object width in physics units
-     * @param height The object width in physics units
+     * @param texture      the texture
+     * @param scale        the draw scale
+     * @param position     position
      */
-    public DeadBody(JsonValue data, float width, float height) {
-        // The shrink factors fit the image to a tigher hitbox
-        super(data.get("pos").getFloat(0),
-                data.get("pos").getFloat(1),
-                width * data.get("shrink").getFloat(0),
-                height * data.get("shrink").getFloat(1),
-                Orientation.TOP);
-        setDensity(data.getFloat("density", 0));
-        setFriction(data.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
-        setFixedRotation(true);
+    public DeadBody(TextureRegion texture, Vector2 scale, Vector2 position) {
+        super(texture.getRegionWidth()/scale.x*objectConstants.get("shrink").getFloat(0),
+                texture.getRegionHeight()/scale.y*objectConstants.get("shrink").getFloat(1));
 
-        maxspeed = data.getFloat("maxspeed", 0);
-        damping = data.getFloat("damping", 0);
-        force = data.getFloat("force", 0);
-        dash_force = data.getFloat("dash_force", 0);
+        setTexture(texture);
+        setDrawScale(scale);
+        setDensity(objectConstants.getFloat("density", 0));
+        setFriction(objectConstants.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
+        setFixedRotation(true);
+        setLinearDamping(objectConstants.getFloat("damping", 2f));
+
+        damping = objectConstants.getFloat("damping", 0);
         sensorName = "deadBodyGroundSensor";
-        this.data = data;
 
         // Gameplay attributes
+        setX(position.x+objectConstants.get("offset").getFloat(0));
+        setY(position.y+objectConstants.get("offset").getFloat(1));
         burnTicks = 0;
         burning = false;
-        isGrounded = false;
         faceRight = true;
-
+        //create centre sensor (for fixing to spikes)
 
         setName("deadBody");
     }
@@ -235,53 +163,22 @@ public class DeadBody extends CapsuleObstacle {
             return false;
         }
 
-        // Ground Sensor
-        // -------------
-        //
-        // To determine whether or not the dead body is on the ground,
-        // we create a thin sensor under the feet, which reports
-        // collisions with the world but has no collision response.
-        //TODO: put this in JSON
         Vector2 sensorCenter = new Vector2();
         FixtureDef sensorDef = new FixtureDef();
         sensorDef.density = 0;
         sensorDef.isSensor = true;
         sensorShape = new CircleShape();
-        sensorShape.setRadius(0.1f);
+        sensorShape.setRadius(objectConstants.getFloat("sensorRadius"));
         sensorShape.setPosition(sensorCenter);
         sensorDef.shape = sensorShape;
 
         // Ground sensor to represent our feet
         Fixture sensorFixture = body.createFixture(sensorDef);
         sensorFixture.setUserData(this);
-
+        body.setUserData(this);
         return true;
     }
 
-
-    /**
-     * Applies the force to the body of this dead body
-     * <p>
-     * This method should be called after the force attribute is set.
-     */
-    public void applyForce() {
-        if (!isActive()) {
-            return;
-        }
-        // Don't want to be moving. Damp out player motion
-        if (getMovement() == 0f) {
-            forceCache.set(-getDamping() * getVX(), 0);
-            body.applyForce(forceCache, getPosition(), true);
-        }
-
-        // Velocity too high, clamp it
-        if (Math.abs(getVX()) >= getMaxSpeed()) {
-            setVX(Math.signum(getMovement()) * getMaxSpeed());
-        } else {
-            forceCache.set(getMovement(), 0);
-            body.applyForce(forceCache, getPosition(), true);
-        }
-    }
 
     /**
      * Updates the object's physics state (NOT GAME LOGIC).
@@ -296,12 +193,15 @@ public class DeadBody extends CapsuleObstacle {
         super.update(dt);
         if (burning) {
             burnTicks++;
-            if (burnTicks >= TOTAL_BURN_TICKS){
+            if (burnTicks >= totalBurnTicks){
                 markRemoved(true);
             }
         }
     }
 
+    /**
+     * @param burning the new burning state of this dead body
+     */
     public void setBurning(boolean burning){
         this.burning = burning;
     }
@@ -313,7 +213,7 @@ public class DeadBody extends CapsuleObstacle {
      */
     public void draw(GameCanvas canvas) {
         float effect = faceRight ? 1.0f : -1.0f;
-        Color color = new Color(1, 1, 1, 1f - ((float)burnTicks)/((float)TOTAL_BURN_TICKS));
+        Color color = new Color(1, 1, 1, 1f - ((float)burnTicks)/((float)totalBurnTicks));
         canvas.draw(texture, color, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), effect, 1.0f);
     }
 
@@ -327,5 +227,14 @@ public class DeadBody extends CapsuleObstacle {
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
         canvas.drawPhysics(sensorShape, Color.RED, getX(), getY(), drawScale.x, drawScale.y);
+    }
+
+    /**
+     * Sets the shared constants for all instances of this class
+     * @param constants JSON storing the shared constants.
+     */
+    public static void setConstants(JsonValue constants) {
+        objectConstants = constants;
+        totalBurnTicks = constants.getInt("burnTicks");
     }
 }

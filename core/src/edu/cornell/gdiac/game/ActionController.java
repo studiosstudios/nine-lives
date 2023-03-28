@@ -1,33 +1,34 @@
 package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.game.object.*;
+import edu.cornell.gdiac.util.Direction;
 
 import java.util.HashMap;
 
+/**
+ * Controller that processes in-world player actions and interactions.
+ * <br><br>
+ * This controller handles all logic having to do with player actions, including movement, along
+ * with the results of the player interacting with the world, including laser raycasting, button pressing,
+ * and more.
+ */
 public class ActionController {
     /** The boundary of the world */
     protected Rectangle bounds;
     /** The world scale */
     protected Vector2 scale;
-
-    /** The hashmap for texture regions */
-    private HashMap<String, TextureRegion> textureRegionAssetMap;
     /** The hashmap for sounds */
     private HashMap<String, Sound> soundAssetMap;
-    /** The hashmap for fonts */
-    private HashMap<String, BitmapFont> fontAssetMap;
     /** The JSON value constants */
-    private JsonValue JSONconstants;
-    /** JSON representing the level */
-    private JsonValue levelJV;
+    private JsonValue constantsJSON;
     /** The default sound volume */
     private float volume;
     /** The jump sound */
@@ -40,7 +41,14 @@ public class ActionController {
     private long meowId = -1;
     /** The level */
     private Level level;
+    private Array<AIController> mobControllers;
 
+    /** Fields needed for raycasting */
+    private Vector2 rayCastPoint = new Vector2();
+    private Fixture rayCastFixture;
+    private float closestFraction;
+    private Vector2 startPointCache = new Vector2();
+    private Vector2 endPointCache = new Vector2();
     /**
      * Creates and initialize a new instance of a ActionController
      *
@@ -52,7 +60,13 @@ public class ActionController {
         this.bounds = bounds;
         this.scale = scale;
         this.volume = volume;
+        mobControllers = new Array<>();
     }
+
+    /**
+     * Sets the volume for all sounds in the game.
+     * */
+    public void setVolume(float volume) { this.volume = volume; }
 
     /**
      * Sets the level model
@@ -64,25 +78,35 @@ public class ActionController {
     }
 
     /**
-     * Sets the hashmaps for Texture Regions, Sounds, Fonts, and sets JSON value constants
+     * Sets the mob AI controllers in the level
      *
-     * @param tMap the hashmap for Texture Regions
-     * @param fMap the hashmap for Fonts
-     * @param sMap the hashmap for Sounds
-     * @param constants the JSON value for constants
+     * @param level The target level to associate the AI controllers with
      */
-    public void setAssets(HashMap<String, TextureRegion> tMap, HashMap<String, BitmapFont> fMap,
-                          HashMap<String, Sound> sMap, JsonValue constants, JsonValue levelJV){
-        textureRegionAssetMap = tMap;
-        fontAssetMap = fMap;
-        soundAssetMap = sMap;
-        JSONconstants = constants;
-        this.levelJV = levelJV;
+    public void setMobControllers(Level level) {
+        mobControllers.clear();
+        for (Mob mob : level.getMobArray()) {
+            mobControllers.add(new AIController(bounds, level, mob, mob.isAggressive()));
+        }
     }
 
     /**
-     * Called when the Screen is paused.
+     * Returns array of currently active MobControllers
+     * @return Array of active MobControllers with the current level
+     */
+    public Array<AIController> getMobControllers() {
+        return mobControllers;
+    }
+
+    /**
+     * Sets the hashmaps for Texture Regions, Sounds, Fonts, and sets JSON value constants
      *
+     * @param sMap the hashmap for Sounds
+     */
+    public void setAssets(HashMap<String, Sound> sMap){ soundAssetMap = sMap; }
+
+    /**
+     * Called when the Screen is paused.
+     * <br><br>
      * We need this method to stop all sounds when we pause.
      * Pausing happens when we switch game modes.
      */
@@ -95,7 +119,7 @@ public class ActionController {
 
     /**
      * The core gameplay loop of this world.
-     *
+     * <br><br>
      * This method contains the specific update code for this mini-game. It does
      * not handle collisions, as those are managed by the parent class WorldController.
      * This method is called after input is read, but before collisions are resolved.
@@ -104,21 +128,50 @@ public class ActionController {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt){
+        InputController ic = InputController.getInstance();
         Cat cat = level.getCat();
-        cat.setMovement(InputController.getInstance().getHorizontal() *cat.getForce() * (cat.getIsClimbing() ? 0 : 1));
-        cat.setVerticalMovement(InputController.getInstance().getVertical() * cat.getForce());
-        cat.setHorizontalMovement(InputController.getInstance().getHorizontal() * cat.getForce());
-        cat.setJumping(InputController.getInstance().didPrimary());
-        cat.setDashing(InputController.getInstance().didDash());
-        cat.setClimbing(InputController.getInstance().didClimb() && cat.isWalled());
 
-        cat.applyForce();
-        if (cat.isJumping()) {
-            jumpId = playSound(soundAssetMap.get("jump"), jumpId, volume);
+        updateSpiritLine(dt, ic.holdSwitch() && !ic.didSwitch());
+
+        if (ic.didSwitch()){
+            //switch body
+            DeadBody body = level.getNextBody();
+            if (body != null){
+                level.spawnDeadBody();
+                cat.setPosition(body.getPosition());
+                cat.setLinearVelocity(body.getLinearVelocity());
+                cat.setFacingRight(body.isFacingRight());
+                body.markRemoved(true);
+                level.removeDeadBody(body);
+            }
+        } else {
+            cat.setHorizontalMovement(ic.getHorizontal());
+            cat.setVerticalMovement(ic.getVertical());
+            cat.setJumpPressed(ic.didJump());
+            cat.setClimbingPressed(ic.didClimb());
+            cat.setDashPressed(ic.didDash());
+
+            cat.updateState();
+            cat.applyForce();
+            if (cat.isJumping()) {
+                jumpId = playSound(soundAssetMap.get("jump"), jumpId, volume);
+            }
+        }
+        if (ic.didMeow()){
+            cat.setMeowing(true);
+            meowId = playSound(soundAssetMap.get("meow"), meowId, volume);
         }
 
-        if (InputController.getInstance().didMeow()){
-            meowId = playSound(soundAssetMap.get("meow"), meowId, volume);
+        //Prepare dead bodies for raycasting
+        for (DeadBody d: level.getdeadBodyArray()){
+            d.setTouchingLaser(false);
+        }
+
+        //Raycast lasers
+        for (Laser l : level.getLasers()){
+            if (l.isActivated()) {
+                rayCastLaser(l);
+            }
         }
 
         // Process buttons
@@ -126,32 +179,157 @@ public class ActionController {
             a.updateActivated();
             if (level.getActivationRelations().containsKey(a.getID())){
                 for (Activatable s : level.getActivationRelations().get(a.getID())){
-                    s.updateActivated(a.isActive(), level.getWorld());
+                    s.updateActivated(a.isActivating(), level.getWorld());
                 }
             }
+        }
+
+        // Mob control:
+        for (AIController mobControl : mobControllers) {
+            Mob mob = mobControl.getMob();
+            mob.setPosition(mob.getX() + mobControl.getAction(), mob.getY());
+            mob.applyForce();
+        }
+
+    }
+
+    /**
+     * Updates the start target and end target of the spirit line based on current
+     * level state, then updates spirit line. Note that this MUST be called before
+     * the player switches body, otherwise the targets will not be updated properly
+     * after switching.
+     *
+     * @param dt           Number of seconds since last animation frame
+     * @param spiritMode   true if level is in spirit mode
+     */
+    public void updateSpiritLine(float dt, boolean spiritMode){
+        SpiritLine spiritLine = level.getSpiritLine();
+        Cat cat = level.getCat();
+        if (level.isSpiritMode()){
+            if (!spiritMode) {
+                //switch out of spirit mode
+                spiritLine.setStart(cat.getPosition());
+            } else {
+                spiritLine.startTarget.set(cat.getPosition());
+                spiritLine.setStart(cat.getPosition());
+                DeadBody nextDeadBody = level.getNextBody();
+                if (nextDeadBody != null) {
+                    spiritLine.endTarget.set(nextDeadBody.getPosition());
+                }
+            }
+        } else {
+            if (spiritMode){
+                //switch into spirit mode
+                spiritLine.setEnd(cat.getPosition());
+                spiritLine.setStart(cat.getPosition());
+            } else {
+                spiritLine.endTarget.set(cat.getPosition());
+                spiritLine.startTarget.set(cat.getPosition());
+            }
+        }
+        level.setSpiritMode(spiritMode);
+        spiritLine.update(dt, spiritMode);
+    }
+
+    /**
+     * Finds the points of a laser beam using raycasting. The beam will reflect off of mirrors and stop at any other
+     * obstacle (or the edge of the screen). The points are added to the <code>Laser</code> instance which will draw the
+     * beam. Also handles any collision logic involving laser beams.
+     *
+     * @param l The laser to raycast a beam out of
+     */
+    private void rayCastLaser(Laser l){
+        l.beginRayCast();
+
+        //initial beam
+        closestFraction = 1;
+        startPointCache.set(l.getBeamStart());
+        Direction dir = l.getDirection();
+        getRayCastEnd(startPointCache, dir);
+        level.world.rayCast(LaserRayCastCallback, startPointCache, endPointCache);
+        boolean reflect = false;
+        if (closestFraction == 1) {
+            rayCastPoint = endPointCache;
+            rayCastFixture = null;
+        } else {
+            reflect = rayCastFixture.getBody().getUserData() instanceof Mirror;
+        }
+        l.addBeamPoint(new Vector2(rayCastPoint));
+
+        //reflect off of mirrors
+        while(reflect) {
+            Mirror mirror = (Mirror) rayCastFixture.getBody().getUserData();
+            dir = mirror.reflect(dir);
+            if (dir != null) {
+                closestFraction = 1;
+                startPointCache.set(rayCastPoint);
+                getRayCastEnd(startPointCache, dir);
+                level.world.rayCast(LaserRayCastCallback, startPointCache, endPointCache);
+                if (closestFraction == 1) {
+                    rayCastPoint = endPointCache;
+                    rayCastFixture = null;
+                    reflect = false;
+                } else {
+                    reflect = rayCastFixture.getBody().getUserData() instanceof Mirror;
+                }
+                l.addBeamPoint(new Vector2(rayCastPoint));
+            } else {
+                reflect = false;
+            }
+        }
+
+        if (level.getCat().getBody().getFixtureList().contains(rayCastFixture, true)){
+            die();
+        }
+        if (rayCastFixture != null && rayCastFixture.getBody().getUserData() instanceof DeadBody){
+            ((DeadBody) rayCastFixture.getBody().getUserData()).setTouchingLaser(true);
+        }
+    }
+
+    /**
+     * Sets the target end point of a raycast in the current level starting at a given point.
+     * Stores the result into <code>endPointCache</code> for efficiency.
+     *
+     * @param start
+     * @param dir
+     */
+    private void getRayCastEnd(Vector2 start, Direction dir){
+        switch (dir) {
+            case UP:
+                endPointCache.set(start.x,bounds.height);
+                break;
+            case LEFT:
+                endPointCache.set(0, start.y);
+                break;
+            case DOWN:
+                endPointCache.set(start.x, 0);
+                break;
+            case RIGHT:
+                endPointCache.set(bounds.width, start.y);
+                break;
         }
     }
 
     /**
      * Fixes a body to spikes
      *
-     * @param deadbody the DeadBody to fix to the spikes
+     * @param deadBody the DeadBody to fix to the spikes
      * @param spikes the spikes
      * @param points the points to fix to
      */
-    public void fixBodyToSpikes(DeadBody deadbody, Spikes spikes, Vector2[] points) {
+    public void fixBodyToSpikes(DeadBody deadBody, Spikes spikes, Vector2[] points) {
         switch ((int) (spikes.getAngle() * 180/Math.PI)) {
             case 0:
             case 90:
             case 270:
-                WeldJointDef wjoint = new WeldJointDef();
+                WeldJointDef joint = new WeldJointDef();
                 for (Vector2 contactPoint : points) {
-                    wjoint.bodyA = deadbody.getBody();
-                    wjoint.bodyB = spikes.getBody();
-                    wjoint.localAnchorA.set(deadbody.getBody().getLocalPoint(contactPoint));
-                    wjoint.localAnchorB.set(spikes.getBody().getLocalPoint(contactPoint));
-                    wjoint.collideConnected = false;
-                    level.queueJoint(wjoint);
+                    joint.bodyA = deadBody.getBody();
+                    joint.bodyB = spikes.getBody();
+                    joint.localAnchorA.set(deadBody.getBody().getLocalPoint(contactPoint));
+                    joint.localAnchorB.set(spikes.getBody().getLocalPoint(contactPoint));
+                    joint.collideConnected = true;
+                    level.queueJoint(joint);
                 }
                 break;
             case 180:
@@ -164,10 +342,8 @@ public class ActionController {
     /**
      * Called when a player dies. Removes all input but keeps velocities.
      */
-    public DeadBody die(){
-        Cat cat = level.getCat();
+    public void die() {
         if (!level.getDied()) {
-            level.getCat().setJumping(false);
             level.setDied(true);
             // decrement lives
             level.setNumLives(level.getNumLives()-1);
@@ -177,45 +353,21 @@ public class ActionController {
                 level.setFailure(true);
             } else {
                 // create dead body
-                DeadBody deadBody = new DeadBody(levelJV.get("cat"), level.getDwidth(), level.getDheight());
-                deadBody.setDrawScale(scale);
-                deadBody.setTexture(textureRegionAssetMap.get("deadcat"));
-                deadBody.setSensor(false);
-                deadBody.setLinearVelocity(cat.getLinearVelocity());
-                deadBody.setLinearDamping(2f);
-                deadBody.setPosition(cat.getPosition());
-                level.setNewDeadBody(deadBody);
-                level.queueObject(deadBody);
-                return deadBody;
+                level.spawnDeadBody();
             }
         }
-        return null;
-    }
-
-    /**
-     * Actions carried out when the player has died
-     * The level model died is set to false
-     * The level model new dead body is set to face the same direction as the cat
-     * The level model new dead body is added to the array of dead bodies
-     *
-     */
-    public void died() {
-        level.setDied(false);
-        level.getNewDeadBody().setFacingRight(level.getCat().isFacingRight());
-        level.getCat().setPosition(level.getRespawnPos());
-        level.getdeadBodyArray().add(level.getNewDeadBody());
     }
 
     /**
      * Method to ensure that a sound asset is only played once.
-     *
+     * <br><br>
      * Every time you play a sound asset, it makes a new instance of that sound.
      * If you play the sounds to close together, you will have overlapping copies.
      * To prevent that, you must stop the sound before you play it again.  That
      * is the purpose of this method.  It stops the current instance playing (if
      * any) and then returns the id of the new instance for tracking.
      *
-     * @param sound		The sound asset to play
+     * @param sound	The sound asset to play
      * @param soundId	The previously playing sound instance
      *
      * @return the new sound instance for this asset.
@@ -226,14 +378,14 @@ public class ActionController {
 
     /**
      * Method to ensure that a sound asset is only played once.
-     *
+     * <br><br>
      * Every time you play a sound asset, it makes a new instance of that sound.
      * If you play the sounds to close together, you will have overlapping copies.
      * To prevent that, you must stop the sound before you play it again.  That
      * is the purpose of this method.  It stops the current instance playing (if
      * any) and then returns the id of the new instance for tracking.
      *
-     * @param sound		The sound asset to play
+     * @param sound	The sound asset to play
      * @param soundId	The previously playing sound instance
      * @param volume	The sound volume
      *
@@ -245,4 +397,28 @@ public class ActionController {
         }
         return sound.play(volume);
     }
+
+
+    /**
+     * A RayCastCallback for lasers. Stores the closest fixture hit into <code>rayCastFixture</code>, and
+     * the fraction between the start and end of the ray for that fixture into <code>closestFraction</code>.
+     * A <code>closestFraction</code> of 1 means that the raycast hit the end of the world, thus no
+     * fixture was found.
+     */
+    private RayCastCallback LaserRayCastCallback = new RayCastCallback() {
+
+        /**
+         * Gets closest raycasted fixture and stores collision point and the fixture itself.
+         */
+        @Override
+        public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
+            if ( fraction < closestFraction ) {
+                closestFraction = fraction;
+                rayCastPoint.set(point);
+                rayCastFixture = fixture;
+            }
+
+            return 1;
+        }
+    };
 }

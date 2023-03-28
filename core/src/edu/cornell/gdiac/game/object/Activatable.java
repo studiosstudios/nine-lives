@@ -20,7 +20,7 @@ public interface Activatable {
     //region GETTERS AND SETTERS
     void setActivated(boolean activated);
 
-    boolean getActivated();
+    boolean isActivated();
 
     boolean getInitialActivation();
 
@@ -36,9 +36,9 @@ public interface Activatable {
         if (data == null) {
             setActivated(false);
         } else {
-            setActivated(data.getBoolean("active", false));
+            setActivated(data.getBoolean("active", true));
         }
-        setInitialActivation(getActivated());
+        setInitialActivation(isActivated());
     }
 
     /**
@@ -48,11 +48,11 @@ public interface Activatable {
      */
     default void updateActivated(boolean activator, World world){
         boolean next = getInitialActivation() ^ activator;
-        if (next && !getActivated()) {
+        if (next && !isActivated()) {
             //state switch from inactive to active
             setActivated(true);
             activated(world);
-        } else if (!next && getActivated()){
+        } else if (!next && isActivated()){
             //state switch from active to inactive
             setActivated(false);
             deactivated(world);

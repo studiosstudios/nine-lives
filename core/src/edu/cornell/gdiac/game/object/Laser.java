@@ -1,83 +1,167 @@
 package edu.cornell.gdiac.game.object;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.game.GameCanvas;
-import edu.cornell.gdiac.game.obstacle.ComplexObstacle;
+import edu.cornell.gdiac.game.obstacle.BoxObstacle;
+import com.badlogic.gdx.physics.box2d.World;
+import edu.cornell.gdiac.util.Direction;
 
-public class Laser extends ComplexObstacle {
-    /** The initializing data (to avoid magic numbers) */
-    private final JsonValue data;
+public class Laser extends BoxObstacle implements Activatable{
 
-    /** Whether the laser object is on and firing a beam */
-    private boolean isFiring;
-
-    protected LaserBeam beam;
-    protected TextureRegion laserTexture;
-
-    // Dimension information
-    /** The size of the entire laser */
-    protected Vector2 dimension;
-    /** The size of a single section of laser */
-    protected Vector2 sectionsize;
-    /** The length of each link */
-    protected float linksize = 1.0f;
-    /** The spacing between each link */
-    protected float spacing = 0.0f;
+    /** Points of the beam */
+    private Array<Vector2> points;
+    /** The offset vector between the center of the laser body and the beginning of the beam */
+    private Vector2 beamOffset;
+    /** Thickness of beams */
+    private static float thickness;
+    /** Constants that are shared between all instances of this class*/
+    protected static JsonValue objectConstants;
+    /** Current activation state */
+    private boolean activated;
+    /** Starting activation state */
+    private boolean initialActivation;
+    /** Cache of current color of the beam */
+    private Color color;
+    /** Makes laser beams change color with time */
+    private float totalTime;
+    /** The direction that this laser fires in */
+    private Direction dir;
 
     /**
-     * Returns true if the laser if firing
-     *
-     * @return true if the laser is firing
+     * Creates a new Laser object.
+     * @param texture   TextureRegion for drawing.
+     * @param scale     Draw scale for drawing.
+     * @param data      JSON data for loading.
      */
-    public boolean getFiring() {
-        return isFiring;
+    public Laser(TextureRegion texture, Vector2 scale, JsonValue data){
+        super(texture.getRegionWidth()/scale.x,
+                texture.getRegionHeight()/scale.y);
+
+        setBodyType(BodyDef.BodyType.StaticBody);
+        setName("laser");
+        setDrawScale(scale);
+        setTexture(texture);;
+
+        setRestitution(objectConstants.getFloat("restitution", 0));
+        setFriction(objectConstants.getFloat("friction", 0));
+        setDensity(objectConstants.getFloat("density", 0));
+        setMass(objectConstants.getFloat("mass", 0));
+        setX(data.get("pos").getFloat(0)+objectConstants.get("offset").getFloat(0));
+        setY(data.get("pos").getFloat(1)+objectConstants.get("offset").getFloat(1));
+        setAngle((float) (data.getInt("angle") * Math.PI/180));
+        setSensor(true);
+        setFixedRotation(true);
+
+        dir = Direction.angleToDir(data.getInt("angle"));
+        switch (dir){
+            case UP:
+                beamOffset = new Vector2(objectConstants.get("beamOffset").getFloat(0), objectConstants.get("beamOffset").getFloat(1));
+                break;
+            case DOWN:
+                beamOffset = new Vector2(objectConstants.get("beamOffset").getFloat(0), -objectConstants.get("beamOffset").getFloat(1));
+                break;
+            case LEFT:
+                beamOffset = new Vector2(-objectConstants.get("beamOffset").getFloat(1), objectConstants.get("beamOffset").getFloat(0));
+                break;
+            case RIGHT:
+                beamOffset = new Vector2(objectConstants.get("beamOffset").getFloat(1), -objectConstants.get("beamOffset").getFloat(0));
+                break;
+        }
+        totalTime = 0;
+        color = Color.RED;
+        points = new Array<>();
+        initActivations(data);
     }
+
     /**
-     * Sets whether the laser object is firing
-     *
-     * @param firing whether the laser is firing
+     * @return Direction that laser fires in.
      */
-    public void setFiring(boolean firing) {
-        isFiring = firing;
+    public Direction getDirection(){ return dir; }
+
+    /**
+     * Adds a new point to the laser's beam.
+     * @param point The point to add.
+     */
+    public void addBeamPoint(Vector2 point){ points.add(point);}
+
+    /**
+     * Resets the state of the laser to prepare for raycasting.
+     */
+    public void beginRayCast(){
+        points.clear();
+        points.add(getBeamStart());
     }
 
     /**
-     * Creates a new LaserBase
-     *
-     * The size is expressed in physics units NOT pixels.  In order for
-     * drawing to work properly, you MUST set the drawScale. The drawScale
-     * converts the physics units to pixels.
-     *
-     * @param x x position of the laser base
-     * @param y y position of the laser base
+     * @return The starting point of the beam.
      */
-    public Laser(JsonValue data, float x, float y, float lwidth, float lheight, String name, TextureRegion laserTexture) {
-        super(x,y);
-        setName(name);
-        this.data = data;
-        this.laserTexture = laserTexture;
-        beam = new LaserBeam(data, x,y ,9f, lwidth, lheight,name + "Beam");
-        beam.setTexture(laserTexture);
-        bodies.add(beam);
-
+    public Vector2 getBeamStart(){
+        return getPosition().add(beamOffset);
     }
 
     @Override
-    protected boolean createJoints(World world) {
-        return true;
+    public void draw(GameCanvas canvas){
+        if (activated) {
+            if (points.size > 1) {
+                canvas.drawFactoryPath(points, thickness, color, drawScale.x, drawScale.y);
+                canvas.drawFactoryPath(points, thickness*0.3f, Color.WHITE, drawScale.x, drawScale.y);
+            }
+        }
+        super.draw(canvas);
     }
 
     /**
-     * Updates the object's physics state (NOT GAME LOGIC).
-     *
-     * We use this method to reset cooldowns.
-     *
-     * @param dt	Number of seconds since last animation frame
+     * Updates the object's physics state and the beam's color.
+     * @param dt Timing values from parent loop
      */
-    public void update(float dt) {
+    public void update(float dt){
+        super.update(dt);
+        totalTime += dt;
+        color.set(1, 0, 0, ((float) Math.cos((double) totalTime * 2)) * 0.25f + 0.75f);
+    }
 
+    /**
+     * Turns on laser. Does nothing because beam raycasting is done in <code>ActionController</code>.
+     * @param world  Box2D world
+     */
+    @Override
+    public void activated(World world){}
+
+    /**
+     * Turns off laser.
+     * @param world  Box2D world
+     */
+    @Override
+    public void deactivated(World world){
+        points.clear();
+        totalTime = 0;
+    }
+
+    //region ACTIVATABLE METHODS
+    @Override
+    public void setActivated(boolean activated) {this.activated = activated;}
+
+    @Override
+    public boolean isActivated() { return activated; }
+
+    @Override
+    public void setInitialActivation(boolean initialActivation){ this.initialActivation = initialActivation; }
+
+    @Override
+    public boolean getInitialActivation() { return initialActivation; }
+    //endregion
+
+    /**
+     * Sets the shared constants for all instances of this class
+     * @param constants JSON storing the shared constants.
+     */
+    public static void setConstants(JsonValue constants) {
+        objectConstants = constants;
+        thickness = constants.getFloat("thickness");
     }
 }

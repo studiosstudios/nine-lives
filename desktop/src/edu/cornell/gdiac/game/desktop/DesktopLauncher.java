@@ -1,15 +1,3 @@
-/*
- * DesktopLauncher.java
- * 
- * LibGDX is a cross-platform development library. You write all of your code in 
- * the core project.  However, you still need some extra classes if you want to
- * deploy on a specific platform (e.g. PC, Android, Web).  That is the purpose
- * of this class.  It deploys your game on a PC/desktop computer.
- *
- * Author: Walker M. White
- * Based on original Optimization Lab by Don Holden, 2007
- * LibGDX version, 2/2/2015
- */
 package edu.cornell.gdiac.game.desktop;
 
 import edu.cornell.gdiac.backend.GDXApp;
@@ -19,10 +7,12 @@ import edu.cornell.gdiac.game.NineLives;
 /**
  * The main class of the game.
  * 
- * This class sets the window size and launches the game.  Aside from modifying
- * the window size, you should almost never need to modify this class.
+ * This class sets the window size and launches the game.
+ *
+ * Adapted from Walker M. White's DesktopLauncher.java in Cornell CS 3152, Spring 2023.
  */
 public class DesktopLauncher {
+	public static boolean FULLSCREEN = false;
 
 	/**
 	 * Classic main method that all Java programmers know.
@@ -34,9 +24,10 @@ public class DesktopLauncher {
 	 */
 	public static void main (String[] arg) {
 		GDXAppSettings config = new GDXAppSettings();
+		config.title = "9 Lives";
 		config.width  = 1024;
 		config.height = 576;
-		config.resizable = true;
+		config.fullscreen = FULLSCREEN;
 		new GDXApp(new NineLives(), config);
 	}
 }

@@ -315,6 +315,22 @@ public class LevelController {
             } else {
                 // Note that update is called last!
                 obj.update(dt);
+
+                //update base velocity
+                if (obj instanceof Moveable) {
+                    Vector2 baseVel = new Vector2();
+                    ObjectSet<Fixture> fixtures =  ((Moveable) obj).getGroundFixtures();
+
+                    //set base velocity to average of linear velocities of grounds
+                    if (fixtures.size > 0) {
+                        for (Fixture f : fixtures) {
+                            baseVel.add((((Obstacle) f.getBody().getUserData()).getLinearVelocity()));
+                        }
+                        baseVel.scl(1f / (float) fixtures.size);
+                    }
+                    obj.setBaseVelocity(baseVel);
+                }
+
             }
         }
     }

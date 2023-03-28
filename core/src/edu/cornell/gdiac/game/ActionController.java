@@ -8,7 +8,9 @@ import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.object.*;
+import edu.cornell.gdiac.game.obstacle.Obstacle;
 import edu.cornell.gdiac.util.Direction;
 
 import java.util.HashMap;
@@ -131,6 +133,8 @@ public class ActionController {
         InputController ic = InputController.getInstance();
         Cat cat = level.getCat();
 
+        updateSpiritLine(dt, ic.holdSwitch() && !ic.didSwitch());
+
         if (ic.didSwitch()){
             //switch body
             DeadBody body = level.getNextBody();
@@ -189,12 +193,12 @@ public class ActionController {
             mob.applyForce();
         }
 
-        updateSpiritLine(dt, ic.holdSwitch() && !ic.didSwitch());
     }
 
     /**
      * Updates the start target and end target of the spirit line based on current
-     * level state, then updates spirit line.
+     * level state, then updates spirit line. Note that this MUST be called before switching into a dead body,
+     * otherwise the targets will not update properly after switching.
      *
      * @param dt           Number of seconds since last animation frame
      * @param spiritMode   true if level is in spirit mode
@@ -337,7 +341,7 @@ public class ActionController {
     }
 
     /**
-     * Called when a player dies. Removes all input but keeps velocities.
+     * Called when a player dies. Decrements lives, and fails level/spawns body when necessary.
      */
     public void die() {
         if (!level.getDied()) {

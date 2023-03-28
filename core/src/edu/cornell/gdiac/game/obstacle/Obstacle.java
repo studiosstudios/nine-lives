@@ -68,7 +68,12 @@ public abstract class Obstacle {
 	protected Vector2 centroidCache = new Vector2();
 	/** A cache value for when the user wants to access the drawing scale */
 	protected Vector2 scaleCache = new Vector2();
-
+	/** The base velocity for this obstacle if relative motion is desired. Linear velocity is defined as
+	 * <code>baseVelocity + relativeVelocity</code>*/
+	protected Vector2 baseVelocity = new Vector2();
+	/** The relative velocity for this obstacle if relative motion is desired. Linear velocity is defined as
+	 * <code>baseVelocity + relativeVelocity</code>*/
+	protected Vector2 relativeVelocity = new Vector2();
 
 	/// BodyDef Methods
 	/**
@@ -209,10 +214,7 @@ public abstract class Obstacle {
 	 */
 	public void setLinearVelocity(Vector2 value) {
 		bodyinfo.linearVelocity.set(value);
-	}
-
-	public void setLinearVelocity(float x, float y) {
-		bodyinfo.linearVelocity.set(x, y);
+		relativeVelocity.set(value.sub(baseVelocity));
 	}
 	
 	/**
@@ -231,6 +233,7 @@ public abstract class Obstacle {
 	 */
 	public void setVX(float value) {
 		bodyinfo.linearVelocity.x = value;
+		relativeVelocity.x = value - baseVelocity.x;
 	}
 	
 	/**
@@ -249,7 +252,86 @@ public abstract class Obstacle {
 	 */
 	public void setVY(float value) {
 		bodyinfo.linearVelocity.y = value;
+		relativeVelocity.y = value - baseVelocity.y;
 	}
+
+	/**
+	 * Sets the base velocity for this physics body
+	 *
+	 * @param value  the base velocity for this physics body
+	 */
+	public void setBaseVelocity(Vector2 value) {
+		baseVelocity.set(value);
+		bodyinfo.linearVelocity.set(value.add(relativeVelocity));
+	}
+
+	/**
+	 * Sets the base x velocity for this physics body
+	 *
+	 * @param value  the base x velocity for this physics body
+	 */
+	public void setBaseVX(float value){
+		baseVelocity.x = value;
+		bodyinfo.linearVelocity.x = value + relativeVelocity.x;
+	}
+
+	/**
+	 * Sets the base y velocity for this physics body
+	 *
+	 * @param value  the base y velocity for this physics body
+	 */
+	public void setBaseVY(float value){
+		baseVelocity.y = value;
+		bodyinfo.linearVelocity.y = value + relativeVelocity.y;
+	}
+
+	/**
+	 * Sets the relative x velocity for this physics body
+	 *
+	 * @param value  the relative x velocity for this physics body
+	 */
+	public void setRelativeVX(float value){
+		relativeVelocity.x = value;
+		bodyinfo.linearVelocity.x = value + baseVelocity.x;
+	}
+
+	/**
+	 * Sets the relative y velocity for this physics body
+	 *
+	 * @param value  the relative y velocity for this physics body
+	 */
+	public void setRelativeVY(float value){
+		relativeVelocity.y = value;
+		bodyinfo.linearVelocity.y = value + baseVelocity.y;
+	}
+
+	/**
+	 * Sets the relative velocity for this physics body
+	 *
+	 * @param value  the relative velocity for this physics body
+	 */
+	public void setRelativeVelocity(Vector2 value) {
+		relativeVelocity.set(value);
+		bodyinfo.linearVelocity.set(value.add(baseVelocity));
+	}
+
+	/**
+	 * Gets the relative velocity for this physics body. Relative velocity is defined as
+	 * <code>linearVelocity - baseVelocity</code>. This is useful if you want to set motion of a body relative
+	 * to another body rather than relative to the world.
+	 *
+	 * @return  relative velocity for this physics body
+	 */
+	public Vector2 getRelativeVelocity() { return relativeVelocity; }
+
+	/**
+	 * Gets the relative velocity for this physics body. Base velocity is defined as
+	 * <code>linearVelocity - relativeVelocity</code>. This is useful if you want to set motion of a body relative
+	 * to another body rather than relative to the world.
+	 *
+	 * @return  base velocity for this physics body
+	 */
+	public Vector2 getBaseVelocity() { return baseVelocity; }
 	
 	/**
 	 * Returns the angular velocity for this physics body

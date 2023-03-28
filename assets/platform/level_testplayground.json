@@ -13,7 +13,7 @@
   "platforms": [
     {"shape": [4, 8, 4, 9, 8, 9, 8, 8], "disp": [0, 6], "activatorID": "button1", "speed": 40, "damping": 0.1},
     {"shape": [10, 8, 10, 9, 14, 9, 14, 8], "disp": [0, 6], "activatorID": "button1", "speed": 40, "damping": 0.2, "active":false},
-    {"shape": [16, 8, 16, 9, 20, 9, 20, 8], "disp": [0, 6], "activatorID": "button1", "speed": 30, "damping": 1},
+    {"shape": [16, 8, 16, 9, 20, 9, 20, 8], "disp": [6, 0], "activatorID": "button1", "speed": 30, "damping": 1},
     {"shape": [10, 5, 10, 6, 14, 6, 14, 5], "disp": [4, 0], "activatorID": "button1", "speed": 10, "damping": 0.1},
     {"shape": [22, 8, 22, 9, 26, 9, 26, 8], "disp": [4, -4], "activatorID": "button1", "speed": 5, "damping": 0.2}
   ],

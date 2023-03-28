@@ -62,9 +62,10 @@ public class Platform extends Wall implements Activatable {
         //check if close enough to target pos
         if (getPosition().epsilonEquals(target, 0.01f)){
             moving = 0;
-            setLinearVelocity(0, 0);
             setPosition(target);
             targetVel.set(0, 0);
+            setVX(0);
+            setVY(0);
         }
 
         //check if passing through target pos: velocity is parallel to target velocity and target is between
@@ -72,14 +73,15 @@ public class Platform extends Wall implements Activatable {
         if (targetVel.dot(getLinearVelocity()) >= 0 &&
                 target.dst(getPosition()) < target.dst(getPosition().add(getLinearVelocity().scl(dt)))) {
             moving = 0;
-            setLinearVelocity(0, 0);
             setPosition(target);
+            setVX(0);
+            setVY(0);
             targetVel.set(0, 0);
         }
 
         //update velocity
-        setLinearVelocity(getLinearVelocity().x + (targetVel.x - getLinearVelocity().x) * damping,
-                getLinearVelocity().y + (targetVel.y - getLinearVelocity().y) * damping );
+        setVX(getVX() + (targetVel.x - getVX()) * damping);
+        setVY(getVY() + (targetVel.y - getVY()) * damping);
 
     }
 

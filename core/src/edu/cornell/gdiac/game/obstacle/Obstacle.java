@@ -210,6 +210,10 @@ public abstract class Obstacle {
 	public void setLinearVelocity(Vector2 value) {
 		bodyinfo.linearVelocity.set(value);
 	}
+
+	public void setLinearVelocity(float x, float y) {
+		bodyinfo.linearVelocity.set(x, y);
+	}
 	
 	/**
 	 * Returns the x-velocity for this physics body

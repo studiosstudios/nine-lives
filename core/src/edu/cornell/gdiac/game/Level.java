@@ -398,9 +398,9 @@ public class Level {
         } catch (NullPointerException e) {}
 
         try {
-            for (JsonValue wallJV : levelJV.get("platforms")){
-                Wall wall = new Wall(tMap.get("steel"), scale, wallJV);
-                addObject(wall);
+            for (JsonValue platformJV : levelJV.get("platforms")){
+                Platform platform = new Platform(tMap.get("steel"), scale, platformJV);
+                loadActivatable(platform, platformJV);
             }
         } catch (NullPointerException e) {}
 

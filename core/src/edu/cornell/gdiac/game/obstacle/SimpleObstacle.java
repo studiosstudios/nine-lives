@@ -213,6 +213,14 @@ public abstract class SimpleObstacle extends Obstacle {
 			super.setLinearVelocity(value);
 		}
 	}
+
+	public void setLinearVelocity(float x, float y) {
+		if (body != null) {
+			body.setLinearVelocity(x, y);
+		} else {
+			super.setLinearVelocity(x, y);
+		}
+	}
 	
 	/**
 	 * Returns the x-velocity for this physics body

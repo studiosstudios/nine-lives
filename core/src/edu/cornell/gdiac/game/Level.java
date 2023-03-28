@@ -12,7 +12,6 @@ import edu.cornell.gdiac.game.object.*;
 
 import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.util.PooledList;
-import sun.security.provider.ConfigFile;
 
 import java.util.HashMap;
 
@@ -699,7 +698,6 @@ public class Level {
                 canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
             }
             for (Obstacle obj : objects) {
-                System.out.println(obj);
                 obj.drawDebug(canvas);
             }
             canvas.endDebug();

@@ -197,8 +197,9 @@ public class ActionController {
 
     /**
      * Updates the start target and end target of the spirit line based on current
-     * level state, then updates spirit line. Note that this MUST be called before switching into a dead body,
-     * otherwise the targets will not update properly after switching.
+     * level state, then updates spirit line. Note that this MUST be called before
+     * the player switches body, otherwise the targets will not be updated properly
+     * after switching.
      *
      * @param dt           Number of seconds since last animation frame
      * @param spiritMode   true if level is in spirit mode

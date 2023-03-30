@@ -75,16 +75,16 @@
     "restitution": 0.1
   },
   "platforms": {
-    "friction": 0.4,
-    "density" : 0.0,
-    "restitution": 0.1
+    "friction": 5,
+    "density" : 1,
+    "restitution": 0
   },
   "cat": {
     "shrink": [0.7, 0.95],
     "force": 30.0,
     "damping": 30.0,
     "density": 1.0,
-    "friction": 0.0,
+    "friction": 0,
     "maxspeed": 6.5,
     "jump_force": 2.5,
     "jump_damping": 0.8,

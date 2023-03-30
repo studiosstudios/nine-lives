@@ -1,0 +1,22 @@
+{
+  "cat" : {
+    "pos": [0.5, 13],
+    "ret_pos": [31.5,13], //temp impossible
+  },
+  "exits" : [{"type":  "return", "height": 18, "pos": [0, 9]}],
+  "walls": 		  [
+    {"shape":[32.0, 13.0, 33.0, 13.0, 33.0, 17.0, 32.0, 17.0]}, //invisible exit wall (don't want to loop this time around)
+    {"shape":[0, 13, 2, 13, 2, 2, 0, 2], "climbable": true},
+    {"shape":[0, 0, 0, 2, 30, 2, 30, 18, 32, 18, 32, 0]},
+    {"shape":[8, 2, 8, 4, 9, 4, 9, 2]}
+  ],
+  "platforms": [
+    {"shape": [4, 8, 4, 9, 8, 9, 8, 8], "disp": [0, 6], "activatorID": "button1", "speed": 40, "damping": 0.1},
+    {"shape": [10, 8, 10, 9, 14, 9, 14, 8], "disp": [0, 6], "activatorID": "button1", "speed": 40, "damping": 0.2, "active":false},
+    {"shape": [16, 8, 16, 9, 20, 9, 20, 8], "disp": [6, 0], "activatorID": "button1", "speed": 30, "damping": 1},
+    {"shape": [10, 5, 10, 6, 14, 6, 14, 5], "disp": [4, 0], "activatorID": "button1", "speed": 10, "damping": 0.1},
+    {"shape": [22, 8, 22, 9, 26, 9, 26, 8], "disp": [4, -4], "activatorID": "button1", "speed": 5, "damping": 0.2}
+  ],
+  "activators": [{"pos": [5, 2], "type": "button", "id" : "button1"}],
+  "mobs" : [{"pos" : [3, 3], "facingRight":  false, "aggressive":  false}]
+}

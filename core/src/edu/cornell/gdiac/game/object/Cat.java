@@ -20,6 +20,7 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
 
@@ -29,7 +30,7 @@ import edu.cornell.gdiac.game.obstacle.*;
  * Note that this class returns to static loading.  That is because there are
  * no other subclasses that we might loop through.
  */
-public class Cat extends CapsuleObstacle {
+public class Cat extends CapsuleObstacle implements Moveable {
     private enum State {
         MOVING, JUMPING, CLIMBING, DASHING
     }
@@ -111,6 +112,8 @@ public class Cat extends CapsuleObstacle {
 
     private int dashTimer = 0;
     private final Vector2 dashCache = new Vector2();
+
+    private ObjectSet<Fixture> groundFixtures;
 
 
     /*
@@ -354,6 +357,7 @@ public class Cat extends CapsuleObstacle {
         groundSensorName = "catGroundSensor";
         sideSensorName = "catSideSensor";
         sensorShapes = new Array<>();
+        groundFixtures = new ObjectSet<>();
         this.data = data;
 
         jump_animated = false;
@@ -543,15 +547,15 @@ public class Cat extends CapsuleObstacle {
                 forceCache.set(0, jumpMovement);
                 body.applyLinearImpulse(forceCache,getPosition(),true);
             case MOVING:
-                setVX(horizontalMovement * 0.25f);
+                setRelativeVX(horizontalMovement * 0.25f);
                 break;
             case CLIMBING:
-                setVX(0);
-                setVY(verticalMovement / 3f);
+                setRelativeVX(0);
+                setRelativeVY(verticalMovement / 3f);
                 break;
             case DASHING:
-                setVX(dashCache.x);
-                setVY(dashCache.y);
+                setRelativeVX(dashCache.x);
+                setRelativeVY(dashCache.y);
                 break;
         }
 //        float speedTarget = getMovement() * getMaxSpeed();
@@ -725,6 +729,10 @@ public class Cat extends CapsuleObstacle {
         System.out.println("GROUNDED: "+isGrounded);
         System.out.println("DASH TIMER: "+dashTimer);
     }
+
+    public boolean isMoveable(){ return true; }
+
+    public ObjectSet<Fixture> getGroundFixtures(){ return groundFixtures; }
 
     public static void setConstants(JsonValue constants){objectConstants = constants;}
 }

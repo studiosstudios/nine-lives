@@ -8,7 +8,9 @@ import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.object.*;
+import edu.cornell.gdiac.game.obstacle.Obstacle;
 import edu.cornell.gdiac.util.Direction;
 
 import java.util.HashMap;
@@ -340,7 +342,7 @@ public class ActionController {
     }
 
     /**
-     * Called when a player dies. Removes all input but keeps velocities.
+     * Called when a player dies. Decrements lives, and fails level/spawns body when necessary.
      */
     public void die() {
         if (!level.getDied()) {

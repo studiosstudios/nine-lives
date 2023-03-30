@@ -14,8 +14,6 @@ public class CollisionController implements ContactListener, ContactFilter {
     private Level level;
     /** The ActionController */
     private ActionController actionController;
-    /** Mark set to handle more sophisticated collision callbacks */
-    protected ObjectSet<Fixture> sensorFixtures;
     /** Whether should return to previous level */
     boolean shouldReturn;
 
@@ -26,7 +24,6 @@ public class CollisionController implements ContactListener, ContactFilter {
      */
     public CollisionController(ActionController actionController){
         this.actionController = actionController;
-        sensorFixtures = new ObjectSet<>();
         shouldReturn = false;
     }
 
@@ -96,7 +93,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                 // See if we have landed on the ground.
                 if (!bd2.isSensor() && cat.getGroundSensorName().equals(fd1)) {
                     cat.setGrounded(true);
-                    sensorFixtures.add(fix2); // Could have more than one ground
+                    cat.getGroundFixtures().add(fix2); // Could have more than one ground
                 }
 
                 // See if we are touching a wall
@@ -221,8 +218,8 @@ public class CollisionController implements ContactListener, ContactFilter {
             }
 
             if (cat.getGroundSensorName().equals(fd1) && cat != bd2) {
-                sensorFixtures.remove(fix2);
-                if (sensorFixtures.size == 0) {
+                cat.getGroundFixtures().remove(fix2);
+                if (cat.getGroundFixtures().size == 0) {
                     cat.setGrounded(false);
                 }
             }

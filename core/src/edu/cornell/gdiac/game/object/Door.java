@@ -32,6 +32,13 @@ public class Door extends PolygonObstacle implements Activatable {
     private final float height;
     /** 1 if closing, -1 if opening, 0 if static */
     private float closing;
+<<<<<<< HEAD
+=======
+    /** x position of the door when fully closed */
+    private final float x;
+    /** y position of the door when fully closed */
+    private final float y;
+>>>>>>> origin/alpha
 
     /**
      * Creates a new Door with specified width and height.
@@ -55,8 +62,15 @@ public class Door extends PolygonObstacle implements Activatable {
         angle = Direction.angleToDir(data.getInt("angle"));
         totalTicks = data.getFloat("totalTicks");
         ticks = (int) totalTicks;
+<<<<<<< HEAD
         setX(data.get("pos").getFloat(0)+ objectConstants.get("offset").getFloat(0));
         setY(data.get("pos").getFloat(1)+ objectConstants.get("offset").getFloat(1));
+=======
+        x = data.get("pos").getFloat(0)+ objectConstants.get("offset").getFloat(0);
+        y = data.get("pos").getFloat(1)+ objectConstants.get("offset").getFloat(1);
+        setX(x);
+        setY(y);
+>>>>>>> origin/alpha
         
         closing = 0;
         initActivations(data);
@@ -78,6 +92,7 @@ public class Door extends PolygonObstacle implements Activatable {
      */
     public void update(float dt){
         super.update(dt);
+<<<<<<< HEAD
         if (closing == 1){
             //closing
             ticks++;
@@ -130,6 +145,34 @@ public class Door extends PolygonObstacle implements Activatable {
                         break;
                 }
             }
+=======
+        ticks += closing;
+        if (ticks == 0){
+            setActive(false);
+            closing = 0;
+            return;
+        }
+        if (ticks == totalTicks){
+            closing = 0;
+        }
+        switch (angle) {
+            case DOWN:
+                setY(y + height * (1-ticks / totalTicks));
+                setDimension(width,  height * ticks / totalTicks, true, width, 0);
+                break;
+            case UP:
+                setY(y - height * (1-ticks / totalTicks));
+                setDimension(width,  height * ticks / totalTicks, true, width, height);
+                break;
+            case LEFT:
+                setX(x + width * (1-ticks / totalTicks));
+                setDimension(width * ticks / totalTicks,  height, true, 0, height);
+                break;
+            case RIGHT:
+                setX(x - width * (1-ticks / totalTicks));
+                setDimension(width * ticks / totalTicks,  height, true, width, height);
+                break;
+>>>>>>> origin/alpha
         }
     }
 

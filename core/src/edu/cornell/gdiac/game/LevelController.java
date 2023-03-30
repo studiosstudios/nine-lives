@@ -109,6 +109,7 @@ public class LevelController {
      */
     public Level getLevel() {
         return level;
+<<<<<<< HEAD
     }
 
     /**
@@ -123,6 +124,22 @@ public class LevelController {
     }
 
     /**
+=======
+    }
+
+    /**
+     * Returns the canvas associated with this controller
+     * <br><br>
+     * The canvas is shared across all controllers
+     *
+     * @return the canvas associated with this controller
+     */
+    public GameCanvas getCanvas() {
+        return canvas;
+    }
+
+    /**
+>>>>>>> origin/alpha
      * Returns true if returning to prev level
      *
      * @return true if returning to previous level
@@ -315,6 +332,22 @@ public class LevelController {
             } else {
                 // Note that update is called last!
                 obj.update(dt);
+
+                //update base velocity
+                if (obj instanceof Moveable) {
+                    Vector2 baseVel = new Vector2();
+                    ObjectSet<Fixture> fixtures =  ((Moveable) obj).getGroundFixtures();
+
+                    //set base velocity to average of linear velocities of grounds
+                    if (fixtures.size > 0) {
+                        for (Fixture f : fixtures) {
+                            baseVel.add((((Obstacle) f.getBody().getUserData()).getLinearVelocity()));
+                        }
+                        baseVel.scl(1f / (float) fixtures.size);
+                    }
+                    obj.setBaseVelocity(baseVel);
+                }
+
             }
         }
     }

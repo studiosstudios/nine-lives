@@ -32,7 +32,8 @@
         "background": "platform/labBkg_concept.png",
         "flame_anim": "platform/flame_anim.png",
         "roboMob": "platform/robo_mob.png",
-        "meow_anim": "platform/meow.png"
+        "meow_anim": "platform/meow.png",
+      "idle_anim": "platform/idle.png"
     },
     "jsons"  : {
         "constants": "platform/constants.json",

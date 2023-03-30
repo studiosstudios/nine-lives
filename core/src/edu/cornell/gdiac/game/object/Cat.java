@@ -49,15 +49,19 @@ public class Cat extends CapsuleObstacle {
     private Animation<TextureRegion> jump_animation;
     private Animation<TextureRegion> meow_animation;
     private Animation<TextureRegion> walk_animation;
+    private Animation<TextureRegion> idle_animation;
     private TextureRegion[][] spriteFrames;
     private TextureRegion[][] spriteFrames2;
     private TextureRegion[][] spriteFrames3;
+    private TextureRegion[][] spriteFrames4;
     private float jumpTime;
     private float meowTime;
     private float walkTime;
+    private float idleTime;
     private Texture normal_texture;
     private Texture jumping_texture;
     private Texture sit_texture;
+    private int time;
     private boolean jump_animated;
     /** The amount to slow the character down */
     private final float damping;
@@ -360,15 +364,18 @@ public class Cat extends CapsuleObstacle {
         spriteFrames = TextureRegion.split(arr[2], 65, 65);
         spriteFrames2 = TextureRegion.split(arr[3], 62, 42);
         spriteFrames3 = TextureRegion.split(arr[5], 62, 62);
+        spriteFrames4 = TextureRegion.split(arr[6],62,62);
 
         jump_animation = new Animation<>(0.025f, spriteFrames[0]);
         meow_animation = new Animation<>(0.05f, spriteFrames2[0]);
         walk_animation = new Animation<>(0.15f, spriteFrames3[0]);
+        idle_animation = new Animation<>(0.15f, spriteFrames4[0]);
 
         jumpTime = 0f;
         meowTime = 0f;
         walkTime = 0f;
-
+        idleTime = 0f;
+        time = 0;
         // Gameplay attributes
         state = State.MOVING;
         setGravityScale(2f);
@@ -666,7 +673,7 @@ public class Cat extends CapsuleObstacle {
             meow_animation.setPlayMode(Animation.PlayMode.REVERSED);
             meowTime += Gdx.graphics.getDeltaTime();
             TextureRegion currentFrame2 = meow_animation.getKeyFrame(meowTime);
-            canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x,y, getAngle(),effect,1.0f);
+            canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x-(14*effect),y, getAngle(),effect,1.0f);
             if (meowTime >= (0.05*5)){
                 meowTime = 0;
                 isMeowing = false;
@@ -674,7 +681,18 @@ public class Cat extends CapsuleObstacle {
         }
         //sit
         else if(horizontalMovement == 0 && verticalMovement == 0){
-            canvas.draw(sit_texture, Color.WHITE, origin.x, origin.y, x,y, getAngle(), effect, 1.0f);
+            if(idleTime <= 20){
+                idle_animation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+                idleTime += Gdx.graphics.getDeltaTime();
+                TextureRegion currentFrame2 = idle_animation.getKeyFrame(idleTime);
+                canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x+50*effect,y-10, getAngle(),-effect,1.0f);
+            }
+            else{
+                if(idleTime >=10){
+                    idleTime = 0;
+                }
+                canvas.draw(sit_texture, Color.WHITE, origin.x, origin.y, x,y, getAngle(), effect, 1.0f);
+            }
         }
         else{
             if ((state == State.JUMPING)) {

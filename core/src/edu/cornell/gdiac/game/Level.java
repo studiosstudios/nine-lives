@@ -433,10 +433,14 @@ public class Level {
 
         try {
             for (JsonValue checkpointJV : levelJV.get("checkpoints")){
-                Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint"), tMap.get("checkpointActive"));
+//                Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint"), tMap.get("checkpointActive"));
+                Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint_anim"), tMap.get("checkpoint_active_anim"));
+//                System.out.println("added checkpoint");
                 addObject(checkpoint);
             }
-        } catch (NullPointerException e) {}
+        } catch (NullPointerException e) {
+//            System.out.println("failed to add checkpoint.");
+        }
 
         try {
             for(JsonValue boxJV : levelJV.get("boxes")){

@@ -29,18 +29,12 @@ import edu.cornell.gdiac.game.obstacle.*;
 public class Mob extends CapsuleObstacle {
     /** The initializing data (to avoid magic numbers) */
     private final JsonValue data;
-
     /** The factor to multiply by the input */
     private final float force;
     /** The amount to slow the character down */
     private final float damping;
     /** The maximum character speed */
     private final float maxspeed;
-//    /** Identifier to allow us to track the sensor in ContactListener */
-//    private final String groundSensorName;
-//    /** Identifier to allow us to track side sensor in ContactListener */
-//    private final String sideSensorName;
-
     /** The current horizontal movement of the character */
     private float   movement;
     /** The current vertical movement of the character */
@@ -59,7 +53,6 @@ public class Mob extends CapsuleObstacle {
     /** List of shapes corresponding to the sensors attached to this body */
     private Array<PolygonShape> sensorShapes;
     private PolygonShape sensorShape;
-
 
     /** Cache for internal force calculations */
     private final Vector2 forceCache = new Vector2();
@@ -127,7 +120,6 @@ public class Mob extends CapsuleObstacle {
         horizontalMovement = value;
     }
 
-
     /**
      * Returns true if the cat is on the ground.
      *
@@ -136,20 +128,6 @@ public class Mob extends CapsuleObstacle {
     public boolean isGrounded() {
         return isGrounded;
     }
-
-//    /**
-//     * Sets whether the cat is on the ground.
-//     *
-//     * @param value whether the cat is on the ground.
-//     */
-//    public void setGrounded(boolean value) {
-//        isGrounded = value;
-//        if (isGrounded) {
-//            canDash = true;
-//            jumpMovement = jump_force;
-//            stoppedJumping = false;
-//        }
-//    }
 
     /**
      * Returns how much force to apply to get the cat moving
@@ -181,29 +159,6 @@ public class Mob extends CapsuleObstacle {
     public float getMaxSpeed() {
         return maxspeed;
     }
-
-//    /**
-//     * Returns the name of the ground sensor
-//     *
-//     * This is used by ContactListener
-//     *
-//     * @return the name of the ground sensor
-//     */
-//    public String getGroundSensorName() {
-//        return groundSensorName;
-//    }
-
-//    /**
-//     * Returns the name of the side sensor
-//     *
-//     * This is used by ContactListener
-//     *
-//     * @return the name of the side sensor
-//     */
-//    public String getSideSensorName() {
-//        return sideSensorName;
-//    }
-
 
     /**
      * Returns true if this character is facing right
@@ -293,71 +248,8 @@ public class Mob extends CapsuleObstacle {
             return false;
         }
         body.setUserData(this);
-//        FixtureDef sensorDef = new FixtureDef();
-//        sensorDef.density = 0;
-//        sensorDef.isSensor = true;
-//        sensorShape = new PolygonShape();
-//        // TODO: sensor shape
-////        sensorShape.set(new Vector2[0]);
-//        sensorDef.shape = sensorShape;
-//
-//        Fixture sensorFixture = body.createFixture( sensorDef );
-//        sensorFixture.setUserData(getSensorName());
-
-        // Ground Sensor
-        // -------------
-        // We only allow the cat to jump when he's on the ground.
-        // Double jumping is not allowed.
-        //
-        // To determine whether or not the cat is on the ground,
-        // we create a thin sensor under his feet, which reports
-        // collisions with the world but has no collision response.
-//        JsonValue groundSensorJV = data.get("ground_sensor");
-//        Fixture a = generateSensor( new Vector2(0, -getHeight() / 2),
-//                groundSensorJV.getFloat("shrink",0)*getWidth()/2.0f,
-//                groundSensorJV.getFloat("height",0),
-//                getGroundSensorName() );
-//
-//        // Side sensors to help detect for wall climbing
-//        JsonValue sideSensorJV = data.get("side_sensor");
-//        Fixture b= generateSensor( new Vector2(-getWidth() / 2, 0),
-//                sideSensorJV.getFloat("width", 0),
-//                sideSensorJV.getFloat("shrink") * getHeight() / 2.0f,
-//                getSideSensorName() );
-//
-//        generateSensor( new Vector2(getWidth() / 2, 0),
-//                sideSensorJV.getFloat("width", 0),
-//                sideSensorJV.getFloat("shrink") * getHeight() / 2.0f,
-//                getSideSensorName() );
-
         return true;
     }
-
-//    /**
-//     * Generates a sensor fixture to be used on the Cat.
-//     *
-//     * We set friction to 0 to ensure fixture has no physical effects.
-//     *
-//     * @param location relative location of the sensor fixture
-//     * @param hx half-width used for PolygonShape
-//     * @param hy half-height used for PolygonShape
-//     * @param name name for the sensor UserData
-//     * @return
-//     */
-//    private Fixture generateSensor(Vector2 location, float hx, float hy, String name) {
-//        FixtureDef sensorDef = new FixtureDef();
-//        sensorDef.friction = 0;
-//        sensorDef.isSensor = true;
-//        PolygonShape sensorShape = new PolygonShape();
-//        sensorShape.setAsBox(hx, hy, location, 0.0f);
-//        sensorDef.shape = sensorShape;
-//
-//        Fixture sensorFixture = body.createFixture( sensorDef );
-//        sensorFixture.setUserData(name);
-//        sensorShapes.add(sensorShape);
-//        return sensorFixture;
-//    }
-
 
     /**
      * Applies the force to the body of this cat
@@ -391,13 +283,6 @@ public class Mob extends CapsuleObstacle {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt) {
-        // Apply cooldowns
-//        if (isJumping()) {
-//            jumpCooldown = jumpLimit;
-//        } else {
-//            jumpCooldown = Math.max(0, jumpCooldown - 1);
-//        }
-
         super.update(dt);
     }
 

@@ -9,14 +9,21 @@ import com.badlogic.gdx.utils.JsonValue;
  * A Platform is a wall that can be moved.
  */
 public class Platform extends Wall implements Activatable {
+    /** Current activation state */
     private boolean activated;
-
+    /** Starting activation state */
     private boolean initialActivation;
-
+    /** The location of the platform when deactivated */
     private Vector2 startPoint;
-
+    /** The location of the platform when activated */
     private Vector2 endPoint;
 
+    /**
+     * Creates a new platform object.
+     * @param texture  TextureRegion for drawing.
+     * @param scale    Draw scale for drawing.
+     * @param data     JSON for loading.
+     */
     public Platform(TextureRegion texture, Vector2 scale, JsonValue data) {
         super(texture, scale, data);
         setName("platform");
@@ -41,16 +48,19 @@ public class Platform extends Wall implements Activatable {
     //TODO: move to startPoint
     @Override
     public void deactivated(World world){}
+
+    //region ACTIVATBLE METHODS
     @Override
     public void setActivated(boolean activated){ this.activated = activated; }
 
     @Override
-    public boolean getActivated() { return activated; }
+    public boolean isActivated() { return activated; }
 
     @Override
     public void setInitialActivation(boolean initialActivation){ this.initialActivation = initialActivation; }
 
     @Override
     public boolean getInitialActivation() { return initialActivation; }
+    //endregion
 
 }

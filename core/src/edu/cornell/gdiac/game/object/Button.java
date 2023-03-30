@@ -10,15 +10,24 @@ import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
 
+/**
+ * The simplest activator, active when pressed and inactive otherwise.
+ */
 public class Button extends Activator {
 
+    /**
+     * Creates a new button object.
+     * @param texture   Animation filmstrip.
+     * @param texture2  Static texture.
+     * @param scale     Draw scale for drawing.
+     * @param data      JSON for loading.
+     */
     public Button(TextureRegion texture, TextureRegion texture2, Vector2 scale, JsonValue data){
-
         super(texture, texture2, scale, data);
         setName("button");
     }
 
-    /** for a button, active = pressed */
+    /** For a button, active = isPressed() */
     public void updateActivated(){
         active = isPressed();
     }

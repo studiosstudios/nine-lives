@@ -1,20 +1,3 @@
-/*
- * GameCanvas.java
- *
- * To properly follow the model-view-controller separation, we should not have
- * any specific drawing code in GameMode. All of that code goes here.  As
- * with GameEngine, this is a class that you are going to want to copy for
- * your own projects.
- *
- * An important part of this canvas design is that it is loosely coupled with
- * the model classes. All of the drawing methods are abstracted enough that
- * it does not require knowledge of the interfaces of the model classes.  This
- * important, as the model classes are likely to change often.
- *
- * Author: Walker M. White
- * Based on original PhysicsDemo Lab by Don Holden, 2007
- * LibGDX version, 2/6/2015
- */
 package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.Gdx;
@@ -32,10 +15,12 @@ import edu.cornell.gdiac.math.PathFactory;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
- * 
+ * <br><br>
  * This version of GameCanvas only supports both rectangular and polygonal Sprite
  * drawing.  It also supports a debug mode that draws polygonal outlines.  However,
  * that mode must be done in a separate begin/end pass.
+ * <br><br>
+ * Adapted from Walker M. White's GameCanvas.java in Cornell CS 3152, Spring 2023.
  */
 public class GameCanvas {
 	/** Enumeration to track which pass we are in */
@@ -50,15 +35,15 @@ public class GameCanvas {
 	
 	/**
 	 * Enumeration of supported BlendStates.
-	 *
+	 * <br><br>
 	 * For reasons of convenience, we do not allow user-defined blend functions.
 	 * 99% of the time, we find that the following blend modes are sufficient
 	 * (particularly with 2D games).
 	 */
 	public enum BlendState {
-		/** Alpha blending on, assuming the colors have pre-multipled alpha (DEFAULT) */
+		/** Alpha blending on, assuming the colors have pre-multiplied alpha (DEFAULT) */
 		ALPHA_BLEND,
-		/** Alpha blending on, assuming the colors have no pre-multipled alpha */
+		/** Alpha blending on, assuming the colors have no pre-multiplied alpha */
 		NO_PREMULT,
 		/** Color values are added together, causing a white-out effect */
 		ADDITIVE,
@@ -66,8 +51,8 @@ public class GameCanvas {
 		OPAQUE
 	}	
 
-	private float STANDARD_WIDTH = 1024f;
-	private float STANDARD_HEIGHT = 576f;
+	private final float STANDARD_WIDTH = 1024f;
+	private final float STANDARD_HEIGHT = 576f;
 	
 	/** Drawing context to handle textures AND POLYGONS as sprites */
 	private PolygonSpriteBatch spriteBatch;
@@ -84,17 +69,17 @@ public class GameCanvas {
 	/** Rendering context for the debug outlines */
 	private ShapeRenderer debugRender;
 	
-	/** Track whether or not we are active (for error checking) */
+	/** Track whether we are active (for error checking) */
 	private DrawPass active;
 	
 	/** The current color blending mode */
 	private BlendState blend;
 	
 	/** Camera for the underlying SpriteBatch */
-	private OrthographicCamera camera;
+	private final OrthographicCamera camera;
 
 	/** ExtendViewport, used during gameplay */
-	private Viewport extendView;
+	private final Viewport viewport;
 
 	/** Value to cache window width (if we are currently full screen) */
 	int width;
@@ -112,10 +97,10 @@ public class GameCanvas {
 
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
-	 * 
+	 * <br><br>
 	 * Width, height, and fullscreen are taken from the LWGJApplicationConfig
 	 * object used to start the application.  This constructor initializes all
-	 * of the necessary graphics objects.
+	 * the necessary graphics objects.
 	 */
 	public GameCanvas() {
 		active = DrawPass.INACTIVE;
@@ -128,11 +113,8 @@ public class GameCanvas {
 		// Set the projection matrix (for proper scaling)
 		camera = new OrthographicCamera(STANDARD_WIDTH, STANDARD_HEIGHT);
 		camera.setToOrtho(false, STANDARD_WIDTH, STANDARD_HEIGHT);
-//		camera.position.set(STANDARD_WIDTH / 2, STANDARD_HEIGHT / 2, 0);
-//		camera.update();
-//		extendView = new ExtendViewport(0, 0, STANDARD_WIDTH, STANDARD_HEIGHT, camera);
-		extendView = new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT, camera);
-		extendView.apply(true);
+		viewport = new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT, camera);
+		viewport.apply(true);
 		spriteBatch.setProjectionMatrix(camera.combined);
 		debugRender.setProjectionMatrix(camera.combined);
 
@@ -153,6 +135,8 @@ public class GameCanvas {
 		}
 		spriteBatch.dispose();
 		spriteBatch = null;
+		debugRender.dispose();
+		debugRender = null;
 		local  = null;
 		global = null;
 		vertex = null;
@@ -161,7 +145,7 @@ public class GameCanvas {
 
 	/**
 	 * Returns the width of this canvas
-	 *
+	 * <br><br>
 	 * This currently gets its value from Gdx.graphics.getWidth()
 	 *
 	 * @return the width of this canvas
@@ -172,7 +156,7 @@ public class GameCanvas {
 	
 	/**
 	 * Changes the width of this canvas
-	 *
+	 * <br><br>
 	 * This method raises an IllegalStateException if called while drawing is
 	 * active (e.g. in-between a begin-end pair).
 	 *
@@ -192,7 +176,7 @@ public class GameCanvas {
 	
 	/**
 	 * Returns the height of this canvas
-	 *
+	 * <br><br>
 	 * This currently gets its value from Gdx.graphics.getHeight()
 	 *
 	 * @return the height of this canvas
@@ -203,7 +187,7 @@ public class GameCanvas {
 	
 	/**
 	 * Changes the height of this canvas
-	 *
+	 * <br><br>
 	 * This method raises an IllegalStateException if called while drawing is
 	 * active (e.g. in-between a begin-end pair).
 	 *
@@ -232,7 +216,7 @@ public class GameCanvas {
 	
 	/**
 	 * Changes the width and height of this canvas
-	 *
+	 * <br><br>
 	 * This method raises an IllegalStateException if called while drawing is
 	 * active (e.g. in-between a begin-end pair).
 	 *
@@ -263,25 +247,25 @@ public class GameCanvas {
 	}
 	
 	/**
-	 * Sets whether or not this canvas should change to fullscreen.
-	 *
+	 * Sets whether this canvas should change to fullscreen.
+	 * <br><br>
 	 * If desktop is true, it will use the current desktop resolution for
 	 * fullscreen, and not the width and height set in the configuration
 	 * object at the start of the application. This parameter has no effect
 	 * if fullscreen is false.
-	 *
+	 * <br><br>
 	 * This method raises an IllegalStateException if called while drawing is
 	 * active (e.g. in-between a begin-end pair).
 	 *
 	 * @param fullscreen Whether this canvas should change to fullscreen.
 	 * @param desktop 	 Whether to use the current desktop resolution
 	 */	 
-	public void setFullscreen(boolean value, boolean desktop) {
+	public void setFullscreen(boolean fullscreen, boolean desktop) {
 		if (active != DrawPass.INACTIVE) {
 			Gdx.app.error("GameCanvas", "Cannot alter property while drawing active", new IllegalStateException());
 			return;
 		}
-		if (value) {
+		if (fullscreen) {
 			Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 		} else {
 			Gdx.graphics.setWindowedMode(width, height);
@@ -289,24 +273,24 @@ public class GameCanvas {
 	}
 
 	/** Activates the ExtendViewport for drawing to canvas */
-	public void applyExtendViewport() {
-		extendView.apply(true);
+	public void applyViewport() {
+		viewport.apply(true);
 	}
 
 	/**
 	 * Resets the SpriteBatch camera when this canvas is resized.
-	 *
+	 * <br><br>
 	 * If you do not call this when the window is resized, you will get
 	 * weird scaling issues.
 	 */
 	 public void resize() {
 		spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, getWidth(), getHeight());
-		 extendView.update(getWidth(), getHeight(), true);
+		viewport.update(getWidth(), getHeight(), true);
 	}
 	
 	/**
 	 * Returns the current color blending state for this canvas.
-	 *
+	 * <br><br>
 	 * Textures draw to this canvas will be composited according
 	 * to the rules of this blend state.
 	 *
@@ -318,8 +302,8 @@ public class GameCanvas {
 	
 	/**
 	 * Sets the color blending state for this canvas.
-	 *
-	 * Any texture draw subsequent to this call will use the rules of this blend 
+	 * <br><br>
+	 * Any texture draw after this call will use the rules of this blend
 	 * state to composite with other textures.  Unlike the other setters, if it is 
 	 * perfectly safe to use this setter while  drawing is active (e.g. in-between 
 	 * a begin-end pair).  
@@ -348,7 +332,7 @@ public class GameCanvas {
 	}
 	
 	/**
-	 * Clear the screen so we can start a new animation frame
+	 * Clear the screen, so we can start a new animation frame
 	 */
 	public void clear() {
     		// Clear the screen
@@ -358,7 +342,7 @@ public class GameCanvas {
 
 	/**
 	 * Start a standard drawing sequence.
-	 *
+	 * <br><br>
 	 * Nothing is flushed to the graphics card until the method end() is called.
 	 *
 	 * @param affine the global transform apply to the camera
@@ -375,7 +359,7 @@ public class GameCanvas {
 
 	/**
 	 * Start a standard drawing sequence.
-	 *
+	 * <br><br>
 	 * Nothing is flushed to the graphics card until the method end() is called.
 	 *
 	 * @param sx the amount to scale the x-axis
@@ -393,7 +377,7 @@ public class GameCanvas {
     
 	/**
 	 * Start a standard drawing sequence.
-	 *
+	 * <br><br>
 	 * Nothing is flushed to the graphics card until the method end() is called.
 	 */
 	public void begin() {
@@ -410,18 +394,18 @@ public class GameCanvas {
 		active = DrawPass.INACTIVE;
 	}
 
+	//////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////// DRAWING MODES ///////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////
+
 	/**
-	 * Draws the tinted texture at the given position.
-	 *
-	 * The texture colors will be multiplied by the given color.  This will turn
-	 * any white into the given color.  Other colors will be similarly affected.
-	 *
+	 * Draws the texture at the given position.
+	 * <br><br>
 	 * Unless otherwise transformed by the global transform (@see begin(Affine2)),
 	 * the texture will be unscaled.  The bottom left of the texture will be positioned
 	 * at the given coordinates.
 	 *
 	 * @param image The texture to draw
-	 * @param tint  The color tint
 	 * @param x 	The x-coordinate of the bottom left corner
 	 * @param y 	The y-coordinate of the bottom left corner
 	 */
@@ -438,10 +422,10 @@ public class GameCanvas {
 	
 	/**
 	 * Draws the tinted texture at the given position.
-	 *
+	 * <br><br>
 	 * The texture colors will be multiplied by the given color.  This will turn
 	 * any white into the given color.  Other colors will be similarly affected.
-	 *
+	 * <br><br>
 	 * Unless otherwise transformed by the global transform (@see begin(Affine2)),
 	 * the texture will be unscaled.  The bottom left of the texture will be positioned
 	 * at the given coordinates.
@@ -466,10 +450,10 @@ public class GameCanvas {
 	
 	/**
 	 * Draws the tinted texture at the given position.
-	 *
+	 * <br><br>
 	 * The texture colors will be multiplied by the given color.  This will turn
 	 * any white into the given color.  Other colors will be similarly affected.
-	 *
+	 * <br><br>
 	 * Unless otherwise transformed by the global transform (@see begin(Affine2)),
 	 * the texture will be unscaled.  The bottom left of the texture will be positioned
 	 * at the given coordinates.
@@ -497,14 +481,14 @@ public class GameCanvas {
 
 	/**
 	 * Draws the tinted texture with the given transformations
-	 *
+	 * <br><br>
 	 * The texture colors will be multiplied by the given color.  This will turn
 	 * any white into the given color.  Other colors will be similarly affected.
-	 *
+	 * <br><br>
 	 * The transformations are BEFORE after the global transform (@see begin(Affine2)).  
 	 * As a result, the specified texture origin will be applied to all transforms 
 	 * (both the local and global).
-	 *
+	 * <br><br>
 	 * The local transformations in this method are applied in the following order: 
 	 * scaling, then rotation, then translation (e.g. placement at (sx,sy)).
 	 *
@@ -532,14 +516,14 @@ public class GameCanvas {
 	
 	/**
 	 * Draws the tinted texture with the given transformations
-	 *
+	 * <br><br>
 	 * The texture colors will be multiplied by the given color.  This will turn
 	 * any white into the given color.  Other colors will be similarly affected.
-	 *
+	 * <br><br>
 	 * The transformations are BEFORE after the global transform (@see begin(Affine2)).  
 	 * As a result, the specified texture origin will be applied to all transforms 
 	 * (both the local and global).
-	 *
+	 * <br><br>
 	 * The local transformations in this method are applied in the following order: 
 	 * scaling, then rotation, then translation (e.g. placement at (sx,sy)).
 	 *
@@ -561,20 +545,16 @@ public class GameCanvas {
 	}
 	
 	/**
-	 * Draws the tinted texture region (filmstrip) at the given position.
-	 *
+	 * Draws the texture region (filmstrip) at the given position.
+	 * <br><br>
 	 * A texture region is a single texture file that can hold one or more textures.
 	 * It is used for filmstrip animation.
-	 *
-	 * The texture colors will be multiplied by the given color.  This will turn
-	 * any white into the given color.  Other colors will be similarly affected.
-	 *
+	 * <br><br>
 	 * Unless otherwise transformed by the global transform (@see begin(Affine2)),
 	 * the texture will be unscaled.  The bottom left of the texture will be positioned
 	 * at the given coordinates.
 	 *
 	 * @param region The texture to draw
-	 * @param tint  The color tint
 	 * @param x 	The x-coordinate of the bottom left corner
 	 * @param y 	The y-coordinate of the bottom left corner
 	 */
@@ -591,15 +571,15 @@ public class GameCanvas {
 
 	/**
 	 * Draws the tinted texture at the given position.
-	 *
+	 * <br><br>
 	 * The texture colors will be multiplied by the given color.  This will turn
 	 * any white into the given color.  Other colors will be similarly affected.
-	 *
+	 * <br><br>
 	 * Unless otherwise transformed by the global transform (@see begin(Affine2)),
 	 * the texture will be unscaled.  The bottom left of the texture will be positioned
 	 * at the given coordinates.
 	 *region
-	 * @param image The texture to draw
+	 * @param region The texture to draw
 	 * @param tint  The color tint
 	 * @param x 	The x-coordinate of the bottom left corner
 	 * @param y 	The y-coordinate of the bottom left corner
@@ -619,10 +599,10 @@ public class GameCanvas {
 	
 	/**
 	 * Draws the tinted texture at the given position.
-	 *
+	 * <br><br>
 	 * The texture colors will be multiplied by the given color.  This will turn
 	 * any white into the given color.  Other colors will be similarly affected.
-	 *
+	 * <br><br>
 	 * Unless otherwise transformed by the global transform (@see begin(Affine2)),
 	 * the texture will be unscaled.  The bottom left of the texture will be positioned
 	 * at the given coordinates.
@@ -649,17 +629,17 @@ public class GameCanvas {
 
 	/**
 	 * Draws the tinted texture region (filmstrip) with the given transformations
-	 *
+	 * <br><br>
 	 * A texture region is a single texture file that can hold one or more textures.
 	 * It is used for filmstrip animation.
-	 *
+	 * <br><br>
 	 * The texture colors will be multiplied by the given color.  This will turn
 	 * any white into the given color.  Other colors will be similarly affected.
-	 *
+	 * <br><br>
 	 * The transformations are BEFORE after the global transform (@see begin(Affine2)).  
 	 * As a result, the specified texture origin will be applied to all transforms 
 	 * (both the local and global).
-	 *
+	 * <br><br>
 	 * The local transformations in this method are applied in the following order: 
 	 * scaling, then rotation, then translation (e.g. placement at (sx,sy)).
 	 *
@@ -690,22 +670,22 @@ public class GameCanvas {
 
 	/**
 	 * Draws the tinted texture with the given transformations
-	 *
+	 * <br><br>
 	 * The texture colors will be multiplied by the given color.  This will turn
 	 * any white into the given color.  Other colors will be similarly affected.
-	 *
+	 * <br><br>
 	 * The transformations are BEFORE after the global transform (@see begin(Affine2)).  
 	 * As a result, the specified texture origin will be applied to all transforms 
 	 * (both the local and global).
-	 *
+	 * <br><br>
 	 * The local transformations in this method are applied in the following order: 
 	 * scaling, then rotation, then translation (e.g. placement at (sx,sy)).
 	 *
-	 * @param image The region to draw
+	 * @param region The region to draw
 	 * @param tint  The color tint
 	 * @param ox 	The x-coordinate of texture origin (in pixels)
 	 * @param oy 	The y-coordinate of texture origin (in pixels)
-	 * @param transform  The image transform
+	 * @param affine  The image transform
 	 */	
 	public void draw(TextureRegion region, Color tint, float ox, float oy, Affine2 affine) {
 		if (active != DrawPass.STANDARD) {
@@ -721,22 +701,18 @@ public class GameCanvas {
 
 	/**
 	 * Draws the polygonal region with the given transformations
-	 *
+	 * <br><br>
 	 * A polygon region is a texture region with attached vertices so that it draws a
 	 * textured polygon. The polygon vertices are relative to the texture file.
-	 *
-	 * The texture colors will be multiplied by the given color.  This will turn
-	 * any white into the given color.  Other colors will be similarly affected.
-	 *
+	 * <br><br>
 	 * The transformations are BEFORE after the global transform (@see begin(Affine2)).  
 	 * As a result, the specified texture origin will be applied to all transforms 
 	 * (both the local and global).
-	 *
+	 * <br><br>
 	 * The local transformations in this method are applied in the following order: 
 	 * scaling, then rotation, then translation (e.g. placement at (sx,sy)).
 	 *
 	 * @param region The polygon to draw
-	 * @param tint  The color tint
 	 * @param x 	The x-coordinate of the bottom left corner
 	 * @param y 	The y-coordinate of the bottom left corner
 	 */	
@@ -753,17 +729,17 @@ public class GameCanvas {
 	
 	/**
 	 * Draws the polygonal region with the given transformations
-	 *
+	 * <br><br>
 	 * A polygon region is a texture region with attached vertices so that it draws a
 	 * textured polygon. The polygon vertices are relative to the texture file.
-	 *
+	 * <br><br>
 	 * The texture colors will be multiplied by the given color.  This will turn
 	 * any white into the given color.  Other colors will be similarly affected.
-	 *
+	 * <br><br>
 	 * The transformations are BEFORE after the global transform (@see begin(Affine2)).  
 	 * As a result, the specified texture origin will be applied to all transforms 
 	 * (both the local and global).
-	 *
+	 * <br><br>
 	 * The local transformations in this method are applied in the following order: 
 	 * scaling, then rotation, then translation (e.g. placement at (sx,sy)).
 	 *
@@ -787,17 +763,17 @@ public class GameCanvas {
 	
 	/**
 	 * Draws the polygonal region with the given transformations
-	 *
+	 * <br><br>
 	 * A polygon region is a texture region with attached vertices so that it draws a
 	 * textured polygon. The polygon vertices are relative to the texture file.
-	 *
+	 * <br><br>
 	 * The texture colors will be multiplied by the given color.  This will turn
 	 * any white into the given color.  Other colors will be similarly affected.
-	 *
+	 * <br><br>
 	 * The transformations are BEFORE after the global transform (@see begin(Affine2)).  
 	 * As a result, the specified texture origin will be applied to all transforms 
 	 * (both the local and global).
-	 *
+	 * <br><br>
 	 * The local transformations in this method are applied in the following order: 
 	 * scaling, then rotation, then translation (e.g. placement at (sx,sy)).
 	 *
@@ -823,17 +799,17 @@ public class GameCanvas {
 	
 	/**
 	 * Draws the polygonal region with the given transformations
-	 *
+	 * <br><br>
 	 * A polygon region is a texture region with attached vertices so that it draws a
 	 * textured polygon. The polygon vertices are relative to the texture file.
-	 *
+	 * <br><br>
 	 * The texture colors will be multiplied by the given color.  This will turn
 	 * any white into the given color.  Other colors will be similarly affected.
-	 *
+	 * <br><br>
 	 * The transformations are BEFORE after the global transform (@see begin(Affine2)).  
 	 * As a result, the specified texture origin will be applied to all transforms 
 	 * (both the local and global).
-	 *
+	 * <br><br>
 	 * The local transformations in this method are applied in the following order: 
 	 * scaling, then rotation, then translation (e.g. placement at (sx,sy)).
 	 *
@@ -863,17 +839,17 @@ public class GameCanvas {
 
 	/**
 	 * Draws the polygonal region with the given transformations
-	 *
+	 * <br><br>
 	 * A polygon region is a texture region with attached vertices so that it draws a
 	 * textured polygon. The polygon vertices are relative to the texture file.
-	 *
+	 * <br><br>
 	 * The texture colors will be multiplied by the given color.  This will turn
 	 * any white into the given color.  Other colors will be similarly affected.
-	 *
+	 * <br><br>
 	 * The transformations are BEFORE after the global transform (@see begin(Affine2)).  
 	 * As a result, the specified texture origin will be applied to all transforms 
 	 * (both the local and global).
-	 *
+	 * <br><br>
 	 * The local transformations in this method are applied in the following order: 
 	 * scaling, then rotation, then translation (e.g. placement at (sx,sy)).
 	 *
@@ -881,7 +857,7 @@ public class GameCanvas {
 	 * @param tint  The color tint
 	 * @param ox 	The x-coordinate of texture origin (in pixels)
 	 * @param oy 	The y-coordinate of texture origin (in pixels)
-	 * @param transform  The image transform
+	 * @param affine  The image transform
 	 */	
 	public void draw(PolygonRegion region, Color tint, float ox, float oy, Affine2 affine) {
 		if (active != DrawPass.STANDARD) {
@@ -951,7 +927,7 @@ public class GameCanvas {
     
 	/**
 	* Start the debug drawing sequence.
-	*
+	* <br><br>
 	* Nothing is flushed to the graphics card until the method end() is called.
 	*
 	* @param affine the global transform apply to the camera
@@ -967,7 +943,7 @@ public class GameCanvas {
     
 	/**
 	* Start the debug drawing sequence.
-	*
+	* <br><br>
 	* Nothing is flushed to the graphics card until the method end() is called.
 	*
 	* @param sx the amount to scale the x-axis
@@ -985,7 +961,7 @@ public class GameCanvas {
 
 	/**
 	 * Start the debug drawing sequence.
-	 *
+	 * <br><br>
 	 * Nothing is flushed to the graphics card until the method end() is called.
 	 */
 	public void beginDebug() {
@@ -1010,7 +986,7 @@ public class GameCanvas {
 	/**
 	* Draws the outline of the given shape in the specified color
 	*
-	* @param shape The Box2d shape
+	* @param shape The Box2D shape
 	* @param color The outline color
 	* @param x  The x-coordinate of the shape position
 	* @param y  The y-coordinate of the shape position
@@ -1041,7 +1017,7 @@ public class GameCanvas {
 	/**
 	* Draws the outline of the given shape in the specified color
 	*
-	* @param shape The Box2d shape
+	* @param shape The Box2D shape
 	* @param color The outline color
 	* @param x  The x-coordinate of the shape position
 	* @param y  The y-coordinate of the shape position
@@ -1080,13 +1056,12 @@ public class GameCanvas {
 	/**
 	* Draws the outline of the given shape in the specified color
 	*
-	* @param shape The Box2d shape
+	* @param shape The Box2D shape
 	* @param color The outline color
 	* @param x  The x-coordinate of the shape position
 	* @param y  The y-coordinate of the shape position
 	* @param angle  The shape angle of rotation
 	* @param sx The amount to scale the x-axis
-	* @param sx The amount to scale the y-axis
 	*/
 	public void drawPhysics(PolygonShape shape, Color color, float x, float y, float angle, float sx, float sy) {
 		if (active != DrawPass.DEBUG) {
@@ -1121,11 +1096,11 @@ public class GameCanvas {
     
 	/**
 	* Draws the outline of the given shape in the specified color
-	*
+	* <br><br>
 	* The position of the circle is ignored.  Only the radius is used. To move the
 	* circle, change the x and y parameters.
 	*
-	* @param shape The Box2d shape
+	* @param shape The Box2D shape
 	* @param color The outline color
 	* @param x  The x-coordinate of the shape position
 	* @param y  The y-coordinate of the shape position
@@ -1142,16 +1117,15 @@ public class GameCanvas {
     
 	/**
 	* Draws the outline of the given shape in the specified color
-	*
+	* <br><br>
 	* The position of the circle is ignored.  Only the radius is used. To move the
 	* circle, change the x and y parameters.
 	*
-	* @param shape The Box2d shape
+	* @param shape The Box2D shape
 	* @param color The outline color
 	* @param x  The x-coordinate of the shape position
 	* @param y  The y-coordinate of the shape position
 	* @param sx The amount to scale the x-axis
-	* @param sx The amount to scale the y-axis
 	*/
 	public void drawPhysics(CircleShape shape, Color color, float x, float y, float sx, float sy) {
 		if (active != DrawPass.DEBUG) {

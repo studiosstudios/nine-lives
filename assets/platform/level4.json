@@ -1,53 +1,12 @@
 {
-	//TODO: factor constants out of level JSON and into constants JSON
 	"cat" : {
 		"pos": [0.5, 13],
 		"ret_pos": [31.5,13], //temp impossible
-		"shrink": [0.7, 0.95],
-		"force": 30.0,
-		"damping": 30.0,
-		"density": 1.0,
-		"friction": 0.0,
-		"maxspeed": 6.5,
-		"jump_force": 2.5,
-		"jump_damping": 0.8,
-		"dash_force": 1.5,
-		"sensor": {
-			"shrink": 0.9
-		},
-		"ground_sensor": {
-			"shrink" : 0.6,
-			"height" : 0.05
-		},
-		"side_sensor": {
-			"shrink" : 0.6,
-			"width": 0.2
-		}
 	},
-	"spikes": [],
-	"activators": [],
-	"boxes" : [],
-	"flamethrowers" : [],
-	"lasers" : [],
-	"mobs": [],
-	"mirrors": [],
-	"checkpoints" : [{"pos" : [1, 13]}],
-	"goal" : {
-		"pos": [-20, -20], //temp impossible to exit
-		"density": 0.0,
-		"friction": 0.0,
-		"restitution": 0.0
-	},
-	"ret_goal" : {
-		"pos": [-2.5, 13.5],
-		"density": 0.0,
-		"friction": 0.0,
-		"restitution": 0.0
-	},
-	"walls": 		[
-						[32.0, 13.0, 33.0, 13.0, 33.0, 17.0, 32.0, 17.0]//invisible exit wall (don't want to loop this time around)
-			 		],
+	"mobs" : [{"pos" : [28, 14], "facingRight":  false, "aggressive":  true}],
+	"exits" : [{"type":  "return", "height": 18, "pos": [0, 9]},
+		{"type":  "goal", "height": 18, "pos": [32, 9]}],
 	"platforms":	[
-						[-2.5, 13, 32, 13, 32, 10, -2.5, 10]
-					]
+		{"shape":[-2.5, 13, 32, 13, 32, 10, -2.5, 10]},
+		{"shape":[15, 13, 16, 13, 16, 15, 15, 15]}]
 }

@@ -41,6 +41,7 @@
   },
   "lasers": {
     "offset": [0.5, 0.5],
+    "beamOffset": [0, -0.2],
     "thickness": 3,
     "friction": 0.4,
     "density": 1,
@@ -56,6 +57,7 @@
     "density" : 1,
     "damping" : 2,
     "offset": [0, 0],
+    "burnTicks" : 300,
     "sensorRadius": 0.2,
     "shrink": [0.6, 0.7]
   },
@@ -66,5 +68,46 @@
     "friction": 10,
     "density" : 0.2,
     "mass": 1
+  },
+  "walls": {
+    "friction": 0.4,
+    "density" : 0.0,
+    "restitution": 0.1
+  },
+  "platforms": {
+    "friction": 5,
+    "density" : 1,
+    "restitution": 0
+  },
+  "cat": {
+    "shrink": [0.7, 0.95],
+    "force": 30.0,
+    "damping": 30.0,
+    "density": 1.0,
+    "friction": 0,
+    "maxspeed": 6.5,
+    "jump_force": 2.5,
+    "jump_damping": 0.8,
+    "dash_force": 1.5,
+    "sensor": {
+      "shrink": 0.9
+    },
+    "ground_sensor": {
+      "shrink" : 0.6,
+      "height" : 0.05
+    },
+    "side_sensor": {
+      "shrink" : 0.6,
+      "width": 0.2
+    }
+  },
+  "exits": {
+    "width": 1
+  },
+  "doors" : {
+    "friction": 0.4,
+    "density" : 0.0,
+    "restitution": 0.1,
+    "offset": [0, 0]
   }
 }

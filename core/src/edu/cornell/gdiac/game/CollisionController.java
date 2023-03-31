@@ -14,8 +14,6 @@ public class CollisionController implements ContactListener, ContactFilter {
     private Level level;
     /** The ActionController */
     private ActionController actionController;
-    /** Mark set to handle more sophisticated collision callbacks */
-    protected ObjectSet<Fixture> sensorFixtures;
     /** Whether should return to previous level */
     boolean shouldReturn;
 
@@ -26,7 +24,6 @@ public class CollisionController implements ContactListener, ContactFilter {
      */
     public CollisionController(ActionController actionController){
         this.actionController = actionController;
-        sensorFixtures = new ObjectSet<>();
         shouldReturn = false;
     }
 
@@ -75,41 +72,52 @@ public class CollisionController implements ContactListener, ContactFilter {
             Obstacle bd2 = (Obstacle) body2.getUserData();
 
             //cat collisions
-            if (bd1 == level.getCat() || bd2 == level.getCat()) {
+            Cat cat = level.getCat();
+            if (bd1 == cat || bd2 == cat) {
 
                 //ensure bd1 and fd1 are cat body and fixtures
-                if (bd2 == level.getCat()) {
+                if (bd2 == cat) {
                     //don't need to swap bd1 and bd2 because we are assuming bd1 == cat
                     bd2 = bd1;
+                    body2 = body1;
 
-                    Object temp = fd1;
+                    Object temp1 = fd1;
                     fd1 = fd2;
-                    fd2 = temp;
+                    fd2 = temp1;
+
+                    Fixture temp2 = fix1;
+                    fix1 = fix2;
+                    fix2 = temp2;
                 }
 
                 // See if we have landed on the ground.
-                if (!bd2.isSensor() && level.getCat().getGroundSensorName().equals(fd1)) {
-                    level.getCat().setGrounded(true);
-                    sensorFixtures.add(fix2); // Could have more than one ground
+                if (!bd2.isSensor() && cat.getGroundSensorName().equals(fd1)) {
+                    cat.setGrounded(true);
+                    cat.getGroundFixtures().add(fix2); // Could have more than one ground
                 }
 
                 // See if we are touching a wall
-                if (level.getCat().getSideSensorName().equals(fd1) && level.getCat() != bd2
-                    && bd2.getName().equals("wall")) {
-                    level.getCat().incrementWalled();
+                if (cat.getSideSensorName().equals(fd1) && bd2 instanceof Wall) {
+                    if (((Wall) bd2).isClimbable()){
+                        cat.incrementWalled();
+                    }
                 }
 
                 // Check for win condition
-                if (bd2 == level.getGoalDoor()) {
-                    level.setComplete(true);
-                }
-                if (bd2 == level.getRetDoor()) {
-                    setReturn(true);
+                if (bd2 instanceof Exit) {
+                    switch (((Exit) bd2).exitType()) {
+                        case GOAL:
+                            level.setComplete(true);
+                            break;
+                        case RETURN:
+                            setReturn(true);
+                            break;
+                    }
                 }
                 if (fd2 instanceof Spikes) {
                     actionController.die();
                 }
-                if (fd2 == Flamethrower.getSensorName()){
+                if (fd2 instanceof Flamethrower.Flame){
                     actionController.die();
                 }
                 if (fd2 instanceof Checkpoint){
@@ -127,22 +135,27 @@ public class CollisionController implements ContactListener, ContactFilter {
                 //ensure fd1 is DeadBody
                 if (fd2 instanceof DeadBody) {
                     //don't need to swap fd1 and fd2 because we are assuming fd1 is dead body
-                    bd2 = bd1;
+                    body2 = body1;
 
-                    Object temp = fd1;
+                    Object temp1 = fd1;
                     fd1 = fd2;
-                    fd2 = temp;
+                    fd2 = temp1;
+
+                    Fixture temp2 = fix1;
+                    fix1 = fix2;
+                    fix2 = temp2;
                 }
                 DeadBody db = (DeadBody) fd1;
                 if (fd2 instanceof Spikes) {
                     actionController.fixBodyToSpikes(db, (Spikes) fd2, contact.getWorldManifold().getPoints());
                     db.addHazard();
-                } else if (fd2 == Flamethrower.getSensorName()) {
+                } else if (fd2 instanceof Flamethrower.Flame) {
                     db.setBurning(true);
                     db.addHazard();
                 }
             }
 
+            // TODO: fix collisions when obstacles collide with top and bottom
             // Mob changes direction when hits a wall
             if (bd1 instanceof Mob && !(fd2 instanceof Activator) && !(fd2 instanceof Checkpoint)) {
                 ((Mob) bd1).setFacingRight(!((Mob) bd1).isFacingRight());
@@ -181,18 +194,40 @@ public class CollisionController implements ContactListener, ContactFilter {
 
         Object bd1 = body1.getUserData();
         Object bd2 = body2.getUserData();
-        if ((level.getCat().getGroundSensorName().equals(fd2) && level.getCat() != bd1) ||
-                (level.getCat().getGroundSensorName().equals(fd1) && level.getCat() != bd2)) {
-            sensorFixtures.remove(level.getCat() == bd1 ? fix2 : fix1);
-            if (sensorFixtures.size == 0) {
-                level.getCat().setGrounded(false);
-            }
-        }
 
-        // Not handling case where there may be multiple walls at once
-        if ((level.getCat().getSideSensorName().equals(fd2) && level.getCat() != bd1 && ((Obstacle)body1.getUserData()).getName().equals("wall")) ||
-                (level.getCat().getSideSensorName().equals(fd1) && level.getCat() != bd2) && ((Obstacle)body2.getUserData()).getName().equals("wall")) {
-            level.getCat().decrementWalled();
+
+        //cat collisions
+        Cat cat = level.getCat();
+        if (bd1 == cat || bd2 == cat) {
+
+            //ensure bd1 and fd1 are cat body and fixtures
+            if (bd2 == cat) {
+                //don't need to swap bd1 and bd2 because we are assuming bd1 == cat
+                bd2 = bd1;
+                body2 = body1;
+
+                Object temp1 = fd1;
+                fd1 = fd2;
+                fd2 = temp1;
+
+                Fixture temp2 = fix1;
+                fix1 = fix2;
+                fix2 = temp2;
+
+
+            }
+
+            if (cat.getGroundSensorName().equals(fd1) && cat != bd2) {
+                cat.getGroundFixtures().remove(fix2);
+                if (cat.getGroundFixtures().size == 0) {
+                    cat.setGrounded(false);
+                }
+            }
+
+            // Not handling case where there may be multiple walls at once
+            if ((cat.getSideSensorName().equals(fd1) && cat != bd2) && (bd2 instanceof Wall) && ((Wall) bd2).isClimbable()) {
+                cat.decrementWalled();
+            }
         }
 
         //dead body collisions
@@ -210,7 +245,7 @@ public class CollisionController implements ContactListener, ContactFilter {
             DeadBody db = (DeadBody) fd1;
             if (fd2 instanceof Spikes) {
                 db.removeHazard();
-            } else if (fd2 == Flamethrower.getSensorName()) {
+            } else if (fd2 instanceof Flamethrower.Flame) {
                 db.setBurning(false);
                 db.removeHazard();
             }

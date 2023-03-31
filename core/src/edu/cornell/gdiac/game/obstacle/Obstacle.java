@@ -50,6 +50,8 @@ public abstract class Obstacle {
     private String nametag;
 	/** Drawing scale to convert physics units to pixels */
 	protected Vector2 drawScale;
+	/** Texture scale to scale the texture to the correct size */
+	protected Vector2 textureScale = new Vector2(1, 1);
 
 	/// Track garbage collection status
 	/** Whether the object should be removed from the world on next pass */
@@ -66,7 +68,12 @@ public abstract class Obstacle {
 	protected Vector2 centroidCache = new Vector2();
 	/** A cache value for when the user wants to access the drawing scale */
 	protected Vector2 scaleCache = new Vector2();
-
+	/** The base velocity for this obstacle if relative motion is desired. Linear velocity is defined as
+	 * <code>baseVelocity + relativeVelocity</code>*/
+	protected Vector2 baseVelocity = new Vector2();
+	/** The relative velocity for this obstacle if relative motion is desired. Linear velocity is defined as
+	 * <code>baseVelocity + relativeVelocity</code>*/
+	protected Vector2 relativeVelocity = new Vector2();
 
 	/// BodyDef Methods
 	/**
@@ -207,6 +214,7 @@ public abstract class Obstacle {
 	 */
 	public void setLinearVelocity(Vector2 value) {
 		bodyinfo.linearVelocity.set(value);
+		relativeVelocity.set(value.sub(baseVelocity));
 	}
 	
 	/**
@@ -225,6 +233,7 @@ public abstract class Obstacle {
 	 */
 	public void setVX(float value) {
 		bodyinfo.linearVelocity.x = value;
+		relativeVelocity.x = value - baseVelocity.x;
 	}
 	
 	/**
@@ -243,7 +252,86 @@ public abstract class Obstacle {
 	 */
 	public void setVY(float value) {
 		bodyinfo.linearVelocity.y = value;
+		relativeVelocity.y = value - baseVelocity.y;
 	}
+
+	/**
+	 * Sets the base velocity for this physics body
+	 *
+	 * @param value  the base velocity for this physics body
+	 */
+	public void setBaseVelocity(Vector2 value) {
+		baseVelocity.set(value);
+		bodyinfo.linearVelocity.set(value.add(relativeVelocity));
+	}
+
+	/**
+	 * Sets the base x velocity for this physics body
+	 *
+	 * @param value  the base x velocity for this physics body
+	 */
+	public void setBaseVX(float value){
+		baseVelocity.x = value;
+		bodyinfo.linearVelocity.x = value + relativeVelocity.x;
+	}
+
+	/**
+	 * Sets the base y velocity for this physics body
+	 *
+	 * @param value  the base y velocity for this physics body
+	 */
+	public void setBaseVY(float value){
+		baseVelocity.y = value;
+		bodyinfo.linearVelocity.y = value + relativeVelocity.y;
+	}
+
+	/**
+	 * Sets the relative x velocity for this physics body
+	 *
+	 * @param value  the relative x velocity for this physics body
+	 */
+	public void setRelativeVX(float value){
+		relativeVelocity.x = value;
+		bodyinfo.linearVelocity.x = value + baseVelocity.x;
+	}
+
+	/**
+	 * Sets the relative y velocity for this physics body
+	 *
+	 * @param value  the relative y velocity for this physics body
+	 */
+	public void setRelativeVY(float value){
+		relativeVelocity.y = value;
+		bodyinfo.linearVelocity.y = value + baseVelocity.y;
+	}
+
+	/**
+	 * Sets the relative velocity for this physics body
+	 *
+	 * @param value  the relative velocity for this physics body
+	 */
+	public void setRelativeVelocity(Vector2 value) {
+		relativeVelocity.set(value);
+		bodyinfo.linearVelocity.set(value.add(baseVelocity));
+	}
+
+	/**
+	 * Gets the relative velocity for this physics body. Relative velocity is defined as
+	 * <code>linearVelocity - baseVelocity</code>. This is useful if you want to set motion of a body relative
+	 * to another body rather than relative to the world.
+	 *
+	 * @return  relative velocity for this physics body
+	 */
+	public Vector2 getRelativeVelocity() { return relativeVelocity; }
+
+	/**
+	 * Gets the relative velocity for this physics body. Base velocity is defined as
+	 * <code>linearVelocity - relativeVelocity</code>. This is useful if you want to set motion of a body relative
+	 * to another body rather than relative to the world.
+	 *
+	 * @return  base velocity for this physics body
+	 */
+	public Vector2 getBaseVelocity() { return baseVelocity; }
 	
 	/**
 	 * Returns the angular velocity for this physics body
@@ -853,6 +941,24 @@ public abstract class Obstacle {
     	scaleCache.set(drawScale);
     	return scaleCache; 
     }
+
+	/**
+	 * Returns the texture scale for this physics object
+	 *
+	 * The texture scale is how much textures are shrunk down when drawing.
+	 *
+	 * This method does NOT return a reference to the drawing scale. Changes to this
+	 * vector will not affect the body.  However, it returns the same vector each time
+	 * its is called, and so cannot be used as an allocator.
+
+	 * We allow for the scaling factor to be non-uniform.
+	 *
+	 * @return the texture scale for this physics object
+	 */
+	public Vector2 getTextureScale() {
+		scaleCache.set(textureScale);
+		return scaleCache;
+	}
     
     /**
      * Sets the drawing scale for this physics object
@@ -869,6 +975,17 @@ public abstract class Obstacle {
     public void setDrawScale(Vector2 value) { 
     	setDrawScale(value.x,value.y); 
 	}
+
+	/**
+	 * Sets the texture scale for this physics object
+	 *
+	 * The texture scale is how much textures are shrunk down when drawing.
+	 *
+	 * We allow for the scaling factor to be non-uniform.
+	 *
+	 * @param value  the texture scale for this physics object
+	 */
+	public void setTextureScale(Vector2 value) {setTextureScale(value.x,value.y);}
     
     /**
      * Sets the drawing scale for this physics object
@@ -886,6 +1003,18 @@ public abstract class Obstacle {
     public void setDrawScale(float x, float y) {
     	drawScale.set(x,y);
     }
+
+	/**
+	 * Sets the texture scale for this physics object
+	 *
+	 * The texture scale is how much textures are shrunk down when drawing.
+	 *
+	 * We allow for the scaling factor to be non-uniform.
+	 *
+	 * @param x  the x-axis scale for the texture
+	 * @param y  the y-axis scale for the texture
+	 */
+	public void setTextureScale(float x, float y) { textureScale.set(x, y); }
     	
 	/// DEBUG METHODS
 	/**

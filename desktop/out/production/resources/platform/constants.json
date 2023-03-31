@@ -1,0 +1,113 @@
+{
+  "defaults" : {
+    "gravity" : -14.7,
+    "friction": 0.4,
+    "density" : 0.0,
+    "restitution": 0.1,
+    "volume": 0.1
+  },
+  "spikes" : {
+    "sensor_height_scale": 1,
+    "sensor_width_scale": 0.5,
+    "sensor_offset": [0, 0],
+    "solid_offset":[0, -0.25],
+    "solid_height_scale": 0.5,
+    "solid_width_scale": 1,
+    "offset": [
+      0.5,
+      0.5
+    ]
+  },
+  "activators": {
+    "body_shape" : [-0.03125, 0.2, 0.96875, 0.2, 0.66875, 0.4, 0.26875, 0.4],
+    "sensor_shape" : [-0.03125, 0.2, 0.96875, 0.2, 0.96875, 0.6, -0.03125, 0.6],
+    "friction" : 0.4,
+    "offset": [0.03125, -0.4]
+  },
+  "boxes": {
+    "friction" : 0.9,
+    "mass" : 1,
+    "density": 1,
+    "offset": [0.5, 0.5]
+  },
+  "flamethrowers": {
+    "flame_sensor_scale": [0.45, 0.5],
+    "base_offset" : [0.5, 0.5],
+    "flame_offset" : [0, 1.3],
+    "friction": 0.4,
+    "density": 1,
+    "mass": 1,
+    "sensor_shape" : [-0.3, -0.6, 0.3, -0.6, 0.3, 0.9, -0.3, 0.9]
+  },
+  "lasers": {
+    "offset": [0.5, 0.5],
+    "beamOffset": [0, -0.2],
+    "thickness": 3,
+    "friction": 0.4,
+    "density": 1,
+    "mass": 1
+  },
+  "checkpoint": {
+    "offset": [0, 1],
+    "solid_height_scale": 0.5,
+    "solid_width_scale": 1
+  },
+  "deadBody": {
+    "friction": 0.4,
+    "density" : 1,
+    "damping" : 2,
+    "offset": [0, 0],
+    "burnTicks" : 300,
+    "sensorRadius": 0.2,
+    "shrink": [0.6, 0.7]
+  },
+  "mirrors": {
+    "shape": [0, 0, 0, 1, 1, 0],
+    "offset": [0,0],
+    "alpha": 0.3,
+    "friction": 10,
+    "density" : 0.2,
+    "mass": 1
+  },
+  "walls": {
+    "friction": 0.4,
+    "density" : 0.0,
+    "restitution": 0.1
+  },
+  "platforms": {
+    "friction": 0.4,
+    "density" : 0.0,
+    "restitution": 0.1
+  },
+  "cat": {
+    "shrink": [0.7, 0.95],
+    "force": 30.0,
+    "damping": 30.0,
+    "density": 1.0,
+    "friction": 0.0,
+    "maxspeed": 6.5,
+    "jump_force": 2.5,
+    "jump_damping": 0.8,
+    "dash_force": 1.5,
+    "sensor": {
+      "shrink": 0.9
+    },
+    "ground_sensor": {
+      "shrink" : 0.6,
+      "height" : 0.05
+    },
+    "side_sensor": {
+      "shrink" : 0.6,
+      "width": 0.2
+    }
+  },
+  "exits": {
+    "width": 1
+  },
+  "doors" : {
+    "friction": 0.4,
+    "density" : 0.0,
+    "restitution": 0.1,
+    "offset": [0, 0]
+  }
+}

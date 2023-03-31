@@ -14,10 +14,8 @@
 package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.*;
-
-import com.badlogic.gdx.utils.Array;
-import edu.cornell.gdiac.util.*;
 
 /**
  * Class for reading player input. 
@@ -98,6 +96,8 @@ public class InputController {
 	private Vector2 crosshair;
 	/** The crosshair cache (for using as a return value) */
 	private Vector2 crosscache;
+
+	private boolean pause;
 	
 	/**
 	 * Returns the amount of sideways movement. 
@@ -281,6 +281,7 @@ public class InputController {
 		// If we have a game-pad for id, then use it.
 		crosshair = new Vector2();
 		crosscache = new Vector2();
+		pause = false;
 	}
 
 	/**
@@ -312,6 +313,24 @@ public class InputController {
 	}
 
 	/**
+	 * Pauses all input until all keys are released.
+	 */
+	public void pause(){
+		pause = true;
+		jumpPrevious  = true;
+		dashPrevious = true;
+		secondPrevious = true;
+		resetPrevious  = true;
+		debugPrevious  = true;
+		exitPrevious = true;
+		meowPrevious = true;
+		nextPrevious  = true;
+		prevPrevious = true;
+		switchPrevious = true;
+		cancelPressed = true;
+	}
+
+	/**
 	 * Reads input from the keyboard.
 	 *
 	 * This controller reads from the keyboard regardless of whether or not an X-Box
@@ -322,14 +341,14 @@ public class InputController {
 	private void readKeyboard(Rectangle bounds, Vector2 scale) {
 		resetPressed = (Gdx.input.isKeyPressed(Input.Keys.R));
 		debugPressed = (Gdx.input.isKeyPressed(Input.Keys.B));
-		jumpPressed = (Gdx.input.isKeyPressed(Input.Keys.SPACE));
+		jumpPressed = (Gdx.input.isKeyPressed(Keys.C));
 		secondPressed = (Gdx.input.isKeyPressed(Input.Keys.SPACE));
-		dashPressed = (Gdx.input.isKeyPressed(Input.Keys.D));
-		climbPressed = (Gdx.input.isKeyPressed(Input.Keys.A));
+		dashPressed = (Gdx.input.isKeyPressed(Keys.X));
+		climbPressed = (Gdx.input.isKeyPressed(Keys.Z));
 		exitPressed  = (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
 		meowPressed = (Gdx.input.isKeyPressed(Input.Keys.M));
-		switchPressed = (Gdx.input.isKeyPressed(Input.Keys.S));
-		cancelPressed = (Gdx.input.isKeyPressed(Input.Keys.C));
+		switchPressed = (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT));
+		cancelPressed = (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT));
 
 		//useful keys for testing/debugging
 		nextPressed = (Gdx.input.isKeyPressed(Input.Keys.N));
@@ -339,23 +358,25 @@ public class InputController {
 
 		// Directional controls
 		horizontal = 0.0f;
-		if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-			horizontal += 1.0f;
-//			GameCanvas.camera.translate(3, 0, 0);
-//			GameCanvas.camera.update();
-		}
-		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-			horizontal -= 1.0f;
-//			GameCanvas.camera.translate(-3,0,0);
-//			GameCanvas.camera.update();
-		}
 
 		vertical = 0.0f;
-		if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-			vertical += 1.0f;
-		}
-		if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-			vertical -= 1.0f;
+		if (!pause) {
+			if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+				horizontal += 1.0f;
+			}
+			if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+				horizontal -= 1.0f;
+			}
+			if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+				vertical += 1.0f;
+			}
+			if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+				vertical -= 1.0f;
+			}
+		} else {
+			pause = Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.DOWN) ||
+					Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.UP) ||
+					Gdx.input.isKeyPressed(Keys.SHIFT_LEFT);
 		}
 		
 		// Mouse results

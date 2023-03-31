@@ -10,32 +10,42 @@ import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
 
+//TODO: make this a ComplexObstacle
 public class Spikes extends BoxObstacle implements Activatable {
-
-    protected static JsonValue objectConstants;
+    /** Constants that are shared between all instances of this class */
+    private static JsonValue objectConstants;
+    /** Shape of the sensor that kills the player */
     private PolygonShape sensorShape;
-
+    /** Shape of the solid part of the spikes */
     private PolygonShape solidShape;
-
+    /** Fixture of the hitbox that kills the player */
     private Fixture sensorFixture;
-
+    /** Fixture of the solid part of the spikes */
     private Fixture solidFixture;
-
+    /** Set of joints that are attached to this object */
     private ObjectSet<Joint> joints = new ObjectSet<Joint>();
-
+    /** Current activation state */
     private boolean activated;
-
+    /** Starting activation state */
     private boolean initialActivation;
 
-    public Spikes(TextureRegion texture, Vector2 scale, JsonValue data){
-        super(texture.getRegionWidth()/scale.x,
-                texture.getRegionHeight()/scale.y);
+    /**
+     * Creates a new spikes object.
+     * @param texture        TextureRegion for drawing.
+     * @param drawScale      Draw scale for drawing.
+     * @param textureScale   Texture scale to resize texture.
+     * @param data           JSON for loading.
+     */
+    public Spikes(TextureRegion texture, Vector2 drawScale, Vector2 textureScale, JsonValue data){
+        super(texture.getRegionWidth()/drawScale.x*textureScale.x,
+                texture.getRegionHeight()/drawScale.y*textureScale.y);
 
         setBodyType(BodyDef.BodyType.StaticBody);
         setSensor(true);
         setFixedRotation(true);
         setName("spikes");
-        setDrawScale(scale);
+        setDrawScale(drawScale);
+        setTextureScale(textureScale);
         setTexture(texture);
 
         Vector2 sensorCenter = new Vector2(objectConstants.get("sensor_offset").getFloat(0),
@@ -59,19 +69,32 @@ public class Spikes extends BoxObstacle implements Activatable {
         initActivations(data);
     }
 
-
+    /**
+     * Turn on spikes.
+     * @param world the box2D world
+     */
     @Override
     public void activated(World world){
         setActive(true);
     }
 
+    /**
+     * Turn off spikes.
+     * @param world the box2D world
+     */
     @Override
     public void deactivated(World world){
-
         destroyJoints(world);
         setActive(false);
     }
 
+    /**
+     * Creates the physics body for this object, adding them to the world. Immediately deactivates
+     * self if necessary.
+     * @param world Box2D world to store body
+     *
+     * @return      true if object allocation succeeded
+     */
     public boolean activatePhysics(World world){
         if (!super.activatePhysics(world)) {
             return false;
@@ -82,6 +105,9 @@ public class Spikes extends BoxObstacle implements Activatable {
         return true;
     }
 
+    /**
+     * Create solid fixture and sensor fixture.
+     */
     protected void createFixtures(){
         super.createFixtures();
 
@@ -99,6 +125,9 @@ public class Spikes extends BoxObstacle implements Activatable {
         sensorFixture.setUserData(this);
     }
 
+    /**
+     * Release solid fixture and sensor fixture.
+     */
     protected void releaseFixtures(){
         super.releaseFixtures();
         if (sensorFixture != null) {
@@ -111,10 +140,7 @@ public class Spikes extends BoxObstacle implements Activatable {
         }
     }
 
-    /** destroy all joints connected to this spike
-     * is it weird that the spikes can access the world like this?
-     * potentially can be fixed with setActive returning a list of joints to destroy
-     * that the controller then destroys */
+    /** Destroy all joints connected to this spike */
     public void destroyJoints(World world){
         for (Joint j : joints) {
             world.destroyJoint(j);
@@ -126,7 +152,7 @@ public class Spikes extends BoxObstacle implements Activatable {
 
 
     /**
-     * Draws the outline of the physics body.d
+     * Draws the outline of the physics body.
      *
      * This method can be helpful for understanding issues with collisions.
      *
@@ -135,6 +161,7 @@ public class Spikes extends BoxObstacle implements Activatable {
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
         if (activated) {
+            System.out.println(drawScale);
             canvas.drawPhysics(solidShape, Color.YELLOW, getX(), getY(), getAngle(), drawScale.x, drawScale.y);
             canvas.drawPhysics(sensorShape, Color.RED, getX(), getY(), getAngle(), drawScale.x, drawScale.y);
         }
@@ -147,18 +174,24 @@ public class Spikes extends BoxObstacle implements Activatable {
         }
     }
 
+    //region ACTIVATABLE METHODS
     @Override
     public void setActivated(boolean activated){ this.activated = activated; }
 
     @Override
-    public boolean getActivated() { return activated; }
+    public boolean isActivated() { return activated; }
 
     @Override
     public void setInitialActivation(boolean initialActivation){ this.initialActivation = initialActivation; }
 
     @Override
     public boolean getInitialActivation() { return initialActivation; }
+    //endregion
 
+    /**
+     * Sets the shared constants for all instances of this class
+     * @param constants JSON storing the shared constants.
+     */
     public static void setConstants(JsonValue constants) { objectConstants = constants; }
 
 }

@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.audio.*;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -61,6 +62,8 @@ public class WorldController implements Screen {
 	private JsonValue nextJSON;
 	/** The AssetDirectory */
 	private AssetDirectory directory;
+	/** TiledMap */
+	private TiledMap tiledMap;
 
 	/**
 	 * Returns the canvas associated with the current LevelController
@@ -204,7 +207,7 @@ public class WorldController implements Screen {
 		String[] names = {"cat", "jumpingCat","barrier", "rope", "spikes", "button", "flame", "flamethrower", "laser", "laserBeam",
 				"deadCat", "checkpoint", "checkpointActive", "roboMob", "background", "steel", "goal",
 				"flame_anim","checkpoint_anim", "checkpoint_active_anim", "button_anim", "jump_anim",
-				"meow_anim","sit","walk",
+				"meow_anim","sit","walk", "spirit_anim",
 				"lab_tileset"};
 
 		for (String n : names){

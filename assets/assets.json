@@ -35,6 +35,7 @@
         "flame_anim": "platform/flame_anim.png",
         "roboMob": "platform/robo_mob.png",
         "meow_anim": "platform/meow.png",
+        "spirit_anim": "platform/spirit_anim.png",
         "lab_tileset": "platform/lab_tileset.png"
     },
     "jsons"  : {

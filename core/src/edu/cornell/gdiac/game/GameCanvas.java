@@ -76,7 +76,7 @@ public class GameCanvas {
 	private BlendState blend;
 	
 	/** Camera for the underlying SpriteBatch */
-	private OrthographicCamera camera;
+	private Camera camera;
 
 	/** ExtendViewport, used during gameplay */
 	private Viewport extendView;
@@ -94,12 +94,7 @@ public class GameCanvas {
 	private Vector2 vertex;
 	/** Cache object to handle raw textures */
 	private TextureRegion holder;
-
-	private float cameraX;
-	private float cameraY;
-
 	private final float CAMERA_ZOOM = 0.85f;
-	private final float CAMERA_GLIDE_RATE = 0.075f;
 
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
@@ -117,19 +112,11 @@ public class GameCanvas {
 		region = new TextureRegion(new Texture("white.png"));
 		
 		// Set the projection matrix (for proper scaling)
-		camera = new OrthographicCamera(STANDARD_WIDTH, STANDARD_HEIGHT);
-		camera.setToOrtho(false, STANDARD_WIDTH, STANDARD_HEIGHT);
-		camera.zoom = CAMERA_ZOOM;
-		cameraX = camera.position.x;
-		cameraY = camera.position.y;
-//		camera.position.set(STANDARD_WIDTH/3, STANDARD_HEIGHT/2, 0); //NEED TO SET THIS RELATIVE TO CAT
-//		camera.position.set(STANDARD_WIDTH / 2, STANDARD_HEIGHT / 2, 0);
-//		camera.update();
-//		extendView = new ExtendViewport(0, 0, STANDARD_WIDTH, STANDARD_HEIGHT, camera);
-		extendView = new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT, camera);
+		camera = new Camera(STANDARD_WIDTH, STANDARD_HEIGHT, CAMERA_ZOOM);
+		extendView = new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT, camera.getCamera());
 		extendView.apply(true);
-		spriteBatch.setProjectionMatrix(camera.combined);
-		debugRender.setProjectionMatrix(camera.combined);
+		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
+		debugRender.setProjectionMatrix(camera.getCamera().combined);
 
 		// Initialize the cache objects
 		holder = new TextureRegion();
@@ -226,52 +213,6 @@ public class GameCanvas {
 		return new Vector2(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 	}
 
-
-	/**
-	 * Updates camera positioning based on cat's current position (in pixels)
-	 * @param xPos x coordinate of cat's current location in pixels
-	 * @param yPos y coordinate of cat's current location in pixels
-	 * @param glide smoothed camera movement
-	 */
-	public void updateCamera(float xPos, float yPos, boolean glide){
-		float width_scaled = STANDARD_WIDTH*camera.zoom;
-		if(xPos > STANDARD_WIDTH - width_scaled + width_scaled/2){
-			xPos = STANDARD_WIDTH - width_scaled + width_scaled/2;
-		}
-		if(xPos < width_scaled/2){
-			xPos = width_scaled/2;
-		}
-		float height_scaled = STANDARD_HEIGHT*camera.zoom;
-		if(yPos > STANDARD_HEIGHT - height_scaled + height_scaled/2){
-			yPos = STANDARD_HEIGHT - height_scaled + height_scaled/2;
-		}
-		if(yPos < height_scaled/2){
-			yPos = height_scaled/2;
-		}
-		if(glide) {
-			cameraX += (xPos - cameraX) * CAMERA_GLIDE_RATE;
-			cameraY += (yPos - cameraY) * CAMERA_GLIDE_RATE;
-		}
-		else{
-			cameraX = xPos;
-			cameraY = yPos;
-		}
-		camera.position.set(cameraX, cameraY, 0);
-		camera.update();
-	}
-
-	/**
-	 * For internal uses
-	 * Camera either zooms out for debugging or returns to original zoom for gameplay
-	 * @param debug Whether debug mode is active
-	 */
-	public void debugCamera(boolean debug){
-		if (debug)
-			camera.zoom = 1;
-		else
-			camera.zoom = CAMERA_ZOOM;
-	}
-
 	/**
 	 * Changes the width and height of this canvas
 	 * <br><br>
@@ -294,7 +235,13 @@ public class GameCanvas {
 		resize();
 
 	}
-	
+
+	/**
+	 * @return Instance of Camera wrapper
+	 */
+	public Camera getCamera(){
+		return camera;
+	}
 	/**
 	 * Returns whether this canvas is currently fullscreen.
 	 *
@@ -407,7 +354,7 @@ public class GameCanvas {
 	 */
 	public void begin(Affine2 affine) {
 		global.setAsAffine(affine);
-		global.mulLeft(camera.combined);
+		global.mulLeft(camera.getCamera().combined);
 		spriteBatch.setProjectionMatrix(global);
 
 		setBlendState(BlendState.NO_PREMULT);
@@ -426,7 +373,7 @@ public class GameCanvas {
 	public void begin(float sx, float sy) {
 		global.idt();
 		global.scl(sx,sy,1.0f);
-		global.mulLeft(camera.combined);
+		global.mulLeft(camera.getCamera().combined);
 		spriteBatch.setProjectionMatrix(global);
 
 		spriteBatch.begin();
@@ -439,7 +386,7 @@ public class GameCanvas {
 	 * Nothing is flushed to the graphics card until the method end() is called.
 	 */
 	public void begin() {
-		spriteBatch.setProjectionMatrix(camera.combined);
+		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
 		spriteBatch.begin();
 		active = DrawPass.STANDARD;
 	}
@@ -992,7 +939,7 @@ public class GameCanvas {
 	*/
 	public void beginDebug(Affine2 affine) {
 		global.setAsAffine(affine);
-		global.mulLeft(camera.combined);
+		global.mulLeft(camera.getCamera().combined);
 		debugRender.setProjectionMatrix(global);
 
 		debugRender.begin(ShapeRenderer.ShapeType.Line);
@@ -1010,7 +957,7 @@ public class GameCanvas {
 	public void beginDebug(float sx, float sy) {
 		global.idt();
 		global.scl(sx,sy,1.0f);
-		global.mulLeft(camera.combined);
+		global.mulLeft(camera.getCamera().combined);
 		debugRender.setProjectionMatrix(global);
 
 		debugRender.begin(ShapeRenderer.ShapeType.Line);
@@ -1023,7 +970,7 @@ public class GameCanvas {
 	 * Nothing is flushed to the graphics card until the method end() is called.
 	 */
 	public void beginDebug() {
-		debugRender.setProjectionMatrix(camera.combined);
+		debugRender.setProjectionMatrix(camera.getCamera().combined);
 		debugRender.begin(ShapeRenderer.ShapeType.Filled);
 		debugRender.setColor(Color.RED);
 		debugRender.circle(0, 0, 10);

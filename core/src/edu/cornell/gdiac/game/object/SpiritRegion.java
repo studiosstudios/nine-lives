@@ -2,9 +2,11 @@ package edu.cornell.gdiac.game.object;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.JsonValue;
@@ -34,10 +36,14 @@ public class SpiritRegion extends BoxObstacle {
     private int x;
     /** y position of spirit region */
     private int y;
+    /** Vector2 position of bottom left corner of spirit region */
+    private Vector2 pos;
     /** width of spirit region */
     private int width;
     /** height of spirit region */
     private int height;
+    /** draw scale */
+    private Vector2 scale;
 
 
     /** PARTICLE VARS */
@@ -71,32 +77,36 @@ public class SpiritRegion extends BoxObstacle {
         width = (int) getDimension().x;
         height = (int) getDimension().y;
 
+        this.pos = new Vector2(data.get("pos").getFloat(0) - width/2, data.get("pos").getFloat(1) - height/2);
+
         setX(data.get("pos").getFloat(0) - width/2);
         setY(data.get("pos").getFloat(1) - height/2);
 
-        animations = new Animation[width * height];
-
-        int spriteSize = 32;
-        spriteFrames = TextureRegion.split(texture.getTexture(), spriteSize, spriteSize);
-        timeOffsets = new float[width * height];
-
-        System.out.println(spriteFrames.length);
-
-        int numFrames = 34;
-        float frameDuration = 0.1f;
-        for (int i = 0; i < width * height; i++){
-            int rand_frame = ThreadLocalRandom.current().nextInt(0, numFrames);
-            animations[i] = new Animation<>(frameDuration, spriteFrames[0]);
-            animations[i].setPlayMode(Animation.PlayMode.LOOP);
-            timeOffsets[i] = ThreadLocalRandom.current().nextFloat(0, 60);
-        }
+//        // GHOSTIES ANIMATION
+//
+//        animations = new Animation[width * height];
+//
+//        int spriteSize = 32;
+//        spriteFrames = TextureRegion.split(texture.getTexture(), spriteSize, spriteSize);
+//        timeOffsets = new float[width * height];
+//
+//        System.out.println(spriteFrames.length);
+//
+//        int numFrames = 34;
+//        float frameDuration = 0.1f;
+//        for (int i = 0; i < width * height; i++){
+//            int rand_frame = ThreadLocalRandom.current().nextInt(0, numFrames);
+//            animations[i] = new Animation<>(frameDuration, spriteFrames[0]);
+//            animations[i].setPlayMode(Animation.PlayMode.LOOP);
+//            timeOffsets[i] = ThreadLocalRandom.current().nextFloat(0, 60);
+//        }
         animationTime = 0f;
 
 
-        // PHOTON PARTICLES
-//        this.photonTexture = photonTexture.getTexture();
-//        particles = new ObjectSet<Particle>();
-//        memory = new ParticlePool();
+//         PHOTON PARTICLES
+        this.photonTexture = photonTexture.getTexture();
+        particles = new ObjectSet<Particle>();
+        memory = new ParticlePool();
     }
 
     /**
@@ -109,17 +119,75 @@ public class SpiritRegion extends BoxObstacle {
         photonTexture.dispose();
     }
 
+    /**
+     * Updates the status of all of the game objects.
+     *
+     * This method generates particles according to user input, garbage collects them, and
+     * moves them.
+     */
+    public void update() {
+        // Garbage collect any objects that go offscreen
+        // TODO: collect the objects that go out of the region not offscreen
+        ObjectSet.ObjectSetIterator<Particle> iterator = particles.iterator();
+        while (iterator.hasNext()) {
+            Particle item = iterator.next();
+            if (item.getX() < 0 || item.getX() > Gdx.graphics.getWidth() ||
+                    item.getY() < 0 || item.getY() > Gdx.graphics.getHeight()) {
+                iterator.remove();
+                memory.free(item);
+            }
+        }
+
+        if (cooldown <= 0) {
+            // Add a particle to the set
+            Particle item = memory.obtain();
+
+            // Only proceed if allocation succeeded.
+            if (item != null) {
+                // Initialize the object
+                float angle = MathUtils.random()*MathUtils.PI2;
+                // MOUSE LOCATION HAS INVERTED Y-VALUE!
+                // TODO: random pos within region
+                item.getPosition().set(pos);
+                item.setAngle(angle);
+                cooldown = PARTICLE_RESPAWN;
+                // Add it to the set of objects
+                particles.add(item);
+            }
+        }
+
+        // Move all particles
+        for(Particle item : particles) {
+            item.move();
+        }
+
+        // Reset cooldown if necessary
+        if (cooldown > 0) {
+            cooldown--;
+        }
+    }
+
     @Override
     public void draw(GameCanvas canvas){
 
-        animationTime += Gdx.graphics.getDeltaTime();
+//        animationTime += Gdx.graphics.getDeltaTime();
+//
+//        //draw ghosties
+//        for (int i = 0; i < width * height; i++) {
+//            animations[i].setPlayMode(Animation.PlayMode.LOOP);
+//            canvas.draw(animations[i].getKeyFrame(animationTime + timeOffsets[i]), color, origin.x, origin.y,
+//                    (getX() + i % width - width/2 - 0.5f)*drawScale.x,(getY() + i/width - height/2)*drawScale.y,getAngle(),textureScale.x,textureScale.y);
+//        }
 
-        //draw ghosties
-        for (int i = 0; i < width * height; i++) {
-            animations[i].setPlayMode(Animation.PlayMode.LOOP);
-            canvas.draw(animations[i].getKeyFrame(animationTime + timeOffsets[i]), color, origin.x, origin.y,
-                    (getX() + i % width - width/2 - 0.5f)*drawScale.x,(getY() + i/width - height/2)*drawScale.y,getAngle(),textureScale.x,textureScale.y);
+        // Animate all of the photons.
+//        canvas.begin();
+//        canvas.setBlendState(GameCanvas.BlendState.ADDITIVE);
+//        canvas.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE); // Additive blending
+        for(Particle item : particles) {
+            // Draw the object centered at x.
+            canvas.draw(photonTexture, item.getX()-photonTexture.getWidth()/2, item.getY()-photonTexture.getHeight()/2);
         }
+//        canvas.end();
 
     }
 }

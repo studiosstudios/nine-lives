@@ -133,6 +133,10 @@ public class ActionController {
 
         updateSpiritLine(dt, ic.holdSwitch() && !ic.didSwitch());
 
+        for (SpiritRegion spiritRegion : level.getSpiritRegionArray()) {
+            spiritRegion.update();
+        }
+
         if (ic.didSwitch()){
             //switch body
             DeadBody body = level.getNextBody();

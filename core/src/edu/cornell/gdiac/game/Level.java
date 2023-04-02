@@ -69,6 +69,7 @@ public class Level {
     private final Array<Mob> mobArray;
     private Checkpoint currCheckpoint;
     private final Array<Laser> lasers;
+    private final Array<SpiritRegion> spiritRegionArray;
     /** The respawn position of the player */
     private Vector2 respawnPos;
     /** Float value to scale width */
@@ -175,6 +176,13 @@ public class Level {
      * @return a reference to the mob array
      */
     public Array<Mob> getMobArray() { return mobArray; }
+
+    /**
+     * Returns a reference to the array of spirit regions
+     *
+     * @return a reference to the spirit region array
+     */
+    public Array<SpiritRegion> getSpiritRegionArray() { return spiritRegionArray; }
 
     /**
      * Returns a reference to the respawn position
@@ -325,6 +333,7 @@ public class Level {
         deadBodyArray = new Array<>();
         lasers = new Array<>();
         mobArray = new Array<>();
+        spiritRegionArray = new Array<>();
         activationRelations = new HashMap<>();
     }
 
@@ -492,6 +501,7 @@ public class Level {
             for (JsonValue spiritJV : levelJV.get("spiritRegions")){
                 SpiritRegion spiritRegion = new SpiritRegion(tMap.get("spirit_anim"), tMap.get("spirit_photon"), scale, new Vector2(1, 1), spiritJV);
                 addObject(spiritRegion);
+                spiritRegionArray.add(spiritRegion);
             }
         } catch (NullPointerException e) {
 //            e.printStackTrace();

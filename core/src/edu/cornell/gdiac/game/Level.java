@@ -490,7 +490,7 @@ public class Level {
 
         try {
             for (JsonValue spiritJV : levelJV.get("spiritRegions")){
-                SpiritRegion spiritRegion = new SpiritRegion(tMap.get("spirit_anim"), scale, new Vector2(2, 2), spiritJV);
+                SpiritRegion spiritRegion = new SpiritRegion(tMap.get("spirit_anim"), scale, new Vector2(1, 1), spiritJV);
                 addObject(spiritRegion);
             }
         } catch (NullPointerException e) {
@@ -745,7 +745,7 @@ public class Level {
         float minDist = Float.MAX_VALUE;
         DeadBody nextdb = null;
         for (DeadBody db : deadBodyArray){
-            if (db.isSwitchable()){
+            if (sharesSpriritRegion(db.getSpiritRegions(), cat.getSpiritRegions())){
                 float dist = cat.getPosition().dst(db.getPosition());
                 if (dist < minDist){
                     minDist = dist;
@@ -754,6 +754,14 @@ public class Level {
             }
         }
         return nextdb;
+    }
+
+    private boolean sharesSpriritRegion(ObjectSet<SpiritRegion> s1, ObjectSet<SpiritRegion> s2){
+        if (s1.isEmpty() && s2.isEmpty()) return true;
+        for (SpiritRegion r : s1){
+            if (s2.contains(r)) return true;
+        }
+        return false;
     }
 
     /**

@@ -138,13 +138,15 @@ public class ActionController {
         if (ic.didSwitch()){
             //switch body
             DeadBody body = level.getNextBody();
-            if (body != null){
+            if (body != null && body.isSwitchable()){
                 level.spawnDeadBody();
                 cat.setPosition(body.getPosition());
                 cat.setLinearVelocity(body.getLinearVelocity());
                 cat.setFacingRight(body.isFacingRight());
                 body.markRemoved(true);
                 level.removeDeadBody(body);
+            } else {
+                cat.failedSwitch();
             }
         } else {
             cat.setHorizontalMovement(ic.getHorizontal());

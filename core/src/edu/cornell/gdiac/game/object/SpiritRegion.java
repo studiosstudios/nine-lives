@@ -28,14 +28,16 @@ public class SpiritRegion extends BoxObstacle {
     private float animationTime;
     /** Filmstrip of spirit animation */
     private Animation<TextureRegion>[] animations;
+    /** Texture image for the region */
+    private Texture regionTexture;
     /** float offsets for randomizing animation frames */
     private float[] timeOffsets;
     /** List of angles to rotate texture */
     private final int[] listAngles = {0, 90, 180, 270};
-    /** x position of spirit region */
-    private int x;
-    /** y position of spirit region */
-    private int y;
+//    /** x position of spirit region */
+//    private int x;
+//    /** y position of spirit region */
+//    private int y;
     /** Vector2 position of bottom left corner of spirit region */
     private Vector2 pos;
     /** width of spirit region */
@@ -52,7 +54,7 @@ public class SpiritRegion extends BoxObstacle {
     public static final int PARTICLE_RESPAWN = 4;
     /** Collection of particle objects (MODEL) */
     private ObjectSet<Particle> particles;
-    /** Texture image for the photon (???) */
+    /** Texture image for the photon */
     private Texture photonTexture;
     /** Memory pool for (pre)allocation of particles (???) */
     private ParticlePool memory;
@@ -62,17 +64,19 @@ public class SpiritRegion extends BoxObstacle {
     public SpiritRegion(TextureRegion texture, TextureRegion photonTexture, Vector2 scale, Vector2 textureScale, JsonValue data){
         super(data.getFloat("width"), data.getFloat("height"));
 
+        this.photonTexture = photonTexture.getTexture();
+
 //        color = new Color(Color.WHITE);
         color = new Color(data.get("color").getFloat(0),
                 data.get("color").getFloat(1),
                 data.get("color").getFloat(2),
                 data.get("color").getFloat(3));
 
-        setDrawScale(scale);
+        Vector2 particle_scale = new Vector2(32/scale.x, 32/scale.y);
+        setDrawScale(particle_scale);
         setTextureScale(textureScale);
         setSensor(true);
         setBodyType(BodyDef.BodyType.StaticBody);
-
 
         width = (int) getDimension().x;
         height = (int) getDimension().y;
@@ -100,11 +104,10 @@ public class SpiritRegion extends BoxObstacle {
 //            animations[i].setPlayMode(Animation.PlayMode.LOOP);
 //            timeOffsets[i] = ThreadLocalRandom.current().nextFloat(0, 60);
 //        }
-        animationTime = 0f;
+//        animationTime = 0f;
 
 
 //         PHOTON PARTICLES
-        this.photonTexture = photonTexture.getTexture();
         particles = new ObjectSet<Particle>();
         memory = new ParticlePool();
     }
@@ -126,8 +129,7 @@ public class SpiritRegion extends BoxObstacle {
      * moves them.
      */
     public void update() {
-        // Garbage collect any objects that go offscreen
-        // TODO: collect the objects that go out of the region not offscreen
+        // TODO: Garbage collect the objects that go out of the region not offscreen
         ObjectSet.ObjectSetIterator<Particle> iterator = particles.iterator();
         while (iterator.hasNext()) {
             Particle item = iterator.next();
@@ -145,8 +147,8 @@ public class SpiritRegion extends BoxObstacle {
             // Only proceed if allocation succeeded.
             if (item != null) {
                 // Initialize the object
+                // TODO: make angle mainly upwards to simulate floating up (not any direction)
                 float angle = MathUtils.random()*MathUtils.PI2;
-                // MOUSE LOCATION HAS INVERTED Y-VALUE!
                 // TODO: random pos within region
                 item.getPosition().set(pos);
                 item.setAngle(angle);

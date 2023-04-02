@@ -8,9 +8,7 @@ import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.object.*;
-import edu.cornell.gdiac.game.obstacle.Obstacle;
 import edu.cornell.gdiac.util.Direction;
 
 import java.util.HashMap;
@@ -226,6 +224,7 @@ public class ActionController {
                 //switch into spirit mode
                 spiritLine.setEnd(cat.getPosition());
                 spiritLine.setStart(cat.getPosition());
+                spiritLine.resetMidpoints();
             } else {
                 spiritLine.endTarget.set(cat.getPosition());
                 spiritLine.startTarget.set(cat.getPosition());

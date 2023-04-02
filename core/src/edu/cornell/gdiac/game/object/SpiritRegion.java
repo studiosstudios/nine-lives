@@ -2,37 +2,58 @@ package edu.cornell.gdiac.game.object;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.JsonValue;
+import edu.cornell.gdiac.game.object.Particle;
+import edu.cornell.gdiac.game.object.ParticlePool;
+import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
 import edu.cornell.gdiac.game.obstacle.PolygonObstacle;
-import sun.security.provider.ConfigFile;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class SpiritRegion extends BoxObstacle {
 
+    /** Color of spirit region */
     private Color color;
-
     /** The frames of the spirit animation */
     private TextureRegion[][] spriteFrames;
     /** How long the flame has been animating */
     private float animationTime;
     /** Filmstrip of spirit animation */
     private Animation<TextureRegion>[] animations;
+    /** float offsets for randomizing animation frames */
     private float[] timeOffsets;
-
+    /** List of angles to rotate texture */
     private final int[] listAngles = {0, 90, 180, 270};
+    /** x position of spirit region */
     private int x;
+    /** y position of spirit region */
     private int y;
-
+    /** width of spirit region */
     private int width;
+    /** height of spirit region */
     private int height;
 
-    public SpiritRegion(TextureRegion texture, Vector2 scale, Vector2 textureScale, JsonValue data){
+
+    /** PARTICLE VARS */
+
+    /** Respawn rate of the particles */
+    public static final int PARTICLE_RESPAWN = 4;
+    /** Collection of particle objects (MODEL) */
+    private ObjectSet<Particle> particles;
+    /** Texture image for the photon (???) */
+    private Texture photonTexture;
+    /** Memory pool for (pre)allocation of particles (???) */
+    private ParticlePool memory;
+    /** Simple field to slow down the allocation of photons */
+    private int cooldown = 0;
+
+    public SpiritRegion(TextureRegion texture, TextureRegion photonTexture, Vector2 scale, Vector2 textureScale, JsonValue data){
         super(data.getFloat("width"), data.getFloat("height"));
 
 //        color = new Color(Color.WHITE);
@@ -70,6 +91,22 @@ public class SpiritRegion extends BoxObstacle {
             timeOffsets[i] = ThreadLocalRandom.current().nextFloat(0, 60);
         }
         animationTime = 0f;
+
+
+        // PHOTON PARTICLES
+//        this.photonTexture = photonTexture.getTexture();
+//        particles = new ObjectSet<Particle>();
+//        memory = new ParticlePool();
+    }
+
+    /**
+     * Called when the Application is destroyed.
+     *
+     * This is preceded by a call to pause().
+     */
+    public void dispose() {
+        memory.clear();
+        photonTexture.dispose();
     }
 
     @Override
@@ -83,7 +120,6 @@ public class SpiritRegion extends BoxObstacle {
             canvas.draw(animations[i].getKeyFrame(animationTime + timeOffsets[i]), color, origin.x, origin.y,
                     (getX() + i % width - width/2 - 0.5f)*drawScale.x,(getY() + i/width - height/2)*drawScale.y,getAngle(),textureScale.x,textureScale.y);
         }
-
 
     }
 }

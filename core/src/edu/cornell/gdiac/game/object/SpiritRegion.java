@@ -110,7 +110,8 @@ public class SpiritRegion extends BoxObstacle {
 
 //         PHOTON PARTICLES
         particles = new ObjectSet<Particle>();
-        memory = new ParticlePool();
+        int capacity = width*height*2;
+        memory = new ParticlePool(capacity);
     }
 
     /**
@@ -156,8 +157,10 @@ public class SpiritRegion extends BoxObstacle {
                 float rand_angle = min_angle + (max_angle - min_angle) * (float) Math.random();
 //                float angle = MathUtils.random()*MathUtils.PI2;
                 // Random pos within region
+                // Random y pos is within the bottom half of the region
+                // to give the particles time to float up
                 float rand_x = pos.x + width * (float) Math.random();
-                float rand_y = pos.y + height * (float) Math.random();
+                float rand_y = pos.y + (height/2) * (float) Math.random();
 
                 item.setX(rand_x*scale.x);
                 item.setY(rand_y*scale.y);
@@ -199,7 +202,10 @@ public class SpiritRegion extends BoxObstacle {
 //        canvas.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE); // Additive blending
         for(Particle item : particles) {
             // Draw the object centered at x.
-            canvas.draw(photonTexture, item.getX(), item.getY());
+//            canvas.draw(photonTexture, color, item.getX(), item.getY());
+              canvas.draw(photonTexture, color, item.getX(), item.getY(), width, height);
+//            canvas.draw(photonTexture, color, item.getX(), item.getY(),item.getX()*drawScale.x,item.getY()*drawScale.y, item.getAngle(), textureScale.x, textureScale.y);
+
 //            System.out.println("DRAW METHOD PARTICLE");
 //            System.out.println((item.getX()));
 //            System.out.println((item.getY()));

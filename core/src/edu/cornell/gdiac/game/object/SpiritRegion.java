@@ -51,7 +51,7 @@ public class SpiritRegion extends BoxObstacle {
     /** PARTICLE VARS */
 
     /** Respawn rate of the particles */
-    public static final int PARTICLE_RESPAWN = 4;
+    public static final int PARTICLE_RESPAWN = 1;
     /** Collection of particle objects (MODEL) */
     private ObjectSet<Particle> particles;
     /** Texture image for the photon */
@@ -65,6 +65,7 @@ public class SpiritRegion extends BoxObstacle {
         super(data.getFloat("width"), data.getFloat("height"));
 
         this.photonTexture = photonTexture.getTexture();
+        this.scale = scale;
 
 //        color = new Color(Color.WHITE);
         color = new Color(data.get("color").getFloat(0),
@@ -82,7 +83,7 @@ public class SpiritRegion extends BoxObstacle {
         height = (int) getDimension().y;
 
         this.pos = new Vector2(data.get("pos").getFloat(0) - width/2, data.get("pos").getFloat(1) - height/2);
-
+//        System.out.println(pos);
         setX(data.get("pos").getFloat(0) - width/2);
         setY(data.get("pos").getFloat(1) - height/2);
 
@@ -129,12 +130,14 @@ public class SpiritRegion extends BoxObstacle {
      * moves them.
      */
     public void update() {
-        // TODO: Garbage collect the objects that go out of the region not offscreen
+        // Garbage collect the objects that go out of the region
         ObjectSet.ObjectSetIterator<Particle> iterator = particles.iterator();
         while (iterator.hasNext()) {
             Particle item = iterator.next();
-            if (item.getX() < 0 || item.getX() > Gdx.graphics.getWidth() ||
-                    item.getY() < 0 || item.getY() > Gdx.graphics.getHeight()) {
+//            if (item.getX() < 0 || item.getX() > Gdx.graphics.getWidth() ||
+//                    item.getY() < 0 || item.getY() > Gdx.graphics.getHeight()) {
+            if (item.getX() < pos.x*scale.x || item.getX() > (pos.x+width)*scale.x ||
+                    item.getY() < pos.y*scale.y || item.getY() > (pos.y+height)*scale.y) {
                 iterator.remove();
                 memory.free(item);
             }
@@ -147,11 +150,20 @@ public class SpiritRegion extends BoxObstacle {
             // Only proceed if allocation succeeded.
             if (item != null) {
                 // Initialize the object
-                // TODO: make angle mainly upwards to simulate floating up (not any direction)
-                float angle = MathUtils.random()*MathUtils.PI2;
-                // TODO: random pos within region
-                item.getPosition().set(pos);
-                item.setAngle(angle);
+                // Make angle mainly upwards to simulate floating up (not any direction)
+                float min_angle = (float) Math.PI/3;
+                float max_angle = (float) (3*Math.PI/4);
+                float rand_angle = min_angle + (max_angle - min_angle) * (float) Math.random();
+//                float angle = MathUtils.random()*MathUtils.PI2;
+                // Random pos within region
+                float rand_x = pos.x + width * (float) Math.random();
+                float rand_y = pos.y + height * (float) Math.random();
+
+                item.setX(rand_x*scale.x);
+                item.setY(rand_y*scale.y);
+
+//                item.getPosition().set(pos);
+                item.setAngle(rand_angle);
                 cooldown = PARTICLE_RESPAWN;
                 // Add it to the set of objects
                 particles.add(item);
@@ -187,7 +199,11 @@ public class SpiritRegion extends BoxObstacle {
 //        canvas.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE); // Additive blending
         for(Particle item : particles) {
             // Draw the object centered at x.
-            canvas.draw(photonTexture, item.getX()-photonTexture.getWidth()/2, item.getY()-photonTexture.getHeight()/2);
+            canvas.draw(photonTexture, item.getX(), item.getY());
+//            System.out.println("DRAW METHOD PARTICLE");
+//            System.out.println((item.getX()));
+//            System.out.println((item.getY()));
+//            System.out.println(drawScale);
         }
 //        canvas.end();
 

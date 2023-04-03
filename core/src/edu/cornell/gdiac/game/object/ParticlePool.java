@@ -35,7 +35,7 @@ import edu.cornell.gdiac.game.object.Particle;
  */
 public class ParticlePool extends Pool<Particle> {
     /** Default number of particles (low to show off how this works) */
-    public static final int DEFAULT_CAPACITY = 16;
+    public static final int DEFAULT_CAPACITY = 20;
 
     /** The preallocated array of particles */
     private Particle[] memory;

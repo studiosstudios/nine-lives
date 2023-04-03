@@ -221,6 +221,12 @@ public class ActionController {
                 DeadBody nextDeadBody = level.getNextBody();
                 if (nextDeadBody != null) {
                     spiritLine.endTarget.set(nextDeadBody.getPosition());
+                } else {
+                    spiritLine.endTarget.set(cat.getPosition());
+                    if (spiritLine.reachedTargets(1f)) {
+                        spiritLine.setEnd(cat.getPosition());
+                        spiritLine.resetMidpoints();
+                    }
                 }
             }
         } else {

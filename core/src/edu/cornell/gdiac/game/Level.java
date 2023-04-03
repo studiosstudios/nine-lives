@@ -85,8 +85,6 @@ public class Level {
     private HashMap<String, TextureRegion> textureRegionAssetMap;
 
     //region Spirit mode stuff
-    /** next dead body to switch into */
-    private DeadBody nextDeadBody;
     private boolean spiritMode;
     private SpiritLine spiritLine;
     //endregion
@@ -565,6 +563,7 @@ public class Level {
         deadBodyArray.clear();
         activatables.clear();
         mobArray.clear();
+        spiritRegionArray.clear();
         numLives = maxLives;
         if (world != null) {
             world.dispose();
@@ -691,10 +690,9 @@ public class Level {
         if (background != null) {
             canvas.draw(background, 0, 0);
         }
-        //draw everything except cat and dead bodies
-        // TODO: draw spirit region afterwards
+        //draw everything except cat, dead bodies and spirit region
         for(Obstacle obj : objects) {
-            if (obj != cat && !(obj instanceof DeadBody)){
+            if (obj != cat && !(obj instanceof DeadBody) && !(obj instanceof SpiritRegion)){
                 obj.draw(canvas);
             }
         }
@@ -705,6 +703,9 @@ public class Level {
             db.draw(canvas);
         }
         cat.draw(canvas);
+        for (SpiritRegion s : spiritRegionArray){
+            s.draw(canvas);
+        }
         canvas.end();
 
         canvas.begin();

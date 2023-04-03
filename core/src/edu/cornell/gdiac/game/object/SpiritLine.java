@@ -105,6 +105,13 @@ public class SpiritLine {
     }
 
     /**
+     * @return true if start and end targets have been reached
+     */
+    public boolean reachedTargets(float epsilon){
+        return end.epsilonEquals(endTarget, epsilon) && startTarget.epsilonEquals(startTarget, epsilon);
+    }
+
+    /**
      * Draws the line to the canvas
      * @param canvas   Canvas to draw to
      */

@@ -15,27 +15,26 @@ public class Checkpoint extends BoxObstacle
 {
     /** The initializing data (to avoid magic numbers) */
     private final JsonValue data;
-
     protected TextureRegion checkpoint;
     protected TextureRegion active_checkpoint;
 
     protected Vector2 origin;
-
     private boolean active;
     private PolygonShape sensorShape;
     protected static JsonValue objectConstants;
 
-    /** The frames of the flame animation */
+    /** The frames of the coin animation */
     private TextureRegion[][] spriteFrames;
-    /** How long the flame has been animating */
+    /** How long the coin has been animating */
     private float animationTime;
-    /** Filmstrip of flame animation */
+    /** Filmstrip of checkpoint coin animation */
     private Animation<TextureRegion> animation;
-
+    /** Filmstrip of active checkpoint coin animation */
     private Animation<TextureRegion> active_animation;
-
-
+    /** The frames of the active coin animation */
     private TextureRegion[][] activeSpriteFrames;
+    private TextureRegion baseTexture;
+    private TextureRegion activeBaseTexture;
 
     /**
      * Creates a new Checkpoint
@@ -45,7 +44,8 @@ public class Checkpoint extends BoxObstacle
      * converts the physics units to pixels.
      *
      */
-    public Checkpoint(JsonValue data, Vector2 scale, TextureRegion checkpointTexture, TextureRegion activeCheckpointTexture) {
+    public Checkpoint(JsonValue data, Vector2 scale, TextureRegion checkpointTexture, TextureRegion activeCheckpointTexture,
+                      TextureRegion baseTexture, TextureRegion activeBaseTexture) {
 //        super(checkpointTexture.getRegionWidth()/scale.x,
 //                checkpointTexture.getRegionHeight()/scale.y);
 //        this.data = data;
@@ -70,6 +70,8 @@ public class Checkpoint extends BoxObstacle
         active = false;
         int spriteWidth = 32;
         int spriteHeight = 64;
+        this.baseTexture = baseTexture;
+        this.activeBaseTexture = activeBaseTexture;
         spriteFrames = TextureRegion.split(checkpointTexture.getTexture(), spriteWidth, spriteHeight);
         activeSpriteFrames = TextureRegion.split(activeCheckpointTexture.getTexture(), spriteWidth, spriteHeight);
         float frameDuration = 0.1f;
@@ -146,6 +148,21 @@ public class Checkpoint extends BoxObstacle
      */
     public boolean getActive(){
         return active;
+    }
+
+    public void drawBase(GameCanvas canvas) {
+       if (active) {
+//           TextureRegion singleFrame = spriteFrames[0][0];
+//           TextureRegion[][] splitTexture = TextureRegion.split(singleFrame.getTexture(), singleFrame.getRegionWidth(), singleFrame.getRegionHeight()/2);
+//           setTexture(splitTexture[1][1]);
+           setTexture(baseTexture);
+        } else {
+//           TextureRegion singleFrame = activeSpriteFrames[0][0];
+//           TextureRegion[][] splitTexture = TextureRegion.split(singleFrame.getTexture(), singleFrame.getRegionWidth(), singleFrame.getRegionHeight()/2);
+//           setTexture(splitTexture[1][1]);
+           setTexture(activeBaseTexture);
+       }
+        super.draw(canvas);
     }
 
     @Override

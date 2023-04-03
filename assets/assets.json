@@ -31,7 +31,9 @@
         "checkpointActive": "platform/checkpointActive.png",
         "checkpoint_anim" : "platform/checkpoint_anim.png",
         "checkpoint_active_anim" : "platform/checkpoint_active_anim.png",
-       "background": "platform/labBkg_concept.png",
+        "checkpoint_base" : "platform/checkpoint_base.png",
+        "checkpoint_base_active" : "platform/checkpoint_base_active.png",
+        "background": "platform/labBkg_concept.png",
         "flame_anim": "platform/flame_anim.png",
         "roboMob": "platform/robo_mob.png",
         "meow_anim": "platform/meow.png"

@@ -434,7 +434,8 @@ public class Level {
         try {
             for (JsonValue checkpointJV : levelJV.get("checkpoints")){
 //                Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint"), tMap.get("checkpointActive"));
-                Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint_anim"), tMap.get("checkpoint_active_anim"));
+                Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint_anim"), tMap.get("checkpoint_active_anim"),
+                        tMap.get("checkpoint_base"), tMap.get("checkpoint_base_active"));
 //                System.out.println("added checkpoint");
                 addObject(checkpoint);
             }
@@ -684,6 +685,10 @@ public class Level {
             db.draw(canvas);
         }
         cat.draw(canvas);
+
+        if (currCheckpoint != null) {
+            currCheckpoint.drawBase(canvas);
+        }
         canvas.end();
 
         canvas.begin();

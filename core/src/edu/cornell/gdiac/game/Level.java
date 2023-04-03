@@ -547,6 +547,7 @@ public class Level {
         activatables.clear();
         mobArray.clear();
         numLives = maxLives;
+        currCheckpoint = null;
         if (world != null) {
             world.dispose();
             world = null;

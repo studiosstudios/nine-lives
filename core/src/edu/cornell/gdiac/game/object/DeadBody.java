@@ -103,6 +103,20 @@ public class DeadBody extends BoxObstacle {
     }
 
     /**
+     * If the dead body is in the same spirit region.
+     * @return true if the dead body is in the same spirit region
+     */
+    public boolean inSameSpiritRegion(ObjectSet<SpiritRegion> otherRegions){
+        for (SpiritRegion region : otherRegions) {
+            if (spiritRegions.contains(region)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    /**
      * Sets if the dead body is being hit by a laser.
      */
     public void setTouchingLaser(boolean touching){ touchingLaser = touching; }

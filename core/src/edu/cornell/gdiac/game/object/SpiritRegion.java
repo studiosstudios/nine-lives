@@ -16,6 +16,8 @@ import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
 import edu.cornell.gdiac.game.obstacle.PolygonObstacle;
+
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class SpiritRegion extends BoxObstacle {
@@ -118,7 +120,7 @@ public class SpiritRegion extends BoxObstacle {
 
 //         PHOTON PARTICLES
         particles = new ObjectSet<Particle>();
-        int capacity = width*height*2;
+        int capacity = width*height*3;
         memory = new ParticlePool(capacity);
     }
 
@@ -143,9 +145,8 @@ public class SpiritRegion extends BoxObstacle {
         ObjectSet.ObjectSetIterator<Particle> iterator = particles.iterator();
         while (iterator.hasNext()) {
             Particle item = iterator.next();
-            // TODO: not removing right at edges
-            if (item.getX() < pos.x*scale.x || item.getX() > (pos.x+width)*scale.x ||
-                    item.getY() < pos.y*scale.y || item.getY() > (pos.y+height)*scale.y) {
+            if (item.getX() < pos.x*scale.x || item.getX() > (pos.x+width)*scale.x-5f ||
+                    item.getY() < pos.y*scale.y || item.getY() > (pos.y+height)*scale.y-5f) {
                 iterator.remove();
                 memory.free(item);
             }
@@ -164,8 +165,19 @@ public class SpiritRegion extends BoxObstacle {
                 float rand_angle = min_angle + (max_angle - min_angle) * (float) Math.random();
 //                float angle = MathUtils.random()*MathUtils.PI2;
                 // Random pos within region
+                // Cluster the y pos near the bottom to give more "floating up" feeling
+                Random random = new Random();
+
+                float minValueY = pos.y;
+                float maxValueY = pos.y + height;
+                float meanValueY = pos.y;
+                float stdDev = height/4;
+
+                float rand_y = (float) (random.nextGaussian() * stdDev + meanValueY);
+                rand_y = Math.max(minValueY, Math.min(rand_y, maxValueY));
+
                 float rand_x = pos.x + width * (float) Math.random();
-                float rand_y = pos.y + height * (float) Math.random();
+//                float rand_y = pos.y + height * (float) Math.random();
 
                 item.setX(rand_x*scale.x);
                 item.setY(rand_y*scale.y);

@@ -141,6 +141,7 @@ public class ActionController {
             //switch body
             DeadBody body = level.getNextBody();
             if (body != null && body.isSwitchable()){
+//                if (body != null && body.isSwitchable() && body.inSameSpiritRegion(cat.getSpiritRegions())){
                 level.spawnDeadBody();
                 cat.setPosition(body.getPosition());
                 cat.setLinearVelocity(body.getLinearVelocity());

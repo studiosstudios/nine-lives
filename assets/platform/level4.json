@@ -4,7 +4,7 @@
 		"ret_pos": [31.5,13], //temp impossible
 	},
 	"mobs" : [{"pos" : [28, 14], "facingRight":  false, "aggressive":  true}],
-	"spiritRegions" : [{"pos": [13, 15], "width": 5, "height": 4, "color": [1,1,1,0.8]}],
+	"spiritRegions" : [{"pos": [12, 15], "width": 5, "height": 4, "color": [1,0,0,0.5]}],
 	"exits" : [{"type":  "return", "height": 18, "pos": [0, 9]},
 		{"type":  "goal", "height": 18, "pos": [32, 9]}],
 	"platforms":	[

@@ -38,6 +38,7 @@
         "spirit_anim": "platform/spirit_anim.png",
         "spirit_photon": "platform/spirit_photon.png",
         "spirit_photon_cat": "platform/spirit_photon_cat.png",
+        "spirit_region": "platform/spirit_region.png",
         "lab_tileset": "platform/lab_tileset.png"
     },
     "jsons"  : {

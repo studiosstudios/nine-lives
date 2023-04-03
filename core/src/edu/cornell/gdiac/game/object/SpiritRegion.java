@@ -65,6 +65,7 @@ public class SpiritRegion extends BoxObstacle {
         super(data.getFloat("width"), data.getFloat("height"));
 
         this.photonTexture = photonTexture.getTexture();
+        this.regionTexture = texture.getTexture();
         this.scale = scale;
 
 //        color = new Color(Color.WHITE);
@@ -74,18 +75,25 @@ public class SpiritRegion extends BoxObstacle {
                 data.get("color").getFloat(3));
 
         Vector2 particle_scale = new Vector2(32/scale.x, 32/scale.y);
-        setDrawScale(particle_scale);
+
+        setTexture(texture);
+        setDrawScale(scale);
         setTextureScale(textureScale);
         setSensor(true);
         setBodyType(BodyDef.BodyType.StaticBody);
+
 
         width = (int) getDimension().x;
         height = (int) getDimension().y;
 
         this.pos = new Vector2(data.get("pos").getFloat(0) - width/2, data.get("pos").getFloat(1) - height/2);
 //        System.out.println(pos);
-        setX(data.get("pos").getFloat(0) - width/2);
-        setY(data.get("pos").getFloat(1) - height/2);
+
+//        setX(data.get("pos").getFloat(0) - width/2);
+//        setY(data.get("pos").getFloat(1) - height/2);
+
+        setX(data.get("pos").getFloat(0)+0.5f);
+        setY(data.get("pos").getFloat(1));
 
 //        // GHOSTIES ANIMATION
 //
@@ -135,8 +143,7 @@ public class SpiritRegion extends BoxObstacle {
         ObjectSet.ObjectSetIterator<Particle> iterator = particles.iterator();
         while (iterator.hasNext()) {
             Particle item = iterator.next();
-//            if (item.getX() < 0 || item.getX() > Gdx.graphics.getWidth() ||
-//                    item.getY() < 0 || item.getY() > Gdx.graphics.getHeight()) {
+            // TODO: not removing right at edges
             if (item.getX() < pos.x*scale.x || item.getX() > (pos.x+width)*scale.x ||
                     item.getY() < pos.y*scale.y || item.getY() > (pos.y+height)*scale.y) {
                 iterator.remove();
@@ -157,10 +164,8 @@ public class SpiritRegion extends BoxObstacle {
                 float rand_angle = min_angle + (max_angle - min_angle) * (float) Math.random();
 //                float angle = MathUtils.random()*MathUtils.PI2;
                 // Random pos within region
-                // Random y pos is within the bottom half of the region
-                // to give the particles time to float up
                 float rand_x = pos.x + width * (float) Math.random();
-                float rand_y = pos.y + (height/2) * (float) Math.random();
+                float rand_y = pos.y + height * (float) Math.random();
 
                 item.setX(rand_x*scale.x);
                 item.setY(rand_y*scale.y);
@@ -195,6 +200,9 @@ public class SpiritRegion extends BoxObstacle {
 //            canvas.draw(animations[i].getKeyFrame(animationTime + timeOffsets[i]), color, origin.x, origin.y,
 //                    (getX() + i % width - width/2 - 0.5f)*drawScale.x,(getY() + i/width - height/2)*drawScale.y,getAngle(),textureScale.x,textureScale.y);
 //        }
+
+        // Spirit Region Background
+        canvas.draw(regionTexture, color, pos.x*drawScale.x, pos.y*drawScale.y, width*drawScale.x, height*drawScale.y);
 
         // Animate all of the photons.
 //        canvas.begin();

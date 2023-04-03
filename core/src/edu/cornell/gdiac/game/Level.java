@@ -499,7 +499,8 @@ public class Level {
 
         try {
             for (JsonValue spiritJV : levelJV.get("spiritRegions")){
-                SpiritRegion spiritRegion = new SpiritRegion(tMap.get("spirit_anim"), tMap.get("spirit_photon"), scale, new Vector2(1, 1), spiritJV);
+//                SpiritRegion spiritRegion = new SpiritRegion(tMap.get("spirit_anim"), tMap.get("spirit_photon"), scale, new Vector2(1, 1), spiritJV);
+                SpiritRegion spiritRegion = new SpiritRegion(tMap.get("spirit_region"), tMap.get("spirit_photon"), scale, new Vector2(1, 1), spiritJV);
                 addObject(spiritRegion);
                 spiritRegionArray.add(spiritRegion);
             }

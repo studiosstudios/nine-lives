@@ -692,6 +692,7 @@ public class Level {
             canvas.draw(background, 0, 0);
         }
         //draw everything except cat and dead bodies
+        // TODO: draw spirit region afterwards
         for(Obstacle obj : objects) {
             if (obj != cat && !(obj instanceof DeadBody)){
                 obj.draw(canvas);

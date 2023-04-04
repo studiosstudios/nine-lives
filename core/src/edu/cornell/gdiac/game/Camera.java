@@ -10,6 +10,8 @@ public class Camera {
     private OrthographicCamera camera;
     private float viewportWidth;
     private float viewportHeight;
+    private float levelWidth;
+    private float levelHeight;
     private float zoom;
     private float x;
     private float y;
@@ -22,10 +24,14 @@ public class Camera {
         camera.zoom = zoom;
         this.viewportWidth = viewportWidth;
         this.viewportHeight = viewportHeight;
+        this.levelWidth = viewportWidth;
+        this.levelHeight = viewportHeight;
         x = camera.position.x;
         y = camera.position.y;
     }
     /**
+     * TEMP: assuming bottom left corner of screen is pixel values 0,0
+     *
      * Focus determined by caller
      * Updates camera positioning based on focus's current position (in pixels)
      * @param xPos x coordinate of focus's current location in pixels
@@ -33,16 +39,17 @@ public class Camera {
      * @param glide smoothed camera movement
      */
     public void updateCamera(float xPos, float yPos, boolean glide){
-        float width_scaled = viewportWidth*camera.zoom;
-        if(xPos > viewportWidth - width_scaled + width_scaled/2){
-            xPos = viewportWidth - width_scaled + width_scaled/2;
+//        System.out.println(levelHeight); //levelHeight smaller for some reason?
+        float width_scaled = viewportWidth*camera.zoom; //width of viewport zoomed in
+        if(xPos > levelWidth - width_scaled + width_scaled/2){
+            xPos = levelWidth - width_scaled + width_scaled/2;
         }
         if(xPos < width_scaled/2){
             xPos = width_scaled/2;
         }
-        float height_scaled = viewportHeight*camera.zoom;
-        if(yPos > viewportHeight - height_scaled + height_scaled/2){
-            yPos = viewportHeight - height_scaled + height_scaled/2;
+        float height_scaled = viewportHeight*camera.zoom; //height of viewport zoomed in
+        if(yPos > levelHeight - height_scaled + height_scaled/2){
+            yPos = levelHeight - height_scaled + height_scaled/2;
         }
         if(yPos < height_scaled/2){
             yPos = height_scaled/2;
@@ -52,15 +59,20 @@ public class Camera {
             y += (yPos - y) * CAMERA_GLIDE_RATE;
         }
         else{
-
             x = xPos;
             y = yPos;
         }
+//        System.out.println(x + " " + y);
         camera.position.set(x, y, 0);
         camera.update();
     }
     public OrthographicCamera getCamera(){
         return camera;
+    }
+    public void setLevelSize(float width, float height){
+//        System.out.println("setting level size:" + height);
+        levelWidth = width;
+        levelHeight = height;
     }
     /**
      * For internal uses

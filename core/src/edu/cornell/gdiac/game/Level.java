@@ -379,6 +379,12 @@ public class Level {
         so that we can enforce a stronger format for our level JSONs.
          */
         try {
+            JsonValue size = levelJV.get("size");
+            bounds.width = size.getFloat(0)*32;
+            bounds.height = size.getFloat(1)*32;
+
+        } catch (NullPointerException e) {}
+        try {
             for (JsonValue exitJV : levelJV.get("exits")){
                 Exit exit = new Exit(scale, exitJV);
                 addObject(exit);
@@ -665,7 +671,11 @@ public class Level {
         canvas.begin();
         canvas.applyViewport();
         if (background != null) {
-            canvas.draw(background, 0, 0);
+            //scales background with level size
+            float scaleX = bounds.width/background.getWidth();
+            float scaleY = bounds.height/background.getHeight();
+            canvas.draw(background, Color.WHITE, 0, 0, background.getWidth()*Float.max(scaleX,scaleY), background.getHeight()*Float.max(scaleX,scaleY));
+//            canvas.draw(background, 0, 0);
         }
         //draw everything except cat and dead bodies
         for(Obstacle obj : objects) {

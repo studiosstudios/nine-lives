@@ -254,7 +254,7 @@ public class LevelController {
         // Toggle debug
         if (input.didDebug()) {
             debug = !debug;
-            canvas.getCamera().debugCamera(debug);
+//            canvas.getCamera().debugCamera(debug);
         }
 
         // Handle resets

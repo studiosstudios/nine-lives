@@ -62,7 +62,7 @@ public class Camera {
             x = xPos;
             y = yPos;
         }
-//        System.out.println(x + " " + y);
+        System.out.println(x + " " + y);
         camera.position.set(x, y, 0);
         camera.update();
     }
@@ -74,15 +74,23 @@ public class Camera {
         levelWidth = width;
         levelHeight = height;
     }
+
     /**
      * For internal uses
      * Camera either zooms out for debugging or returns to original zoom for gameplay
      * @param debug Whether debug mode is active
      */
-    public void debugCamera(boolean debug){
-        if (debug)
-            camera.zoom = 1;
-        else
-            camera.zoom = zoom;
+//    public void debugCamera(boolean debug){
+//        if (debug)
+//            camera.zoom = 1;
+//        else
+//            camera.zoom = zoom;
+//    }
+
+    public float getX(){
+        return x;
+    }
+    public float getY(){
+        return y;
     }
 }

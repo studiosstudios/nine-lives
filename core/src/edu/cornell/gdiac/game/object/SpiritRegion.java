@@ -46,9 +46,9 @@ public class SpiritRegion extends BoxObstacle {
     /** Vector2 position of bottom left corner of spirit region */
     private Vector2 pos;
     /** width of spirit region */
-    private int width;
+    private float width;
     /** height of spirit region */
-    private int height;
+    private float height;
     /** draw scale */
     private Vector2 scale;
 
@@ -100,17 +100,17 @@ public class SpiritRegion extends BoxObstacle {
         setBodyType(BodyDef.BodyType.StaticBody);
 
 
-        width = (int) getDimension().x;
-        height = (int) getDimension().y;
+        width = data.getFloat("width");
+        height = data.getFloat("height");
 
-        this.pos = new Vector2(data.get("pos").getFloat(0) - width/2, data.get("pos").getFloat(1) - height/2);
+        this.pos = new Vector2(data.get("pos").getFloat(0) + data.getFloat("width")/2, data.get("pos").getFloat(1) + data.getFloat("height")/2);
 //        System.out.println(pos);
 
-//        setX(data.get("pos").getFloat(0) - width/2);
-//        setY(data.get("pos").getFloat(1) - height/2);
+        setX(data.get("pos").getFloat(0) + data.getFloat("width")/2);
+        setY(data.get("pos").getFloat(1) + data.getFloat("height")/2);
 
-        setX(data.get("pos").getFloat(0)+0.5f);
-        setY(data.get("pos").getFloat(1));
+//        setX(data.get("pos").getFloat(0)+0.5f);
+//        setY(data.get("pos").getFloat(1));
 
 //        // GHOSTIES ANIMATION
 //
@@ -135,7 +135,7 @@ public class SpiritRegion extends BoxObstacle {
 
 //         PHOTON PARTICLES
         particles = new ObjectSet<Particle>();
-        int capacity = width*height*3;
+        int capacity = (int) width * (int) height*3;
         memory = new ParticlePool(capacity);
 
     }
@@ -249,7 +249,7 @@ public class SpiritRegion extends BoxObstacle {
 //        }
 
         // Spirit Region Background
-        canvas.draw(regionTexture, regionColor, pos.x*drawScale.x, pos.y*drawScale.y, width*drawScale.x, height*drawScale.y);
+        canvas.draw(regionTexture, regionColor, (pos.x - width/2)*drawScale.x, (pos.y-height/2)*drawScale.y, width*drawScale.x, height*drawScale.y);
 
         // Animate all of the photons.
 //        canvas.begin();
@@ -257,14 +257,11 @@ public class SpiritRegion extends BoxObstacle {
 //        canvas.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE); // Additive blending
         for(Particle item : particles) {
             // Draw the object centered at x.
+            // TODO: particles scaled very weirdly rn
 //            canvas.draw(photonTexture, color, item.getX(), item.getY());
-              canvas.draw(photonTexture, particleColor, item.getX(), item.getY(), width, height);
+              canvas.draw(photonTexture, particleColor, item.getX() - (width/2)*drawScale.x, item.getY() - (height/2)*drawScale.y, width, height);
 //            canvas.draw(photonTexture, color, item.getX(), item.getY(),item.getX()*drawScale.x,item.getY()*drawScale.y, item.getAngle(), textureScale.x, textureScale.y);
 
-//            System.out.println("DRAW METHOD PARTICLE");
-//            System.out.println((item.getX()));
-//            System.out.println((item.getY()));
-//            System.out.println(drawScale);
         }
 //        canvas.end();
 

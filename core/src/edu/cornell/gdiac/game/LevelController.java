@@ -109,7 +109,6 @@ public class LevelController {
      */
     public Level getLevel() {
         return level;
-<<<<<<< HEAD
     }
 
     /**
@@ -119,9 +118,9 @@ public class LevelController {
      *
      * @return the canvas associated with this controller
      */
-    public GameCanvas getCanvas() {
-        return canvas;
-    }
+//    public GameCanvas getCanvas() {
+//        return canvas;
+//    }
 
     /**
 =======

@@ -218,11 +218,17 @@ public class AIController {
     }
 
     private RayCastCallback DetectorRayCastCallback = new RayCastCallback() {
+
         @Override
         /**
          * Gets closest raycasted fixture and stores collision point and the fixture itself
          */
         public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
+            // Detector ignores Spirit Regions
+            if (fixture.getBody().getUserData() instanceof SpiritRegion) {
+                return -1;
+            }
+
             if ( fraction < closestFraction && fixture.getBody() != mob.getBody()) {
                 closestFraction = fraction;
                 rayCastPoint.set(point);
@@ -240,6 +246,7 @@ public class AIController {
         startPointCache.set(detector.getRayCastStart());
         detector.setPointingRight(mob.isFacingRight());
         getRayCastEnd(startPointCache, mob.isFacingRight());
+
         level.world.rayCast(DetectorRayCastCallback, startPointCache, endPointCache);
 
         if (closestFraction == 1) {
@@ -252,6 +259,7 @@ public class AIController {
             } else {
                 target = null;
             }
+
             detector.setEndPoint(rayCastFixture.getBody().getPosition());
 
         }

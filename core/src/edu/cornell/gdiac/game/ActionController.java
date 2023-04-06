@@ -133,6 +133,16 @@ public class ActionController {
 
         updateSpiritLine(dt, ic.holdSwitch() && !ic.didSwitch());
 
+        if (ic.holdSwitch()) {
+            for (SpiritRegion sr : level.getSpiritRegionArray()) {
+                sr.setSpiritRegionColorOpacity(true);
+            }
+        } else {
+            for (SpiritRegion sr : level.getSpiritRegionArray()) {
+                sr.setSpiritRegionColorOpacity(false);
+            }
+        }
+
         for (SpiritRegion spiritRegion : level.getSpiritRegionArray()) {
             spiritRegion.update();
         }

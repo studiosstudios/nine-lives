@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.game.object.Particle;
 import edu.cornell.gdiac.game.object.ParticlePool;
@@ -22,8 +23,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class SpiritRegion extends BoxObstacle {
 
-    /** Color of spirit region */
-    private Color color;
+    /** Color of spirit region particles */
+    private Color particleColor;
+    /** Color of spirit region background */
+    private Color regionColor;
     /** The frames of the spirit animation */
     private TextureRegion[][] spriteFrames;
     /** How long the flame has been animating */
@@ -54,6 +57,11 @@ public class SpiritRegion extends BoxObstacle {
 
     /** Respawn rate of the particles */
     public static final int PARTICLE_RESPAWN = 1;
+    public static final float PARTICLE_OPACITY_INACTIVE = 0.3f;
+    public static final float REGION_OPACITY_INACTIVE = 0.2f;
+    public static final float PARTICLE_OPACITY_ACTIVE = 0.5f;
+    public static final float REGION_OPACITY_ACTIVE = 0.5f;
+
     /** Collection of particle objects (MODEL) */
     private ObjectSet<Particle> particles;
     /** Texture image for the photon */
@@ -66,15 +74,22 @@ public class SpiritRegion extends BoxObstacle {
     public SpiritRegion(TextureRegion texture, TextureRegion photonTexture, Vector2 scale, Vector2 textureScale, JsonValue data){
         super(data.getFloat("width"), data.getFloat("height"));
 
+        // TODO: position, width, and height are WEIRD RN FIX
+
         this.photonTexture = photonTexture.getTexture();
         this.regionTexture = texture.getTexture();
         this.scale = scale;
 
 //        color = new Color(Color.WHITE);
-        color = new Color(data.get("color").getFloat(0),
+        particleColor = new Color(data.get("color").getFloat(0),
                 data.get("color").getFloat(1),
                 data.get("color").getFloat(2),
-                data.get("color").getFloat(3));
+                PARTICLE_OPACITY_INACTIVE);
+
+        regionColor = new Color(data.get("color").getFloat(0),
+                data.get("color").getFloat(1),
+                data.get("color").getFloat(2),
+                REGION_OPACITY_INACTIVE);
 
         Vector2 particle_scale = new Vector2(32/scale.x, 32/scale.y);
 
@@ -122,6 +137,7 @@ public class SpiritRegion extends BoxObstacle {
         particles = new ObjectSet<Particle>();
         int capacity = width*height*3;
         memory = new ParticlePool(capacity);
+
     }
 
     /**
@@ -132,6 +148,25 @@ public class SpiritRegion extends BoxObstacle {
     public void dispose() {
         memory.clear();
         photonTexture.dispose();
+    }
+
+    /**
+     * Changes region and particle color opacity
+     *
+     * @param val true if spirit region is less opaque, false if more opaque
+     */
+    public void setSpiritRegionColorOpacity(boolean val) {
+        if (val) {
+            particleColor.set(particleColor.r, particleColor.g, particleColor.b,
+                    PARTICLE_OPACITY_ACTIVE);
+            regionColor.set(regionColor.r, regionColor.g, regionColor.b,
+                    REGION_OPACITY_ACTIVE);
+        } else {
+            particleColor.set(particleColor.r, particleColor.g, particleColor.b,
+                    PARTICLE_OPACITY_INACTIVE);
+            regionColor.set(regionColor.r, regionColor.g, regionColor.b,
+                    REGION_OPACITY_INACTIVE);
+        }
     }
 
     /**
@@ -214,7 +249,7 @@ public class SpiritRegion extends BoxObstacle {
 //        }
 
         // Spirit Region Background
-        canvas.draw(regionTexture, color, pos.x*drawScale.x, pos.y*drawScale.y, width*drawScale.x, height*drawScale.y);
+        canvas.draw(regionTexture, regionColor, pos.x*drawScale.x, pos.y*drawScale.y, width*drawScale.x, height*drawScale.y);
 
         // Animate all of the photons.
 //        canvas.begin();
@@ -223,7 +258,7 @@ public class SpiritRegion extends BoxObstacle {
         for(Particle item : particles) {
             // Draw the object centered at x.
 //            canvas.draw(photonTexture, color, item.getX(), item.getY());
-              canvas.draw(photonTexture, color, item.getX(), item.getY(), width, height);
+              canvas.draw(photonTexture, particleColor, item.getX(), item.getY(), width, height);
 //            canvas.draw(photonTexture, color, item.getX(), item.getY(),item.getX()*drawScale.x,item.getY()*drawScale.y, item.getAngle(), textureScale.x, textureScale.y);
 
 //            System.out.println("DRAW METHOD PARTICLE");

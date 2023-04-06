@@ -166,9 +166,11 @@ public class CollisionController implements ContactListener, ContactFilter {
 
             // TODO: fix collisions when obstacles collide with top and bottom
             // Mob changes direction when hits a wall
-            if (bd1 instanceof Mob && !(fd2 instanceof Activator) && !(fd2 instanceof Checkpoint)) {
+            if (bd1 instanceof Mob && !(fd2 instanceof Activator) && !(fd2 instanceof Checkpoint)
+                    && !(bd2 instanceof SpiritRegion)) {
                 ((Mob) bd1).setFacingRight(!((Mob) bd1).isFacingRight());
-            } else if (bd2 instanceof Mob && !(fd1 instanceof Activator) && !(fd1 instanceof Checkpoint)) {
+            } else if (bd2 instanceof Mob && !(fd1 instanceof Activator) && !(fd1 instanceof Checkpoint)
+                    && !(bd1 instanceof SpiritRegion)) {
                 ((Mob) bd2).setFacingRight(!((Mob) bd2).isFacingRight());
             }
 

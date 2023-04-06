@@ -714,9 +714,9 @@ public class Cat extends CapsuleObstacle implements Moveable {
     }
 
     public void debugPrint() {
-        System.out.println("STATE: "+state);
-        System.out.println("GROUNDED: "+isGrounded);
-        System.out.println("DASH TIMER: "+dashTimer);
+//        System.out.println("STATE: "+state);
+//        System.out.println("GROUNDED: "+isGrounded);
+//        System.out.println("DASH TIMER: "+dashTimer);
     }
 
     public boolean isMoveable(){ return true; }

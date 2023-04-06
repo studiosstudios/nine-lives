@@ -21,7 +21,10 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
+import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.*;  // For GameCanvas
+
+import java.util.HashMap;
 
 /**
  * Base model class to support collisions.
@@ -1127,5 +1130,21 @@ public abstract class Obstacle {
 	 * @param canvas Drawing context
 	 */
 	public abstract void drawDebug(GameCanvas canvas);
+
+	public ObjectMap<String, Object> storeState(){
+		ObjectMap<String, Object> stateMap = new ObjectMap<>();
+		stateMap.put("position", bodyinfo.position);
+		stateMap.put("relativeVelocity", relativeVelocity);
+		stateMap.put("baseVelocity", baseVelocity);
+		stateMap.put("linearVelocity", bodyinfo.linearVelocity);
+		return stateMap;
+	}
+
+	public void loadState(ObjectMap<String, Object> stateMap){
+		bodyinfo.position.set((Vector2) stateMap.get("position"));
+		bodyinfo.linearVelocity.set((Vector2) stateMap.get("linearVelocity"));
+		relativeVelocity.set((Vector2) stateMap.get("relativeVelocity"));
+		baseVelocity.set((Vector2) stateMap.get("baseVelocity"));
+	}
 
 }

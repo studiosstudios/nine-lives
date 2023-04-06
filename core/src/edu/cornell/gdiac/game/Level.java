@@ -14,7 +14,6 @@ import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.util.PooledList;
 
 import java.util.HashMap;
-
 /**
  * Represents a single level in our game
  * <br><br>
@@ -35,18 +34,12 @@ public class Level {
     // Physics objects for the game
     /** Reference to the character cat */
     private Cat cat;
-    /** Reference to the goalDoor (for collision detection) */
-    private BoxObstacle goalDoor;
-    /**Reference to the returnDoor (for collision detection) */
-    private BoxObstacle retDoor;
-
     /** All the objects in the world. */
     protected PooledList<Obstacle> objects  = new PooledList<>();
     /** Queue for adding objects */
     protected PooledList<Obstacle> addQueue = new PooledList<>();
-    /** queue to add joints to the world created in beginContact() */
+    /** Queue to add joints to the world */
     protected PooledList<JointDef> jointQueue = new PooledList<>();
-
     /** Whether we have completed this level */
     private boolean complete;
     /** Whether we have failed at this world (and need a reset) */
@@ -58,11 +51,11 @@ public class Level {
     /** The max lives allowed */
     private final int maxLives;
 
-    /** hashmap to represent activator-spike relationships:
+    /** hashmap to represent activator-activatable relationships:
      *   keys are activator ids specified in JSON*/
     private HashMap<String, Array<Activatable>> activationRelations;
 
-    /** object lists - in the future this will be one list maybe */
+    /** object arrays */
     private final Array<Activator> activators;
     private final Array<Activatable> activatables;
     private final Array<DeadBody> deadBodyArray;
@@ -71,21 +64,13 @@ public class Level {
     private final Array<Laser> lasers;
     /** The respawn position of the player */
     private Vector2 respawnPos;
-    /** Float value to scale width */
-    private float dwidth;
-    /** Float value to scale height */
-    private float dheight;
     /** The background texture */
     private Texture background;
-    /** JSON of the level */
-    private JsonValue levelJV;
 
     /** texture assets */
     private HashMap<String, TextureRegion> textureRegionAssetMap;
 
     //region Spirit mode stuff
-    /** next dead body to switch into */
-    private DeadBody nextDeadBody;
     private boolean spiritMode;
     private SpiritLine spiritLine;
     //endregion
@@ -129,15 +114,7 @@ public class Level {
         return cat;
     }
 
-
-    /**
-     * Returns a reference to the exit door
-     *
-     * @return a reference to the exit door
-     */
-    public BoxObstacle getExit() {
-        return goalDoor;
-    }
+    public Checkpoint getCheckpoint() {return currCheckpoint;}
 
     /**
      * Returns a reference to the array of activators
@@ -191,20 +168,6 @@ public class Level {
     public void setRespawnPos(Vector2 pos) { respawnPos = pos; }
 
     /**
-     * Returns a reference to the dwidth
-     *
-     * @return a reference to the dwidth
-     */
-    public float getDwidth() { return dwidth; }
-
-    /**
-     * Returns a reference to the dheight
-     *
-     * @return a reference to the dheight
-     */
-    public float getDheight() { return dheight; }
-
-    /**
      * Returns true if the level is completed.
      * <br><br>
      * If true, the level will advance after a countdown
@@ -236,20 +199,6 @@ public class Level {
     public void setFailure(boolean value) {
         failed = value;
     }
-
-    /**
-     * Returns a reference to the goal door
-     *
-     * @return a reference to the goal door
-     */
-    public Obstacle getGoalDoor() {  return goalDoor; }
-
-    /**
-     * Returns a reference to the return door
-     *
-     * @return a reference to the return door
-     */
-    public Obstacle getRetDoor() {  return retDoor; }
 
     /**
      * Sets the game world
@@ -366,7 +315,7 @@ public class Level {
      */
     public void populateLevel(HashMap<String, TextureRegion> tMap, HashMap<String, BitmapFont> fMap,
                                HashMap<String, Sound> sMap, JsonValue constants, JsonValue levelJV, boolean ret, Cat prevCat) {
-        this.levelJV = levelJV;
+        /** JSON of the level */
 
         activationRelations = new HashMap<>();
         background = tMap.get("background").getTexture();
@@ -485,8 +434,10 @@ public class Level {
         } catch (NullPointerException e) {}
 
         // Create cat
-        dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
-        dheight = tMap.get("cat").getRegionHeight()/scale.y;
+        /** Float value to scale width */
+        float dwidth = tMap.get("cat").getRegionWidth() / scale.x;
+        /** Float value to scale height */
+        float dheight = tMap.get("cat").getRegionHeight() / scale.y;
         Texture[] arr = new Texture[6];
         arr[0] = tMap.get("cat").getTexture();
         arr[1] = tMap.get("jumpingCat").getTexture();
@@ -503,7 +454,6 @@ public class Level {
         spiritMode = false;
         spiritLine = new SpiritLine(Color.WHITE, Color.CYAN, scale);
     }
-
     /**
      * TODO: MOVE TO LEVELCONTROLLER
      * @param constants
@@ -616,8 +566,6 @@ public class Level {
             JointDef jdef = jointQueue.poll();
             Joint joint = world.createJoint(jdef);
 
-            //add joint to joint list of spikes
-            //this is very jank and should be factored out for all gameobjects
             if (jdef.bodyA.getUserData() instanceof Spikes){
                 ((Spikes) jdef.bodyA.getUserData()).addJoint(joint);
             } else if (jdef.bodyB.getUserData() instanceof Spikes) {
@@ -717,9 +665,21 @@ public class Level {
     }
 
     /**
+     * Loads a dead body into this level from a saved state.
+     * @param state Map of arguments for the dead body, called from storeState() in {@link DeadBody}.
+     */
+    public void loadDeadBodyState(ObjectMap<String, Object> state){
+        DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat"), scale, Vector2.Zero);
+        deadBody.loadState(state);
+        queueObject(deadBody);
+        deadBodyArray.add(deadBody);
+    }
+
+    /**
      * Removes a DeadBody from the dead body array
      * */
     public void removeDeadBody(DeadBody db){
+        db.markRemoved(true);
         deadBodyArray.removeValue(db, true);
     }
 

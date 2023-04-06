@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
 
+import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.*;  // For GameCanvas
 
 /**
@@ -202,6 +203,17 @@ public class BoxObstacle extends SimpleObstacle {
 	 */
 	public void drawDebug(GameCanvas canvas) {
 		canvas.drawPhysics(shape,Color.YELLOW,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
+	}
+
+	public ObjectMap<String, Object> storeState(){
+		ObjectMap<String, Object> stateMap = super.storeState();
+		stateMap.put("dimension", dimension);
+		return stateMap;
+	}
+
+	public void loadState(ObjectMap<String, Object> stateMap){
+		super.loadState(stateMap);
+		setDimension((Vector2) stateMap.get("dimension"));
 	}
 
 

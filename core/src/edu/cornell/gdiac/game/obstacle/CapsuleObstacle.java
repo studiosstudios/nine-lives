@@ -452,6 +452,7 @@ public class CapsuleObstacle extends SimpleObstacle {
 			cap2 = body.createFixture(fixture);
 			break;
 		}
+		fixture.density = fixture.density*2.0f;
 
 		markDirty(false);
 	}

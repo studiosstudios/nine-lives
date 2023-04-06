@@ -81,7 +81,9 @@ public class InputController {
 
 	/** Whether the cancel button was pressed. */
 	private boolean cancelPressed;
-	private boolean cancelPrevious;
+	/** Whether the undo button was pressed. */
+	private boolean undoPressed;
+	private boolean undoPrevious;
 
 	/** if the cancel button was pressed */
 	private boolean didCancel;
@@ -245,6 +247,13 @@ public class InputController {
 	}
 
 	/**
+	 * Returns true if the meow button was pressed.
+	 *
+	 * @return true if the meow button was pressed.
+	 */
+	public boolean didUndo() { return undoPressed && !undoPrevious; }
+
+	/**
 	 * Returns true if the switch button was released.
 	 *
 	 * @return true if the switch button was released.
@@ -266,7 +275,7 @@ public class InputController {
 	 * @return true if the switch button is being held.
 	 */
 	public boolean holdSwitch() {
-		didCancel = cancelPressed && !cancelPrevious;
+		didCancel = cancelPressed;
 		cancelled = cancelled || didCancel;
 		return switchPressed & !cancelled;
 	}
@@ -307,7 +316,7 @@ public class InputController {
 		nextPrevious  = nextPressed;
 		prevPrevious = prevPressed;
 		switchPrevious = switchPressed;
-		cancelPressed = cancelPrevious;
+		undoPrevious = undoPressed;
 		
 		readKeyboard(bounds, scale);
 	}
@@ -349,6 +358,7 @@ public class InputController {
 		meowPressed = (Gdx.input.isKeyPressed(Input.Keys.M));
 		switchPressed = (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT));
 		cancelPressed = (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT));
+		undoPressed = (Gdx.input.isKeyPressed(Keys.U));
 
 		//useful keys for testing/debugging
 		nextPressed = (Gdx.input.isKeyPressed(Input.Keys.N));

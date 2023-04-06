@@ -119,6 +119,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                 }
                 if (fd2 instanceof Flamethrower.Flame){
                     actionController.die();
+                    System.out.println("die");
                 }
                 if (fd2 instanceof Checkpoint){
                     level.updateCheckpoints(((Checkpoint) fd2));

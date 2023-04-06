@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
 import edu.cornell.gdiac.game.obstacle.ComplexObstacle;
@@ -16,8 +17,6 @@ public class Checkpoint extends BoxObstacle
 
     protected TextureRegion checkpoint;
     protected TextureRegion active_checkpoint;
-
-    protected Vector2 origin;
 
     private boolean active;
     private PolygonShape sensorShape;
@@ -102,4 +101,12 @@ public class Checkpoint extends BoxObstacle
      * @param constants Json field corresponding to this object
      */
     public static void setConstants(JsonValue constants) { objectConstants = constants; }
+
+    @Override
+    public void loadState(ObjectMap<String, Object> state){
+        super.loadState(state);
+        Vector2 pos = (Vector2) state.get("position");
+        setX(pos.x + objectConstants.get("offset").getFloat(0));
+        setY(pos.y + objectConstants.get("offset").getFloat(1));
+    }
 }

@@ -12,8 +12,10 @@ import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.object.*;
 import edu.cornell.gdiac.game.obstacle.Obstacle;
 import edu.cornell.gdiac.util.Direction;
+import edu.cornell.gdiac.util.PooledList;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Controller that processes in-world player actions and interactions.
@@ -143,7 +145,6 @@ public class ActionController {
                 cat.setPosition(body.getPosition());
                 cat.setLinearVelocity(body.getLinearVelocity());
                 cat.setFacingRight(body.isFacingRight());
-                body.markRemoved(true);
                 level.removeDeadBody(body);
             }
         } else {
@@ -231,6 +232,46 @@ public class ActionController {
         }
         level.setSpiritMode(spiritMode);
         spiritLine.update(dt, spiritMode);
+    }
+
+    /**
+     * Updates all objects in the level.
+     * @param dt  Number of seconds since last animation frame
+     */
+    public void postUpdate(float dt){
+        // Garbage collect the deleted objects.
+        // Note how we use the linked list nodes to delete O(1) in place.
+        // This is O(n) without copying.
+        Iterator<PooledList<Obstacle>.Entry> iterator = level.getObjects().entryIterator();
+        while (iterator.hasNext()) {
+            PooledList<Obstacle>.Entry entry = iterator.next();
+            Obstacle obj = entry.getValue();
+            if (obj.isRemoved()) {
+                obj.deactivatePhysics(level.getWorld());
+                entry.remove();
+            } else {
+                // Note that update is called last!
+                obj.update(dt);
+
+                // Update base velocity.
+                if (obj instanceof Moveable) {
+                    Vector2 baseVel = new Vector2();
+                    ObjectSet<Fixture> fixtures =  (((Moveable) obj).getGroundFixtures());
+                    //set base velocity to average of linear velocities of grounds
+                    if (fixtures.size > 0) {
+                        for (Fixture f : fixtures) {
+                            baseVel.add((((Obstacle) f.getBody().getUserData()).getLinearVelocity()));
+                        }
+                        baseVel.scl(1f / (float) fixtures.size);
+                        obj.setBaseVelocity(baseVel);
+                    } else {
+                        obj.setBaseVelocity(Vector2.Zero);
+                    }
+
+                }
+
+            }
+        }
     }
 
     /**

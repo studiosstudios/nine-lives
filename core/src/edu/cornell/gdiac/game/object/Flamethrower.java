@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
 import edu.cornell.gdiac.game.obstacle.ComplexObstacle;
@@ -156,6 +157,26 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
      * @param constants JSON storing the shared constants.
      */
     public static void setConstants(JsonValue constants) { objectConstants = constants; }
+
+
+    public ObjectMap<String, Object> storeState(){
+        ObjectMap<String, Object> stateMap = new ObjectMap<>();
+        stateMap.put("basePosition", flameBase.getPosition().cpy());
+        stateMap.put("flamePosition", flame.getPosition().cpy());
+        stateMap.put("relativeVelocity", relativeVelocity.cpy());
+        stateMap.put("baseVelocity", baseVelocity.cpy());
+        stateMap.put("linearVelocity", getLinearVelocity().cpy());
+        return stateMap;
+    }
+
+    public void loadState(ObjectMap<String, Object> stateMap){
+        flameBase.setPosition((Vector2) stateMap.get("basePosition"));
+        flame.setPosition((Vector2) stateMap.get("flamePosition"));
+        setLinearVelocity((Vector2) stateMap.get("linearVelocity"));
+        relativeVelocity.set((Vector2) stateMap.get("relativeVelocity"));
+        baseVelocity.set((Vector2) stateMap.get("baseVelocity"));
+        markDirty(true);
+    }
 
     /**
      * Represents a flame that a flamethrower can produce.

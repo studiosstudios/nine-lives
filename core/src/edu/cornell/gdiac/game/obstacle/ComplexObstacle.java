@@ -1164,4 +1164,29 @@ public abstract class ComplexObstacle extends Obstacle {
 		}
 	}
 
+	public ObjectMap<String, Object> storeState(){
+		if (body != null){
+			ObjectMap<String, Object> stateMap = new ObjectMap<>();
+			stateMap.put("position", getPosition().cpy());
+			stateMap.put("relativeVelocity", relativeVelocity.cpy());
+			stateMap.put("baseVelocity", baseVelocity.cpy());
+			stateMap.put("linearVelocity", getLinearVelocity().cpy());
+			return stateMap;
+		} else {
+			return super.storeState();
+		}
+	}
+
+	public void loadState(ObjectMap<String, Object> stateMap){
+		if (body != null) {
+			setPosition((Vector2) stateMap.get("position"));
+			setLinearVelocity((Vector2) stateMap.get("linearVelocity"));
+			relativeVelocity.set((Vector2) stateMap.get("relativeVelocity"));
+			baseVelocity.set((Vector2) stateMap.get("baseVelocity"));
+		} else {
+			super.loadState(stateMap);
+		}
+		markDirty(true);
+	}
+
 }

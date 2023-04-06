@@ -14,7 +14,7 @@
 		{"pos": [5, 17], "angle": 180},
 		{"pos": [2, 17], "angle": 270}
 	],
-	"checkpoints" : [{"pos" : [1, 13]}],
+	"checkpoints" : [{"pos" : [1, 13], "angle": 0}],
 	"exits" : [{"type":  "return", "height": 18, "pos": [0, 9]},
 		{"type":  "goal", "height": 18, "pos": [32, 9]}],
 	"platforms":	[{"shape":[-2.5, 13, 32, 13, 32, 0, -2.5, 0]}]

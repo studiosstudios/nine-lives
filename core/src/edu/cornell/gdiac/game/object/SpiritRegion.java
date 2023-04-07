@@ -39,10 +39,7 @@ public class SpiritRegion extends BoxObstacle {
     private float[] timeOffsets;
     /** List of angles to rotate texture */
     private final int[] listAngles = {0, 90, 180, 270};
-//    /** x position of spirit region */
-//    private int x;
-//    /** y position of spirit region */
-//    private int y;
+
     /** Vector2 position of bottom left corner of spirit region */
     private Vector2 pos;
     /** width of spirit region */
@@ -52,15 +49,20 @@ public class SpiritRegion extends BoxObstacle {
     /** draw scale */
     private Vector2 scale;
 
-
     /** PARTICLE VARS */
 
     /** Respawn rate of the particles */
     public static final int PARTICLE_RESPAWN = 1;
+    /** Opacity value for particles when spirit region not active on key press */
     public static final float PARTICLE_OPACITY_INACTIVE = 0.3f;
+    /** Opacity value when spirit region not active on key press */
     public static final float REGION_OPACITY_INACTIVE = 0.2f;
+    /** Opacity value for particles when spirit region not active on key press */
     public static final float PARTICLE_OPACITY_ACTIVE = 0.5f;
+    /** Opacity value when spirit region active on key press */
     public static final float REGION_OPACITY_ACTIVE = 0.5f;
+    /** Size of particles to scale */
+    public static final float PARTICLE_SIZE = 6f;
 
     /** Collection of particle objects (MODEL) */
     private ObjectSet<Particle> particles;
@@ -71,16 +73,24 @@ public class SpiritRegion extends BoxObstacle {
     /** Simple field to slow down the allocation of photons */
     private int cooldown = 0;
 
+    /**
+     * Creates a new SpiritRegion Model
+     *
+     * The Spirit Region has some color.
+     *
+     * @param texture The texture for the background region
+     * @param photonTexture The texture for the particles
+     * @param scale Drawing scale
+     * @param textureScale Texture scale
+     * @param data The JSON data to read from
+     */
     public SpiritRegion(TextureRegion texture, TextureRegion photonTexture, Vector2 scale, Vector2 textureScale, JsonValue data){
         super(data.getFloat("width"), data.getFloat("height"));
-
-        // TODO: position, width, and height are WEIRD RN FIX
 
         this.photonTexture = photonTexture.getTexture();
         this.regionTexture = texture.getTexture();
         this.scale = scale;
 
-//        color = new Color(Color.WHITE);
         particleColor = new Color(data.get("color").getFloat(0),
                 data.get("color").getFloat(1),
                 data.get("color").getFloat(2),
@@ -91,26 +101,20 @@ public class SpiritRegion extends BoxObstacle {
                 data.get("color").getFloat(2),
                 REGION_OPACITY_INACTIVE);
 
-        Vector2 particle_scale = new Vector2(32/scale.x, 32/scale.y);
-
         setTexture(texture);
         setDrawScale(scale);
         setTextureScale(textureScale);
         setSensor(true);
         setBodyType(BodyDef.BodyType.StaticBody);
 
-
         width = data.getFloat("width");
         height = data.getFloat("height");
 
         this.pos = new Vector2(data.get("pos").getFloat(0) + data.getFloat("width")/2, data.get("pos").getFloat(1) + data.getFloat("height")/2);
-//        System.out.println(pos);
 
         setX(data.get("pos").getFloat(0) + data.getFloat("width")/2);
         setY(data.get("pos").getFloat(1) + data.getFloat("height")/2);
 
-//        setX(data.get("pos").getFloat(0)+0.5f);
-//        setY(data.get("pos").getFloat(1));
 
 //        // GHOSTIES ANIMATION
 //
@@ -170,7 +174,7 @@ public class SpiritRegion extends BoxObstacle {
     }
 
     /**
-     * Updates the status of all of the game objects.
+     * Updates the status of the particles.
      *
      * This method generates particles according to user input, garbage collects them, and
      * moves them.
@@ -198,7 +202,6 @@ public class SpiritRegion extends BoxObstacle {
                 float min_angle = (float) Math.PI/3;
                 float max_angle = (float) (3*Math.PI/4);
                 float rand_angle = min_angle + (max_angle - min_angle) * (float) Math.random();
-//                float angle = MathUtils.random()*MathUtils.PI2;
                 // Random pos within region
                 // Cluster the y pos near the bottom to give more "floating up" feeling
                 Random random = new Random();
@@ -212,12 +215,10 @@ public class SpiritRegion extends BoxObstacle {
                 rand_y = Math.max(minValueY, Math.min(rand_y, maxValueY));
 
                 float rand_x = pos.x + width * (float) Math.random();
-//                float rand_y = pos.y + height * (float) Math.random();
 
                 item.setX(rand_x*scale.x);
                 item.setY(rand_y*scale.y);
 
-//                item.getPosition().set(pos);
                 item.setAngle(rand_angle);
                 cooldown = PARTICLE_RESPAWN;
                 // Add it to the set of objects
@@ -236,6 +237,11 @@ public class SpiritRegion extends BoxObstacle {
         }
     }
 
+    /**
+     * Draws the Spirit Region and its particles
+     *
+     * @param canvas Drawing context
+     */
     @Override
     public void draw(GameCanvas canvas){
 
@@ -249,21 +255,15 @@ public class SpiritRegion extends BoxObstacle {
 //        }
 
         // Spirit Region Background
-        canvas.draw(regionTexture, regionColor, (pos.x - width/2)*drawScale.x, (pos.y-height/2)*drawScale.y, width*drawScale.x, height*drawScale.y);
+        canvas.draw(regionTexture, regionColor, (pos.x - width/2)*drawScale.x, (pos.y-height/2)*drawScale.y,
+                width*drawScale.x, height*drawScale.y);
 
-        // Animate all of the photons.
-//        canvas.begin();
-//        canvas.setBlendState(GameCanvas.BlendState.ADDITIVE);
-//        canvas.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE); // Additive blending
+        // Draw particles
         for(Particle item : particles) {
             // Draw the object centered at x.
             // TODO: particles scaled very weirdly rn
-//            canvas.draw(photonTexture, color, item.getX(), item.getY());
-              canvas.draw(photonTexture, particleColor, item.getX() - (width/2)*drawScale.x, item.getY() - (height/2)*drawScale.y, width, height);
-//            canvas.draw(photonTexture, color, item.getX(), item.getY(),item.getX()*drawScale.x,item.getY()*drawScale.y, item.getAngle(), textureScale.x, textureScale.y);
-
+              canvas.draw(photonTexture, particleColor, item.getX() - (width/2)*drawScale.x,
+                      item.getY() - (height/2)*drawScale.y, PARTICLE_SIZE, PARTICLE_SIZE);
         }
-//        canvas.end();
-
     }
 }

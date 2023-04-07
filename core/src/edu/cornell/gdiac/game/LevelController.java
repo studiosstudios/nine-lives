@@ -151,7 +151,6 @@ public class LevelController {
     public void setJSON(JsonValue level) { levelJV = level; }
 
 
-
     /**
      * Sets the hashmaps for Texture Regions, Sounds, Fonts, and sets JSON value constants
      *

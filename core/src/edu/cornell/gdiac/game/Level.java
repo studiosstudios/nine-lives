@@ -86,7 +86,9 @@ public class Level {
     //region Spirit mode stuff
     /** next dead body to switch into */
     private DeadBody nextDeadBody;
+    /** Whether in spirit mode or not */
     private boolean spiritMode;
+    /** The spirit line */
     private SpiritLine spiritLine;
     //endregion
 
@@ -353,7 +355,6 @@ public class Level {
         respawnPos = currCheckpoint.getPosition();
     }
 
-
     /**
      * Lays out the game geography from the given JSON file
      * @param tMap Texture map for game objects
@@ -433,15 +434,11 @@ public class Level {
 
         try {
             for (JsonValue checkpointJV : levelJV.get("checkpoints")){
-//                Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint"), tMap.get("checkpointActive"));
                 Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint_anim"), tMap.get("checkpoint_active_anim"),
                         tMap.get("checkpoint_base"), tMap.get("checkpoint_base_active"));
-//                System.out.println("added checkpoint");
                 addObject(checkpoint);
             }
-        } catch (NullPointerException e) {
-//            System.out.println("failed to add checkpoint.");
-        }
+        } catch (NullPointerException e) {}
 
         try {
             for(JsonValue boxJV : levelJV.get("boxes")){
@@ -501,7 +498,6 @@ public class Level {
         arr[5] = tMap.get("walk").getTexture();
         cat = new Cat(levelJV.get("cat"), dwidth, dheight, ret, prevCat == null? null : prevCat.getPosition(),arr);
         cat.setDrawScale(scale);
-//        cat.setTexture(tMap.get("cat"));
         respawnPos = cat.getPosition();
         addObject(cat);
 

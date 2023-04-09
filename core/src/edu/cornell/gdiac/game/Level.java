@@ -372,6 +372,9 @@ public class Level {
         activationRelations = new HashMap<>();
         background = tMap.get("background").getTexture();
 
+        JsonValue size = levelJV.get("size");
+        bounds.width = size.getFloat(0)*32;
+        bounds.height = size.getFloat(1)*32;
         /*
         TODO: Remove try-catches
         We use try-catches here so that the level JSONs don't need to contain empty fields for objects that they don't have.
@@ -667,7 +670,11 @@ public class Level {
         canvas.begin();
         canvas.applyViewport();
         if (background != null) {
-            canvas.draw(background, 0, 0);
+            //scales background with level size
+            float scaleX = bounds.width/background.getWidth();
+            float scaleY = bounds.height/background.getHeight();
+            canvas.draw(background, Color.WHITE, 0, 0, background.getWidth()*Float.max(scaleX,scaleY), background.getHeight()*Float.max(scaleX,scaleY));
+//            canvas.draw(background, 0, 0);
         }
         //draw everything except cat and dead bodies
         for(Obstacle obj : objects) {

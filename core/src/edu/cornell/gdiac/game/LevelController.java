@@ -211,6 +211,8 @@ public class LevelController {
         boolean tempRet = isRet();
         setRet(false);
         populateLevel(tempRet, prevCat);
+        canvas.getCamera().setLevelSize(level.bounds.width, level.bounds.height);
+        canvas.getCamera().updateCamera(level.getCat().getPosition().x*scale.x, level.getCat().getPosition().y*scale.y, false);
     }
 
     /**
@@ -250,6 +252,7 @@ public class LevelController {
         // Toggle debug
         if (input.didDebug()) {
             debug = !debug;
+//            canvas.getCamera().debugCamera(debug);
         }
 
         // Handle resets
@@ -279,6 +282,9 @@ public class LevelController {
             setRet(true);
         }
         actionController.update(dt);
+        float x_pos = level.getCat().getPosition().x*scale.x;
+        float y_pos = level.getCat().getPosition().y*scale.y;
+        canvas.getCamera().updateCamera(x_pos, y_pos, true);
     }
 
     /**

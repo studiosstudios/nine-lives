@@ -358,6 +358,7 @@ public class InputController {
 
 		// Directional controls
 		horizontal = 0.0f;
+
 		vertical = 0.0f;
 		if (!pause) {
 			if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {

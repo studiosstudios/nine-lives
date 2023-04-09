@@ -76,10 +76,10 @@ public class GameCanvas {
 	private BlendState blend;
 	
 	/** Camera for the underlying SpriteBatch */
-	private final OrthographicCamera camera;
+	private Camera camera;
 
 	/** ExtendViewport, used during gameplay */
-	private final Viewport viewport;
+	private Viewport extendView;
 
 	/** Value to cache window width (if we are currently full screen) */
 	int width;
@@ -94,6 +94,7 @@ public class GameCanvas {
 	private Vector2 vertex;
 	/** Cache object to handle raw textures */
 	private TextureRegion holder;
+	private final float CAMERA_ZOOM = 0.85f;
 
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
@@ -111,12 +112,11 @@ public class GameCanvas {
 		region = new TextureRegion(new Texture("white.png"));
 		
 		// Set the projection matrix (for proper scaling)
-		camera = new OrthographicCamera(STANDARD_WIDTH, STANDARD_HEIGHT);
-		camera.setToOrtho(false, STANDARD_WIDTH, STANDARD_HEIGHT);
-		viewport = new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT, camera);
-		viewport.apply(true);
-		spriteBatch.setProjectionMatrix(camera.combined);
-		debugRender.setProjectionMatrix(camera.combined);
+		camera = new Camera(STANDARD_WIDTH, STANDARD_HEIGHT, CAMERA_ZOOM);
+		extendView = new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT, camera.getCamera());
+		extendView.apply(true);
+		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
+		debugRender.setProjectionMatrix(camera.getCamera().combined);
 
 		// Initialize the cache objects
 		holder = new TextureRegion();
@@ -124,7 +124,6 @@ public class GameCanvas {
 		global = new Matrix4();
 		vertex = new Vector2();
 	}
-		
 	/**
 	* Eliminate any resources that should be garbage collected manually.
 	*/
@@ -213,7 +212,7 @@ public class GameCanvas {
 	public Vector2 getSize() {
 		return new Vector2(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 	}
-	
+
 	/**
 	 * Changes the width and height of this canvas
 	 * <br><br>
@@ -236,7 +235,13 @@ public class GameCanvas {
 		resize();
 
 	}
-	
+
+	/**
+	 * @return Instance of Camera wrapper
+	 */
+	public Camera getCamera(){
+		return camera;
+	}
 	/**
 	 * Returns whether this canvas is currently fullscreen.
 	 *
@@ -257,7 +262,7 @@ public class GameCanvas {
 	 * This method raises an IllegalStateException if called while drawing is
 	 * active (e.g. in-between a begin-end pair).
 	 *
-	 * @param fullscreen Whether this canvas should change to fullscreen.
+	 * @param value Whether this canvas should change to fullscreen.
 	 * @param desktop 	 Whether to use the current desktop resolution
 	 */	 
 	public void setFullscreen(boolean fullscreen, boolean desktop) {
@@ -274,7 +279,7 @@ public class GameCanvas {
 
 	/** Activates the ExtendViewport for drawing to canvas */
 	public void applyViewport() {
-		viewport.apply(true);
+		extendView.apply(true);
 	}
 
 	/**
@@ -285,7 +290,7 @@ public class GameCanvas {
 	 */
 	 public void resize() {
 		spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, getWidth(), getHeight());
-		viewport.update(getWidth(), getHeight(), true);
+		 extendView.update(getWidth(), getHeight(), true);
 	}
 	
 	/**
@@ -349,7 +354,7 @@ public class GameCanvas {
 	 */
 	public void begin(Affine2 affine) {
 		global.setAsAffine(affine);
-		global.mulLeft(camera.combined);
+		global.mulLeft(camera.getCamera().combined);
 		spriteBatch.setProjectionMatrix(global);
 
 		setBlendState(BlendState.NO_PREMULT);
@@ -368,7 +373,7 @@ public class GameCanvas {
 	public void begin(float sx, float sy) {
 		global.idt();
 		global.scl(sx,sy,1.0f);
-		global.mulLeft(camera.combined);
+		global.mulLeft(camera.getCamera().combined);
 		spriteBatch.setProjectionMatrix(global);
 
 		spriteBatch.begin();
@@ -381,7 +386,7 @@ public class GameCanvas {
 	 * Nothing is flushed to the graphics card until the method end() is called.
 	 */
 	public void begin() {
-		spriteBatch.setProjectionMatrix(camera.combined);
+		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
 		spriteBatch.begin();
 		active = DrawPass.STANDARD;
 	}
@@ -934,7 +939,7 @@ public class GameCanvas {
 	*/
 	public void beginDebug(Affine2 affine) {
 		global.setAsAffine(affine);
-		global.mulLeft(camera.combined);
+		global.mulLeft(camera.getCamera().combined);
 		debugRender.setProjectionMatrix(global);
 
 		debugRender.begin(ShapeRenderer.ShapeType.Line);
@@ -952,7 +957,7 @@ public class GameCanvas {
 	public void beginDebug(float sx, float sy) {
 		global.idt();
 		global.scl(sx,sy,1.0f);
-		global.mulLeft(camera.combined);
+		global.mulLeft(camera.getCamera().combined);
 		debugRender.setProjectionMatrix(global);
 
 		debugRender.begin(ShapeRenderer.ShapeType.Line);
@@ -965,7 +970,7 @@ public class GameCanvas {
 	 * Nothing is flushed to the graphics card until the method end() is called.
 	 */
 	public void beginDebug() {
-		debugRender.setProjectionMatrix(camera.combined);
+		debugRender.setProjectionMatrix(camera.getCamera().combined);
 		debugRender.begin(ShapeRenderer.ShapeType.Filled);
 		debugRender.setColor(Color.RED);
 		debugRender.circle(0, 0, 10);

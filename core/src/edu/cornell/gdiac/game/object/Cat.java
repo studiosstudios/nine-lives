@@ -700,7 +700,9 @@ public class Cat extends CapsuleObstacle implements Moveable {
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
         for (PolygonShape shape : sensorShapes) {
-            canvas.drawPhysics(shape,Color.RED,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
+            float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+            float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+            canvas.drawPhysics(shape,Color.RED,getX()-xTranslate,getY()-yTranslate,getAngle(),drawScale.x,drawScale.y);
         }
         debugPrint();
 

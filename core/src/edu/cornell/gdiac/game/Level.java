@@ -371,6 +371,9 @@ public class Level {
         activationRelations = new HashMap<>();
         background = tMap.get("background").getTexture();
 
+        JsonValue size = levelJV.get("size");
+        bounds.width = size.getFloat(0)*32;
+        bounds.height = size.getFloat(1)*32;
         /*
         TODO: Remove try-catches
         We use try-catches here so that the level JSONs don't need to contain empty fields for objects that they don't have.
@@ -378,12 +381,6 @@ public class Level {
         every object in the game, even if they're empty. At that point, we should remove these try-catches
         so that we can enforce a stronger format for our level JSONs.
          */
-        try {
-            JsonValue size = levelJV.get("size");
-            bounds.width = size.getFloat(0)*32;
-            bounds.height = size.getFloat(1)*32;
-
-        } catch (NullPointerException e) {}
         try {
             for (JsonValue exitJV : levelJV.get("exits")){
                 Exit exit = new Exit(scale, exitJV);

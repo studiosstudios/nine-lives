@@ -65,6 +65,9 @@ public class LevelController {
     private LevelState[] prevLivesState = new LevelState[9];
     /** If we have respawned in preUpdated(). Needed in postUpdate() for saving level state. */
     private boolean justRespawned;
+    /** The color of the flash animation after resetting/undoing */
+    private Color flashColor = new Color(1, 1, 1, 0);
+
 
     /**
      * Creates and initialize a new instance of a LevelController
@@ -262,6 +265,7 @@ public class LevelController {
 
         // Handle resets
         if (input.didReset()) {
+//            flashColor.set(0, 0, 0, 1);
             reset(null);
         }
 
@@ -272,6 +276,7 @@ public class LevelController {
         if (input.didUndo()) {
             if (level.getNumLives() < 9) {
                 loadLevelState(prevLivesState[8 - level.getNumLives()]);
+                flashColor.set(1, 1, 1, 1);
             }
         }
 
@@ -293,6 +298,8 @@ public class LevelController {
             setRet(true);
         }
         actionController.update(dt);
+
+        flashColor.a -= flashColor.a/10;
     }
 
     /**
@@ -346,14 +353,20 @@ public class LevelController {
      * @param dt	Number of seconds since last animation frame
      */
     public void draw(float dt) {
-        level.draw(canvas, debug);
+        canvas.clear();
+        canvas.applyViewport();
 
-        // Final message
-        if (level.isComplete() && !level.isFailure()) {
-            displayFont.setColor(Color.YELLOW);
-            canvas.begin(); // DO NOT SCALE
-            canvas.end();
+        canvas.begin();
+        level.draw(canvas);
+        canvas.drawRectangle(0, 0, bounds.width,bounds.height, flashColor, scale.x, scale.y);
+        canvas.end();
+
+        if (debug) {
+            canvas.beginDebug();
+            level.drawDebug(canvas);
+            canvas.endDebug();
         }
+
     }
 
 
@@ -373,7 +386,6 @@ public class LevelController {
                 if (obs instanceof DeadBody) {
                     deadBodyData.add(obs.storeState());
                 } else {
-                    //TODO: for dead bodies, doors, platforms, switches and timedbuttons, override storeState() to store relevant variables of object state
                     obstacleData.put(obs, obs.storeState());
                 }
             }
@@ -391,7 +403,7 @@ public class LevelController {
         if (state.checkpoint != null) {
             level.updateCheckpoints(state.checkpoint);
         } else {
-            //TODO: handle this case
+            level.resetCheckpoints();
         }
         for (Obstacle obs : level.getObjects()){
 
@@ -400,8 +412,13 @@ public class LevelController {
                 DeadBody db = (DeadBody) obs;
                 level.removeDeadBody(db);
             } else {
-                //TODO: test if spike and dead body weld joints still work after loading
+
                 obs.loadState(state.obstacleData.get(obs));
+
+                //TODO: test if spike and dead body weld joints still work after loading
+                if (obs instanceof Spikes){
+                    ((Spikes) obs).destroyJoints(world);
+                }
             }
         }
 

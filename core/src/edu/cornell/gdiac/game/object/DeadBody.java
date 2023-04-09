@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
@@ -246,4 +247,15 @@ public class DeadBody extends BoxObstacle implements Movable {
     public ObjectSet<Fixture> getGroundFixtures() { return groundFixtures; }
 
     public String getGroundSensorName(){ return groundSensorName; }
+
+    public ObjectMap<String, Object> storeState(){
+        ObjectMap<String, Object> stateMap = super.storeState();
+        stateMap.put("burnTicks", burnTicks);
+        return stateMap;
+    }
+
+    public void loadState(ObjectMap<String, Object> stateMap){
+        super.loadState(stateMap);
+        burnTicks = (int) stateMap.get("burnTicks");
+    }
 }

@@ -74,7 +74,8 @@ public class Level {
     private boolean spiritMode;
     private SpiritLine spiritLine;
     //endregion
-
+    /** the initial respawn position for this level */
+    private Vector2 startRespawnPos;
     /**
      * Returns the bounding rectangle for the physics world
      * <br><br>
@@ -302,6 +303,14 @@ public class Level {
         respawnPos = currCheckpoint.getPosition();
     }
 
+    public void resetCheckpoints(){
+        if(currCheckpoint != null){
+            currCheckpoint.setActive(false);
+        }
+        currCheckpoint = null;
+        respawnPos = startRespawnPos;
+    }
+
 
     /**
      * Lays out the game geography from the given JSON file
@@ -449,6 +458,7 @@ public class Level {
         cat.setDrawScale(scale);
 //        cat.setTexture(tMap.get("cat"));
         respawnPos = cat.getPosition();
+        startRespawnPos = respawnPos;
         addObject(cat);
 
         spiritMode = false;
@@ -496,6 +506,7 @@ public class Level {
             world.dispose();
             world = null;
         }
+        currCheckpoint = null;
         setComplete(false);
         setFailure(false);
     }
@@ -600,63 +611,60 @@ public class Level {
     }
 
     /**
-     * Draws the level to the given game canvas
-     * <br><br>
-     * If debug mode is true, it will outline all physics bodies as wireframes. Otherwise
-     * it will only draw the sprite representations.
+     * Draws the level to the given game canvas. Assumes <code>canvas.begin()</code> has already been called.
      *
      * @param canvas	the drawing context
      */
-    public void draw(GameCanvas canvas, boolean debug) {
-        canvas.clear();
-
-        canvas.begin();
-        canvas.applyViewport();
+    public void draw(GameCanvas canvas) {
         if (background != null) {
             canvas.draw(background, 0, 0);
         }
         //draw everything except cat and dead bodies
-        for(Obstacle obj : objects) {
-            if (obj != cat && !(obj instanceof DeadBody)){
+        for (Obstacle obj : objects) {
+            if (obj != cat && !(obj instanceof DeadBody)) {
                 obj.draw(canvas);
             }
         }
 
         spiritLine.draw(canvas);
 
-        for (DeadBody db : deadBodyArray){
+        for (DeadBody db : deadBodyArray) {
             db.draw(canvas);
         }
         cat.draw(canvas);
-        canvas.end();
 
-        canvas.begin();
-        if (debug) {
-            canvas.beginDebug();
-            //draw grid
-            Color lineColor = new Color(0.8f, 0.8f, 0.8f, 1);
-            for (int x = 0; x < bounds.width; x++) {
-                Vector2 p1 = new Vector2(x, 0);
-                Vector2 p2 = new Vector2(x, bounds.height);
-                canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
-            }
-            for (int y = 0; y < bounds.height; y++) {
-                Vector2 p1 = new Vector2(0, y);
-                Vector2 p2 = new Vector2(bounds.width, y);
-                canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
-            }
-            for (Obstacle obj : objects) {
-                obj.drawDebug(canvas);
-            }
-            canvas.endDebug();
-        }
-        canvas.end();
     }
+
+    /**
+     * Draws the wireframe debug of the level to the given game canvas. Assumes <code>canvas.beginDebug()</code> has already been called.
+     *
+     * @param canvas	the drawing context
+     */
+    public void drawDebug(GameCanvas canvas){
+        //draw grid
+        Color lineColor = new Color(0.8f, 0.8f, 0.8f, 1);
+        for (int x = 0; x < bounds.width; x++) {
+            Vector2 p1 = new Vector2(x, 0);
+            Vector2 p2 = new Vector2(x, bounds.height);
+            canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
+        }
+        for (int y = 0; y < bounds.height; y++) {
+            Vector2 p1 = new Vector2(0, y);
+            Vector2 p2 = new Vector2(bounds.width, y);
+            canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
+        }
+        for (Obstacle obj : objects) {
+            obj.drawDebug(canvas);
+        }
+    }
+
+
 
     /**
      * Spawns a dead body at the location of the cat
      * */
     public void spawnDeadBody(){
+        System.out.println(currCheckpoint);
         DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat"), scale, cat.getPosition());
         deadBody.setLinearVelocity(cat.getLinearVelocity());
         deadBody.setFacingRight(cat.isFacingRight());

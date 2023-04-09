@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.math.Path2;
 import edu.cornell.gdiac.math.PathExtruder;
 import edu.cornell.gdiac.math.PathFactory;
+import edu.cornell.gdiac.math.PolyFactory;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
@@ -63,6 +64,9 @@ public class GameCanvas {
 	/** extruder for path rendering */
 	private PathExtruder extruder;
 
+	/** Polygon rendering */
+	private PolyFactory polyFactory;
+
 	/** region used for drawing paths */
 	private TextureRegion region;
 	
@@ -107,6 +111,7 @@ public class GameCanvas {
 		spriteBatch = new PolygonSpriteBatch();
 		debugRender = new ShapeRenderer();
 		pathFactory = new PathFactory();
+		polyFactory = new PolyFactory();
 		extruder = new PathExtruder();
 		region = new TextureRegion(new Texture("white.png"));
 		
@@ -1199,6 +1204,16 @@ public class GameCanvas {
 			start = points.get(i);
 		}
 		points.iterator();
+	}
+
+	public void drawRectangle(float x, float y, float w, float h, Color color, float sx, float sy){
+		if (active != DrawPass.STANDARD) {
+			Gdx.app.error("GameCanvas", "Cannot draw without active begin", new IllegalStateException());
+			return;
+		}
+		PolygonRegion rect = polyFactory.makeRect(x*sx, y*sy, w*sx, h*sy).makePolyRegion(region);
+		spriteBatch.setColor(color);
+		spriteBatch.draw(rect, 0,0);
 	}
     
 	/**

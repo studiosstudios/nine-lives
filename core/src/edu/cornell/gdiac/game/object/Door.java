@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.util.Direction;
@@ -175,4 +176,15 @@ public class Door extends PolygonObstacle implements Activatable {
      * @param constants JSON storing the shared constants.
      */
     public static void setConstants(JsonValue constants) {objectConstants = constants;}
+
+    public ObjectMap<String, Object> storeState(){
+        ObjectMap<String, Object> stateMap = super.storeState();
+        stateMap.put("ticks", ticks);
+        return stateMap;
+    }
+
+    public void loadState(ObjectMap<String, Object> stateMap){
+        super.loadState(stateMap);
+        ticks = (int) stateMap.get("ticks");
+    }
 }

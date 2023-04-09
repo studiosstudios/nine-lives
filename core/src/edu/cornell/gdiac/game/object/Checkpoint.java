@@ -21,6 +21,7 @@ public class Checkpoint extends BoxObstacle
     private boolean active;
     private PolygonShape sensorShape;
     protected static JsonValue objectConstants;
+    private static final String sensorName = "checkpointSensor";
     /**
      * Creates a new Checkpoint
      *
@@ -72,7 +73,15 @@ public class Checkpoint extends BoxObstacle
         if (!super.activatePhysics(world)) {
             return false;
         }
-        body.getFixtureList().get(0).setUserData(this);
+
+        FixtureDef sensorDef = new FixtureDef();
+        sensorDef.density = 0;
+        sensorDef.isSensor = true;
+        sensorDef.shape = sensorShape;
+
+        Fixture sensorFixture = body.createFixture(sensorDef);
+        sensorFixture.setUserData(sensorName);
+
         return true;
     }
 
@@ -101,6 +110,13 @@ public class Checkpoint extends BoxObstacle
      * @param constants Json field corresponding to this object
      */
     public static void setConstants(JsonValue constants) { objectConstants = constants; }
+
+    public void drawDebug(GameCanvas canvas){
+        super.drawDebug(canvas);
+        canvas.drawPhysics(sensorShape, Color.RED, getX(), getY(), getAngle(), drawScale.x, drawScale.y);
+    }
+
+    public String getSensorName(){ return sensorName; }
 
     @Override
     public void loadState(ObjectMap<String, Object> state){

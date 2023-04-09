@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
 
@@ -36,6 +37,17 @@ public class Switch extends Activator {
             active = !active;
         }
         prevPressed = isPressed();
+    }
+
+    public ObjectMap<String, Object> storeState(){
+        ObjectMap<String, Object> stateMap = super.storeState();
+        stateMap.put("prevPressed", prevPressed);
+        return stateMap;
+    }
+
+    public void loadState(ObjectMap<String, Object> stateMap){
+        super.loadState(stateMap);
+        prevPressed = (boolean) stateMap.get("prevPressed");
     }
 
 }

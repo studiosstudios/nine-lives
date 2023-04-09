@@ -289,6 +289,7 @@ public class ActionController {
 
             for (Fixture f : fixtures) {
                 Obstacle groundObs = (Obstacle) f.getBody().getUserData();
+                //this can cause a stack overflow error if two objects are each other's grounds, which can happen if objects are moving very very fast
                 if (!(groundObs instanceof Movable) || updateBaseVelocity(groundObs, grounded)){
                     numGrounded++;
                     baseVel.add(groundObs.getLinearVelocity());
@@ -296,8 +297,7 @@ public class ActionController {
             }
 
             //object is grounded, update base velocity to be average of velocities of grounds
-            if (numGrounded > 0) {
-                baseVel.scl(1f / numGrounded);
+            if (numGrounded > 0 && !baseVel.scl(1f / numGrounded).epsilonEquals(Vector2.Zero, 0.001f)) {
                 obj.setBaseVelocity(baseVel);
                 grounded.put(obj, true);
                 return true;

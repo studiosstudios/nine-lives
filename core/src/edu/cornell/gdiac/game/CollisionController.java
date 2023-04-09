@@ -125,7 +125,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                 }
 
                 //Add ground fixture to moveable
-                if (bd1 instanceof Movable && !fix2.isSensor() && bd1 != bd2 && ((Movable) bd1).getGroundSensorName().equals(fd1)){
+                if (bd1 instanceof Movable && !fix2.isSensor() && bd1 != bd2 && bd2 != cat && ((Movable) bd1).getGroundSensorName().equals(fd1)){
                     ((Movable) bd1).getGroundFixtures().add(fix2);
                 }
 
@@ -220,7 +220,7 @@ public class CollisionController implements ContactListener, ContactFilter {
 //            ((Mob) fd1).setFacingRight(!((Mob) fd1).isFacingRight());
 //        }
 
-                if (bd1 instanceof Movable && !fix2.isSensor() && bd1 != bd2 && ((Movable) bd1).getGroundSensorName().equals(fd1)) {
+                if (bd1 instanceof Movable && !fix2.isSensor() && bd1 != bd2 && bd2 != cat && ((Movable) bd1).getGroundSensorName().equals(fd1)) {
                     ((Movable) bd1).getGroundFixtures().remove(fix2);
                 }
 

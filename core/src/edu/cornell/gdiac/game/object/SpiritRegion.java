@@ -1,25 +1,17 @@
 package edu.cornell.gdiac.game.object;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.utils.JsonValue;
-import edu.cornell.gdiac.game.object.Particle;
-import edu.cornell.gdiac.game.object.ParticlePool;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
-import edu.cornell.gdiac.game.obstacle.PolygonObstacle;
 
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class SpiritRegion extends BoxObstacle {
 
@@ -46,8 +38,6 @@ public class SpiritRegion extends BoxObstacle {
     private float width;
     /** height of spirit region */
     private float height;
-    /** draw scale */
-    private Vector2 scale;
 
     /** PARTICLE VARS */
 
@@ -89,7 +79,6 @@ public class SpiritRegion extends BoxObstacle {
 
         this.photonTexture = photonTexture.getTexture();
         this.regionTexture = texture.getTexture();
-        this.scale = scale;
 
         particleColor = new Color(data.get("color").getFloat(0),
                 data.get("color").getFloat(1),
@@ -161,15 +150,11 @@ public class SpiritRegion extends BoxObstacle {
      */
     public void setSpiritRegionColorOpacity(boolean val) {
         if (val) {
-            particleColor.set(particleColor.r, particleColor.g, particleColor.b,
-                    PARTICLE_OPACITY_ACTIVE);
-            regionColor.set(regionColor.r, regionColor.g, regionColor.b,
-                    REGION_OPACITY_ACTIVE);
+            particleColor.a = PARTICLE_OPACITY_ACTIVE;
+            regionColor.a = REGION_OPACITY_ACTIVE;
         } else {
-            particleColor.set(particleColor.r, particleColor.g, particleColor.b,
-                    PARTICLE_OPACITY_INACTIVE);
-            regionColor.set(regionColor.r, regionColor.g, regionColor.b,
-                    REGION_OPACITY_INACTIVE);
+            particleColor.a = PARTICLE_OPACITY_INACTIVE;
+            regionColor.a = REGION_OPACITY_INACTIVE;
         }
     }
 
@@ -184,8 +169,8 @@ public class SpiritRegion extends BoxObstacle {
         ObjectSet.ObjectSetIterator<Particle> iterator = particles.iterator();
         while (iterator.hasNext()) {
             Particle item = iterator.next();
-            if (item.getX() < pos.x*scale.x || item.getX() > (pos.x+width)*scale.x-5f ||
-                    item.getY() < pos.y*scale.y || item.getY() > (pos.y+height)*scale.y-5f) {
+            if (item.getX() < pos.x* drawScale.x || item.getX() > (pos.x+width)* drawScale.x-5f ||
+                    item.getY() < pos.y* drawScale.y || item.getY() > (pos.y+height)* drawScale.y-5f) {
                 iterator.remove();
                 memory.free(item);
             }
@@ -216,8 +201,8 @@ public class SpiritRegion extends BoxObstacle {
 
                 float rand_x = pos.x + width * (float) Math.random();
 
-                item.setX(rand_x*scale.x);
-                item.setY(rand_y*scale.y);
+                item.setX(rand_x* drawScale.x);
+                item.setY(rand_y* drawScale.y);
 
                 item.setAngle(rand_angle);
                 cooldown = PARTICLE_RESPAWN;
@@ -259,11 +244,25 @@ public class SpiritRegion extends BoxObstacle {
                 width*drawScale.x, height*drawScale.y);
 
         // Draw particles
+        float bot = pos.y* drawScale.y ;
+        float top = (pos.y+height)* drawScale.y-5f;
+        float left = pos.x* drawScale.x ;
+        float right = (pos.x+width)* drawScale.x-5f;
+
+        //use these two parameters to tune how quickly particles fade in and out relative to borders - higher = slower
+        float xSharpness = 0.5f;
+        float ySharpness = 1f;
+
         for(Particle item : particles) {
             // Draw the object centered at x.
             // TODO: particles scaled very weirdly rn
-              canvas.draw(photonTexture, particleColor, item.getX() - (width/2)*drawScale.x,
-                      item.getY() - (height/2)*drawScale.y, PARTICLE_SIZE, PARTICLE_SIZE);
+            Color c = new Color(particleColor);
+            float y = item.getY();
+            float x = item.getX();
+            c.a = c.a * (float) (Math.pow(y-bot, ySharpness) * Math.pow(top-y, ySharpness)/Math.pow((top-bot)/2, 2*ySharpness));
+            c.a = c.a * (float) (Math.pow(x-left, xSharpness) * Math.pow(right-x, xSharpness)/Math.pow((right-left)/2, 2*xSharpness));
+            canvas.draw(photonTexture, c, x - (width/2f)*drawScale.x,
+                      y - (height/2f)*drawScale.y, PARTICLE_SIZE, PARTICLE_SIZE);
         }
     }
 }

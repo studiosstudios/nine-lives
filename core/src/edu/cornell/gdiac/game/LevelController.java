@@ -217,7 +217,7 @@ public class LevelController {
         boolean tempRet = isRet();
         setRet(false);
         populateLevel(tempRet, prevCat);
-        prevLivesState = new LevelState[8];
+        prevLivesState = new LevelState[9];
         prevLivesState[0] = new LevelState(level);
     }
 

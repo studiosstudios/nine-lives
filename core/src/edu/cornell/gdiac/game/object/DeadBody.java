@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
 
@@ -22,7 +23,7 @@ import edu.cornell.gdiac.game.obstacle.*;
  * Note that this class returns to static loading.  That is because there are
  * no other subclasses that we might loop through.
  */
-public class DeadBody extends BoxObstacle {
+public class DeadBody extends BoxObstacle implements Movable {
     /** Constants that are shared between all instances of this class */
     private static JsonValue objectConstants;
     /** How long the body has been burning */
@@ -37,10 +38,6 @@ public class DeadBody extends BoxObstacle {
      */
     private final float damping;
     /**
-     * Identifier to allow us to track the sensor in ContactListener
-     */
-    private final String sensorName;
-    /**
      * Which direction is the model facing
      */
     private boolean faceRight;
@@ -54,6 +51,10 @@ public class DeadBody extends BoxObstacle {
      * This is necessary because laser collisions are done with raycasting.*/
     private boolean touchingLaser;
 
+    private ObjectSet<Fixture> groundFixtures = new ObjectSet<>();
+    private PolygonShape groundSensorShape;
+    private final String groundSensorName;
+
     /**
      * Returns ow hard the brakes are applied to get a dead body to stop moving
      *
@@ -61,17 +62,6 @@ public class DeadBody extends BoxObstacle {
      */
     public float getDamping() {
         return damping;
-    }
-
-    /**
-     * Returns the name of the ground sensor
-     * <p>
-     * This is used by ContactListener
-     *
-     * @return the name of the ground sensor
-     */
-    public String getSensorName() {
-        return sensorName;
     }
 
     /**
@@ -131,12 +121,13 @@ public class DeadBody extends BoxObstacle {
         setTexture(texture);
         setDrawScale(scale);
         setDensity(objectConstants.getFloat("density", 0));
+        setMass(objectConstants.getFloat("mass", 0));
         setFriction(objectConstants.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
         setFixedRotation(true);
-        setLinearDamping(objectConstants.getFloat("damping", 2f));
+
+//        setLinearDamping(objectConstants.getFloat("damping", 2f)); this messes with moving platforms
 
         damping = objectConstants.getFloat("damping", 0);
-        sensorName = "deadBodyGroundSensor";
 
         // Gameplay attributes
         setX(position.x+objectConstants.get("offset").getFloat(0));
@@ -144,8 +135,8 @@ public class DeadBody extends BoxObstacle {
         burnTicks = 0;
         burning = false;
         faceRight = true;
-        //create centre sensor (for fixing to spikes)
 
+        groundSensorName = "deadBodyGroundSensor";
         setName("deadBody");
     }
 
@@ -163,6 +154,7 @@ public class DeadBody extends BoxObstacle {
             return false;
         }
 
+        //center sensor
         Vector2 sensorCenter = new Vector2();
         FixtureDef sensorDef = new FixtureDef();
         sensorDef.density = 0;
@@ -172,10 +164,20 @@ public class DeadBody extends BoxObstacle {
         sensorShape.setPosition(sensorCenter);
         sensorDef.shape = sensorShape;
 
-        // Ground sensor to represent our feet
         Fixture sensorFixture = body.createFixture(sensorDef);
         sensorFixture.setUserData(this);
-        body.setUserData(this);
+
+        //ground sensor
+        sensorDef = new FixtureDef();
+        sensorDef.friction = 0;
+        sensorDef.isSensor = true;
+        Vector2 location = new Vector2(0, -getDimension().y/2f);
+        groundSensorShape = new PolygonShape();
+        groundSensorShape.setAsBox(getDimension().x/2.5f, 0.1f, location, 0.0f);
+        sensorDef.shape = groundSensorShape;
+
+        Fixture groundSensorFixture = body.createFixture( sensorDef );
+        groundSensorFixture.setUserData(groundSensorName);
         return true;
     }
 
@@ -227,6 +229,7 @@ public class DeadBody extends BoxObstacle {
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
         canvas.drawPhysics(sensorShape, Color.RED, getX(), getY(), drawScale.x, drawScale.y);
+        canvas.drawPhysics(groundSensorShape, Color.RED, getX(), getY(), getAngle(), drawScale.x, drawScale.y);
     }
 
     /**
@@ -237,4 +240,10 @@ public class DeadBody extends BoxObstacle {
         objectConstants = constants;
         totalBurnTicks = constants.getInt("burnTicks");
     }
+
+    public boolean isMovable() {return true;}
+
+    public ObjectSet<Fixture> getGroundFixtures() { return groundFixtures; }
+
+    public String getGroundSensorName(){ return groundSensorName; }
 }

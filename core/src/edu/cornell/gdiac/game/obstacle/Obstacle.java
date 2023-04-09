@@ -264,8 +264,15 @@ public abstract class Obstacle {
 	 * @param value  the base velocity for this physics body
 	 */
 	public void setBaseVelocity(Vector2 value) {
+		bodyinfo.linearVelocity.set(value.x - baseVelocity.x +  bodyinfo.linearVelocity.x, value.y - baseVelocity.y +  bodyinfo.linearVelocity.y);
 		baseVelocity.set(value);
-		bodyinfo.linearVelocity.set(value.add(relativeVelocity));
+	}
+
+	/**
+	 * Resets the base velocity of this physics body to zero without changing total linear velocity.
+	 */
+	public void resetBaseVelocity(){
+		baseVelocity.set(Vector2.Zero);
 	}
 
 	/**
@@ -274,8 +281,8 @@ public abstract class Obstacle {
 	 * @param value  the base x velocity for this physics body
 	 */
 	public void setBaseVX(float value){
+		bodyinfo.linearVelocity.x = value - baseVelocity.x + bodyinfo.linearVelocity.x;
 		baseVelocity.x = value;
-		bodyinfo.linearVelocity.x = value + relativeVelocity.x;
 	}
 
 	/**
@@ -284,8 +291,8 @@ public abstract class Obstacle {
 	 * @param value  the base y velocity for this physics body
 	 */
 	public void setBaseVY(float value){
+		bodyinfo.linearVelocity.x = value - baseVelocity.y + bodyinfo.linearVelocity.y;
 		baseVelocity.y = value;
-		bodyinfo.linearVelocity.y = value + relativeVelocity.y;
 	}
 
 	/**

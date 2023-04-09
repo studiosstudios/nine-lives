@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.object.*;
 import edu.cornell.gdiac.game.obstacle.Obstacle;
@@ -243,6 +244,7 @@ public class ActionController {
         // Note how we use the linked list nodes to delete O(1) in place.
         // This is O(n) without copying.
         Iterator<PooledList<Obstacle>.Entry> iterator = level.getObjects().entryIterator();
+        ObjectMap<Obstacle, Boolean> grounded = new ObjectMap<>();
         while (iterator.hasNext()) {
             PooledList<Obstacle>.Entry entry = iterator.next();
             Obstacle obj = entry.getValue();
@@ -254,24 +256,60 @@ public class ActionController {
                 obj.update(dt);
 
                 // Update base velocity.
-                if (obj instanceof Moveable) {
-                    Vector2 baseVel = new Vector2();
-                    ObjectSet<Fixture> fixtures =  (((Moveable) obj).getGroundFixtures());
-                    //set base velocity to average of linear velocities of grounds
-                    if (fixtures.size > 0) {
-                        for (Fixture f : fixtures) {
-                            baseVel.add((((Obstacle) f.getBody().getUserData()).getLinearVelocity()));
-                        }
-                        baseVel.scl(1f / (float) fixtures.size);
-                        obj.setBaseVelocity(baseVel);
-                    } else {
-                        obj.setBaseVelocity(Vector2.Zero);
-                    }
-
+                if (obj instanceof Movable && ((Movable) obj).isMovable()) {
+                    updateBaseVelocity(obj, grounded);
                 }
 
             }
         }
+    }
+
+    /**
+     * Updates the base velocity of a movable obstacle. If the obstacle is not grounded, resets its base velocity to
+     * zero without modifying its linear velocity. If the obstacle is grounded, its base velocity is set to the average
+     * of the linear velocities of its grounds, and its linear velocity is changed accordingly.
+     * <br><br>
+     * If any of the ground fixtures of this obstacle are also movable, this method first recursively updates their
+     * base velocities and stores the result in a hashmap. An obstacle is therefore considered grounded if either it
+     * has no ground fixtures, or any of its ground fixtures are grounded.
+     *
+     * @param obj       The obstacle to update
+     * @param grounded  Map where keys are updated obstacles (at this tick), and values are if obstacle is grounded.
+     *                  This prev
+     * @return          True if obstacle is grounded
+     */
+    public boolean updateBaseVelocity(Obstacle obj, ObjectMap<Obstacle, Boolean> grounded){
+        if (grounded.containsKey(obj)) { return grounded.get(obj); }
+
+        Vector2 baseVel = new Vector2();
+        ObjectSet<Fixture> fixtures =  ((Movable) obj).getGroundFixtures();
+        float numGrounded = 0;
+
+        if (fixtures.size > 0) {
+
+            for (Fixture f : fixtures) {
+                Obstacle groundObs = (Obstacle) f.getBody().getUserData();
+                if (!(groundObs instanceof Movable) || updateBaseVelocity(groundObs, grounded)){
+                    numGrounded++;
+                    baseVel.add(groundObs.getLinearVelocity());
+                }
+            }
+
+            //object is grounded, update base velocity to be average of velocities of grounds
+            if (numGrounded > 0) {
+                baseVel.scl(1f / numGrounded);
+                obj.setBaseVelocity(baseVel);
+                grounded.put(obj, true);
+                return true;
+            }
+
+        }
+
+        //object is no longer grounded
+        obj.resetBaseVelocity();
+        grounded.put(obj, false);
+        return false;
+
     }
 
     /**

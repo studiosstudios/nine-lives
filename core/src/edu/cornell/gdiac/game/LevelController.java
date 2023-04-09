@@ -212,7 +212,6 @@ public class LevelController {
         boolean tempRet = isRet();
         setRet(false);
         populateLevel(tempRet, prevCat);
-        System.out.println(level.bounds.height);
         canvas.getCamera().setLevelSize(level.bounds.width, level.bounds.height);
         canvas.getCamera().updateCamera(level.getCat().getPosition().x*scale.x, level.getCat().getPosition().y*scale.y, false);
     }

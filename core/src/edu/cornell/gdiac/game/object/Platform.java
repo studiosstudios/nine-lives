@@ -148,8 +148,8 @@ public class Platform extends Wall implements Activatable {
 
     public void loadState(ObjectMap<String, Object> stateMap){
         super.loadState(stateMap);
-        moving = (int) stateMap.get("moving");
-        targetVel = (Vector2) stateMap.get("targetVel");
+        moving = (float) stateMap.get("moving");
+        targetVel.set((Vector2) stateMap.get("targetVel"));
     }
 
 }

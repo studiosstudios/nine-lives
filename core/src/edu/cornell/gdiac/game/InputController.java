@@ -20,6 +20,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 
+import java.io.*;
+
 /**
  * Class for reading player input. 
  *
@@ -42,11 +44,25 @@ public class InputController {
 		}
 		return theController;
 	}
-	private ObjectMap<String, Integer> controls = new ObjectMap<>();
-	private ObjectMap<String, Boolean> previousMap = new ObjectMap<>();
-	private ObjectMap<String, Boolean> pressedMap = new ObjectMap<>();
 
+	/** Map from control names to <code>Input.Keys</code> key integer codes.*/
+	private ObjectMap<String, Integer> controls = new ObjectMap<>();
+	/** Map from control names to if they were pressed at previous tick*/
+	private ObjectMap<String, Boolean> previousMap = new ObjectMap<>();
+	/** Map from control names to if they are pressed at current tick*/
+	private ObjectMap<String, Boolean> pressedMap = new ObjectMap<>();
+	/** Array of control names */
 	private Array<String> controlNames = new Array<>();
+	/** For reading input from a text file */
+	private BufferedReader readFile;
+	/** For writing input to a text file */
+	private BufferedWriter writeFile;
+
+	/**
+	 * Sets the keybindings from a JSON. The JSON must be a single object consisting only of string-string pairs, where
+	 * the key is the name of the control, and the value is the string of the desired <code>Input.Keys</code> key.
+	 * @param controlsJSON keybindings JSON
+	 */
 	public void setControls(JsonValue controlsJSON){
 		for (JsonValue entry : controlsJSON){
 			try {
@@ -60,6 +76,33 @@ public class InputController {
 			controlNames.add(entry.name);
 			previousMap.put(entry.name, false);
 			pressedMap.put(entry.name, false);
+		}
+	}
+
+	/**
+	 * Sets the input controller to read input from a file instead of the keyboard.
+	 * @param fileName  file to read from
+	 */
+	public void readFrom(String fileName){
+		try {
+			FileReader reader = new FileReader(fileName);
+			readFile = new BufferedReader(reader);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Sets the input controller to write input to a file as it reads input.
+	 * @param fileName  file to write to
+	 */
+	public void writeTo(String fileName){
+		try {
+			new PrintWriter(fileName).close();
+			FileWriter writer = new FileWriter(fileName);
+			writeFile = new BufferedWriter(writer);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -235,6 +278,8 @@ public class InputController {
 		// If we have a game-pad for id, then use it.
 		crosshair = new Vector2();
 		crosscache = new Vector2();
+		writeFile = null;
+		readFile = null;
 	}
 
 	/**
@@ -253,8 +298,64 @@ public class InputController {
 		for (String control : controlNames){
 			previousMap.put(control, pressedMap.get(control));
 		}
-		
-		readKeyboard(bounds, scale);
+
+		if (readFile == null || !readFromFile()) {
+			readKeyboard(bounds, scale);
+		}
+
+		horizontal = 0.0f;
+		vertical = 0.0f;
+		if (pressedMap.get("right")) {
+			horizontal += 1.0f;
+		}
+		if (pressedMap.get("left")) {
+			horizontal -= 1.0f;
+		}
+		if (pressedMap.get("up")) {
+			vertical += 1.0f;
+		}
+		if (pressedMap.get("down")) {
+			vertical -= 1.0f;
+		}
+
+		if (writeFile != null){
+			try {
+				String toString = pressedMap.toString();
+				writeFile.write(toString.substring(1, toString.length()-1));
+				writeFile.newLine();
+				writeFile.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Reads keyboard input from a file by updating <code>pressedMap</code>. Each line of the file is a <code>toString()</code>
+	 * representation of <code>pressedMap</code>, excluding the start and end braces.
+	 *
+	 * @return true if a non-null line was read
+	 */
+	private boolean readFromFile(){
+		try {
+			String line = readFile.readLine();
+			if (line != null) {
+				String[] args = line.split(",");
+				for (String s : args) {
+					String[] pair = s.split("=");
+					if (pair[0].charAt(0) == ' '){
+						pair[0] = pair[0].substring(1);
+					}
+					pressedMap.put(pair[0], pair[1].charAt(0) == 't');
+				}
+			} else {
+				return false;
+			}
+		} catch (IOException e){
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -270,23 +371,6 @@ public class InputController {
 			pressedMap.put(control, Gdx.input.isKeyPressed(controls.get(control)));
 		}
 
-		// Directional controls
-		horizontal = 0.0f;
-		vertical = 0.0f;
-		if (Gdx.input.isKeyPressed(controls.get("right"))) {
-			horizontal += 1.0f;
-		}
-		if (Gdx.input.isKeyPressed(controls.get("left"))) {
-			horizontal -= 1.0f;
-		}
-		if (Gdx.input.isKeyPressed(controls.get("up"))) {
-			vertical += 1.0f;
-		}
-		if (Gdx.input.isKeyPressed(controls.get("down"))) {
-			vertical -= 1.0f;
-		}
-
-		
 		// Mouse results
 		crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 		crosshair.scl(1/scale.x,-1/scale.y);

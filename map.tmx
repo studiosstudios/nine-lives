@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.0" orientation="orthogonal" renderorder="right-down" width="32" height="18" tilewidth="64" tileheight="64" infinite="0" nextlayerid="3" nextobjectid="2">
+<map version="1.10" tiledversion="1.10.0" orientation="orthogonal" renderorder="right-down" width="32" height="18" tilewidth="64" tileheight="64" infinite="0" nextlayerid="3" nextobjectid="18">
+ <editorsettings>
+  <export target="map..tmj" format="json"/>
+ </editorsettings>
  <tileset firstgid="1" source="tiles.tsx"/>
  <tileset firstgid="49" source="../Group 11 Challenge Design Lab copy.tsx"/>
  <layer id="1" name="Tile Layer 1" width="32" height="18">
@@ -28,6 +31,86 @@
   <object id="1" gid="39" x="0" y="0" width="64" height="64">
    <properties>
     <property name="s" value="32,1"/>
+   </properties>
+  </object>
+  <object id="2" gid="14" x="448" y="192" width="64" height="64">
+   <properties>
+    <property name="s" value="3,1"/>
+   </properties>
+  </object>
+  <object id="3" gid="2" x="768" y="192" width="64" height="64">
+   <properties>
+    <property name="s" value="6,1"/>
+   </properties>
+  </object>
+  <object id="4" gid="2" x="640" y="576" width="64" height="64">
+   <properties>
+    <property name="s" value="3,1"/>
+   </properties>
+  </object>
+  <object id="5" gid="25" x="448" y="256" width="64" height="64">
+   <properties>
+    <property name="s" value="1,12"/>
+   </properties>
+  </object>
+  <object id="6" gid="25" x="1088" y="256" width="64" height="64">
+   <properties>
+    <property name="s" value="1,12"/>
+   </properties>
+  </object>
+  <object id="7" gid="3" x="0" y="448" width="64" height="64">
+   <properties>
+    <property name="s" value="4,1"/>
+   </properties>
+  </object>
+  <object id="8" gid="15" x="0" y="640" width="64" height="64">
+   <properties>
+    <property name="s" value="5,3"/>
+   </properties>
+  </object>
+  <object id="9" gid="15" x="0" y="1024" width="64" height="64">
+   <properties>
+    <property name="s" value="32,2"/>
+   </properties>
+  </object>
+  <object id="10" gid="25" x="1216" y="64" width="64" height="64">
+   <properties>
+    <property name="s" value="1,13"/>
+   </properties>
+  </object>
+  <object id="11" gid="2" x="1408" y="576" width="64" height="64">
+   <properties>
+    <property name="s" value="3,1"/>
+   </properties>
+  </object>
+  <object id="12" gid="2" x="1472" y="320" width="64" height="64">
+   <properties>
+    <property name="s" value="3,1"/>
+   </properties>
+  </object>
+  <object id="13" gid="2" x="1728" y="704" width="64" height="64">
+   <properties>
+    <property name="s" value="3,1"/>
+   </properties>
+  </object>
+  <object id="14" gid="5" x="1472" y="832" width="64" height="64">
+   <properties>
+    <property name="s" value="8,1"/>
+   </properties>
+  </object>
+  <object id="15" gid="25" x="1472" y="896" width="64" height="64">
+   <properties>
+    <property name="s" value="1,2"/>
+   </properties>
+  </object>
+  <object id="16" gid="25" x="1984" y="384" width="64" height="64">
+   <properties>
+    <property name="s" value="1,10"/>
+   </properties>
+  </object>
+  <object id="17" gid="14" x="1792" y="192" width="64" height="64">
+   <properties>
+    <property name="s" value="4,3"/>
    </properties>
   </object>
  </objectgroup>

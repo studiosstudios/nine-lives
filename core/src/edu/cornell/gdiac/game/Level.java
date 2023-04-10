@@ -353,16 +353,6 @@ public class Level {
         respawnPos = currCheckpoint.getPosition();
     }
 
-    public void levelEditor(HashMap<String, TextureRegion> tMap,JsonValue constants,JsonValue levelJV,boolean ret, Cat prevCat){
-
-        //parse through tmj layers : data : which has which tile is which
-        //want to keep track of which ones are the corner tiles to create the polygon
-        //use DFS on the tile map to get
-        //for the shape, pass in the array of tile images
-        //otherwise if it's not a platform tile then we just create that object based on the position
-        //what we have to do: remember the numbers for switches and obstacles and which is which
-        //convert to Json file
-    }
 
     /**
      * Lays out the game geography from the given JSON file

@@ -230,7 +230,7 @@ public class WorldController implements Screen {
 		InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
 
 //		InputController.getInstance().writeTo("inputLogs/out.txt");
-		InputController.getInstance().readFrom("inputLogs/out.txt");
+//		InputController.getInstance().readFrom("inputLogs/out.txt");
 	}
 
 	/**

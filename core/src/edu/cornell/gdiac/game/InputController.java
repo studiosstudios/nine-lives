@@ -248,7 +248,7 @@ public class InputController {
 	 * @return true if the switch button was released and not cancelled.
 	 */
 	public boolean didSwitch() {
-		if (isClicked("switch")){
+		if (!pressedMap.get("switch") && previousMap.get("switch")){
 			if (cancelled){
 				cancelled = false;
 				return false;

@@ -48,9 +48,9 @@ public class SpiritRegion extends BoxObstacle {
     /** Opacity value when spirit region not active on key press */
     public static final float REGION_OPACITY_INACTIVE = 0.2f;
     /** Opacity value for particles when spirit region not active on key press */
-    public static final float PARTICLE_OPACITY_ACTIVE = 0.5f;
+    public static final float PARTICLE_OPACITY_ACTIVE = 0.75f;
     /** Opacity value when spirit region active on key press */
-    public static final float REGION_OPACITY_ACTIVE = 0.5f;
+    public static final float REGION_OPACITY_ACTIVE = 0.75f;
     /** Size of particles to scale */
     public static final float PARTICLE_SIZE = 6f;
 
@@ -150,11 +150,11 @@ public class SpiritRegion extends BoxObstacle {
      */
     public void setSpiritRegionColorOpacity(boolean val) {
         if (val) {
-            particleColor.a = PARTICLE_OPACITY_ACTIVE;
-            regionColor.a = REGION_OPACITY_ACTIVE;
+            particleColor.a += (PARTICLE_OPACITY_ACTIVE - particleColor.a)*0.1;
+            regionColor.a += (REGION_OPACITY_ACTIVE - regionColor.a)*0.1;
         } else {
-            particleColor.a = PARTICLE_OPACITY_INACTIVE;
-            regionColor.a = REGION_OPACITY_INACTIVE;
+            particleColor.a += (PARTICLE_OPACITY_INACTIVE - particleColor.a)*0.1;
+            regionColor.a += (REGION_OPACITY_INACTIVE - regionColor.a)*0.1;
         }
     }
 
@@ -259,8 +259,8 @@ public class SpiritRegion extends BoxObstacle {
             Color c = new Color(particleColor);
             float y = item.getY();
             float x = item.getX();
-            c.a = c.a * (float) (Math.pow(y-bot, ySharpness) * Math.pow(top-y, ySharpness)/Math.pow((top-bot)/2, 2*ySharpness));
-            c.a = c.a * (float) (Math.pow(x-left, xSharpness) * Math.pow(right-x, xSharpness)/Math.pow((right-left)/2, 2*xSharpness));
+            c.a = c.a * (float) (Math.max(Math.pow(y-bot, ySharpness) * Math.pow(top-y, ySharpness)/Math.pow((top-bot)/2, 2*ySharpness), 0));
+            c.a = c.a * (float) (Math.max(Math.pow(x-left, xSharpness) * Math.pow(right-x, xSharpness)/Math.pow((right-left)/2, 2*xSharpness), 0));
             canvas.draw(photonTexture, c, x - (width/2f)*drawScale.x,
                       y - (height/2f)*drawScale.y, PARTICLE_SIZE, PARTICLE_SIZE);
         }

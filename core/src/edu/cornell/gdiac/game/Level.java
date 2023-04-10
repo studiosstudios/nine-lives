@@ -372,8 +372,8 @@ public class Level {
         background = tMap.get("background").getTexture();
 
         JsonValue size = levelJV.get("size");
-        bounds.width = size.getFloat(0)*32;
-        bounds.height = size.getFloat(1)*32;
+        bounds.width = size.getFloat(0)*scale.x;
+        bounds.height = size.getFloat(1)*scale.y;
         /*
         TODO: Remove try-catches
         We use try-catches here so that the level JSONs don't need to contain empty fields for objects that they don't have.
@@ -694,14 +694,16 @@ public class Level {
             canvas.beginDebug();
             //draw grid
             Color lineColor = new Color(0.8f, 0.8f, 0.8f, 1);
+            float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/scale.x;
+            float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/scale.y;
             for (int x = 0; x < bounds.width; x++) {
-                Vector2 p1 = new Vector2(x, 0);
-                Vector2 p2 = new Vector2(x, bounds.height);
+                Vector2 p1 = new Vector2(x-xTranslate, 0-yTranslate);
+                Vector2 p2 = new Vector2(x-xTranslate, bounds.height-yTranslate);
                 canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
             }
             for (int y = 0; y < bounds.height; y++) {
-                Vector2 p1 = new Vector2(0, y);
-                Vector2 p2 = new Vector2(bounds.width, y);
+                Vector2 p1 = new Vector2(0-xTranslate, y-yTranslate);
+                Vector2 p2 = new Vector2(bounds.width-xTranslate, y-yTranslate);
                 canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
             }
             for (Obstacle obj : objects) {

@@ -16,6 +16,9 @@ package edu.cornell.gdiac.game;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 
 /**
  * Class for reading player input. 
@@ -39,57 +42,30 @@ public class InputController {
 		}
 		return theController;
 	}
+	private ObjectMap<String, Integer> controls = new ObjectMap<>();
+	private ObjectMap<String, Boolean> previousMap = new ObjectMap<>();
+	private ObjectMap<String, Boolean> pressedMap = new ObjectMap<>();
+
+	private Array<String> controlNames = new Array<>();
+	public void setControls(JsonValue controlsJSON){
+		for (JsonValue entry : controlsJSON){
+			try {
+				String keyName = entry.asString();
+				controls.put(entry.name, Input.Keys.class.getField(keyName).getInt(Input.Keys.class.getField(keyName)));
+			} catch (Exception e){
+				controls.put(entry.name, Keys.UNKNOWN);
+				System.err.println("Failed to bind key for " + entry.name + ":");
+				e.printStackTrace();
+			}
+			controlNames.add(entry.name);
+			previousMap.put(entry.name, false);
+			pressedMap.put(entry.name, false);
+		}
+	}
 	
 	// Fields to manage buttons
-	/** Whether the reset button was pressed. */
-	private boolean resetPressed;
-	private boolean resetPrevious;
-	/** Whether the jump action button was pressed. */
-	private boolean jumpPressed;
-	private boolean jumpPrevious;
-	/** Whether the dash button was pressed. */
-	private boolean dashPressed;
-	/** Whether the meow button was pressed. */
-	private boolean meowPressed;
-	private boolean meowPrevious;
-	private boolean dashPrevious;
-
-	/** Whether the climb button was pressed. */
-	private boolean climbPressed;
-
-	/** Whether the secondary action button was pressed. */
-	private boolean secondPressed;
-	private boolean secondPrevious;
-	/** Whether the teritiary action button was pressed. */
-	private boolean tertiaryPressed;
-	/** Whether the debug toggle was pressed. */
-	private boolean debugPressed;
-	private boolean debugPrevious;
-	/** Whether the exit button was pressed. */
-	private boolean exitPressed;
-	private boolean exitPrevious;
-	/** Whether the next button was pressed. */
-	private boolean nextPressed;
-	private boolean nextPrevious;
-	/** Whether the previous button was pressed. */
-	private boolean prevPressed;
-	private boolean prevPrevious;
-
-	/** Whether the body switch button was pressed. */
-	private boolean switchPressed;
-	private boolean switchPrevious;
-
-	/** Whether the cancel button was pressed. */
-	private boolean cancelPressed;
-	/** Whether the undo button was pressed. */
-	private boolean undoPressed;
-	private boolean undoPrevious;
-
-	/** if the cancel button was pressed */
-	private boolean didCancel;
 	/** if the switch has been cancelled */
 	private boolean cancelled;
-	
 	/** How much did we move horizontally? */
 	private float horizontal;
 	/** How much did we move vertically? */
@@ -99,8 +75,7 @@ public class InputController {
 	/** The crosshair cache (for using as a return value) */
 	private Vector2 crosscache;
 
-	private boolean pause;
-	
+
 	/**
 	 * Returns the amount of sideways movement. 
 	 *
@@ -122,21 +97,6 @@ public class InputController {
 	public float getVertical() {
 		return vertical;
 	}
-	
-	/**
-	 * Returns the current position of the crosshairs on the screen.
-	 *
-	 * This value does not return the actual reference to the crosshairs position.
-	 * That way this method can be called multiple times without any fair that 
-	 * the position has been corrupted.  However, it does return the same object
-	 * each time.  So if you modify the object, the object will be reset in a
-	 * subsequent call to this getter.
-	 *
-	 * @return the current position of the crosshairs on the screen.
-	 */
-	public Vector2 getCrossHair() {
-		return crosscache.set(crosshair);
-	}
 
 	/**
 	 * Returns true if the primary action button was pressed.
@@ -148,17 +108,16 @@ public class InputController {
 	 */
 	public boolean didJump() {
 //		return jumpPressed && !jumpPrevious;
-		return jumpPressed;
+		return pressedMap.get("jump");
 	}
+
 	/**
-	 * Returns true if the dash button was pressed.
+	 * Returns true if the key mapped to by a given control was just pressed
 	 *
-	 * This is a one-press button. It only returns true at the moment it was
-	 * pressed, and returns false at any frame afterwards.
-	 *
-	 * @return true if the dash button was pressed.
+	 * @param control the name of the control
+	 * @return true if the key mapped to by a given control was just pressed
 	 */
-	public boolean didNext() { return nextPressed && !nextPrevious;}
+	private boolean isClicked(String control) { return pressedMap.get(control) && !previousMap.get(control); }
 
 	/**
 	 * Returns true if the dash button was pressed.
@@ -168,7 +127,7 @@ public class InputController {
 	 *
 	 * @return true if the dash button was pressed.
 	 */
-	public boolean didPrev() { return prevPressed && !prevPrevious;}
+	public boolean didNext() { return isClicked("next");}
 
 	/**
 	 * Returns true if the dash button was pressed.
@@ -178,37 +137,24 @@ public class InputController {
 	 *
 	 * @return true if the dash button was pressed.
 	 */
-	public boolean didDash() { return dashPressed && !dashPrevious;}
+	public boolean didPrev() { return isClicked("previous");}
+
+	/**
+	 * Returns true if the dash button was pressed.
+	 *
+	 * This is a one-press button. It only returns true at the moment it was
+	 * pressed, and returns false at any frame afterwards.
+	 *
+	 * @return true if the dash button was pressed.
+	 */
+	public boolean didDash() { return isClicked("dash");}
 
 	/**
 	 * Returns true if the climb button was pressed.
 	 *
 	 * @return true if the climb button was pressed.
 	 */
-	public boolean didClimb() { return climbPressed; }
-
-	/**
-	 * Returns true if the secondary action button was pressed.
-	 *
-	 * This is a one-press button. It only returns true at the moment it was
-	 * pressed, and returns false at any frame afterwards.
-	 *
-	 * @return true if the secondary action button was pressed.
-	 */
-	public boolean didSecondary() {
-		return secondPressed && !secondPrevious;
-	}
-	/**
-	 * Returns true if the tertiary action button was pressed.
-	 *
-	 * This is a sustained button. It will returns true as long as the player
-	 * holds it down.
-	 *
-	 * @return true if the secondary action button was pressed.
-	 */
-	public boolean didTertiary() {
-		return tertiaryPressed;
-	}
+	public boolean didClimb() { return pressedMap.get("climb"); }
 
 	/**
 	 * Returns true if the reset button was pressed.
@@ -216,7 +162,7 @@ public class InputController {
 	 * @return true if the reset button was pressed.
 	 */
 	public boolean didReset() {
-		return resetPressed && !resetPrevious;
+		return isClicked("reset");
 	}
 	
 	/**
@@ -225,7 +171,7 @@ public class InputController {
 	 * @return true if the player wants to go toggle the debug mode.
 	 */
 	public boolean didDebug() {
-		return debugPressed && !debugPrevious;
+		return isClicked("debug");
 	}
 
 	/**
@@ -234,7 +180,7 @@ public class InputController {
 	 * @return true if the exit button was pressed.
 	 */
 	public boolean didExit() {
-		return exitPressed && !exitPrevious;
+		return isClicked("exit");
 	}
 
 	/**
@@ -243,23 +189,23 @@ public class InputController {
 	 * @return true if the meow button was pressed.
 	 */
 	public boolean didMeow() {
-		return meowPressed && !meowPrevious;
+		return isClicked("meow");
 	}
 
 	/**
-	 * Returns true if the meow button was pressed.
+	 * Returns true if the undo button was pressed.
 	 *
-	 * @return true if the meow button was pressed.
+	 * @return true if the undo button was pressed.
 	 */
-	public boolean didUndo() { return undoPressed && !undoPrevious; }
+	public boolean didUndo() { return isClicked("undo"); }
 
 	/**
-	 * Returns true if the switch button was released.
+	 * Returns true if the switch button was released and not cancelled.
 	 *
-	 * @return true if the switch button was released.
+	 * @return true if the switch button was released and not cancelled.
 	 */
 	public boolean didSwitch() {
-		if (!switchPressed && switchPrevious){
+		if (isClicked("switch")){
 			if (cancelled){
 				cancelled = false;
 				return false;
@@ -275,9 +221,8 @@ public class InputController {
 	 * @return true if the switch button is being held.
 	 */
 	public boolean holdSwitch() {
-		didCancel = cancelPressed;
-		cancelled = cancelled || didCancel;
-		return switchPressed & !cancelled;
+		cancelled = cancelled || pressedMap.get("cancel");
+		return pressedMap.get("switch") & !cancelled;
 	}
 
 	/**
@@ -290,7 +235,6 @@ public class InputController {
 		// If we have a game-pad for id, then use it.
 		crosshair = new Vector2();
 		crosscache = new Vector2();
-		pause = false;
 	}
 
 	/**
@@ -306,37 +250,11 @@ public class InputController {
 	public void readInput(Rectangle bounds, Vector2 scale) {
 		// Copy state from last animation frame
 		// Helps us ignore buttons that are held down
-		jumpPrevious  = jumpPressed;
-		dashPrevious = dashPressed;
-		secondPrevious = secondPressed;
-		resetPrevious  = resetPressed;
-		debugPrevious  = debugPressed;
-		exitPrevious = exitPressed;
-		meowPrevious = meowPressed;
-		nextPrevious  = nextPressed;
-		prevPrevious = prevPressed;
-		switchPrevious = switchPressed;
-		undoPrevious = undoPressed;
+		for (String control : controlNames){
+			previousMap.put(control, pressedMap.get(control));
+		}
 		
 		readKeyboard(bounds, scale);
-	}
-
-	/**
-	 * Pauses all input until all keys are released.
-	 */
-	public void pause(){
-		pause = true;
-		jumpPrevious  = true;
-		dashPrevious = true;
-		secondPrevious = true;
-		resetPrevious  = true;
-		debugPrevious  = true;
-		exitPrevious = true;
-		meowPrevious = true;
-		nextPrevious  = true;
-		prevPrevious = true;
-		switchPrevious = true;
-		cancelPressed = true;
 	}
 
 	/**
@@ -348,48 +266,28 @@ public class InputController {
 	 *
 	 */
 	private void readKeyboard(Rectangle bounds, Vector2 scale) {
-		resetPressed = (Gdx.input.isKeyPressed(Input.Keys.R));
-		debugPressed = (Gdx.input.isKeyPressed(Input.Keys.B));
-		jumpPressed = (Gdx.input.isKeyPressed(Keys.C));
-		secondPressed = (Gdx.input.isKeyPressed(Input.Keys.SPACE));
-		dashPressed = (Gdx.input.isKeyPressed(Keys.X));
-		climbPressed = (Gdx.input.isKeyPressed(Keys.Z));
-		exitPressed  = (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
-		meowPressed = (Gdx.input.isKeyPressed(Input.Keys.M));
-		switchPressed = (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT));
-		cancelPressed = (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT));
-		undoPressed = (Gdx.input.isKeyPressed(Keys.U));
-
-		//useful keys for testing/debugging
-		nextPressed = (Gdx.input.isKeyPressed(Input.Keys.N));
-		prevPressed  = (Gdx.input.isKeyPressed(Input.Keys.P));
-
-
+		for (String control : controlNames){
+			pressedMap.put(control, Gdx.input.isKeyPressed(controls.get(control)));
+		}
 
 		// Directional controls
 		horizontal = 0.0f;
 		vertical = 0.0f;
-		if (!pause) {
-			if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-				horizontal += 1.0f;
-			}
-			if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-				horizontal -= 1.0f;
-			}
-			if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-				vertical += 1.0f;
-			}
-			if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-				vertical -= 1.0f;
-			}
-		} else {
-			pause = Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.DOWN) ||
-					Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.UP) ||
-					Gdx.input.isKeyPressed(Keys.SHIFT_LEFT);
+		if (Gdx.input.isKeyPressed(controls.get("right"))) {
+			horizontal += 1.0f;
 		}
+		if (Gdx.input.isKeyPressed(controls.get("left"))) {
+			horizontal -= 1.0f;
+		}
+		if (Gdx.input.isKeyPressed(controls.get("up"))) {
+			vertical += 1.0f;
+		}
+		if (Gdx.input.isKeyPressed(controls.get("down"))) {
+			vertical -= 1.0f;
+		}
+
 		
 		// Mouse results
-        	tertiaryPressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
 		crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 		crosshair.scl(1/scale.x,-1/scale.y);
 		crosshair.y += bounds.height;

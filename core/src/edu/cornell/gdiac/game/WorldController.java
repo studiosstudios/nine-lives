@@ -225,6 +225,9 @@ public class WorldController implements Screen {
 		// Giving assets to levelController
 		currLevel.setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants, levelJSON(1));
 		nextJSON = levelJSON(2);
+
+		//Set controls
+		InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
 	}
 
 	/**

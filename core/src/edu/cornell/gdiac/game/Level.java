@@ -296,16 +296,16 @@ public class Level {
      */
     public void updateCheckpoints(Checkpoint c){
         if(currCheckpoint != null){
-            currCheckpoint.setActive(false);
+            currCheckpoint.setCurrent(false);
         }
         currCheckpoint = c;
-        currCheckpoint.setActive(true);
+        currCheckpoint.setCurrent(true);
         respawnPos = currCheckpoint.getPosition();
     }
 
     public void resetCheckpoints(){
         if(currCheckpoint != null){
-            currCheckpoint.setActive(false);
+            currCheckpoint.setCurrent(false);
         }
         currCheckpoint = null;
         respawnPos = startRespawnPos;
@@ -664,7 +664,6 @@ public class Level {
      * Spawns a dead body at the location of the cat
      * */
     public void spawnDeadBody(){
-        System.out.println(currCheckpoint);
         DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat"), scale, cat.getPosition());
         deadBody.setLinearVelocity(cat.getLinearVelocity());
         deadBody.setFacingRight(cat.isFacingRight());

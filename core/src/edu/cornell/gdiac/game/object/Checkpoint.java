@@ -8,7 +8,6 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
-import edu.cornell.gdiac.game.obstacle.ComplexObstacle;
 
 public class Checkpoint extends BoxObstacle
 {
@@ -18,7 +17,7 @@ public class Checkpoint extends BoxObstacle
     protected TextureRegion checkpoint;
     protected TextureRegion active_checkpoint;
 
-    private boolean active;
+    private boolean current;
     private PolygonShape sensorShape;
     protected static JsonValue objectConstants;
     private static final String sensorName = "checkpointSensor";
@@ -36,7 +35,7 @@ public class Checkpoint extends BoxObstacle
         this.data = data;
         this.checkpoint = checkpointTexture;
         this.active_checkpoint = activeCheckpointTexture;
-        active = false;
+        current = false;
         setTexture(checkpointTexture);
         setName("checkpoint");
         setDrawScale(scale);
@@ -88,16 +87,16 @@ public class Checkpoint extends BoxObstacle
     /**
      * @param b  whether we want the checkpoint to be active
      */
-    public void setActive(boolean b){
-        active = b;
-        setTexture(active?active_checkpoint:checkpoint);
+    public void setCurrent(boolean b){
+        current = b;
+        setTexture(current ?active_checkpoint:checkpoint);
     }
 
     /**
      * @return true if the checkpoint is active
      */
-    public boolean getActive(){
-        return active;
+    public boolean getCurrent(){
+        return current;
     }
 
     @Override

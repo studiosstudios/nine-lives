@@ -993,6 +993,7 @@ public abstract class SimpleObstacle extends Obstacle {
 			stateMap.put("relativeVelocity", relativeVelocity.cpy());
 			stateMap.put("baseVelocity", baseVelocity.cpy());
 			stateMap.put("linearVelocity", getLinearVelocity().cpy());
+			stateMap.put("active", isActive());
 			return stateMap;
 		} else {
 			return super.storeState();
@@ -1005,6 +1006,7 @@ public abstract class SimpleObstacle extends Obstacle {
 			setLinearVelocity((Vector2) stateMap.get("linearVelocity"));
 			relativeVelocity.set((Vector2) stateMap.get("relativeVelocity"));
 			baseVelocity.set((Vector2) stateMap.get("baseVelocity"));
+			setActive((boolean) stateMap.get("active"));
 		} else {
 			super.loadState(stateMap);
 		}

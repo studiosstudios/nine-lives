@@ -86,12 +86,14 @@ public class Door extends PolygonObstacle implements Activatable {
     public void update(float dt){
         super.update(dt);
         ticks += closing;
-        if (ticks == 0){
+        if (ticks <= 0){
             setActive(false);
             closing = 0;
+            ticks = 0;
             return;
         }
-        if (ticks == totalTicks){
+        if (ticks >= totalTicks){
+            ticks = (int) totalTicks;
             closing = 0;
         }
         switch (angle) {
@@ -147,7 +149,6 @@ public class Door extends PolygonObstacle implements Activatable {
     @Override
     public void deactivated(World world){
         closing = -1;
-        setActive(true);
     }
 
     //region ACTIVATABLE METHODS
@@ -180,11 +181,14 @@ public class Door extends PolygonObstacle implements Activatable {
     public ObjectMap<String, Object> storeState(){
         ObjectMap<String, Object> stateMap = super.storeState();
         stateMap.put("ticks", ticks);
+        stateMap.put("closing", closing);
+        stateMap.put("activated", activated);
         return stateMap;
     }
 
     public void loadState(ObjectMap<String, Object> stateMap){
         super.loadState(stateMap);
         ticks = (int) stateMap.get("ticks");
+        closing = (float) stateMap.get("closing");
     }
 }

@@ -202,7 +202,7 @@ public class WorldController implements Screen {
 		fontAssetMap = new HashMap<>();
 
 		String[] names = {"cat", "jumpingCat","barrier", "rope", "spikes", "button", "flame", "flamethrower", "laser", "laserBeam",
-				"deadCat", "checkpoint", "checkpointActive", "roboMob", "background", "steel", "goal",
+				"deadCat", "checkpoint", "checkpointActive", "roboMob", "roboMobAnim", "background", "steel", "goal",
 				"flame_anim","checkpoint_anim", "checkpoint_active_anim", "checkpoint_base", "checkpoint_base_active",
 				"button_anim", "jump_anim",
 				"meow_anim","sit","walk"};

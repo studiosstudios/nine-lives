@@ -338,6 +338,8 @@ public class Cat extends CapsuleObstacle implements Moveable {
                 width*objectConstants.get("shrink").getFloat( 0 ),
                 height*objectConstants.get("shrink").getFloat( 1 ),
                 Orientation.TOP);
+        System.out.println(width);
+        System.out.println(height);
         setDensity(objectConstants.getFloat("density", 0));
         setFriction(objectConstants.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
         setFixedRotation(true);

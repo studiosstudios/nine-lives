@@ -10,7 +10,10 @@
  */
 package edu.cornell.gdiac.game.object;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
@@ -29,6 +32,12 @@ import edu.cornell.gdiac.game.obstacle.*;
 public class Mob extends CapsuleObstacle {
     /** The initializing data (to avoid magic numbers) */
     private final JsonValue data;
+
+    /** walking animation */
+    private Animation<TextureRegion> walkAnimation;
+
+    private float walkTime;
+    private TextureRegion[][] spriteFrames;
     /** The factor to multiply by the input */
     private final float force;
     /** The amount to slow the character down */
@@ -62,7 +71,7 @@ public class Mob extends CapsuleObstacle {
     /**
      * Returns left/right movement of this character.
      *
-     * This is the result of input times cat force.
+     * This is the result of input times mob force.
      *
      * @return left/right movement of this character.
      */
@@ -185,23 +194,29 @@ public class Mob extends CapsuleObstacle {
      * drawing to work properly, you MUST set the drawScale. The drawScale
      * converts the physics units to pixels.
      *
-     * @param texture the mob texture
+     * Note that the animation consists of multiple textures so we pass in the width/height
+     * for scaling and constructing the capsule.
+     *
+     * @param animationTexture the mob animation texture
+     * @param textureWidth the mob's animation texture's width
+     * @param textureHeight the mob's animation texture's height
      * @param drawScale the draw scale for the mob
-     * @param  textureScale the texture scale for the mob
+     * @param textureScale the texture scale for the mob
      * @param data  The JSON data for this mob
      *
      */
-    public Mob(TextureRegion texture, Vector2 drawScale, Vector2 textureScale, JsonValue data) {
-        super(texture.getRegionWidth()/drawScale.x*textureScale.x/2f,
-                texture.getRegionHeight()/drawScale.y*textureScale.y);
-
+    public Mob(Texture animationTexture, float textureWidth, float textureHeight, Vector2 drawScale, Vector2 textureScale, JsonValue data) {
+        super(textureWidth/drawScale.x*textureScale.x/2f,
+                textureHeight/drawScale.y*textureScale.y);
         setFixedRotation(true);
         setName("mob");
         setX(data.get("pos").getFloat(0));
         setY(data.get("pos").getFloat(1));
         setDrawScale(drawScale);
         setTextureScale(textureScale);
-        setTexture(texture);
+        walkTime = 0f;
+        spriteFrames = TextureRegion.split(animationTexture, 2048, 2048);
+        walkAnimation = new Animation<>(0.15f, spriteFrames[0]);
 
         setDensity(data.getFloat("density", 0));
         setFriction(data.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
@@ -252,14 +267,16 @@ public class Mob extends CapsuleObstacle {
     public boolean activatePhysics(World world) {
         // create the box from our superclass
         if (!super.activatePhysics(world)) {
+            System.out.println("activate physics");
             return false;
         }
+        System.out.println("activate physics");
         body.setUserData(this);
         return true;
     }
 
     /**
-     * Applies the force to the body of this cat
+     * Applies the force to the body of this mob
      *
      * This method should be called after the force attribute is set.
      */
@@ -300,7 +317,12 @@ public class Mob extends CapsuleObstacle {
      */
     public void draw(GameCanvas canvas) {
         float effect = faceRight ? 1.0f : -1.0f;
-        canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),effect * textureScale.x, textureScale.y);
+        float x = getX() * drawScale.x - effect*25;
+        float y = getY()*drawScale.y-24f;
+        walkAnimation.setPlayMode(Animation.PlayMode.LOOP_REVERSED);
+        walkTime += Gdx.graphics.getDeltaTime();
+        TextureRegion currentFrame = walkAnimation.getKeyFrame(walkTime);
+        canvas.draw(currentFrame,Color.WHITE, origin.x, origin.y,x,y, getAngle(),effect * textureScale.x,textureScale.y);
     }
 
     /**

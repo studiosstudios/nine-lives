@@ -473,7 +473,11 @@ public class Level {
         // Create mobs
         try {
             for (JsonValue mobJV : levelJV.get("mobs")){
-                Mob mob = new Mob(tMap.get("roboMob"), scale, new Vector2(1f/32, 1f/32), mobJV);
+                // TODO: should support diff types of mobs later
+                float mobTextureWidth = tMap.get("roboMob").getRegionWidth();
+                float mobTextureHeight = tMap.get("roboMob").getRegionHeight();
+                Mob mob = new Mob(tMap.get("roboMobAnim").getTexture(), mobTextureWidth, mobTextureHeight, scale, new Vector2(1f/40, 1f/40), mobJV);
+                // System.out.println("added mob");
                 mobArray.add(mob);
                 addObject(mob);
             }
@@ -488,6 +492,8 @@ public class Level {
 
         // Create cat
         dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
+        System.out.println(tMap.get("cat").getTexture().getWidth());
+        System.out.println(tMap.get("cat").getRegionWidth());
         dheight = tMap.get("cat").getRegionHeight()/scale.y;
         Texture[] arr = new Texture[6];
         arr[0] = tMap.get("cat").getTexture();
@@ -673,6 +679,7 @@ public class Level {
         for(Obstacle obj : objects) {
             if (obj != cat && !(obj instanceof DeadBody)){
                 obj.draw(canvas);
+                if (obj instanceof Mob) {System.out.println("drew mob");}
             }
         }
 

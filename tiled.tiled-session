@@ -64,9 +64,11 @@
             "scaleInEditor": 0.84
         }
     },
+    "last.exportedFilePath": "/Users/sabrinali/Desktop/nove",
     "last.externalTilesetPath": "/Users/sabrinali/Desktop/nove",
     "last.imagePath": "/Users/sabrinali/Desktop/nove/assets/platform",
     "map.height": 18,
+    "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 64,
     "map.tileWidth": 64,

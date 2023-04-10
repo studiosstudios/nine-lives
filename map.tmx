@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.0" orientation="orthogonal" renderorder="right-down" width="32" height="18" tilewidth="64" tileheight="64" infinite="0" nextlayerid="3" nextobjectid="1">
+<map version="1.10" tiledversion="1.10.0" orientation="orthogonal" renderorder="right-down" width="32" height="18" tilewidth="64" tileheight="64" infinite="0" nextlayerid="3" nextobjectid="2">
  <tileset firstgid="1" source="tiles.tsx"/>
  <tileset firstgid="49" source="../Group 11 Challenge Design Lab copy.tsx"/>
  <layer id="1" name="Tile Layer 1" width="32" height="18">
@@ -24,5 +24,11 @@
 27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27
 </data>
  </layer>
- <objectgroup id="2" name="Object Layer 1"/>
+ <objectgroup id="2" name="Object Layer 1">
+  <object id="1" gid="39" x="0" y="0" width="64" height="64">
+   <properties>
+    <property name="s" value="32,1"/>
+   </properties>
+  </object>
+ </objectgroup>
 </map>

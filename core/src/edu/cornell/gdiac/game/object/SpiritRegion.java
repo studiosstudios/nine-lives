@@ -134,7 +134,11 @@ public class SpiritRegion extends BoxObstacle {
         memory = new ParticlePool(capacity);
         for (int i = 0; i < capacity; i++){
             Particle item = addParticle();
-            item.setY(random.nextFloat(item.getBottom()*drawScale.y, item.getTop()*drawScale.y-PARTICLE_SIZE));
+            try {
+                item.setY(random.nextFloat(item.getBottom() * drawScale.y, item.getTop() * drawScale.y - PARTICLE_SIZE));
+            } catch (Exception e) {
+                item.setY(item.getBottom());
+            }
         }
 
     }

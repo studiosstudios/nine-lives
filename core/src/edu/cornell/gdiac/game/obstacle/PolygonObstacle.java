@@ -22,6 +22,7 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 
 import edu.cornell.gdiac.game.*;  // For GameCanvas
+import edu.cornell.gdiac.game.object.Door;
 import edu.cornell.gdiac.math.Poly2; // For the shape
 
 /**
@@ -108,6 +109,8 @@ public class PolygonObstacle extends SimpleObstacle {
 	 * @param y		  Local y coordinate of scaling center
 	 */
 	public void setDimension(float width, float height, boolean clip, float x, float y) {
+//		System.out.println(width);
+//		System.out.println(height);
 		resizeFromPoint(width, height, clip, x, y);
 		markDirty(true);
 	}
@@ -202,7 +205,7 @@ public class PolygonObstacle extends SimpleObstacle {
 			}
 			if (vertices[ii+1] < miny) {
 				miny = vertices[ii+1];
-			} else if (vertices[ii] > maxy) {
+			} else if (vertices[ii+1] > maxy) {
 				maxy = vertices[ii+1];
 			}
 		}

@@ -1,7 +1,6 @@
 package edu.cornell.gdiac.game;
 
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.audio.*;
@@ -11,6 +10,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.game.stage.StageWrapper;
 import edu.cornell.gdiac.util.*;
 
 /**
@@ -65,6 +65,8 @@ public class WorldController implements Screen {
 	private AssetDirectory directory;
 	/** TiledMap */
 	private TiledMap tiledMap;
+	public StageController pauseStage = null;
+	public boolean paused = false;
 
 	/**
 	 * Returns the canvas associated with the current LevelController
@@ -150,6 +152,7 @@ public class WorldController implements Screen {
 			if (levelNum < numLevels) {
 				nextJSON = levelJSON(levelNum + 1);
 			}
+			resume();
 		}
 	}
 
@@ -173,6 +176,7 @@ public class WorldController implements Screen {
 			if (levelNum > 1) {
 				prevJSON = levelJSON(levelNum - 1);
 			}
+			resume();
 		}
 	}
 	public void setCurrLevel(int level) {
@@ -315,11 +319,16 @@ public class WorldController implements Screen {
 			}
 		}
 
-		if (preUpdate(delta)) {
+		if (preUpdate(delta) && !paused) {
 			currLevel.update(delta); // This is the one that must be defined.
 			currLevel.postUpdate(delta);
 		}
 		currLevel.draw(delta);
+		if (paused && pauseStage != null) {
+//			pauseStage.getPauseStage().act();
+//			pauseStage.getPauseStage().draw();
+			pauseStage.render(delta);
+		}
 	}
 
 	/**
@@ -330,6 +339,7 @@ public class WorldController implements Screen {
 	 */
 	public void pause() {
 //		currLevel.pause();
+		paused = true;
 	}
 
 	/**
@@ -338,7 +348,8 @@ public class WorldController implements Screen {
 	 * This is usually when it regains focus.
 	 */
 	public void resume() {
-		// TODO Auto-generated method stub
+		paused = false;
+		pauseStage = null;
 	}
 	
 	/**

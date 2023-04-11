@@ -97,26 +97,33 @@ public class NineLives extends Game implements ScreenListener {
 	 * @param exitCode The state of the screen upon exit
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
-		if (screen == menu && exitCode == 0) {
+		if (exitCode == 77) {
+//			setScreen(menu);
+			menu.loadAssets();
 			directory = menu.getAssets();
 			controller.gatherAssets(directory);
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
+			controller.resume();
 			controller.getCurrLevel().reset(null);
 			setScreen(controller);
 			menu.dispose();
 			menu = null;
-		} else if (screen == menu && exitCode == 69) {
+		} else if (exitCode == 69) {
+//			setScreen(menu);
 			directory = menu.getAssets();
 			controller.gatherAssets(directory);
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
+			controller.resume();
 			controller.setCurrLevel(menu.getSelectedLevel());
 			controller.getCurrLevel().reset(null);
 			setScreen(controller);
 			menu.dispose();
 			menu = null;
-		} else if (screen == menu && exitCode == 25) {
+		} else if (exitCode == 25) {
+//			setScreen(menu);
+			controller.pauseStage = null;
 			controller.resume();
 			setScreen(controller);
 			menu.dispose();
@@ -127,9 +134,12 @@ public class NineLives extends Game implements ScreenListener {
 			menu.setScreenListener(this);
 			menu.pause = true;
 			menu.currLevel = controller.getCurrLevel();
-//			controller.pause();
-			setScreen(menu);
+			controller.pauseStage = menu;
+			controller.pause();
+//			setScreen(menu);
 //			controller.getCurrLevel().getLevel().draw(canvas,false);
+		} else if (exitCode == 88) {
+			setScreen(menu);
 		} else if (exitCode == 99) {
 			Gdx.app.exit();
 		}

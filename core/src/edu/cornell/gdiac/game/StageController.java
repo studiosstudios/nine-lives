@@ -24,7 +24,7 @@ public class StageController implements Screen {
 	/** Internal assets for this loading screen */
 	private final AssetDirectory internal;
 	/** The actual assets to be loaded */
-	private final AssetDirectory assets;
+	private AssetDirectory assets;
 	/** Standard window size (for scaling) */
 	private static int STANDARD_WIDTH  = 1024;
 	/** Standard window height (for scaling) */
@@ -106,6 +106,7 @@ public class StageController implements Screen {
 	}
 
 	public StageWrapper getStage() { return stage; }
+	public StageWrapper getPauseStage() { return pauseStage; }
 
 	/**
 	 * Creates a LoadingMode with the default budget, size and position.
@@ -170,6 +171,12 @@ public class StageController implements Screen {
 		internal.unloadAssets();
 		internal.dispose();
 	}
+
+	public void loadAssets() {
+		assets = new AssetDirectory("assets.json");
+		assets.loadAssets();
+		assets.finishLoading();
+	}
 	
 	/**
 	 * Update the status of this player mode.
@@ -197,17 +204,19 @@ public class StageController implements Screen {
 	 * prefer this in lecture.
 	 */
 	private void draw() {
-		Gdx.gl.glClearColor(0, 0, 0, 1.0f);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		animation.setPlayMode(Animation.PlayMode.LOOP);
-		animationTime += Gdx.graphics.getDeltaTime();
-		TextureRegion currentFrame = animation.getKeyFrame(animationTime);
+		if (!pause) {
+			Gdx.gl.glClearColor(0, 0, 0, 1.0f);
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+			animation.setPlayMode(Animation.PlayMode.LOOP);
+			animationTime += Gdx.graphics.getDeltaTime();
+			TextureRegion currentFrame = animation.getKeyFrame(animationTime);
+		}
 		canvas.begin();
 		stage.getViewport().apply();
 		stage.act();
 		stage.draw();
-//		canvas.draw(jump_texture, Color.WHITE, 100,100,500,500);
 		canvas.end();
+//		canvas.draw(jump_texture, Color.WHITE, 100,100,500,500);
 	}
 
 	// ADDITIONAL SCREEN METHODS
@@ -221,17 +230,19 @@ public class StageController implements Screen {
 	 */
 	public void render(float delta) {
 		if (active) {
-			update(delta);
+			if (!pause) {
+				update(delta);
+			}
 			draw();
 			if (pause) {
-				pause = false;
+//				pause = false;
 				pauseStage.currLevel = this.currLevel;
 				changeStage(pauseStage);
 			}
 
 			// We are ready, notify our listener
 			if (mainMenuStage.isPlay() && listener != null) {
-				listener.exitScreen(this, 0);
+				listener.exitScreen(this, 77);
 			} else if (mainMenuStage.isSettings()) {
 				mainMenuStage.setSettingsState(0);
 				changeStage(settingsStage);
@@ -247,14 +258,17 @@ public class StageController implements Screen {
 				selectedLevel = levelSelectStage.getSelectedLevel();
 				listener.exitScreen(this, 69);
 			} else if (pauseStage.isResume() && listener != null) {
+				pause = false;
 				pauseStage.setResumeButtonState(0);
 				pauseStage.currLevel = null;
 				listener.exitScreen(this, 25);
 			} else if (pauseStage.isMainMenu() && listener != null) {
+				pause = false;
 				pauseStage.setMainMenuState(0);
 				pauseStage.currLevel = null;
 				mainMenuStage.createActors();
 				changeStage(mainMenuStage);
+				listener.exitScreen(this,88);
 			} else if (mainMenuStage.isExit() && listener != null) {
 				listener.exitScreen(this, 99);
 			}

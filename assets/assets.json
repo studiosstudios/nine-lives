@@ -38,7 +38,8 @@
         "roboMob": "platform/robo_mob.png",
         "meow_anim": "platform/meow.png",
       "idle_anim": "platform/idle.png",
-      "idle_anim_stand": "platform/standing_idle.png"
+      "idle_anim_stand": "platform/standing_idle.png",
+      "metal_tileset": "tiled/metal_tileset.png"
     },
     "jsons"  : {
         "constants": "platform/constants.json",
@@ -47,7 +48,7 @@
         "level3": "platform/level3.json",
         "level4": "platform/level4.json",
         "level5": "platform/level_testplayground.json",
-//        "tiledLevel": "tiledLevel.json"
+        "tiledLevel1": "tiled/tiledLevel1.json"
     },
     "sounds" : {
         "jump" : "platform/jump.mp3",

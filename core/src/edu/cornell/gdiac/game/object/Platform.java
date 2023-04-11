@@ -35,7 +35,7 @@ public class Platform extends Wall implements Activatable {
      * @param data     JSON for loading.
      */
     public Platform(TextureRegion texture, Vector2 scale, JsonValue data) {
-        super(texture, scale, data);
+        super(texture, scale, data.get("shape").asFloatArray(), data.getBoolean("climbable", false));
         setName("platform");
         setBodyType(BodyDef.BodyType.KinematicBody);
         try {

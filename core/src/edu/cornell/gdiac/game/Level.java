@@ -363,40 +363,171 @@ public class Level {
      */
     public void levelEditor(JsonValue tiledMap){
 
-        //parse through tmj layers : objects : which has platform width, height data stored in "s"
-        // TODO: need constant in TiledMap that says which biome it is for getting a specific the tileset asset
         JsonValue layers = tiledMap.get("layers");
-        JsonValue data = layers.get(0);
-        JsonValue objects = layers.get(1).get("objects");
+        JsonValue tileData = layers.get(0);
 
         int tileSize = tiledMap.getInt("tilewidth");
         int levelWidth = tiledMap.getInt("width");
         int levelHeight = tiledMap.getInt("height");
 
-        tiles = new Tiles(data, tileSize, levelWidth, levelHeight, textureRegionAssetMap.get("tileset"));
+        Array<JsonValue> obstacleData = new Array<>();
 
-
-        Json levelJSON = new Json();
-
-        Array<Array<Integer>> shapeArray = new Array<>();
-
-        for (JsonValue obj : objects) {
-            JsonValue points = obj.get("polygon");
-            Array<Integer> shape = new Array<>();
-            for (JsonValue point : points) {
-                shape.add(point.getInt("x")/tileSize, point.getInt("y")/tileSize);
-                shapeArray.add(shape);
+        for (JsonValue layer : layers) {
+            if (layer.getInt("id") != 1) {
+                obstacleData.add(layer);
             }
         }
+
+        populateObstacles(obstacleData, tileSize, levelHeight);
+
+        String biome = tiledMap.get("properties").get(0).getString("value");
+
+        TextureRegion tileset = new TextureRegion();
+
+        if (biome.equals("metal")) {
+            tileset = textureRegionAssetMap.get("metal_tileset");
+        }
+        else if (biome.equals("forest")) {
+            // TODO: change this in future
+            tileset = textureRegionAssetMap.get("metal_tileset");
+        }
+
+        tiles = new Tiles(tileData, tileSize, levelWidth, levelHeight, tileset, new Vector2(1/32f, 1/32f));
     }
 
     /**
-     * Reformat levelJV
-     * @param levelJV
+     * blah
+     * @param data
      */
-    public JsonValue reformatLevelJV(JsonValue levelJV) {
-        return levelJV;
+    public void populateObstacles(Array<JsonValue> data, int tileSize, int levelHeight) {
+        for (JsonValue obstacleData : data) {
+            String name = obstacleData.getString("name");
+            // Walls
+            if (name.equals("wall-poly")) {
+                populateWalls(obstacleData, tileSize, levelHeight);
+            }
+            // Platforms
+//            else if (name.equals("platforms")) {
+//                populatePlatforms(obstacleData, tileSize, levelHeight);
+//            }
+            // Doors
+            // Boxes
+            // Checkpoints
+            else if (name.equals("checkpoints")) {
+                populateCheckpoints(obstacleData, tileSize, levelHeight);
+            }
+
+            // Activators
+            // Spikes
+            // Flamethrowers
+//            else if (name.equals("flamethrowers")) {
+//                populateFlamethrowers(obstacleData, tileSize, levelHeight);
+//            }
+            // Lasers
+            // Mobs
+            // Cat
+
+
+        }
     }
+
+    private void populateWalls(JsonValue data, int tileSize, int levelHeight) {
+
+        JsonValue objects = data.get("objects");
+
+        for (JsonValue obj : objects) {
+            JsonValue points = obj.get("polygon");
+            float x = obj.getFloat("x");
+            float y = obj.getFloat("y");
+            float[] shape = new float[points.size*2];
+
+            int i = 0;
+            for (JsonValue point : points) {
+
+                shape[i] = (x + point.getFloat("x"))/tileSize;
+
+                shape[i+1] = levelHeight - (y + point.getFloat("y"))/tileSize;
+                i+=2;
+            }
+
+            // check climbable
+            Boolean isClimbable = false;
+
+            if (obj.get("properties") != null) {
+                isClimbable = obj.get("properties").get(0).getBoolean("value");
+            }
+            Wall wall = new Wall(textureRegionAssetMap.get("steel"), scale, shape, isClimbable);
+            addObject(wall);
+        }
+    }
+
+
+    private void populatePlatforms(JsonValue data, int tileSize, int levelHeight){
+        JsonValue objects = data.get("objects");
+
+        for (JsonValue obj : objects) {
+            float x = obj.getFloat("x")/tileSize;
+            float y = levelHeight - obj.getFloat("y")/tileSize;
+            float width = obj.getFloat("width")/tileSize;
+            float height = obj.getFloat("height")/tileSize;
+            float[] shape = new float[]{x, y, x + width, y, x + width, y + height, x, y + height};
+
+            JsonValue properties = obj.get("properties");
+            Vector2 disp = new Vector2(properties.get(4).get("value").getFloat("x"), properties.get(3).get("value").getFloat("y"));
+            boolean isClimbable = obj.get("properties").get(0).getBoolean("value");
+            float speed = properties.get(5).get("value").getFloat("x");
+
+        }
+
+    }
+
+
+    private void populateCheckpoints(JsonValue data, int tileSize, int levelHeight) {
+
+        JsonValue objects = data.get("objects");
+
+        for (JsonValue obj : objects) {
+            float x = obj.getFloat("x");
+            float y = obj.getFloat("y");
+
+            Vector2 pos = new Vector2(x/tileSize, levelHeight - y/tileSize);
+            float angle = (float) ((360-obj.getFloat("rotation")) * Math.PI/180);
+
+            Checkpoint checkpoint = new Checkpoint(pos, angle, scale, textureRegionAssetMap.get("checkpoint_anim"),
+                    textureRegionAssetMap.get("checkpoint_active_anim"), textureRegionAssetMap.get("checkpoint_base"),
+                    textureRegionAssetMap.get("checkpoint_base_active"));
+            addObject(checkpoint);
+        }
+    }
+
+    private void populateActivators(JsonValue data, int tileSize, int levelHeight) {
+
+    }
+
+    private void populateSpikes(JsonValue data, int tileSize, int levelHeight) {
+
+    }
+
+    private void populateFlamethrowers(JsonValue data, int tileSize, int levelHeight) {
+
+//        JsonValue objects = data.get("objects");
+//
+//        for (JsonValue obj : objects) {
+//            Flamethrower flamethrower = new Flamethrower(textureRegionAssetMap.get("flamethrower"),
+//                    new Vector2(1f/64, 1f/64), textureRegionAssetMap.get("flame_anim"),
+//                    new Vector2(1, 1), scale, obj);
+//            loadActivatable(flamethrower, obj);
+//        }
+
+    }
+
+
+    private void populateLasers(JsonValue data, int tileSize, int levelHeight) {
+
+    }
+
+
+
 
     /**
      * Lays out the game geography from the given JSON file
@@ -436,19 +567,19 @@ public class Level {
         // This world is heavier
         world.setGravity( new Vector2(0,defaults.getFloat("gravity",0)) );
 
-        try {
-            for (JsonValue wallJV : levelJV.get("walls")){
-                Wall wall = new Wall(tMap.get("steel"), scale, wallJV);
-                addObject(wall);
-            }
-        } catch (NullPointerException e) {}
+//        try {
+//            for (JsonValue wallJV : levelJV.get("walls")){
+//                Wall wall = new Wall(tMap.get("steel"), scale, wallJV);
+//                addObject(wall);
+//            }
+//        } catch (NullPointerException e) {}
 
-        try {
-            for (JsonValue platformJV : levelJV.get("platforms")){
-                Platform platform = new Platform(tMap.get("steel"), scale, platformJV);
-                loadActivatable(platform, platformJV);
-            }
-        } catch (NullPointerException e) {}
+//        try {
+//            for (JsonValue platformJV : levelJV.get("platforms")){
+//                Platform platform = new Platform(tMap.get("steel"), scale, platformJV);
+//                loadActivatable(platform, platformJV);
+//            }
+//        } catch (NullPointerException e) {}
 
         try {
             for (JsonValue activatorJV : levelJV.get("activators")){
@@ -478,13 +609,13 @@ public class Level {
             }
         } catch (NullPointerException e) {}
 
-        try {
-            for (JsonValue checkpointJV : levelJV.get("checkpoints")){
-                Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint_anim"), tMap.get("checkpoint_active_anim"),
-                        tMap.get("checkpoint_base"), tMap.get("checkpoint_base_active"));
-                addObject(checkpoint);
-            }
-        } catch (NullPointerException e) {}
+//        try {
+//            for (JsonValue checkpointJV : levelJV.get("checkpoints")){
+//                Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint_anim"), tMap.get("checkpoint_active_anim"),
+//                        tMap.get("checkpoint_base"), tMap.get("checkpoint_base_active"));
+//                addObject(checkpoint);
+//            }
+//        } catch (NullPointerException e) {}
 
         try {
             for(JsonValue boxJV : levelJV.get("boxes")){
@@ -567,7 +698,7 @@ public class Level {
         Checkpoint.setConstants(constants.get("checkpoint"));
         Mirror.setConstants(constants.get("mirrors"));
         Wall.setConstants(constants.get("walls"));
-        Platform.setConstants(constants.get("platforms"));
+//        Platform.setConstants(constants.get("platforms"));
         Cat.setConstants(constants.get("cat"));
         Exit.setConstants(constants.get("exits"));
         Door.setConstants(constants.get("doors"));
@@ -721,9 +852,13 @@ public class Level {
             canvas.draw(background, Color.WHITE, 0, 0, background.getWidth()*Float.max(scaleX,scaleY), background.getHeight()*Float.max(scaleX,scaleY));
 //            canvas.draw(background, 0, 0);
         }
+
+        tiles.draw(canvas);
+
         //draw everything except cat and dead bodies
         for(Obstacle obj : objects) {
-            if (obj != cat && !(obj instanceof DeadBody)){
+//            if (obj != cat && !(obj instanceof DeadBody)){
+                if (obj != cat && !(obj instanceof DeadBody) && !(obj instanceof Wall)){
                 obj.draw(canvas);
             }
         }
@@ -738,6 +873,7 @@ public class Level {
         if (currCheckpoint != null) {
             currCheckpoint.drawBase(canvas);
         }
+
         canvas.end();
 
         canvas.begin();

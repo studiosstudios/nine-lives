@@ -45,6 +45,7 @@
         "level3": "platform/level3.json",
         "level4": "platform/level4.json",
         "level5": "platform/level_testplayground.json",
+//        "tiledLevel": "tiledLevel.json"
     },
     "sounds" : {
         "jump" : "platform/jump.mp3",

@@ -1010,7 +1010,6 @@ public abstract class SimpleObstacle extends Obstacle {
 		} else {
 			super.loadState(stateMap);
 		}
-		markDirty(true);
 	}
 
 }

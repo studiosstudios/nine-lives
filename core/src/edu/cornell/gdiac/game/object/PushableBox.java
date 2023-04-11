@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
@@ -86,4 +87,21 @@ public class PushableBox extends BoxObstacle implements Movable {
         canvas.drawPhysics(sensorShape, Color.RED,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
     }
 
+    public ObjectMap<String, Object> storeState(){
+        ObjectMap<String, Object> stateMap = super.storeState();
+        stateMap.put("groundFixtures", copyObjectSet(groundFixtures));
+        return stateMap;
+    }
+
+    private <T> ObjectSet<T> copyObjectSet(ObjectSet<T> base) {
+        ObjectSet<T> copy = new ObjectSet<>();
+        for (T el : base){
+            copy.add(el);
+        }
+        return copy;
+    }
+    public void loadState(ObjectMap<String, Object> stateMap){
+        super.loadState(stateMap);
+        groundFixtures = (ObjectSet<Fixture>) stateMap.get("groundFixtures");
+    }
 }

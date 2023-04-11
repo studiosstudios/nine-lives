@@ -214,6 +214,7 @@ public class BoxObstacle extends SimpleObstacle {
 	public void loadState(ObjectMap<String, Object> stateMap){
 		super.loadState(stateMap);
 		setDimension((Vector2) stateMap.get("dimension"));
+		markDirty(false);
 	}
 
 

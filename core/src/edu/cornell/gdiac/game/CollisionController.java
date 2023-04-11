@@ -5,7 +5,7 @@ import edu.cornell.gdiac.game.object.*;
 import edu.cornell.gdiac.game.obstacle.Obstacle;
 
 public class CollisionController implements ContactListener, ContactFilter {
-
+    //TODO: consider storing a set of current contacts, to ensure no issues with undoing level states
 
     /** The Level model */
     private Level level;

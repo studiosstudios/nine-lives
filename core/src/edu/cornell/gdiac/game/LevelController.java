@@ -1,5 +1,7 @@
 package edu.cornell.gdiac.game;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.audio.*;
@@ -63,7 +65,7 @@ public class LevelController {
     /** Array storing level states of past lives. The ith element of this array is the state
      * of the level at the instant the player had died i times. */
     private LevelState[] prevLivesState = new LevelState[9];
-    /** If we have respawned in preUpdated(). Needed in postUpdate() for saving level state. */
+    /** If we have respawned in preUpdate(). Needed in postUpdate() for saving level state. */
     private boolean justRespawned;
     /** The color of the flash animation after resetting/undoing */
     private Color flashColor = new Color(1, 1, 1, 0);
@@ -207,7 +209,7 @@ public class LevelController {
     public void reset(Cat prevCat) {
 
         Vector2 gravity = new Vector2( world.getGravity() );
-        justRespawned = false;
+        justRespawned = true;
         level.dispose();
         world = new World(gravity,false);
         level.setWorld(world);
@@ -221,7 +223,6 @@ public class LevelController {
         setRet(false);
         populateLevel(tempRet, prevCat);
         prevLivesState = new LevelState[9];
-        prevLivesState[0] = new LevelState(level);
     }
 
     /**
@@ -273,13 +274,6 @@ public class LevelController {
             respawn();
         }
 
-        if (input.didUndo()) {
-            if (level.getNumLives() < 9) {
-                loadLevelState(prevLivesState[8 - level.getNumLives()]);
-                flashColor.set(1, 1, 1, 1);
-            }
-        }
-
         return input.didExit();
     }
 
@@ -326,9 +320,24 @@ public class LevelController {
         //to the world. Ideally we could do this in respawn(), but that would involve rearranging the order of everything
         //which may be a pain. Also it does seem like saving state after stepping the world has better results - will need
         //testing.
+
+//        if (InputController.getInstance().didUndo()) {
+//            if (level.getNumLives() < 9) {
+//                loadLevelState(prevLivesState[8 - level.getNumLives()]);
+//                flashColor.set(1, 1, 1, 1);
+//            }
+//        }
         if (justRespawned) {
             prevLivesState[9 - level.getNumLives()] = new LevelState(level);
             justRespawned = false;
+        }
+
+
+        if (InputController.getInstance().didUndo()) {
+            if (level.getNumLives() < 9) {
+                loadLevelState(prevLivesState[8 - level.getNumLives()]);
+                flashColor.set(1, 1, 1, 1);
+            }
         }
     }
 

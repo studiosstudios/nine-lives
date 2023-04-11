@@ -71,7 +71,7 @@ public class Platform extends Wall implements Activatable {
 
         //check if passing through target pos: velocity is parallel to target velocity and target is between
         //current position and next position
-        if (targetVel.dot(getLinearVelocity()) >= 0 &&
+        if (targetVel.dot(getLinearVelocity()) >= 0 && !targetVel.equals(Vector2.Zero) &&
                 target.dst(getPosition()) < target.dst(getPosition().add(getLinearVelocity().scl(dt)))) {
             moving = 0;
             setPosition(target);

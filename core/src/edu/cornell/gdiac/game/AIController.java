@@ -10,10 +10,12 @@ import edu.cornell.gdiac.game.object.*;
 import edu.cornell.gdiac.game.obstacle.*;
 
 public class AIController {
+    /** The bounds of the world */
+    private Rectangle bounds;
     /**
      * Enumeration to encode the finite state machine.
      */
-    private static enum FSMState {
+    private enum FSMState {
         /** The mob just spawned */
         SPAWN,
         /** The mob is patrolling around without a target */
@@ -23,7 +25,7 @@ public class AIController {
     }
 
     // Instance Attributes
-    /** The ship's current state in the FSM */
+    /** The mob's current state in the FSM */
     private FSMState state;
     /** The mob being controlled by this AIController */
     private Mob mob;
@@ -33,13 +35,9 @@ public class AIController {
     private Cat target;
     /** How much did we move horizontally? */
     private float horizontal;
-    /** The crosshair position (for raddoll) */
-    private Vector2 crosshair;
-    /** The crosshair cache (for using as a return value) */
-    private Vector2 crosscache;
-
+    /** The constant to move the mob by when not chasing */
     private static final float MOVE_CONSTANT = 0.02f;
-
+    /** The detector ray associated with the mob of the controller */
     private MobDetector detectorRay;
 
     /** fields needed for raycasting */
@@ -49,17 +47,15 @@ public class AIController {
     private Vector2 startPointCache = new Vector2();
     private Vector2 endPointCache = new Vector2();
 
-    private Rectangle bounds;
-
-//    private Boolean dete
-
 
     /**
      * Creates an AIController for the ship with the given id.
      *
+     * @param bounds The bounds of the Box2D world
      * @param level The level model (for pathfinding)
+     * @param mob The mob model associated with this controller
      */
-    public AIController(Rectangle bounds, Level level, Mob mob, Boolean aggressive) {
+    public AIController(Rectangle bounds, Level level, Mob mob) {
         this.bounds = bounds;
         this.level = level;
         this.mob = mob;
@@ -73,25 +69,47 @@ public class AIController {
         detectorRay = mob.getDetectorRay();
     }
 
-    /* Returns mob of this AI Controller*/
+    /**
+     * Returns the mob of this AI controller
+     *
+     * @return mob
+     */
     public Mob getMob() {
         return mob;
     }
 
+    /**
+     * Returns the next action for them mob.
+     * First check if a target was detected in the detector ray.
+     * Then change the mob's state if applicable.
+     *
+     * @return the horizontal distance to move by
+     */
     public float getAction() {
         detectRayCast(detectorRay);
         changeStateifApplicable();
         return getHorizontal();
     }
 
+    /**
+     * Returns the detector ray associated with the mob
+     *
+     * @return detectorRay
+     */
     public MobDetector getDetectorRay() { return detectorRay; }
 
+    /**
+     * Changes the state of this mob.
+     *
+     */
     public void changeStateifApplicable() {
 
+        // Goes straight to WANDER after the mob spawns
         if (state == FSMState.SPAWN) {
             this.state = FSMState.WANDER;
         }
         else if (state == FSMState.WANDER) {
+            // If the mob has a target, then switch to CHASE
             if (target != null) {
                 if (mob.isAggressive()) {
                     this.state = FSMState.CHASE;
@@ -124,54 +142,6 @@ public class AIController {
         }
     }
 
-//    private void selectTarget() {
-//        Cat targ = null;
-//        Cat cat = level.getCat();
-//        float cat_pos_x = level.getCat().getX();
-//        float cat_pos_y = level.getCat().getY();
-//        float mob_pos_x = mob.getX();
-//        float mob_pos_y = mob.getY();
-//        float buffer_y = level.getCat().getHeight();
-//
-//        // Check that the mob is on the same plane as the Cat (with some buffer)
-//        if (cat_pos_y <= mob_pos_y + buffer_y && cat_pos_y >= mob_pos_y - buffer_y) {
-//
-//            // Check that the object is on the same plane as the Cat and Mob (with some buffer)
-//            for (Obstacle obstacle : level.getObjects()) {
-//                // Make sure obj is not Cat
-//                if (obstacle != cat && obstacle != mob) {
-//                    float ob_pos_x = obstacle.getX();
-//                    float ob_pos_y = obstacle.getY();
-//                    if (ob_pos_y <= mob_pos_y + buffer_y && ob_pos_y >= mob_pos_y - buffer_y) {
-//                        // Check direction that mob is facing
-//                        if (mob.isFacingRight() && mob_pos_x <= cat_pos_x) {
-//                            // Check if obj is to the right of the Mob and to the left of the Cat
-//                            if (ob_pos_x >= mob_pos_x && ob_pos_x <= cat_pos_x) {
-//                                // Object is in line of sight between the cat and the mob
-//                                target = null;
-//                                return;
-//                            } else {
-//                                // the cat is in the line of sight
-//                                targ = cat;
-//                            }
-//                        } else if (!mob.isFacingRight() && mob_pos_x >= cat_pos_x) {
-//                            // Facing left
-//                            if (cat_pos_x <= ob_pos_x && ob_pos_x <= mob_pos_x) {
-//                                // Object is in line of sight between the cat and the mob
-//                                target = null;
-//                                return;
-//                            } else {
-//                                // the cat is in the line of sight
-//                                targ = cat;
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        target = targ;
-//    }
-
     /**
      * Returns the amount of sideways movement.
      *
@@ -184,31 +154,10 @@ public class AIController {
     }
 
     /**
-     * Returns the current position of the crosshairs on the screen.
-     *
-     * This value does not return the actual reference to the crosshairs position.
-     * That way this method can be called multiple times without any fair that
-     * the position has been corrupted.  However, it does return the same object
-     * each time.  So if you modify the object, the object will be reset in a
-     * subsequent call to this getter.
-     *
-     * @return the current position of the crosshairs on the screen.
+     * Sets the end point cache of the detector
+     * @param start the start position for the detector
+     * @param isRight if the mob is facing right
      */
-    public Vector2 getCrossHair() {
-        return crosscache.set(crosshair);
-    }
-
-    /**
-     * Clamp the cursor position so that it does not go outside the window
-     *
-     * While this is not usually a problem with mouse control, this is critical
-     * for the gamepad controls.
-     */
-    private void clampPosition(Rectangle bounds) {
-        crosshair.x = Math.max(bounds.x, Math.min(bounds.x+bounds.width, crosshair.x));
-        crosshair.y = Math.max(bounds.y, Math.min(bounds.y+bounds.height, crosshair.y));
-    }
-
     private void getRayCastEnd(Vector2 start, Boolean isRight){
         if (isRight) {
             endPointCache.set(bounds.width, start.y);
@@ -217,6 +166,10 @@ public class AIController {
         }
     }
 
+    /**
+     * The main ray cast callback
+     *
+     */
     private RayCastCallback DetectorRayCastCallback = new RayCastCallback() {
 
         @Override
@@ -238,6 +191,11 @@ public class AIController {
         }
     };
 
+    /**
+     * Sees if a target has been detected
+     *
+     * @param detector the detector ray of the mob
+     */
     public void detectRayCast(MobDetector detector) {
         detector.beginRayCast();
 

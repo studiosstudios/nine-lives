@@ -33,22 +33,13 @@ public class DeadBody extends BoxObstacle {
     private boolean burning;
     /** The total number ticks a body burns for */
     private static int totalBurnTicks;
-
-    /**
-     * The amount to slow the model down
-     */
+    /** The amount to slow the model down */
     private final float damping;
-    /**
-     * Identifier to allow us to track the sensor in ContactListener
-     */
+    /** Identifier to allow us to track the sensor in ContactListener */
     private final String sensorName;
-    /**
-     * Which direction is the model facing
-     */
+    /** Which direction is the model facing */
     private boolean faceRight;
-    /**
-     * The physics shape of this object
-     */
+    /** The physics shape of this object */
     private CircleShape sensorShape;
     /** The number of hazards that the body is touching */
     private int hazardsTouching;
@@ -250,7 +241,9 @@ public class DeadBody extends BoxObstacle {
      */
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
-        canvas.drawPhysics(sensorShape, Color.RED, getX(), getY(), drawScale.x, drawScale.y);
+        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+        canvas.drawPhysics(sensorShape, Color.RED, getX()-xTranslate, getY()-yTranslate, drawScale.x, drawScale.y);
     }
 
     /**

@@ -174,6 +174,11 @@ public class WorldController implements Screen {
 			}
 		}
 	}
+	public void setCurrLevel(int level) {
+		if (level < numLevels) {
+			currLevel.setJSON(levelJSON(level+1));
+		}
+	}
 	/**
 	 * Loads in the JSON of a level
 	 *
@@ -206,10 +211,9 @@ public class WorldController implements Screen {
 
 		String[] names = {"cat", "jumpingCat","barrier", "rope", "spikes", "button", "flame", "flamethrower", "laser", "laserBeam",
 				"deadCat", "checkpoint", "checkpointActive", "roboMob", "background", "steel", "goal",
-				"flame_anim","checkpoint_anim", "checkpoint_active_anim", "button_anim", "jump_anim",
-				"meow_anim","sit","walk", "spirit_anim", "spirit_photon", "spirit_photon_cat", "spirit_region",
+				"flame_anim","checkpoint_anim", "checkpoint_active_anim", "checkpoint_base", "checkpoint_base_active",
+						"button_anim", "jump_anim", "meow_anim","sit","walk", "spirit_anim", "spirit_photon", "spirit_photon_cat", "spirit_region",
 				"lab_tileset"};
-
 		for (String n : names){
 			textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
 		}
@@ -304,7 +308,7 @@ public class WorldController implements Screen {
 	 * also paused before it is destroyed.
 	 */
 	public void pause() {
-		// TODO Auto-generated method stub
+//		currLevel.pause();
 	}
 
 	/**

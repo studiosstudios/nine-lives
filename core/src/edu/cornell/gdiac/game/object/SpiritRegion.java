@@ -170,7 +170,7 @@ public class SpiritRegion extends BoxObstacle {
         while (iterator.hasNext()) {
             Particle item = iterator.next();
             if (item.getX() < pos.x* drawScale.x || item.getX() > (pos.x+width)* drawScale.x-5f ||
-                    item.getY() < pos.y* drawScale.y || item.getY() > (pos.y+height)* drawScale.y-5f) {
+                    item.getY() < item.getBottom()* drawScale.y || item.getY() > item.getTop()* drawScale.y - PARTICLE_SIZE) {
                 iterator.remove();
                 memory.free(item);
             }
@@ -193,16 +193,23 @@ public class SpiritRegion extends BoxObstacle {
 
                 float minValueY = pos.y;
                 float maxValueY = pos.y + height;
-                float meanValueY = pos.y;
-                float stdDev = height/4;
+                float stdDev = height/2;
 
-                float rand_y = (float) (random.nextGaussian() * stdDev + meanValueY);
-                rand_y = Math.max(minValueY, Math.min(rand_y, maxValueY));
+                float rand_bot = (float) (random.nextGaussian() * stdDev + minValueY);
+                rand_bot = Math.max(minValueY, Math.min(rand_bot, maxValueY));
+                item.setBottom(rand_bot);
+
+                float rand_top = rand_bot;
+                while (rand_top <= rand_bot){
+                    rand_top = (float) (random.nextGaussian() * stdDev + maxValueY);
+                }
+                rand_top = Math.min(rand_top, maxValueY);
+                item.setTop(rand_top);
 
                 float rand_x = pos.x + width * (float) Math.random();
 
                 item.setX(rand_x* drawScale.x);
-                item.setY(rand_y* drawScale.y);
+                item.setY(rand_bot* drawScale.y);
 
                 item.setAngle(rand_angle);
                 cooldown = PARTICLE_RESPAWN;
@@ -244,8 +251,8 @@ public class SpiritRegion extends BoxObstacle {
                 width*drawScale.x, height*drawScale.y);
 
         // Draw particles
-        float bot = pos.y* drawScale.y ;
-        float top = (pos.y+height)* drawScale.y-5f;
+//        float bot = pos.y* drawScale.y ;
+//        float top = (pos.y+height)* drawScale.y-5f;
         float left = pos.x* drawScale.x ;
         float right = (pos.x+width)* drawScale.x-5f;
 
@@ -256,6 +263,8 @@ public class SpiritRegion extends BoxObstacle {
         for(Particle item : particles) {
             // Draw the object centered at x.
             // TODO: particles scaled very weirdly rn
+            float bot = item.getBottom()* drawScale.y ;
+            float top = item.getTop()* drawScale.y - PARTICLE_SIZE;
             Color c = new Color(particleColor);
             float y = item.getY();
             float x = item.getX();

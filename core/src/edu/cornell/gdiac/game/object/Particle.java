@@ -35,6 +35,9 @@ public class Particle implements Pool.Poolable {
     /** The particle angle of movement (according to initial position) */
     private float angle;
 
+    private float top;
+    private float bottom;
+
     /**
      * Returns the position of this particle.
      *
@@ -138,4 +141,11 @@ public class Particle implements Pool.Poolable {
         angle = 0;
     }
 
+    public void setBottom(float bottom) { this.bottom = bottom; }
+
+    public void setTop(float top) { this.top = top; }
+
+    public float getBottom() { return bottom; }
+
+    public float getTop() { return top; }
 }

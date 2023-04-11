@@ -172,6 +172,7 @@ public class StageController implements Screen {
 		internal.dispose();
 	}
 
+	// TODO MAKE A OVERCOOKED STYLE CONTROLS SHOWCASE LOADING SCREEN
 	public void loadAssets() {
 		assets = new AssetDirectory("assets.json");
 		assets.loadAssets();

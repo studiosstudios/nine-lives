@@ -51,15 +51,18 @@ public class Cat extends CapsuleObstacle implements Moveable {
     private Animation<TextureRegion> meow_animation;
     private Animation<TextureRegion> walk_animation;
     private Animation<TextureRegion> idle_animation;
+    private Animation<TextureRegion> idle_stand_animation;
     private TextureRegion[][] spriteFrames;
     private TextureRegion[][] spriteFrames2;
     private TextureRegion[][] spriteFrames3;
     private TextureRegion[][] spriteFrames4;
+    private TextureRegion[][] spriteFrames5;
     private float jumpTime;
     private float meowTime;
     private float walkTime;
     private float idleTime;
     private float nonMoveTime;
+    private float standTime;
     private Texture normal_texture;
     private Texture jumping_texture;
     private Texture sit_texture;
@@ -370,17 +373,20 @@ public class Cat extends CapsuleObstacle implements Moveable {
         spriteFrames2 = TextureRegion.split(arr[3], 62, 42);
         spriteFrames3 = TextureRegion.split(arr[5], 62, 62);
         spriteFrames4 = TextureRegion.split(arr[6],62,62);
+        spriteFrames5 = TextureRegion.split(arr[7],64,64);
 
         jump_animation = new Animation<>(0.025f, spriteFrames[0]);
         meow_animation = new Animation<>(0.05f, spriteFrames2[0]);
         walk_animation = new Animation<>(0.15f, spriteFrames3[0]);
         idle_animation = new Animation<>(0.15f, spriteFrames4[0]);
+        idle_stand_animation = new Animation<>(0.15f, spriteFrames5[0]);
 
         jumpTime = 0f;
         meowTime = 0f;
         walkTime = 0f;
         idleTime = 0f;
         nonMoveTime = 0f;
+        standTime = 0f;
         time = 0;
         // Gameplay attributes
         state = State.MOVING;
@@ -690,15 +696,22 @@ public class Cat extends CapsuleObstacle implements Moveable {
         }
         //sit
         else if(horizontalMovement == 0 && verticalMovement == 0){
-            if(nonMoveTime >= 5){
+            if(nonMoveTime >= 10){
                 idle_animation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
                 idleTime += Gdx.graphics.getDeltaTime();
                 TextureRegion currentFrame2 = idle_animation.getKeyFrame(idleTime);
-                canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x+50*effect,y-10, getAngle(),-effect,1.0f);
+                canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x+54*effect,y-10, getAngle(),-effect,1.0f);
+            }
+            else if(nonMoveTime >= 5){
+                nonMoveTime += Gdx.graphics.getDeltaTime();
+                canvas.draw(sit_texture, Color.WHITE, origin.x, origin.y, x,y-5, getAngle(), effect, 1.0f);
             }
             else{
                 nonMoveTime += Gdx.graphics.getDeltaTime();
-                canvas.draw(sit_texture, Color.WHITE, origin.x, origin.y, x,y, getAngle(), effect, 1.0f);
+                idle_stand_animation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+                standTime += Gdx.graphics.getDeltaTime();
+                TextureRegion currentFrame2 = idle_stand_animation.getKeyFrame(standTime);
+                canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x+54*effect,y-10, getAngle(),-effect,1.0f);
             }
         }
         else{

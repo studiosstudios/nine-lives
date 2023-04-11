@@ -491,7 +491,7 @@ public class Level {
         // Create cat
         dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
         dheight = tMap.get("cat").getRegionHeight()/scale.y;
-        Texture[] arr = new Texture[7];
+        Texture[] arr = new Texture[8];
         arr[0] = tMap.get("cat").getTexture();
         arr[1] = tMap.get("jumpingCat").getTexture();
         arr[2] = tMap.get("jump_anim").getTexture();
@@ -499,6 +499,7 @@ public class Level {
         arr[4] = tMap.get("sit").getTexture();
         arr[5] = tMap.get("walk").getTexture();
         arr[6] = tMap.get("idle_anim").getTexture();
+        arr[7] = tMap.get("idle_anim_stand").getTexture();
         cat = new Cat(levelJV.get("cat"), dwidth, dheight, ret, prevCat == null? null : prevCat.getPosition(),arr);
         cat.setDrawScale(scale);
 //        cat.setTexture(tMap.get("cat"));

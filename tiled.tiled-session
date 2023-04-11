@@ -31,11 +31,11 @@
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 0.3356,
+            "scale": 0.33,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 1004.1716328963051,
-                "y": 370.97735399284863
+                "x": 1000,
+                "y": 371.21212121212125
             }
         },
         "rules.tmx": {
@@ -60,7 +60,7 @@
         },
         "tiles.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 0.4934,
+            "scaleInDock": 1.1031,
             "scaleInEditor": 0.84
         }
     },
@@ -75,16 +75,18 @@
     "map.width": 32,
     "openFiles": [
         "tiles.tsx",
+        "map.tmx",
+        "rules.tmx",
         "map.tmx"
     ],
     "project": "tiled.tiled-project",
     "recentFiles": [
         "tiles.tsx",
         "map.tmx",
+        "rules.tmx",
         "spikes2.tsx",
         "/Users/sabrinali/Desktop/button.tsx",
         "/Users/sabrinali/Desktop/Group 11 Challenge Design Lab copy.tsx",
-        "rules.tmx",
         "tilemap.tmx"
     ],
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",

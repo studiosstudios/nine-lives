@@ -103,11 +103,34 @@ public class NineLives extends Game implements ScreenListener {
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
 			controller.getCurrLevel().reset(null);
-
 			setScreen(controller);
 			menu.dispose();
 			menu = null;
-		} else if (exitCode == WorldController.EXIT_QUIT || exitCode == 99) {
+		} else if (screen == menu && exitCode == 69) {
+			directory = menu.getAssets();
+			controller.gatherAssets(directory);
+			controller.setScreenListener(this);
+			controller.setCanvas(canvas);
+			controller.setCurrLevel(menu.getSelectedLevel());
+			controller.getCurrLevel().reset(null);
+			setScreen(controller);
+			menu.dispose();
+			menu = null;
+		} else if (screen == menu && exitCode == 25) {
+			controller.resume();
+			setScreen(controller);
+			menu.dispose();
+			menu = null;
+		} else if (exitCode == WorldController.EXIT_QUIT && screen == controller) {
+			// pause stage
+			menu = new StageController("assets.json", canvas, 1);
+			menu.setScreenListener(this);
+			menu.pause = true;
+			menu.currLevel = controller.getCurrLevel();
+//			controller.pause();
+			setScreen(menu);
+//			controller.getCurrLevel().getLevel().draw(canvas,false);
+		} else if (exitCode == 99) {
 			Gdx.app.exit();
 		}
 	}

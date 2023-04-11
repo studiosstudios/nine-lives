@@ -52,12 +52,14 @@ public class Exit extends BoxObstacle {
 
     @Override
     public void drawDebug(GameCanvas canvas){
+        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
         switch (exitType){
             case GOAL:
-                canvas.drawPhysics(shape, Color.GREEN,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
+                canvas.drawPhysics(shape, Color.GREEN,getX()-xTranslate,getY()-yTranslate,getAngle(),drawScale.x,drawScale.y);
                 break;
             case RETURN:
-                canvas.drawPhysics(shape,Color.BLUE,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
+                canvas.drawPhysics(shape,Color.BLUE,getX()-xTranslate,getY()-yTranslate,getAngle(),drawScale.x,drawScale.y);
                 break;
         }
     }

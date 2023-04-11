@@ -87,7 +87,7 @@ public class ActionController {
     public void setMobControllers(Level level) {
         mobControllers.clear();
         for (Mob mob : level.getMobArray()) {
-            mobControllers.add(new AIController(bounds, level, mob, mob.isAggressive()));
+            mobControllers.add(new AIController(bounds, level, mob));
         }
     }
 
@@ -361,6 +361,7 @@ public class ActionController {
     }
 
     /**
+
      * Method to ensure that a sound asset is only played once.
      * <br><br>
      * Every time you play a sound asset, it makes a new instance of that sound.

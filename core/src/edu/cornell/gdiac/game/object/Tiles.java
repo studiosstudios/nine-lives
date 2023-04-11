@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
-import com.jogamp.opengl.util.texture.Texture;
 import edu.cornell.gdiac.game.GameCanvas;
 
 import java.util.Arrays;

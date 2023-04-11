@@ -88,7 +88,9 @@ public class Level {
     //region Spirit mode stuff
     /** next dead body to switch into */
     private DeadBody nextDeadBody;
+    /** Whether in spirit mode or not */
     private boolean spiritMode;
+    /** The spirit line */
     private SpiritLine spiritLine;
     //endregion
 
@@ -396,7 +398,6 @@ public class Level {
         return levelJV;
     }
 
-
     /**
      * Lays out the game geography from the given JSON file
      * @param tMap Texture map for game objects
@@ -414,6 +415,9 @@ public class Level {
         activationRelations = new HashMap<>();
         background = tMap.get("background").getTexture();
 
+        JsonValue size = levelJV.get("size");
+        bounds.width = size.getFloat(0)*scale.x;
+        bounds.height = size.getFloat(1)*scale.y;
         /*
         TODO: Remove try-catches
         We use try-catches here so that the level JSONs don't need to contain empty fields for objects that they don't have.
@@ -476,14 +480,11 @@ public class Level {
 
         try {
             for (JsonValue checkpointJV : levelJV.get("checkpoints")){
-//                Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint"), tMap.get("checkpointActive"));
-                Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint_anim"), tMap.get("checkpoint_active_anim"));
-//                System.out.println("added checkpoint");
+                Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint_anim"), tMap.get("checkpoint_active_anim"),
+                        tMap.get("checkpoint_base"), tMap.get("checkpoint_base_active"));
                 addObject(checkpoint);
             }
-        } catch (NullPointerException e) {
-//            System.out.println("failed to add checkpoint.");
-        }
+        } catch (NullPointerException e) {}
 
         try {
             for(JsonValue boxJV : levelJV.get("boxes")){
@@ -545,7 +546,6 @@ public class Level {
         arr[7] = tMap.get("idle_anim_stand").getTexture();
         cat = new Cat(levelJV.get("cat"), dwidth, dheight, ret, prevCat == null? null : prevCat.getPosition(),arr);
         cat.setDrawScale(scale);
-//        cat.setTexture(tMap.get("cat"));
         respawnPos = cat.getPosition();
         addObject(cat);
 
@@ -591,6 +591,7 @@ public class Level {
         activatables.clear();
         mobArray.clear();
         numLives = maxLives;
+        currCheckpoint = null;
         if (world != null) {
             world.dispose();
             world = null;
@@ -714,7 +715,11 @@ public class Level {
         canvas.begin();
         canvas.applyViewport();
         if (background != null) {
-            canvas.draw(background, 0, 0);
+            //scales background with level size
+            float scaleX = bounds.width/background.getWidth();
+            float scaleY = bounds.height/background.getHeight();
+            canvas.draw(background, Color.WHITE, 0, 0, background.getWidth()*Float.max(scaleX,scaleY), background.getHeight()*Float.max(scaleX,scaleY));
+//            canvas.draw(background, 0, 0);
         }
         //draw everything except cat and dead bodies
         for(Obstacle obj : objects) {
@@ -729,6 +734,10 @@ public class Level {
             db.draw(canvas);
         }
         cat.draw(canvas);
+
+        if (currCheckpoint != null) {
+            currCheckpoint.drawBase(canvas);
+        }
         canvas.end();
 
         canvas.begin();
@@ -736,14 +745,16 @@ public class Level {
             canvas.beginDebug();
             //draw grid
             Color lineColor = new Color(0.8f, 0.8f, 0.8f, 1);
+            float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/scale.x;
+            float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/scale.y;
             for (int x = 0; x < bounds.width; x++) {
-                Vector2 p1 = new Vector2(x, 0);
-                Vector2 p2 = new Vector2(x, bounds.height);
+                Vector2 p1 = new Vector2(x-xTranslate, 0-yTranslate);
+                Vector2 p2 = new Vector2(x-xTranslate, bounds.height-yTranslate);
                 canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
             }
             for (int y = 0; y < bounds.height; y++) {
-                Vector2 p1 = new Vector2(0, y);
-                Vector2 p2 = new Vector2(bounds.width, y);
+                Vector2 p1 = new Vector2(0-xTranslate, y-yTranslate);
+                Vector2 p2 = new Vector2(bounds.width-xTranslate, y-yTranslate);
                 canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
             }
             for (Obstacle obj : objects) {

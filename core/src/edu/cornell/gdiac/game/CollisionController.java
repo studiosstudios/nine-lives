@@ -9,7 +9,6 @@ import edu.cornell.gdiac.game.obstacle.Obstacle;
 
 public class CollisionController implements ContactListener, ContactFilter {
 
-
     /** The Level model */
     private Level level;
     /** The ActionController */

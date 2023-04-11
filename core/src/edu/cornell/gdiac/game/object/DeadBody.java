@@ -212,6 +212,9 @@ public class DeadBody extends BoxObstacle implements Movable {
                 markRemoved(true);
             }
         }
+        if (groundFixtures.size == 0){
+            setVX(getVX()/damping);
+        }
     }
 
     /**

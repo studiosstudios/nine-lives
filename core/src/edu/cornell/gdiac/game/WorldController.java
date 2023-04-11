@@ -254,8 +254,8 @@ public class WorldController implements Screen {
 		//Set controls
 		InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
 
-//		InputController.getInstance().writeTo("inputLogs/debugPlatformUndo2.txt");
-//		InputController.getInstance().readFrom("inputLogs/debugPlatformUndo.txt");
+//		InputController.getInstance().writeTo("inputLogs/alphademo.txt");
+//		InputController.getInstance().readFrom("inputLogs/alphademo.txt");
 	}
 
 	/**

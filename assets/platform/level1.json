@@ -73,6 +73,6 @@
 		{"shape":[21, 20, 21, 21, 24, 21, 24, 20]}
 	],
 	"platforms":	[
-		{"shape": [23, 18, 24, 18, 24, 20, 23, 20], "disp": [-13, 0], "activatorID": "switch2", "speed": 10, "damping": 0.1},
+		{"shape": [23, 18, 24, 18, 24, 20, 23, 20], "disp": [-13, 0], "activatorID": "switch2", "speed": 6, "damping": 0.1},
 	]
 }

@@ -40,6 +40,8 @@ public class Level {
     /**Reference to the returnDoor (for collision detection) */
     private BoxObstacle retDoor;
 
+    /** Tiles of level */
+    protected Tiles tiles;
     /** All the objects in the world. */
     protected PooledList<Obstacle> objects  = new PooledList<>();
     /** Queue for adding objects */
@@ -351,6 +353,47 @@ public class Level {
         currCheckpoint = c;
         currCheckpoint.setActive(true);
         respawnPos = currCheckpoint.getPosition();
+    }
+
+    /**
+     * Parses Tiled file
+     *
+     */
+    public void levelEditor(JsonValue tiledMap){
+
+        //parse through tmj layers : objects : which has platform width, height data stored in "s"
+        // TODO: need constant in TiledMap that says which biome it is for getting a specific the tileset asset
+        JsonValue layers = tiledMap.get("layers");
+        JsonValue data = layers.get(0);
+        JsonValue objects = layers.get(1).get("objects");
+
+        int tileSize = tiledMap.getInt("tilewidth");
+        int levelWidth = tiledMap.getInt("width");
+        int levelHeight = tiledMap.getInt("height");
+
+        tiles = new Tiles(data, tileSize, levelWidth, levelHeight, textureRegionAssetMap.get("tileset"));
+
+
+        Json levelJSON = new Json();
+
+        Array<Array<Integer>> shapeArray = new Array<>();
+
+        for (JsonValue obj : objects) {
+            JsonValue points = obj.get("polygon");
+            Array<Integer> shape = new Array<>();
+            for (JsonValue point : points) {
+                shape.add(point.getInt("x")/tileSize, point.getInt("y")/tileSize);
+                shapeArray.add(shape);
+            }
+        }
+    }
+
+    /**
+     * Reformat levelJV
+     * @param levelJV
+     */
+    public JsonValue reformatLevelJV(JsonValue levelJV) {
+        return levelJV;
     }
 
 

@@ -12,7 +12,7 @@
 	],
 	"doors": [
 		{"width": 1, "height": 2, "pos": [27, 15], "angle": 0,
-		"totalTicks": 120, "activatorID": "button2", "active": true},
+		"totalTicks": 150, "activatorID": "button2", "active": true},
 		{"width": 2, "height": 2, "pos": [29, 22], "angle": 180,
 		"totalTicks": 45, "activatorID": "button3", "active": true}
 	],

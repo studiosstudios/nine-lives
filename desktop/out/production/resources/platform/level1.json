@@ -1,0 +1,52 @@
+{
+	"spikes": [{"pos" : [1, 4], "angle": 180, "active": false, "activatorID": "switch1"}],
+	"doors": [{"width": 2, "height": 2, "pos": [28, 15], "angle": 180,
+		"totalTicks": 45, "activatorID": "button2", "active": true}],
+	"activators": [
+		{"pos": [1, 11], "type": "switch", "id" : "switch1"},
+		{"pos": [1, 2], "type": "button", "id" : "button1"},
+		{"pos": [27, 2], "type": "switch", "id" : "switch2"},
+		{"pos": [11, 9], "type": "button", "id" : "button2"}],
+	"lasers" : [
+		{"pos" :  [6, 16], "angle" : 180, "activatorID": "button1"}, // first half laser
+		// Left side
+		{"pos" :  [16, 3], "angle" : 90, "active":false, "activatorID": "switch2"},
+		{"pos" :  [16, 5], "angle" : 90, "active":false, "activatorID": "switch2"},
+		{"pos" :  [16, 7], "angle" : 90, "active":false, "activatorID": "switch2"},
+		{"pos" :  [16, 9], "angle" : 90, "active":false, "activatorID": "switch2"},
+		{"pos" :  [16, 11], "angle" : 90, "active":false, "activatorID": "switch2"},
+		{"pos" :  [16, 13], "angle" : 90, "active":false, "activatorID": "switch2"},
+		// Right Side
+		{"pos" :  [20, 5], "angle" : 270, "active":true, "activatorID": "switch2"},
+		{"pos" :  [20, 7], "angle" : 270, "active":true, "activatorID": "switch2"},
+		{"pos" :  [20, 9], "angle" : 270, "active":true, "activatorID": "switch2"},
+		{"pos" :  [20, 11], "angle" : 270, "active":true, "activatorID": "switch2"},
+		{"pos" :  [20, 13], "angle" : 270, "active":true, "activatorID": "switch2"},
+	],
+	"checkpoints" : [{"pos" : [9, 15]}],
+	"mobs" : [{"pos" : [28, 2], "facingRight":  true, "aggressive":  true}],
+	"exits" : [{"type":  "goal", "height": 18, "pos": [32, 9]}],
+	"cat" : {
+		"pos": [1, 8],
+		"ret_pos": [31.5, 15.0]
+	},
+	"walls": 		[
+		{"shape":[0.0, 2.0, 0.0, 17.0, -1.0, 17.0, -1.0, 2]}, //invisible left side
+		{"shape":[28, 12, 31, 12, 31, 5, 32, 5,32,15, 28, 15]}, //left
+		{"shape":[0, 17.0, 32.0, 17.0, 32.0, 18.0, 0, 18.0]}, //top
+		{"shape":[7, 2, 7, 15, 10, 15, 10, 14, 8, 14, 8, 2], "climbable": true}, //center wall with checkpoint on top
+		{"shape":[12, 14, 18, 14, 18, 15, 12, 15],"climbable":true},
+		{"shape":[18, 15, 18, 2, 17, 2, 17, 15],"climbable":true},
+		{"shape":[19, 17, 19, 4, 20, 4, 20, 17]},
+		{"shape":[24,2,24,4,31,4,31,2,32,2,32,5,23,5,23,2]} //jail
+			 		],
+	"platforms":	[
+		{"shape":[0.0, 2.0, 35.0, 2.0, 35.0, 0.0, 0.0, 0.0]}, //main platform
+		{"shape":[0, 5, 5, 5, 5, 8, 0, 8]},
+		{"shape":[0, 10, 4, 10, 4, 11, 0, 11]},
+		{"shape":[10, 8, 13, 8, 13, 9, 10, 9]}, // platform on left laser side
+		{"shape":[22, 8, 25, 8, 25, 9, 22, 9]}, // platform on right laser side
+		{"shape":[27, 6, 30, 6, 30, 7, 27, 7]},
+		{"shape":[23, 12, 23, 13, 26, 13, 26, 12],"climbable":true},
+					]
+}

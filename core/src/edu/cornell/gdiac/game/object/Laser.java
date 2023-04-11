@@ -9,27 +9,35 @@ import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
 import com.badlogic.gdx.physics.box2d.World;
+import edu.cornell.gdiac.util.Direction;
 
 public class Laser extends BoxObstacle implements Activatable{
 
-    /** points of the beam */
+    /** Points of the beam */
     private Array<Vector2> points;
-
-    private Vector2 endPointCache = new Vector2();
-
+    /** The offset vector between the center of the laser body and the beginning of the beam */
     private Vector2 beamOffset;
+    /** Thickness of beams */
     private static float thickness;
+    /** Constants that are shared between all instances of this class*/
     protected static JsonValue objectConstants;
+    /** Current activation state */
     private boolean activated;
+    /** Starting activation state */
     private boolean initialActivation;
+    /** Cache of current color of the beam */
     private Color color;
-
-    /** makes laser beams change color with time*/
+    /** Makes laser beams change color with time */
     private float totalTime;
-    public enum Direction {UP, DOWN, LEFT, RIGHT}
-
+    /** The direction that this laser fires in */
     private Direction dir;
 
+    /**
+     * Creates a new Laser object.
+     * @param texture   TextureRegion for drawing.
+     * @param scale     Draw scale for drawing.
+     * @param data      JSON data for loading.
+     */
     public Laser(TextureRegion texture, Vector2 scale, JsonValue data){
         super(texture.getRegionWidth()/scale.x,
                 texture.getRegionHeight()/scale.y);
@@ -49,7 +57,7 @@ public class Laser extends BoxObstacle implements Activatable{
         setSensor(true);
         setFixedRotation(true);
 
-        dir = angleToDir(data.getInt("angle"));
+        dir = Direction.angleToDir(data.getInt("angle"));
         switch (dir){
             case UP:
                 beamOffset = new Vector2(objectConstants.get("beamOffset").getFloat(0), objectConstants.get("beamOffset").getFloat(1));
@@ -70,31 +78,29 @@ public class Laser extends BoxObstacle implements Activatable{
         initActivations(data);
     }
 
+    /**
+     * @return Direction that laser fires in.
+     */
     public Direction getDirection(){ return dir; }
-    public static Direction angleToDir(int angle){
-        switch (angle){
-            case 0:
-                return Direction.UP;
-            case 90:
-                return Direction.LEFT;
-            case 180:
-                return Direction.DOWN;
-            case 270:
-                return Direction.RIGHT;
-            default:
-                throw new RuntimeException("undefined angle");
-        }
-    }
 
+    /**
+     * Adds a new point to the laser's beam.
+     * @param point The point to add.
+     */
     public void addBeamPoint(Vector2 point){ points.add(point);}
 
+    /**
+     * Resets the state of the laser to prepare for raycasting.
+     */
     public void beginRayCast(){
         points.clear();
-        points.add(getRayCastStart());
+        points.add(getBeamStart());
     }
 
-
-    public Vector2 getRayCastStart(){
+    /**
+     * @return The starting point of the beam.
+     */
+    public Vector2 getBeamStart(){
         return getPosition().add(beamOffset);
     }
 
@@ -109,34 +115,51 @@ public class Laser extends BoxObstacle implements Activatable{
         super.draw(canvas);
     }
 
+    /**
+     * Updates the object's physics state and the beam's color.
+     * @param dt Timing values from parent loop
+     */
     public void update(float dt){
         super.update(dt);
         totalTime += dt;
         color.set(1, 0, 0, ((float) Math.cos((double) totalTime * 2)) * 0.25f + 0.75f);
     }
 
+    /**
+     * Turns on laser. Does nothing because beam raycasting is done in <code>ActionController</code>.
+     * @param world  Box2D world
+     */
     @Override
-    public void activated(World world){
-    }
+    public void activated(World world){}
 
+    /**
+     * Turns off laser.
+     * @param world  Box2D world
+     */
     @Override
     public void deactivated(World world){
         points.clear();
-        points.add(getPosition());
         totalTime = 0;
     }
 
+    //region ACTIVATABLE METHODS
     @Override
     public void setActivated(boolean activated) {this.activated = activated;}
 
     @Override
-    public boolean getActivated() { return activated; }
+    public boolean isActivated() { return activated; }
 
     @Override
     public void setInitialActivation(boolean initialActivation){ this.initialActivation = initialActivation; }
 
     @Override
     public boolean getInitialActivation() { return initialActivation; }
+    //endregion
+
+    /**
+     * Sets the shared constants for all instances of this class
+     * @param constants JSON storing the shared constants.
+     */
     public static void setConstants(JsonValue constants) {
         objectConstants = constants;
         thickness = constants.getFloat("thickness");

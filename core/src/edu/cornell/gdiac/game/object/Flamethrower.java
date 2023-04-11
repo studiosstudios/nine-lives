@@ -9,30 +9,42 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
 import edu.cornell.gdiac.game.obstacle.ComplexObstacle;
 
-public class Flamethrower extends ComplexObstacle implements Activatable {
+public class Flamethrower extends ComplexObstacle implements Activatable, Movable {
+    /** Constants that are shared between all instances of this class*/
     private static JsonValue objectConstants;
-
+    /** The flame object of this flamethrower*/
     private Flame flame;
-
+    /** Texture of the flame */
     private TextureRegion flameTexture;
-
-    protected BoxObstacle flameBase;
-
+    /** The base of the flamethrower */
+    private BoxObstacle flameBase;
+    /** Current activation state */
     private boolean activated;
-
+    /** Starting activation state */
     private boolean initialActivation;
-
-    private static final String sensorName = "flameSensor";
-
     private final Vector2 flameOffset;
-
+    /** If this flamethrower can be pushed */
     private final boolean pushable;
 
+    private ObjectSet<Fixture> groundFixtures = new ObjectSet<>();
+    private PolygonShape groundSensorShape;
+    private final String groundSensorName;
 
+
+    /** Creates a new Flamethrower object.
+     * @param flamebaseTexture   TextureRegion of flamethrower base.
+     * @param flameBaseScale     Texture scale for the flamethrower base.
+     * @param flameTexture       TextureRegion of flame.
+     * @param flameScale         Texture scale for the flame base.
+     * @param drawScale          Draw scale for drawing.
+     * @param data               JSON data for loading.
+     */
     public Flamethrower(TextureRegion flamebaseTexture, Vector2 flameBaseScale, TextureRegion flameTexture, Vector2 flameScale, Vector2 drawScale, JsonValue data) {
         super();
 //        setName("flamethrower");
@@ -40,6 +52,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
         this.flameTexture = flameTexture;
 
         flameBase = new BoxObstacle(flamebaseTexture.getRegionWidth()/drawScale.x*flameBaseScale.x, flamebaseTexture.getRegionHeight()/drawScale.y*flameBaseScale.y);
+        setDrawScale(drawScale);
         flameBase.setDrawScale(drawScale);
         flameBase.setTextureScale(flameBaseScale);
         flameBase.setTexture(flamebaseTexture);
@@ -71,6 +84,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
 
         bodies.add(flameBase);
         bodies.add(flame);
+        groundSensorName = "flameBaseGroundSensor";
         initActivations(data);
     }
 
@@ -97,16 +111,12 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
     }
 
     /**
-     * Returns the name of the top sensor
+     * Creates the physics body for this object, adding them to the world. Immediately deactivates
+     * self if necessary.
+     * @param world Box2D world to store body
      *
-     * This is used by ContactListener
-     *
-     * @return the name of the ground sensor
+     * @return      true if object allocation succeeded
      */
-    public static String getSensorName() {
-        return sensorName;
-    }
-
     public boolean activatePhysics(World world) {
         if (!super.activatePhysics(world)) {
             return false;
@@ -114,6 +124,19 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
         if (!activated){
             deactivated(world);
         }
+
+        //ground sensor
+        FixtureDef sensorDef = new FixtureDef();
+        sensorDef.friction = 0;
+        sensorDef.isSensor = true;
+        Vector2 location = new Vector2(0, -flameBase.getDimension().y/2f);
+        groundSensorShape = new PolygonShape();
+        groundSensorShape.setAsBox(flameBase.getDimension().x/2.5f, 0.1f, location, 0.0f);
+        sensorDef.shape = groundSensorShape;
+
+        flameBase.getBody().setUserData(this);
+        Fixture sensorFixture = flameBase.getBody().createFixture( sensorDef );
+        sensorFixture.setUserData(groundSensorName);
         return true;
     }
 
@@ -135,34 +158,77 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
         joints.clear();
     }
 
-    public void draw(GameCanvas canvas) {
-        flameBase.draw(canvas);
-        flame.draw(canvas);
-    }
-
+    //region ACTIVATABLE METHODS
     @Override
     public void setActivated(boolean activated){ this.activated = activated; }
 
     @Override
-    public boolean getActivated() { return activated; }
+    public boolean isActivated() { return activated; }
 
     @Override
     public void setInitialActivation(boolean initialActivation){ this.initialActivation = initialActivation; }
 
     @Override
     public boolean getInitialActivation() { return initialActivation; }
+    //endregion
 
+    /**
+     * Sets the shared constants for all instances of this class/
+     * @param constants JSON storing the shared constants.
+     */
     public static void setConstants(JsonValue constants) { objectConstants = constants; }
 
+    public boolean isMovable() {return pushable;}
+
+    public ObjectSet<Fixture> getGroundFixtures() { return groundFixtures; }
+
+    public String getGroundSensorName(){ return groundSensorName; }
+
+    public ObjectMap<String, Object> storeState(){
+        ObjectMap<String, Object> stateMap = new ObjectMap<>();
+        stateMap.put("basePosition", flameBase.getPosition().cpy());
+        stateMap.put("flamePosition", flame.getPosition().cpy());
+        stateMap.put("relativeVelocity", relativeVelocity.cpy());
+        stateMap.put("baseVelocity", baseVelocity.cpy());
+        stateMap.put("linearVelocity", getLinearVelocity().cpy());
+        return stateMap;
+    }
+
+    public void loadState(ObjectMap<String, Object> stateMap){
+        flameBase.setPosition((Vector2) stateMap.get("basePosition"));
+        flame.setPosition((Vector2) stateMap.get("flamePosition"));
+        setLinearVelocity((Vector2) stateMap.get("linearVelocity"));
+        relativeVelocity.set((Vector2) stateMap.get("relativeVelocity"));
+        baseVelocity.set((Vector2) stateMap.get("baseVelocity"));
+        markDirty(true);
+    }
+
+    public void drawDebug(GameCanvas canvas) {
+        super.drawDebug(canvas);
+        canvas.drawPhysics(groundSensorShape,Color.RED,flameBase.getX(), flameBase.getY(),getAngle(),drawScale.x,drawScale.y);
+    }
+
+    /**
+     * Represents a flame that a flamethrower can produce.
+     */
     public class Flame extends BoxObstacle {
 
-        /** the shape of the hitbox that will kill the player */
+        /** The shape of the hitbox that will kill the player */
         private PolygonShape sensorShape;
+        /** The frames of the flame animation */
         private TextureRegion[][] spriteFrames;
+        /** How long the flame has been animating */
         private float animationTime;
-        protected Animation<TextureRegion> animation;
-        private float angle;
+        /** Filmstrip of flame animation */
+        private Animation<TextureRegion> animation;
 
+        /**
+         * Creates a new Flame object.
+         * @param texture Filmstrip texture region.
+         * @param scale   Draw scale.
+         * @param pos     Position of flamethrower base.
+         * @param angle   Angle of flame.
+         */
         public Flame(TextureRegion texture, Vector2 scale, Vector2 pos, float angle) {
             super(42/scale.x, 74/scale.y);
             int spriteWidth = 42;
@@ -173,7 +239,6 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
             animation.setPlayMode(Animation.PlayMode.LOOP);
             animationTime = 0f;
             setAngle(angle);
-            this.angle = angle;
             setMass(0);
             setName("flame");
             setDrawScale(scale);
@@ -183,7 +248,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
 
         }
 
-        /** creates sensor */
+        /** Creates hitbox sensor. The hitbox is smaller than the texture itself. */
         public boolean activatePhysics(World world) {
             if (!super.activatePhysics(world)) {
                 return false;
@@ -196,15 +261,16 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
             sensorDef.shape = sensorShape;
 
             Fixture sensorFixture = body.createFixture( sensorDef );
-            sensorFixture.setUserData(getSensorName());
-            body.setUserData(this);
+            sensorFixture.setUserData(this);
             return true;
         }
 
         @Override
         public void drawDebug(GameCanvas canvas) {
             super.drawDebug(canvas);
-            canvas.drawPhysics(sensorShape,Color.RED,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
+            float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+            float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+            canvas.drawPhysics(sensorShape,Color.RED,getX()-xTranslate,getY()-yTranslate,getAngle(),drawScale.x,drawScale.y);
         }
 
         @Override

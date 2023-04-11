@@ -6,27 +6,31 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 
-abstract class StageWrapper extends Stage {
+public abstract class StageWrapper extends Stage {
 
     /** Internal assets for this loading screen */
-    public AssetDirectory internal;
+    protected AssetDirectory internal;
     /** Standard window size (for scaling) */
     static int STANDARD_WIDTH  = 1024;
     /** Standard window height (for scaling) */
     static int STANDARD_HEIGHT = 576;
     /** x-coordinate for center of button list */
     public int buttonX;
+    public int xHalf;
+    public int yHalf;
     /** y-coordinate for top button */
     public int buttonY;
 
-    public StageWrapper() {
+    public StageWrapper(AssetDirectory internal, boolean createActors) {
         super(new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT));
-        internal = new AssetDirectory( "loading.json" );
-        internal.loadAssets();
-        internal.finishLoading();
+        this.internal = internal;
         buttonX = (int)(3f/5 * STANDARD_WIDTH);
         buttonY = (int)(1f/2 * STANDARD_HEIGHT);
-        createActors();
+        xHalf = (int) (1f/2 * STANDARD_WIDTH);
+        yHalf = (int) (1f/2 * STANDARD_HEIGHT);
+        if (createActors) {
+            createActors();
+        }
     }
 
     public void draw() {

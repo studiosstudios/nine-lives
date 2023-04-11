@@ -1,0 +1,21 @@
+{
+	"cat" : {
+		"pos": [0.5, 13],
+		"ret_pos": [31.5,13], //temp impossible
+	},
+	"lasers" : [{"pos": [6, 17], "angle": 180}],
+	"mirrors": [{"pos": [6, 13], "angle": 0, "pushable":  true},
+		{"pos": [15, 13], "angle": 90},
+		{"pos": [15, 16], "angle": 270},
+		{"pos": [20, 16], "angle": 180},
+		{"pos": [5, 13], "angle": 90, "pushable":  true},
+		{"pos": [4, 13], "angle": 0, "pushable":  true},
+		{"pos": [20, 13], "angle": 90},
+		{"pos": [5, 17], "angle": 180},
+		{"pos": [2, 17], "angle": 270}
+	],
+	"checkpoints" : [{"pos" : [1, 13]}],
+	"exits" : [{"type":  "return", "height": 18, "pos": [0, 9]},
+		{"type":  "goal", "height": 18, "pos": [32, 9]}],
+	"platforms":	[{"shape":[-2.5, 13, 32, 13, 32, 0, -2.5, 0]}]
+}

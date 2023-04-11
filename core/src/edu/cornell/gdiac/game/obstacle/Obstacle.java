@@ -21,7 +21,10 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
+import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.*;  // For GameCanvas
+
+import java.util.HashMap;
 
 /**
  * Base model class to support collisions.
@@ -68,7 +71,12 @@ public abstract class Obstacle {
 	protected Vector2 centroidCache = new Vector2();
 	/** A cache value for when the user wants to access the drawing scale */
 	protected Vector2 scaleCache = new Vector2();
-
+	/** The base velocity for this obstacle if relative motion is desired. Linear velocity is defined as
+	 * <code>baseVelocity + relativeVelocity</code>*/
+	protected Vector2 baseVelocity = new Vector2();
+	/** The relative velocity for this obstacle if relative motion is desired. Linear velocity is defined as
+	 * <code>baseVelocity + relativeVelocity</code>*/
+	protected Vector2 relativeVelocity = new Vector2();
 
 	/// BodyDef Methods
 	/**
@@ -209,6 +217,7 @@ public abstract class Obstacle {
 	 */
 	public void setLinearVelocity(Vector2 value) {
 		bodyinfo.linearVelocity.set(value);
+		relativeVelocity.set(value.sub(baseVelocity));
 	}
 	
 	/**
@@ -227,6 +236,7 @@ public abstract class Obstacle {
 	 */
 	public void setVX(float value) {
 		bodyinfo.linearVelocity.x = value;
+		relativeVelocity.x = value - baseVelocity.x;
 	}
 	
 	/**
@@ -245,7 +255,93 @@ public abstract class Obstacle {
 	 */
 	public void setVY(float value) {
 		bodyinfo.linearVelocity.y = value;
+		relativeVelocity.y = value - baseVelocity.y;
 	}
+
+	/**
+	 * Sets the base velocity for this physics body
+	 *
+	 * @param value  the base velocity for this physics body
+	 */
+	public void setBaseVelocity(Vector2 value) {
+		bodyinfo.linearVelocity.set(value.x - baseVelocity.x +  bodyinfo.linearVelocity.x, value.y - baseVelocity.y +  bodyinfo.linearVelocity.y);
+		baseVelocity.set(value);
+	}
+
+	/**
+	 * Resets the base velocity of this physics body to zero without changing total linear velocity.
+	 */
+	public void resetBaseVelocity(){
+		baseVelocity.set(Vector2.Zero);
+	}
+
+	/**
+	 * Sets the base x velocity for this physics body
+	 *
+	 * @param value  the base x velocity for this physics body
+	 */
+	public void setBaseVX(float value){
+		bodyinfo.linearVelocity.x = value - baseVelocity.x + bodyinfo.linearVelocity.x;
+		baseVelocity.x = value;
+	}
+
+	/**
+	 * Sets the base y velocity for this physics body
+	 *
+	 * @param value  the base y velocity for this physics body
+	 */
+	public void setBaseVY(float value){
+		bodyinfo.linearVelocity.x = value - baseVelocity.y + bodyinfo.linearVelocity.y;
+		baseVelocity.y = value;
+	}
+
+	/**
+	 * Sets the relative x velocity for this physics body
+	 *
+	 * @param value  the relative x velocity for this physics body
+	 */
+	public void setRelativeVX(float value){
+		relativeVelocity.x = value;
+		bodyinfo.linearVelocity.x = value + baseVelocity.x;
+	}
+
+	/**
+	 * Sets the relative y velocity for this physics body
+	 *
+	 * @param value  the relative y velocity for this physics body
+	 */
+	public void setRelativeVY(float value){
+		relativeVelocity.y = value;
+		bodyinfo.linearVelocity.y = value + baseVelocity.y;
+	}
+
+	/**
+	 * Sets the relative velocity for this physics body
+	 *
+	 * @param value  the relative velocity for this physics body
+	 */
+	public void setRelativeVelocity(Vector2 value) {
+		relativeVelocity.set(value);
+		bodyinfo.linearVelocity.set(value.add(baseVelocity));
+	}
+
+	/**
+	 * Gets the relative velocity for this physics body. Relative velocity is defined as
+	 * <code>linearVelocity - baseVelocity</code>. This is useful if you want to set motion of a body relative
+	 * to another body rather than relative to the world.
+	 *
+	 * @return  relative velocity for this physics body
+	 */
+	public Vector2 getRelativeVelocity() { return relativeVelocity; }
+
+	/**
+	 * Gets the relative velocity for this physics body. Base velocity is defined as
+	 * <code>linearVelocity - relativeVelocity</code>. This is useful if you want to set motion of a body relative
+	 * to another body rather than relative to the world.
+	 *
+	 * @return  base velocity for this physics body
+	 */
+	public Vector2 getBaseVelocity() { return baseVelocity; }
 	
 	/**
 	 * Returns the angular velocity for this physics body
@@ -1041,5 +1137,21 @@ public abstract class Obstacle {
 	 * @param canvas Drawing context
 	 */
 	public abstract void drawDebug(GameCanvas canvas);
+
+	public ObjectMap<String, Object> storeState(){
+		ObjectMap<String, Object> stateMap = new ObjectMap<>();
+		stateMap.put("position", bodyinfo.position);
+		stateMap.put("relativeVelocity", relativeVelocity);
+		stateMap.put("baseVelocity", baseVelocity);
+		stateMap.put("linearVelocity", bodyinfo.linearVelocity);
+		return stateMap;
+	}
+
+	public void loadState(ObjectMap<String, Object> stateMap){
+		bodyinfo.position.set((Vector2) stateMap.get("position"));
+		bodyinfo.linearVelocity.set((Vector2) stateMap.get("linearVelocity"));
+		relativeVelocity.set((Vector2) stateMap.get("relativeVelocity"));
+		baseVelocity.set((Vector2) stateMap.get("baseVelocity"));
+	}
 
 }

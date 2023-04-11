@@ -9,37 +9,63 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.*;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+/**
+ * An abstract class that represents objects that can be pressed and activate other objects. The exact behaviour of
+ * how an activator becomes active must be implemented by the inheritor.
+ */
 public abstract class Activator extends PolygonObstacle {
-
+    /** Constants that are shared between all instances of this class */
     protected static JsonValue objectConstants;
+    /** Filmstrip */
     protected Animation<TextureRegion> animation;
-
-    /** if the activator is activating objects*/
+    /** If the activator is activating objects */
     protected boolean active;
-    /** each activator has a unique string id specified in JSON*/
+    /** The unique string id of this Activator */
     protected String id;
+    /** Array of animation frames */
     private TextureRegion[][] spriteFrames;
+    /** How long the activator has been animating */
     private float animationTime;
+    /** Shape of the sensor that presses this activator */
     private PolygonShape sensorShape;
-    /** the number of objects pressing on this activator */
+    /** The number of objects pressing on this activator */
     public int numPressing;
 
-    public boolean isActive(){ return active; }
+    /**
+     * @return true if the activator is currently activating
+     */
+    public boolean isActivating(){ return active; }
 
+    /**
+     * @return true if an object is pressing this activator
+     */
     public boolean isPressed(){ return numPressing > 0; }
 
+    /**
+     * @return ID of this activator
+     */
     public String getID(){ return id; }
 
-    /** a new object is pressing the activator */
+    /** A new object is pressing the activator */
     public void addPress() { numPressing++; }
 
-    /** an object has stopped pressing the activator */
+    /** An object has stopped pressing the activator */
     public void removePress() { numPressing--; }
 
+    /**
+     * Updates the active state of this activator. This is called every game loop, and is the
+     * primary method to specify for inheritors.
+     */
     public abstract void updateActivated();
 
+    /**
+     * Creates a new Activator object.
+     * @param texture   Animation filmstrip.
+     * @param texture2  Static texture.
+     * @param scale     Draw scale for drawing.
+     * @param data      JSON for loading.
+     */
     public Activator(TextureRegion texture, TextureRegion texture2, Vector2 scale, JsonValue data){
         super(objectConstants.get("body_shape").asFloatArray());
         int spriteWidth = 32;
@@ -76,6 +102,14 @@ public abstract class Activator extends PolygonObstacle {
             canvas.draw(currentFrame, getX()*drawScale.x,getY()*drawScale.x);
         }
     }
+
+    /**
+     * Creates the physics Body(s) for this object, adding them to the world.
+     * Creates activator sensor.
+     * @param world Box2D world to store body
+     *
+     * @return true if object allocation succeeded
+     */
     public boolean activatePhysics(World world){
         if (!super.activatePhysics(world)) {
             return false;
@@ -107,8 +141,14 @@ public abstract class Activator extends PolygonObstacle {
      */
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
-        canvas.drawPhysics(sensorShape,Color.RED,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
+        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+        canvas.drawPhysics(sensorShape,Color.RED,getX()-xTranslate,getY()-yTranslate,getAngle(),drawScale.x,drawScale.y);
     }
 
+    /**
+     * Sets the shared constants for all instances of this class.
+     * @param constants JSON storing the shared constants.
+     */
     public static void setConstants(JsonValue constants) { objectConstants = constants; }
 }

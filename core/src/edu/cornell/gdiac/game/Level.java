@@ -580,12 +580,12 @@ public class Level {
 //            }
 //        } catch (NullPointerException e) {}
 
-//        try {
-//            for (JsonValue platformJV : levelJV.get("platforms")){
-//                Platform platform = new Platform(tMap.get("steel"), scale, platformJV);
-//                loadActivatable(platform, platformJV);
-//            }
-//        } catch (NullPointerException e) {}
+        try {
+            for (JsonValue platformJV : levelJV.get("platforms")){
+                Platform platform = new Platform(tMap.get("steel"), scale, platformJV);
+                loadActivatable(platform, platformJV);
+            }
+        } catch (NullPointerException e) {}
 
         try {
             for (JsonValue activatorJV : levelJV.get("activators")){
@@ -671,13 +671,12 @@ public class Level {
 
         try {
             for (JsonValue spiritJV : levelJV.get("spiritRegions")){
-//                SpiritRegion spiritRegion = new SpiritRegion(tMap.get("spirit_anim"), tMap.get("spirit_photon"), scale, new Vector2(1, 1), spiritJV);
                 SpiritRegion spiritRegion = new SpiritRegion(tMap.get("spirit_region"), tMap.get("spirit_photon"), scale, new Vector2(1, 1), spiritJV);
                 addObject(spiritRegion);
                 spiritRegionArray.add(spiritRegion);
             }
         } catch (NullPointerException e) {
-//            e.printStackTrace();
+            e.printStackTrace();
         }
 
         // Create cat
@@ -875,7 +874,8 @@ public class Level {
 
         //draw everything except cat, dead bodies and spirit region
         for(Obstacle obj : objects) {
-            if (obj != cat && !(obj instanceof DeadBody) && !(obj instanceof SpiritRegion) && !(obj instanceof Wall)){
+            if (obj != cat && !(obj instanceof DeadBody) && !(obj instanceof SpiritRegion)
+                    && !(obj instanceof Wall && !(obj instanceof Platform)) ){
                 obj.draw(canvas);
             }
         }

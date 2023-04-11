@@ -97,7 +97,7 @@ public class GameCanvas {
 	private Vector2 vertex;
 	/** Cache object to handle raw textures */
 	private TextureRegion holder;
-	private final float CAMERA_ZOOM = 2f;
+	private final float CAMERA_ZOOM = 1f;
 
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.

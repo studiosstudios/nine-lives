@@ -24,7 +24,7 @@ import com.badlogic.gdx.utils.*;
  */
 public class Particle implements Pool.Poolable {
     /** How many pixels the particle moves per animation frame */
-    public static final float PARTICLE_SPEED = 0.2f;
+    public static final float PARTICLE_SPEED = 0.12f;
 
     /** The particle position */
     private Vector2 position;

@@ -44,13 +44,13 @@ public class SpiritRegion extends BoxObstacle {
     /** Respawn rate of the particles */
     public static final int PARTICLE_RESPAWN = 1;
     /** Opacity value for particles when spirit region not active on key press */
-    public static final float PARTICLE_OPACITY_INACTIVE = 0.3f;
+    public static final float PARTICLE_OPACITY_INACTIVE = 0.25f;
     /** Opacity value when spirit region not active on key press */
-    public static final float REGION_OPACITY_INACTIVE = 0.2f;
+    public static final float REGION_OPACITY_INACTIVE = 0.15f;
     /** Opacity value for particles when spirit region not active on key press */
-    public static final float PARTICLE_OPACITY_ACTIVE = 0.75f;
+    public static final float PARTICLE_OPACITY_ACTIVE = 0.4f;
     /** Opacity value when spirit region active on key press */
-    public static final float REGION_OPACITY_ACTIVE = 0.75f;
+    public static final float REGION_OPACITY_ACTIVE = 0.4f;
     /** Size of particles to scale */
     public static final float PARTICLE_SIZE = 6f;
 
@@ -63,6 +63,7 @@ public class SpiritRegion extends BoxObstacle {
     /** Simple field to slow down the allocation of photons */
     private int cooldown = 0;
 
+    private Random random;
     /**
      * Creates a new SpiritRegion Model
      *
@@ -127,10 +128,56 @@ public class SpiritRegion extends BoxObstacle {
 
 
 //         PHOTON PARTICLES
+        random = new Random();
         particles = new ObjectSet<Particle>();
-        int capacity = (int) width * (int) height*3;
+        int capacity = (int) width * (int) height * 2;
         memory = new ParticlePool(capacity);
+        for (int i = 0; i < capacity; i++){
+            Particle item = addParticle();
+            item.setY(random.nextFloat(item.getBottom()*drawScale.y, item.getTop()*drawScale.y-PARTICLE_SIZE));
+        }
 
+    }
+
+    private Particle addParticle(){
+        Particle item = memory.obtain();
+
+        // Only proceed if allocation succeeded.
+        if (item != null) {
+            // Initialize the object
+            // Make angle mainly upwards to simulate floating up (not any direction)
+            float min_angle = (float) Math.PI/3;
+            float max_angle = (float) (3*Math.PI/4);
+            float rand_angle = min_angle + (max_angle - min_angle) * (float) Math.random();
+            // Random pos within region
+            // Cluster the y pos near the bottom to give more "floating up" feeling
+
+            float minValueY = pos.y;
+            float maxValueY = pos.y + height;
+            float stdDev = height/5;
+
+            float rand_bot = (float) (Math.abs(random.nextGaussian()) * stdDev + minValueY);
+            rand_bot = Math.min(rand_bot, maxValueY - 1);
+            item.setBottom(rand_bot);
+
+            float rand_top = rand_bot;
+            while (rand_top <= rand_bot){
+                rand_top = (float) (maxValueY - Math.abs(random.nextGaussian()) * stdDev);
+            }
+            rand_top = Math.min(rand_top, maxValueY);
+            item.setTop(rand_top);
+
+            float rand_x = pos.x + width * (float) Math.random();
+
+            item.setX(rand_x* drawScale.x);
+            item.setY(rand_bot* drawScale.y);
+
+            item.setAngle(rand_angle);
+            cooldown = PARTICLE_RESPAWN;
+            // Add it to the set of objects
+            particles.add(item);
+        }
+        return item;
     }
 
     /**
@@ -150,11 +197,11 @@ public class SpiritRegion extends BoxObstacle {
      */
     public void setSpiritRegionColorOpacity(boolean val) {
         if (val) {
-            particleColor.a += (PARTICLE_OPACITY_ACTIVE - particleColor.a)*0.1;
-            regionColor.a += (REGION_OPACITY_ACTIVE - regionColor.a)*0.1;
+            particleColor.a += (PARTICLE_OPACITY_ACTIVE - particleColor.a)*0.07;
+            regionColor.a += (REGION_OPACITY_ACTIVE - regionColor.a)*0.07;
         } else {
-            particleColor.a += (PARTICLE_OPACITY_INACTIVE - particleColor.a)*0.1;
-            regionColor.a += (REGION_OPACITY_INACTIVE - regionColor.a)*0.1;
+            particleColor.a += (PARTICLE_OPACITY_INACTIVE - particleColor.a)*0.07;
+            regionColor.a += (REGION_OPACITY_INACTIVE - regionColor.a)*0.07;
         }
     }
 
@@ -178,44 +225,7 @@ public class SpiritRegion extends BoxObstacle {
 
         if (cooldown <= 0) {
             // Add a particle to the set
-            Particle item = memory.obtain();
-
-            // Only proceed if allocation succeeded.
-            if (item != null) {
-                // Initialize the object
-                // Make angle mainly upwards to simulate floating up (not any direction)
-                float min_angle = (float) Math.PI/3;
-                float max_angle = (float) (3*Math.PI/4);
-                float rand_angle = min_angle + (max_angle - min_angle) * (float) Math.random();
-                // Random pos within region
-                // Cluster the y pos near the bottom to give more "floating up" feeling
-                Random random = new Random();
-
-                float minValueY = pos.y;
-                float maxValueY = pos.y + height;
-                float stdDev = height/2;
-
-                float rand_bot = (float) (random.nextGaussian() * stdDev + minValueY);
-                rand_bot = Math.max(minValueY, Math.min(rand_bot, maxValueY));
-                item.setBottom(rand_bot);
-
-                float rand_top = rand_bot;
-                while (rand_top <= rand_bot){
-                    rand_top = (float) (random.nextGaussian() * stdDev + maxValueY);
-                }
-                rand_top = Math.min(rand_top, maxValueY);
-                item.setTop(rand_top);
-
-                float rand_x = pos.x + width * (float) Math.random();
-
-                item.setX(rand_x* drawScale.x);
-                item.setY(rand_bot* drawScale.y);
-
-                item.setAngle(rand_angle);
-                cooldown = PARTICLE_RESPAWN;
-                // Add it to the set of objects
-                particles.add(item);
-            }
+            addParticle();
         }
 
         // Move all particles

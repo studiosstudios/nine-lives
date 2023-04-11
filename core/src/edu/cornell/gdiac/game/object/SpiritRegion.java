@@ -157,7 +157,7 @@ public class SpiritRegion extends BoxObstacle {
             float stdDev = height/5;
 
             float rand_bot = (float) (Math.abs(random.nextGaussian()) * stdDev + minValueY);
-            rand_bot = Math.min(rand_bot, maxValueY - 1);
+            rand_bot = Math.min(rand_bot, pos.y + height/2);
             item.setBottom(rand_bot);
 
             float rand_top = rand_bot;

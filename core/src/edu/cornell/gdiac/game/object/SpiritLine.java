@@ -43,7 +43,7 @@ public class SpiritLine {
     /** How fast line fades out when exiting spirit mode */
     private static final float FADE_OUT_SPEED = 0.2f;
     /** The thickness of the line */
-    private static final float THICKNESS = 4;
+    private static final float THICKNESS = 6;
 
     /**
      * Creates a new spirit line

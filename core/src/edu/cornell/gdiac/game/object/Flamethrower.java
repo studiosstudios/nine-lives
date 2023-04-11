@@ -47,7 +47,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
      */
     public Flamethrower(TextureRegion flamebaseTexture, Vector2 flameBaseScale, TextureRegion flameTexture, Vector2 flameScale, Vector2 drawScale, JsonValue data) {
         super();
-//        setName("flamethrower");
+
 
         this.flameTexture = flameTexture;
 

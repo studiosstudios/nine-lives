@@ -388,10 +388,12 @@ public class Cat extends CapsuleObstacle implements Movable {
         meowTime = 0f;
         walkTime = 0f;
         failedTicks = FAIL_ANIM_TICKS;
+
         idleTime = 0f;
         nonMoveTime = 0f;
         standTime = 0f;
         time = 0;
+
         // Gameplay attributes
         state = State.MOVING;
         setGravityScale(2f);
@@ -679,6 +681,7 @@ public class Cat extends CapsuleObstacle implements Movable {
             walkTime += Gdx.graphics.getDeltaTime();
             yOffset = -10;
             frame = walk_animation.getKeyFrame(walkTime);
+
             TextureRegion currentFrame3 = walk_animation.getKeyFrame(walkTime);
             canvas.draw(currentFrame3,Color.WHITE, origin.x, origin.y,x,y-10, getAngle(),effect,1.0f);
             nonMoveTime = 0;
@@ -689,6 +692,7 @@ public class Cat extends CapsuleObstacle implements Movable {
             jumpTime += Gdx.graphics.getDeltaTime();
             frame = jump_animation.getKeyFrame(jumpTime);
             yOffset = -15;
+
             TextureRegion currentFrame = jump_animation.getKeyFrame(jumpTime);
             canvas.draw(currentFrame,Color.WHITE, origin.x, origin.y,x,y-15, getAngle(),effect,1.0f);
             nonMoveTime = 0;
@@ -698,6 +702,7 @@ public class Cat extends CapsuleObstacle implements Movable {
             meow_animation.setPlayMode(Animation.PlayMode.REVERSED);
             meowTime += Gdx.graphics.getDeltaTime();
             frame = meow_animation.getKeyFrame(meowTime);
+
             TextureRegion currentFrame2 = meow_animation.getKeyFrame(meowTime);
             canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x-(14*effect),y, getAngle(),effect,1.0f);
             if (meowTime >= (0.05*5)){

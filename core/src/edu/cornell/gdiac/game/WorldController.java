@@ -184,6 +184,7 @@ public class WorldController implements Screen {
 			currLevel.setJSON(levelJSON(level+1));
 		}
 	}
+
 	/**
 	 * Loads in the JSON of a level
 	 *
@@ -191,6 +192,15 @@ public class WorldController implements Screen {
 	 * @return JSON of the level
 	 */
 	private JsonValue levelJSON(int levelNum){ return directory.getEntry("level" + levelNum, JsonValue.class); }
+
+	/**
+	 * Loads in the JSON of a level
+	 *
+	 * @param levelNum the number associated with the level to be loaded in
+	 * @return JSON of the level
+	 */
+	private JsonValue tiledJSON(int levelNum){ return directory.getEntry("tiledLevel" + levelNum, JsonValue.class); }
+
 
 
 	/**
@@ -215,13 +225,13 @@ public class WorldController implements Screen {
 		soundAssetMap = new HashMap<>();
 		fontAssetMap = new HashMap<>();
 
-		String[] names = {"cat", "jumpingCat","barrier", "rope", "spikes", "button", "flame", "flamethrower", "laser", "laserBeam",
-				"deadCat", "checkpoint", "checkpointActive", "roboMob", "background", "steel", "goal",
-				"flame_anim","checkpoint_anim", "checkpoint_active_anim", "checkpoint_base", "checkpoint_base_active",
-						"button_anim", "jump_anim", "meow_anim","sit","walk", "spirit_anim", "spirit_photon", "spirit_photon_cat", "spirit_region",
-				"lab_tileset",
-				"button_anim", "jump_anim",
-				"meow_anim","sit","walk","idle_anim","idle_anim_stand"};
+		String[] names = {"cat", "sit", "deadCat", "jumpingCat", "jump_anim", "walk", "button_anim",
+				"spikes", "button", "flamethrower", "flame", "laser", "checkpoint", "checkpointActive",
+				"checkpoint_anim", "checkpoint_active_anim", "checkpoint_base", "checkpoint_base_active",
+				"background", "flame_anim", "roboMob",
+				"spirit_anim", "spirit_photon", "spirit_photon_cat", "spirit_region",
+				"meow_anim", "idle_anim", "idle_anim_stand",
+				"metal_tileset", "steel"};
 
 		for (String n : names){
 			textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
@@ -242,13 +252,14 @@ public class WorldController implements Screen {
 
 		// Giving assets to levelController
 		currLevel.setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants, levelJSON(1));
+		currLevel.setTiledJSON(tiledJSON(1));
 		nextJSON = levelJSON(2);
 
 		//Set controls
 		InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
 
-//		InputController.getInstance().writeTo("inputLogs/debugPlatformUndo2.txt");
-//		InputController.getInstance().readFrom("inputLogs/debugPlatformUndo.txt");
+//		InputController.getInstance().writeTo("inputLogs/alphademo.txt");
+//		InputController.getInstance().readFrom("inputLogs/alphademo.txt");
 	}
 
 	/**
@@ -310,14 +321,14 @@ public class WorldController implements Screen {
 	 */
 	public void render(float delta){
 		//FOR DEBUGGING
-		delta = 1/60f;
-		if (Gdx.input.isKeyPressed(Input.Keys.F)){
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-			}
-		}
+//		delta = 1/60f;
+//		if (Gdx.input.isKeyPressed(Input.Keys.F)){
+//			try {
+//				Thread.sleep(1000);
+//			} catch (InterruptedException e) {
+//				Thread.currentThread().interrupt();
+//			}
+//		}
 
 		if (preUpdate(delta) && !paused) {
 			currLevel.update(delta); // This is the one that must be defined.

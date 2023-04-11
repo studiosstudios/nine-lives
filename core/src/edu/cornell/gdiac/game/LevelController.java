@@ -71,6 +71,8 @@ public class LevelController {
     private Color flashColor = new Color(1, 1, 1, 0);
 
 
+    private JsonValue tiledLevelJV;
+
     /**
      * Creates and initialize a new instance of a LevelController
      * <br><br>
@@ -174,6 +176,10 @@ public class LevelController {
      */
     public void setJSON(JsonValue level) { levelJV = level; }
 
+    /**
+     * blah
+     */
+    public void setTiledJSON(JsonValue levelJV) { tiledLevelJV = levelJV; }
 
     /**
      * Sets the hashmaps for Texture Regions, Sounds, Fonts, and sets JSON value constants
@@ -198,6 +204,7 @@ public class LevelController {
         actionController.setVolume(constantsJSON.get("defaults").getFloat("volume"));
         actionController.setAssets(sMap);
         level.setAssets(tMap);
+//        level.levelEditor();
     }
 
     /**
@@ -237,6 +244,7 @@ public class LevelController {
         boolean tempRet = isRet();
         setRet(false);
         populateLevel(tempRet, prevCat);
+        level.levelEditor(tiledLevelJV);
         prevLivesState = new LevelState[9];
         canvas.getCamera().setLevelSize(level.bounds.width, level.bounds.height);
         canvas.getCamera().updateCamera(level.getCat().getPosition().x*scale.x, level.getCat().getPosition().y*scale.y, false);

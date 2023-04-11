@@ -44,13 +44,13 @@ public class SpiritRegion extends BoxObstacle {
     /** Respawn rate of the particles */
     public static final int PARTICLE_RESPAWN = 1;
     /** Opacity value for particles when spirit region not active on key press */
-    public static final float PARTICLE_OPACITY_INACTIVE = 0.25f;
+    public static final float PARTICLE_OPACITY_INACTIVE = 0.3f;
     /** Opacity value when spirit region not active on key press */
-    public static final float REGION_OPACITY_INACTIVE = 0.15f;
+    public static final float REGION_OPACITY_INACTIVE = 0.2f;
     /** Opacity value for particles when spirit region not active on key press */
-    public static final float PARTICLE_OPACITY_ACTIVE = 0.4f;
+    public static final float PARTICLE_OPACITY_ACTIVE = 0.5f;
     /** Opacity value when spirit region active on key press */
-    public static final float REGION_OPACITY_ACTIVE = 0.4f;
+    public static final float REGION_OPACITY_ACTIVE = 0.5f;
     /** Size of particles to scale */
     public static final float PARTICLE_SIZE = 6f;
 
@@ -128,18 +128,16 @@ public class SpiritRegion extends BoxObstacle {
 
 
 //         PHOTON PARTICLES
-//        random = new Random();
-//        particles = new ObjectSet<Particle>();
-//        int capacity = (int) width * (int) height * 2;
-//        memory = new ParticlePool(capacity);
-//        for (int i = 0; i < capacity; i++){
-//            Particle item = addParticle();
-//            try {
-//                item.setY(random.nextFloat(item.getBottom() * drawScale.y, item.getTop() * drawScale.y - PARTICLE_SIZE));
-//            } catch (Exception e) {
-//                item.setY(item.getBottom());
-//            }
-//        }
+        random = new Random();
+        particles = new ObjectSet<Particle>();
+        int capacity = (int) width * (int) height * 2;
+        memory = new ParticlePool(capacity);
+        for (int i = 0; i < capacity; i++){
+            Particle item = addParticle();
+            float low = item.getBottom() * drawScale.y;
+            float high = item.getTop() * drawScale.y - PARTICLE_SIZE;
+            item.setY(random.nextFloat()*(high-low)+low);
+        }
 
     }
 

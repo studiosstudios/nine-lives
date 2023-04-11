@@ -12,11 +12,11 @@
         },
         "goal":   "shared/goaldoor.png",
         "cat":  "platform/cat.png",
-      "sit": "platform/sit_idle1.png",
+        "sit": "platform/sit_idle1.png",
         "deadCat": "platform/deadCat.png",
-      "jumpingCat": "platform/Jump.png",
-      "jump_anim": "platform/jump_start.png",
-      "walk": "platform/walk_anim.png",
+        "jumpingCat": "platform/Jump.png",
+        "jump_anim": "platform/jump_start.png",
+        "walk": "platform/walk_anim.png",
         "rope":  "platform/ropebridge.png",
         "barrier": "platform/barrier.png",
         "bullet":  "platform/bullet.png",
@@ -41,9 +41,10 @@
         "spirit_photon": "platform/spirit_photon.png",
         "spirit_photon_cat": "platform/spirit_photon_cat.png",
         "spirit_region": "platform/spirit_region.png",
-        "lab_tileset": "platform/lab_tileset.png",
         "idle_anim": "platform/idle.png",
-        "idle_anim_stand": "platform/standing_idle.png"
+        "idle_anim_stand": "platform/standing_idle.png",
+        "metal_tileset": "tiled/metal_tileset.png",
+        "steel": "shared/steeltile.png"
     },
     "jsons"  : {
         "constants": "platform/constants.json",
@@ -53,7 +54,7 @@
         "level3": "platform/level3.json",
         "level4": "platform/level4.json",
         "level5": "platform/level_testplayground.json",
-//        "tiledLevel": "tiledLevel.json"
+        "tiledLevel1": "tiled/tiledLevel1.json"
     },
     "sounds" : {
         "jump" : "platform/jump.mp3",

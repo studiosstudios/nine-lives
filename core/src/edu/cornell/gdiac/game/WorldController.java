@@ -143,6 +143,7 @@ public class WorldController implements Screen {
 			currLevel.setJSON(nextJSON);
 			currLevel.setRet(false);
 			currLevel.reset(resetSpawn ? null : currLevel.getLevel().getCat());
+			currLevel.setState("SWITCH");
 			if (levelNum < numLevels) {
 				nextJSON = levelJSON(levelNum + 1);
 			}

@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Rectangle;
 
 /**
  * Different from abstract class Camera
@@ -12,10 +13,8 @@ public class Camera {
     private float viewportWidth;
     /** Height of visible window **/
     private float viewportHeight;
-    /** Width of current level **/
-    private float levelWidth;
-    /** Height of current level **/
-    private float levelHeight;
+    /** Bounds of current level **/
+    private Rectangle levelBounds;
     /** Camera x-coordinate **/
     private float x;
     /** Camera y-coordinate **/
@@ -35,8 +34,6 @@ public class Camera {
         camera.zoom = zoom;
         this.viewportWidth = viewportWidth;
         this.viewportHeight = viewportHeight;
-        this.levelWidth = viewportWidth;
-        this.levelHeight = viewportHeight;
         x = camera.position.x;
         y = camera.position.y;
     }
@@ -53,15 +50,15 @@ public class Camera {
     public void updateCamera(float xPos, float yPos, boolean glide){
 //        System.out.println(levelHeight); //levelHeight smaller for some reason?
         float width_scaled = viewportWidth*camera.zoom; //width of viewport zoomed in
-        if(xPos > levelWidth - width_scaled + width_scaled/2){
-            xPos = levelWidth - width_scaled + width_scaled/2;
+        if(xPos > levelBounds.width - width_scaled + width_scaled/2){
+            xPos = levelBounds.width - width_scaled + width_scaled/2;
         }
         if(xPos < width_scaled/2){
             xPos = width_scaled/2;
         }
         float height_scaled = viewportHeight*camera.zoom; //height of viewport zoomed in
-        if(yPos > levelHeight - height_scaled + height_scaled/2){
-            yPos = levelHeight - height_scaled + height_scaled/2;
+        if(yPos > levelBounds.height - height_scaled + height_scaled/2){
+            yPos = levelBounds.height - height_scaled + height_scaled/2;
         }
         if(yPos < height_scaled/2){
             yPos = height_scaled/2;
@@ -87,13 +84,11 @@ public class Camera {
 
     /**
      * Adjusting level size used for camera positioning calculations
-     * @param width width of current level
-     * @param height height of current level
+     * @param bounds bounds of current level
      */
-    public void setLevelSize(float width, float height){
+    public void setLevelBounds(Rectangle bounds){
 //        System.out.println("setting level size:" + height);
-        levelWidth = width;
-        levelHeight = height;
+        levelBounds = bounds;
     }
 
 //

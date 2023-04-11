@@ -1,5 +1,6 @@
 {
 	"size": [32, 26], //[width, height]
+	"offset": [0,0], //[x,y] bottom left corner
 	"spikes": [{"pos" : [1, 4], "angle": 180, "active": false, "activatorID": "switch1"}],
 	"doors": [{"width": 2, "height": 2, "pos": [28, 23], "angle": 180,
 		"totalTicks": 45, "activatorID": "button2", "active": true}],

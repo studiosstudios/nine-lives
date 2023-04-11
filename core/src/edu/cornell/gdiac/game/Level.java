@@ -374,6 +374,11 @@ public class Level {
         JsonValue size = levelJV.get("size");
         bounds.width = size.getFloat(0)*scale.x;
         bounds.height = size.getFloat(1)*scale.y;
+
+        JsonValue offset = levelJV.get("offset");
+        bounds.x = offset.getFloat(0)*scale.x;
+        bounds.y = offset.getFloat(1)*scale.y;
+
         /*
         TODO: Remove try-catches
         We use try-catches here so that the level JSONs don't need to contain empty fields for objects that they don't have.

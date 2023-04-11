@@ -99,7 +99,7 @@ public class NineLives extends Game implements ScreenListener {
 	public void exitScreen(Screen screen, int exitCode) {
 		if (exitCode == 77) {
 //			setScreen(menu);
-			menu.loadAssets();
+			menu.loadAssets(); // THIS IS A GOOD PLACE TO PUT A CONTROLS LOADING SCREEN
 			directory = menu.getAssets();
 			controller.gatherAssets(directory);
 			controller.setScreenListener(this);

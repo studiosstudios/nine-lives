@@ -171,6 +171,11 @@ public class WorldController implements Screen {
 			}
 		}
 	}
+	public void setCurrLevel(int level) {
+		if (level < numLevels) {
+			currLevel.setJSON(levelJSON(level+1));
+		}
+	}
 	/**
 	 * Loads in the JSON of a level
 	 *
@@ -301,7 +306,7 @@ public class WorldController implements Screen {
 	 * also paused before it is destroyed.
 	 */
 	public void pause() {
-		// TODO Auto-generated method stub
+//		currLevel.pause();
 	}
 
 	/**

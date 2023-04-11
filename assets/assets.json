@@ -37,17 +37,13 @@
         "flame_anim": "platform/flame_anim.png",
         "roboMob": "platform/robo_mob.png",
         "meow_anim": "platform/meow.png",
-<<<<<<< HEAD
-      "idle_anim": "platform/idle.png",
-      "idle_anim_stand": "platform/standing_idle.png",
-      "metal_tileset": "tiled/metal_tileset.png"
-=======
+        "idle_anim": "platform/idle.png",
+        "idle_anim_stand": "platform/standing_idle.png",
+        "metal_tileset": "tiled/metal_tileset.png",
         "spirit_anim": "platform/spirit_anim.png",
         "spirit_photon": "platform/spirit_photon.png",
         "spirit_photon_cat": "platform/spirit_photon_cat.png",
-        "spirit_region": "platform/spirit_region.png",
-        "lab_tileset": "platform/lab_tileset.png"
->>>>>>> alpha
+        "spirit_region": "platform/spirit_region.png"
     },
     "jsons"  : {
         "constants": "platform/constants.json",

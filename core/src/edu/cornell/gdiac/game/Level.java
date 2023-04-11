@@ -871,6 +871,8 @@ public class Level {
 //            canvas.draw(background, 0, 0);
         }
 
+        tiles.draw(canvas);
+
         //draw everything except cat, dead bodies and spirit region
         for(Obstacle obj : objects) {
             if (obj != cat && !(obj instanceof DeadBody) && !(obj instanceof SpiritRegion) && !(obj instanceof Wall)){

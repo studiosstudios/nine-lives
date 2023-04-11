@@ -62,6 +62,7 @@ public class Level {
     private final Array<Mob> mobArray;
     private Checkpoint currCheckpoint;
     private final Array<Laser> lasers;
+    private final Array<SpiritRegion> spiritRegionArray;
     /** The respawn position of the player */
     private Vector2 respawnPos;
     /** The background texture */
@@ -72,6 +73,7 @@ public class Level {
 
     //region Spirit mode stuff
     private boolean spiritMode;
+    /** The spirit line */
     private SpiritLine spiritLine;
     //endregion
     /** the initial respawn position for this level */
@@ -153,6 +155,13 @@ public class Level {
      * @return a reference to the mob array
      */
     public Array<Mob> getMobArray() { return mobArray; }
+
+    /**
+     * Returns a reference to the array of spirit regions
+     *
+     * @return a reference to the spirit region array
+     */
+    public Array<SpiritRegion> getSpiritRegionArray() { return spiritRegionArray; }
 
     /**
      * Returns a reference to the respawn position
@@ -275,6 +284,7 @@ public class Level {
         deadBodyArray = new Array<>();
         lasers = new Array<>();
         mobArray = new Array<>();
+        spiritRegionArray = new Array<>();
         activationRelations = new HashMap<>();
     }
 
@@ -311,7 +321,6 @@ public class Level {
         respawnPos = startRespawnPos;
     }
 
-
     /**
      * Lays out the game geography from the given JSON file
      * @param tMap Texture map for game objects
@@ -329,6 +338,9 @@ public class Level {
         activationRelations = new HashMap<>();
         background = tMap.get("background").getTexture();
 
+        JsonValue size = levelJV.get("size");
+        bounds.width = size.getFloat(0)*scale.x;
+        bounds.height = size.getFloat(1)*scale.y;
         /*
         TODO: Remove try-catches
         We use try-catches here so that the level JSONs don't need to contain empty fields for objects that they don't have.
@@ -391,7 +403,8 @@ public class Level {
 
         try {
             for (JsonValue checkpointJV : levelJV.get("checkpoints")){
-                Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint"), tMap.get("checkpointActive"));
+                Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint_anim"), tMap.get("checkpoint_active_anim"),
+                        tMap.get("checkpoint_base"), tMap.get("checkpoint_base_active"));
                 addObject(checkpoint);
             }
         } catch (NullPointerException e) {}
@@ -442,6 +455,17 @@ public class Level {
             }
         } catch (NullPointerException e) {}
 
+        try {
+            for (JsonValue spiritJV : levelJV.get("spiritRegions")){
+//                SpiritRegion spiritRegion = new SpiritRegion(tMap.get("spirit_anim"), tMap.get("spirit_photon"), scale, new Vector2(1, 1), spiritJV);
+                SpiritRegion spiritRegion = new SpiritRegion(tMap.get("spirit_region"), tMap.get("spirit_photon"), scale, new Vector2(1, 1), spiritJV);
+                addObject(spiritRegion);
+                spiritRegionArray.add(spiritRegion);
+            }
+        } catch (NullPointerException e) {
+//            e.printStackTrace();
+        }
+
         // Create cat
         /** Float value to scale width */
         float dwidth = tMap.get("cat").getRegionWidth() / scale.x;
@@ -456,7 +480,6 @@ public class Level {
         arr[5] = tMap.get("walk").getTexture();
         cat = new Cat(levelJV.get("cat"), dwidth, dheight, ret, prevCat == null? null : prevCat.getPosition(),arr);
         cat.setDrawScale(scale);
-//        cat.setTexture(tMap.get("cat"));
         respawnPos = cat.getPosition();
         startRespawnPos = respawnPos;
         addObject(cat);
@@ -501,7 +524,9 @@ public class Level {
         deadBodyArray.clear();
         activatables.clear();
         mobArray.clear();
+        spiritRegionArray.clear();
         numLives = maxLives;
+        currCheckpoint = null;
         if (world != null) {
             world.dispose();
             world = null;
@@ -617,11 +642,15 @@ public class Level {
      */
     public void draw(GameCanvas canvas) {
         if (background != null) {
-            canvas.draw(background, 0, 0);
+            //scales background with level size
+            float scaleX = bounds.width/background.getWidth();
+            float scaleY = bounds.height/background.getHeight();
+            canvas.draw(background, Color.WHITE, 0, 0, background.getWidth()*Float.max(scaleX,scaleY), background.getHeight()*Float.max(scaleX,scaleY));
+//            canvas.draw(background, 0, 0);
         }
-        //draw everything except cat and dead bodies
-        for (Obstacle obj : objects) {
-            if (obj != cat && !(obj instanceof DeadBody)) {
+        //draw everything except cat, dead bodies and spirit region
+        for(Obstacle obj : objects) {
+            if (obj != cat && !(obj instanceof DeadBody) && !(obj instanceof SpiritRegion)){
                 obj.draw(canvas);
             }
         }
@@ -633,6 +662,14 @@ public class Level {
         }
         cat.draw(canvas);
 
+        for (SpiritRegion s : spiritRegionArray) {
+            s.draw(canvas);
+        }
+
+        if (currCheckpoint != null) {
+            currCheckpoint.drawBase(canvas);
+        }
+
     }
 
     /**
@@ -643,14 +680,16 @@ public class Level {
     public void drawDebug(GameCanvas canvas){
         //draw grid
         Color lineColor = new Color(0.8f, 0.8f, 0.8f, 1);
+        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/scale.x;
+        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/scale.y;
         for (int x = 0; x < bounds.width; x++) {
-            Vector2 p1 = new Vector2(x, 0);
-            Vector2 p2 = new Vector2(x, bounds.height);
+            Vector2 p1 = new Vector2(x-xTranslate, 0-yTranslate);
+            Vector2 p2 = new Vector2(x-xTranslate, bounds.height-yTranslate);
             canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
         }
         for (int y = 0; y < bounds.height; y++) {
-            Vector2 p1 = new Vector2(0, y);
-            Vector2 p2 = new Vector2(bounds.width, y);
+            Vector2 p1 = new Vector2(0-xTranslate, y-yTranslate);
+            Vector2 p2 = new Vector2(bounds.width-xTranslate, y-yTranslate);
             canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
         }
         for (Obstacle obj : objects) {
@@ -699,7 +738,7 @@ public class Level {
         float minDist = Float.MAX_VALUE;
         DeadBody nextdb = null;
         for (DeadBody db : deadBodyArray){
-            if (db.isSwitchable()){
+            if (sharesSpriritRegion(db.getSpiritRegions(), cat.getSpiritRegions())){
                 float dist = cat.getPosition().dst(db.getPosition());
                 if (dist < minDist){
                     minDist = dist;
@@ -708,6 +747,14 @@ public class Level {
             }
         }
         return nextdb;
+    }
+
+    private boolean sharesSpriritRegion(ObjectSet<SpiritRegion> s1, ObjectSet<SpiritRegion> s2){
+        if (s1.isEmpty() && s2.isEmpty()) return true;
+        for (SpiritRegion r : s1){
+            if (s2.contains(r)) return true;
+        }
+        return false;
     }
 
     /**

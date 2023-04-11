@@ -1,4 +1,5 @@
 {
+  "size": [32, 18], //[width, height]
   "cat" : {
     "pos": [0.5, 13],
     "ret_pos": [31.5,13], //temp impossible

@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
+import sun.security.provider.ConfigFile;
 
 /**
  * Player avatar for the plaform game.
@@ -33,24 +34,19 @@ public class DeadBody extends BoxObstacle implements Movable {
     private boolean burning;
     /** The total number ticks a body burns for */
     private static int totalBurnTicks;
-
-    /**
-     * The amount to slow the model down
-     */
+    /** The amount to slow the model down */
     private final float damping;
-    /**
-     * Which direction is the model facing
-     */
+    /** Which direction is the model facing */
     private boolean faceRight;
-    /**
-     * The physics shape of this object
-     */
+    /** The physics shape of this object */
     private CircleShape sensorShape;
     /** The number of hazards that the body is touching */
     private int hazardsTouching;
     /** If dead body is currently being hit by a laser.
      * This is necessary because laser collisions are done with raycasting.*/
     private boolean touchingLaser;
+    /** The set of spirit regions that this dead body is inside */
+    private ObjectSet<SpiritRegion> spiritRegions;
 
     private ObjectSet<Fixture> groundFixtures = new ObjectSet<>();
     private PolygonShape groundSensorShape;
@@ -88,6 +84,20 @@ public class DeadBody extends BoxObstacle implements Movable {
     public boolean isSwitchable(){
         return hazardsTouching == 0 && !touchingLaser;
     }
+
+    /**
+     * If the dead body is in the same spirit region.
+     * @return true if the dead body is in the same spirit region
+     */
+    public boolean inSameSpiritRegion(ObjectSet<SpiritRegion> otherRegions){
+        for (SpiritRegion region : otherRegions) {
+            if (spiritRegions.contains(region)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     /**
      * Sets if the dead body is being hit by a laser.
@@ -136,6 +146,8 @@ public class DeadBody extends BoxObstacle implements Movable {
         burnTicks = 0;
         burning = false;
         faceRight = true;
+        spiritRegions = new ObjectSet<>();
+        //create centre sensor (for fixing to spikes)
 
         groundSensorName = "deadBodyGroundSensor";
         setName("deadBody");
@@ -210,6 +222,11 @@ public class DeadBody extends BoxObstacle implements Movable {
     }
 
     /**
+     * @return The set of spirit regions that this dead body is inside
+     */
+    public ObjectSet<SpiritRegion> getSpiritRegions() { return spiritRegions; }
+
+    /**
      * Draws the physics object.
      *
      * @param canvas Drawing context
@@ -229,8 +246,10 @@ public class DeadBody extends BoxObstacle implements Movable {
      */
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
-        canvas.drawPhysics(sensorShape, Color.RED, getX(), getY(), drawScale.x, drawScale.y);
-        canvas.drawPhysics(groundSensorShape, Color.RED, getX(), getY(), getAngle(), drawScale.x, drawScale.y);
+        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+        canvas.drawPhysics(sensorShape, Color.RED, getX()-xTranslate, getY()-yTranslate, drawScale.x, drawScale.y);
+        canvas.drawPhysics(groundSensorShape, Color.RED, getX()-xTranslate, getY()-yTranslate, getAngle(), drawScale.x, drawScale.y);
     }
 
     /**

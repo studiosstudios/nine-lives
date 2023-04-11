@@ -485,7 +485,9 @@ public class CapsuleObstacle extends SimpleObstacle {
 	 * @param canvas Drawing context
 	 */
 	public void drawDebug(GameCanvas canvas) {
-		canvas.drawPhysics(shape,Color.YELLOW,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
+		float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+		float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+		canvas.drawPhysics(shape,Color.YELLOW,getX()-xTranslate,getY()-yTranslate,getAngle(),drawScale.x,drawScale.y);
 		if (cap1 != null) {
 			// Need to manually rotate caps off axis
 			float dx; float dy;
@@ -498,7 +500,7 @@ public class CapsuleObstacle extends SimpleObstacle {
 				dx = (float)(r*Math.cos(Math.PI/2.0f+getAngle()));
 				dy = (float)(r*Math.sin(Math.PI/2.0f+getAngle()));
 			}
-			canvas.drawPhysics(end1,Color.YELLOW,getX()+dx,getY()+dy,drawScale.x,drawScale.y);			
+			canvas.drawPhysics(end1,Color.YELLOW,getX()+dx-xTranslate,getY()+dy-yTranslate,drawScale.x,drawScale.y);
 		}
 		if (cap2 != null) {
 			// Need to manually rotate caps off axis
@@ -512,7 +514,7 @@ public class CapsuleObstacle extends SimpleObstacle {
 				dx = (float)(r*Math.cos(-Math.PI/2.0f+getAngle()));
 				dy = (float)(r*Math.sin(-Math.PI/2.0f+getAngle()));
 			}
-			canvas.drawPhysics(end2,Color.YELLOW,getX()+dx,getY()+dy,drawScale.x,drawScale.y);			
+			canvas.drawPhysics(end2,Color.YELLOW,getX()+dx-xTranslate,getY()+dy-yTranslate,drawScale.x,drawScale.y);
 		}
 	}
 

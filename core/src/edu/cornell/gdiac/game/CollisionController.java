@@ -110,6 +110,9 @@ public class CollisionController implements ContactListener, ContactFilter {
 //                    System.out.println("hit a mob");
                         actionController.die();
                     }
+                    if (bd2 instanceof SpiritRegion){
+                        cat.getSpiritRegions().add((SpiritRegion) bd2);
+                    }
                 }
 
                 //dead body collisions
@@ -121,6 +124,8 @@ public class CollisionController implements ContactListener, ContactFilter {
                     } else if (fd2 instanceof Flamethrower.Flame) {
                         db.setBurning(true);
                         db.addHazard();
+                    } else if (bd2 instanceof SpiritRegion){
+                        db.getSpiritRegions().add((SpiritRegion) bd2);
                     }
                 }
 
@@ -139,7 +144,6 @@ public class CollisionController implements ContactListener, ContactFilter {
                 if (fd1 instanceof Activator) {
                     ((Activator) fd1).addPress();
                 }
-
                 //swap everything
                 Body bodyTemp = body1;
                 body1 = body2;
@@ -210,6 +214,9 @@ public class CollisionController implements ContactListener, ContactFilter {
                     } else if (fd2 instanceof Flamethrower.Flame) {
                         db.setBurning(false);
                         db.removeHazard();
+                    }
+                    if (bd2 instanceof SpiritRegion){
+                        db.getSpiritRegions().remove((SpiritRegion) bd2);
                     }
                 }
 

@@ -159,7 +159,6 @@ public class LevelController {
     public void setJSON(JsonValue level) { levelJV = level; }
 
 
-
     /**
      * Sets the hashmaps for Texture Regions, Sounds, Fonts, and sets JSON value constants
      *
@@ -223,6 +222,8 @@ public class LevelController {
         setRet(false);
         populateLevel(tempRet, prevCat);
         prevLivesState = new LevelState[9];
+        canvas.getCamera().setLevelSize(level.bounds.width, level.bounds.height);
+        canvas.getCamera().updateCamera(level.getCat().getPosition().x*scale.x, level.getCat().getPosition().y*scale.y, false);
     }
 
     /**
@@ -262,6 +263,7 @@ public class LevelController {
         // Toggle debug
         if (input.didDebug()) {
             debug = !debug;
+//            canvas.getCamera().debugCamera(debug);
         }
 
         // Handle resets
@@ -292,8 +294,10 @@ public class LevelController {
             setRet(true);
         }
         actionController.update(dt);
-
         flashColor.a -= flashColor.a/10;
+        float x_pos = level.getCat().getPosition().x*scale.x;
+        float y_pos = level.getCat().getPosition().y*scale.y;
+        canvas.getCamera().updateCamera(x_pos, y_pos, true);
     }
 
     /**
@@ -363,9 +367,9 @@ public class LevelController {
      */
     public void draw(float dt) {
         canvas.clear();
-        canvas.applyViewport();
 
         canvas.begin();
+        canvas.applyViewport();
         level.draw(canvas);
         canvas.drawRectangle(0, 0, bounds.width,bounds.height, flashColor, scale.x, scale.y);
         canvas.end();

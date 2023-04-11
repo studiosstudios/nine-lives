@@ -8,10 +8,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import edu.cornell.gdiac.assets.AssetDirectory;
 
 public class MainMenuStage extends StageWrapper{
-    private Actor PlayButtonActor;
-    private Actor LevelSelectActor;
-    private Actor SettingsActor;
-    private Actor ExitButtonActor;
+    private Actor playButtonActor;
+    private Actor levelSelectActor;
+    private Actor settingsActor;
+    private Actor exitButtonActor;
     private int playButtonState;
     private int levelSelectState;
     private int settingsState;
@@ -27,6 +27,7 @@ public class MainMenuStage extends StageWrapper{
     public void setExitButtonState(int state) { exitButtonState = state; }
 
     public boolean isPlay() { return playButtonState == 2; }
+    public boolean isLevelSelect() { return levelSelectState == 2; }
     public boolean isSettings() { return settingsState == 2; }
     public boolean isExit() { return exitButtonState == 2; }
 
@@ -40,10 +41,11 @@ public class MainMenuStage extends StageWrapper{
     @Override
     public void createActors() {
         addActor(new Image(internal.getEntry( "background", Texture.class )));
-        PlayButtonActor = addActor(internal.getEntry("playGame", Texture.class),buttonX, buttonY);
-        LevelSelectActor = addActor(internal.getEntry("levelSelect", Texture.class),buttonX, buttonY-75);
-        SettingsActor = addActor(internal.getEntry("settings", Texture.class),buttonX, buttonY-150);
-        ExitButtonActor = addActor(internal.getEntry("exit", Texture.class),buttonX, buttonY-225);
+        addActor(internal.getEntry("mainMenuCat", Texture.class),-50,-65);
+        playButtonActor = addActor(internal.getEntry("playGame", Texture.class),buttonX, buttonY);
+        levelSelectActor = addActor(internal.getEntry("levelSelect", Texture.class),buttonX, buttonY-75);
+        settingsActor = addActor(internal.getEntry("settings", Texture.class),buttonX, buttonY-150);
+        exitButtonActor = addActor(internal.getEntry("exit", Texture.class),buttonX, buttonY-225);
     }
 
     /**
@@ -57,20 +59,18 @@ public class MainMenuStage extends StageWrapper{
     @Override
     public boolean listenerTouchDown(InputEvent event, float x, float y, int pointer, int button) {
         Actor actor = event.getListenerActor();
-        if (actor == PlayButtonActor) {
+        if (actor == playButtonActor) {
             playButtonState = 1;
-            PlayButtonActor.setColor(Color.LIGHT_GRAY);
-        }
-        else if (actor == LevelSelectActor) {
-
-        }
-        else if (actor == SettingsActor) {
+            playButtonActor.setColor(Color.LIGHT_GRAY);
+        } else if (actor == levelSelectActor) {
+            levelSelectState = 1;
+            levelSelectActor.setColor(Color.LIGHT_GRAY);
+        } else if (actor == settingsActor) {
             settingsState = 1;
-            SettingsActor.setColor(Color.LIGHT_GRAY);
-        }
-        else if (actor == ExitButtonActor) {
+            settingsActor.setColor(Color.LIGHT_GRAY);
+        } else if (actor == exitButtonActor) {
             exitButtonState = 1;
-            ExitButtonActor.setColor(Color.LIGHT_GRAY);
+            exitButtonActor.setColor(Color.LIGHT_GRAY);
         }
         return true;
     }
@@ -86,18 +86,16 @@ public class MainMenuStage extends StageWrapper{
     public void listenerTouchUp(InputEvent event, float x, float y, int pointer, int button) {
         if (playButtonState == 1) {
             playButtonState = 2;
-            PlayButtonActor.setColor(Color.WHITE);
-        }
-        else if (levelSelectState == 1) {
-
-        }
-        else if (settingsState == 1) {
+            playButtonActor.setColor(Color.WHITE);
+        } else if (levelSelectState == 1) {
+            levelSelectState = 2;
+            levelSelectActor.setColor(Color.WHITE);
+        } else if (settingsState == 1) {
             settingsState = 2;
-            SettingsActor.setColor(Color.WHITE);
-        }
-        else if (exitButtonState == 1) {
+            settingsActor.setColor(Color.WHITE);
+        } else if (exitButtonState == 1) {
             exitButtonState = 2;
-            ExitButtonActor.setColor(Color.WHITE);
+            exitButtonActor.setColor(Color.WHITE);
         }
     }
 }

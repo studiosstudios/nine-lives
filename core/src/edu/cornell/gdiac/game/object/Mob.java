@@ -45,25 +45,19 @@ public class Mob extends CapsuleObstacle {
     private float horizontalMovement;
     /** Which direction is the character facing */
     private boolean faceRight;
-
     /** Whether our feet are on the ground */
     private boolean isGrounded;
-
     /** Whether we are in contact with a wall */
     private int wallCount;
-
     /** List of shapes corresponding to the sensors attached to this body */
     private Array<PolygonShape> sensorShapes;
     private PolygonShape sensorShape;
-
     /** Cache for internal force calculations */
     private final Vector2 forceCache = new Vector2();
-
     /** Whether the mob is an aggressive AI */
     private Boolean isAggressive;
-
     private static final String sensorName = "mobsensor";
-
+    /** The detector ray attached to this mob */
     public MobDetector detectorRay;
 
 
@@ -187,19 +181,22 @@ public class Mob extends CapsuleObstacle {
     }
 
     /**
-     * Creates a new cat avatar with the given physics data
+     * Creates a new mob  with the given physics data
      *
      * The size is expressed in physics units NOT pixels.  In order for
      * drawing to work properly, you MUST set the drawScale. The drawScale
      * converts the physics units to pixels.
      *
-     * @param data  	The physics constants for this cat
+     * @param texture the mob texture
+     * @param drawScale the draw scale for the mob
+     * @param  textureScale the texture scale for the mob
+     * @param data  The JSON data for this mob
+     *
      */
     public Mob(TextureRegion texture, Vector2 drawScale, Vector2 textureScale, JsonValue data) {
         super(texture.getRegionWidth()/drawScale.x*textureScale.x/2f,
                 texture.getRegionHeight()/drawScale.y*textureScale.y);
 
-//        setBodyType(BodyDef.BodyType.DynamicBody);
         setFixedRotation(true);
         setName("mob");
         setX(data.get("pos").getFloat(0));
@@ -228,10 +225,20 @@ public class Mob extends CapsuleObstacle {
         detectorRay = new MobDetector(this);
     }
 
+    /**
+     * Returns the sensor name of the mob
+     *
+     * @return sensorName
+     */
     public static String getSensorName() {
         return sensorName;
     }
 
+    /**
+     * Returns the detector ray of the mob
+     *
+     * @return detectorRay
+     */
     public MobDetector getDetectorRay() { return detectorRay; }
 
 
@@ -307,13 +314,15 @@ public class Mob extends CapsuleObstacle {
      */
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
+        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
         // Draw detectorRay
         if (detectorRay.getPoints().size > 1) {
-            canvas.drawLineDebug(detectorRay.getPoints().get(0), detectorRay.getPoints().get(detectorRay.getPoints().size-1), Color.BLUE, getDrawScale().x, getDrawScale().y);
+            canvas.drawLineDebug(detectorRay.getPoints().get(0).sub(xTranslate,yTranslate), detectorRay.getPoints().get(detectorRay.getPoints().size-1).sub(xTranslate,yTranslate), Color.BLUE, getDrawScale().x, getDrawScale().y);
         }
 
         for (PolygonShape shape : sensorShapes) {
-            canvas.drawPhysics(shape,Color.RED,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
+            canvas.drawPhysics(shape,Color.RED,getX()-xTranslate,getY()-yTranslate,getAngle(),drawScale.x,drawScale.y);
         }
     }
 

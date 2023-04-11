@@ -71,6 +71,7 @@ public class Level {
     private final Array<Mob> mobArray;
     private Checkpoint currCheckpoint;
     private final Array<Laser> lasers;
+    private final Array<SpiritRegion> spiritRegionArray;
     /** The respawn position of the player */
     private Vector2 respawnPos;
     /** Float value to scale width */
@@ -86,9 +87,6 @@ public class Level {
     private HashMap<String, TextureRegion> textureRegionAssetMap;
 
     //region Spirit mode stuff
-    /** next dead body to switch into */
-    private DeadBody nextDeadBody;
-    /** Whether in spirit mode or not */
     private boolean spiritMode;
     /** The spirit line */
     private SpiritLine spiritLine;
@@ -179,6 +177,13 @@ public class Level {
      * @return a reference to the mob array
      */
     public Array<Mob> getMobArray() { return mobArray; }
+
+    /**
+     * Returns a reference to the array of spirit regions
+     *
+     * @return a reference to the spirit region array
+     */
+    public Array<SpiritRegion> getSpiritRegionArray() { return spiritRegionArray; }
 
     /**
      * Returns a reference to the respawn position
@@ -329,6 +334,7 @@ public class Level {
         deadBodyArray = new Array<>();
         lasers = new Array<>();
         mobArray = new Array<>();
+        spiritRegionArray = new Array<>();
         activationRelations = new HashMap<>();
     }
 
@@ -663,6 +669,17 @@ public class Level {
             }
         } catch (NullPointerException e) {}
 
+        try {
+            for (JsonValue spiritJV : levelJV.get("spiritRegions")){
+//                SpiritRegion spiritRegion = new SpiritRegion(tMap.get("spirit_anim"), tMap.get("spirit_photon"), scale, new Vector2(1, 1), spiritJV);
+                SpiritRegion spiritRegion = new SpiritRegion(tMap.get("spirit_region"), tMap.get("spirit_photon"), scale, new Vector2(1, 1), spiritJV);
+                addObject(spiritRegion);
+                spiritRegionArray.add(spiritRegion);
+            }
+        } catch (NullPointerException e) {
+//            e.printStackTrace();
+        }
+
         // Create cat
         dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
         dheight = tMap.get("cat").getRegionHeight()/scale.y;
@@ -721,6 +738,7 @@ public class Level {
         deadBodyArray.clear();
         activatables.clear();
         mobArray.clear();
+        spiritRegionArray.clear();
         numLives = maxLives;
         currCheckpoint = null;
         if (world != null) {
@@ -853,12 +871,9 @@ public class Level {
 //            canvas.draw(background, 0, 0);
         }
 
-        tiles.draw(canvas);
-
-        //draw everything except cat and dead bodies
+        //draw everything except cat, dead bodies and spirit region
         for(Obstacle obj : objects) {
-//            if (obj != cat && !(obj instanceof DeadBody)){
-                if (obj != cat && !(obj instanceof DeadBody) && !(obj instanceof Wall)){
+            if (obj != cat && !(obj instanceof DeadBody) && !(obj instanceof SpiritRegion) && !(obj instanceof Wall)){
                 obj.draw(canvas);
             }
         }
@@ -869,6 +884,9 @@ public class Level {
             db.draw(canvas);
         }
         cat.draw(canvas);
+        for (SpiritRegion s : spiritRegionArray) {
+            s.draw(canvas);
+        }
 
         if (currCheckpoint != null) {
             currCheckpoint.drawBase(canvas);
@@ -928,7 +946,7 @@ public class Level {
         float minDist = Float.MAX_VALUE;
         DeadBody nextdb = null;
         for (DeadBody db : deadBodyArray){
-            if (db.isSwitchable()){
+            if (sharesSpriritRegion(db.getSpiritRegions(), cat.getSpiritRegions())){
                 float dist = cat.getPosition().dst(db.getPosition());
                 if (dist < minDist){
                     minDist = dist;
@@ -937,6 +955,14 @@ public class Level {
             }
         }
         return nextdb;
+    }
+
+    private boolean sharesSpriritRegion(ObjectSet<SpiritRegion> s1, ObjectSet<SpiritRegion> s2){
+        if (s1.isEmpty() && s2.isEmpty()) return true;
+        for (SpiritRegion r : s1){
+            if (s2.contains(r)) return true;
+        }
+        return false;
     }
 
     /**

@@ -60,13 +60,9 @@ public class Cat extends CapsuleObstacle implements Moveable {
     private float jumpTime;
     private float meowTime;
     private float walkTime;
-    private float idleTime;
-    private float nonMoveTime;
-    private float standTime;
-    private Texture normal_texture;
-    private Texture jumping_texture;
-    private Texture sit_texture;
-    private int time;
+    private TextureRegion normal_texture;
+    private TextureRegion jumping_texture;
+    private TextureRegion sit_texture;
     private boolean jump_animated;
     /** The amount to slow the character down */
     private final float damping;
@@ -118,6 +114,12 @@ public class Cat extends CapsuleObstacle implements Moveable {
     private final Vector2 dashCache = new Vector2();
 
     private ObjectSet<Fixture> groundFixtures;
+    /** The current spirit regions that the cat is inside */
+    private ObjectSet<SpiritRegion> spiritRegions;
+    /** Counter for failing to switch animation */
+    private float failedTicks;
+
+    private static final float FAIL_ANIM_TICKS = 30f;
 
 
     /*
@@ -339,7 +341,7 @@ public class Cat extends CapsuleObstacle implements Moveable {
      * @param height	The object width in physics units
      */
     public Cat(JsonValue data, float width, float height, boolean ret, Vector2 prev_pos,
-               com.badlogic.gdx.graphics.Texture[] arr) {
+               Texture[] arr) {
         // The shrink factors fit the image to a tigher hitbox
         super(data.get(ret?"ret_pos":"pos").getFloat(0),
                 prev_pos == null ? data.get(ret?"ret_pos":"pos").getFloat(1) : prev_pos.y,
@@ -349,9 +351,6 @@ public class Cat extends CapsuleObstacle implements Moveable {
         setDensity(objectConstants.getFloat("density", 0));
         setFriction(objectConstants.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
         setFixedRotation(true);
-        normal_texture = arr[0];
-        jumping_texture = arr[1];
-        sit_texture = arr[4];
         maxspeed = objectConstants.getFloat("maxspeed", 0);
         damping = objectConstants.getFloat("damping", 0);
         force = objectConstants.getFloat("force", 0);
@@ -362,12 +361,13 @@ public class Cat extends CapsuleObstacle implements Moveable {
         sideSensorName = "catSideSensor";
         sensorShapes = new Array<>();
         groundFixtures = new ObjectSet<>();
+        spiritRegions = new ObjectSet<>();
         this.data = data;
 
         jump_animated = false;
-        normal_texture = arr[0];
-        jumping_texture = arr[1];
-        sit_texture = arr[4];
+        normal_texture = new TextureRegion(arr[0]);
+        jumping_texture = new TextureRegion(arr[1]);
+        sit_texture = new TextureRegion(arr[4]);
 
         spriteFrames = TextureRegion.split(arr[2], 65, 65);
         spriteFrames2 = TextureRegion.split(arr[3], 62, 42);
@@ -384,10 +384,8 @@ public class Cat extends CapsuleObstacle implements Moveable {
         jumpTime = 0f;
         meowTime = 0f;
         walkTime = 0f;
-        idleTime = 0f;
-        nonMoveTime = 0f;
-        standTime = 0f;
-        time = 0;
+        failedTicks = FAIL_ANIM_TICKS;
+
         // Gameplay attributes
         state = State.MOVING;
         setGravityScale(2f);
@@ -475,6 +473,7 @@ public class Cat extends CapsuleObstacle implements Moveable {
      * All STATE transitions should be contained here
      */
     public void updateState() {
+        failedTicks = Math.min(FAIL_ANIM_TICKS, failedTicks + 1);
         switch (state) {
             case MOVING:
                 // MOVING -> JUMPING
@@ -667,59 +666,43 @@ public class Cat extends CapsuleObstacle implements Moveable {
         float x = getX() * drawScale.x - effect*25;
         float y = getY()*drawScale.y-20;
         //walking animation
+        TextureRegion frame = sit_texture;
+        float yOffset = 0;
         if(!(state == State.JUMPING)&& horizontalMovement != 0){
             walk_animation.setPlayMode(Animation.PlayMode.LOOP_REVERSED);
             walkTime += Gdx.graphics.getDeltaTime();
-            TextureRegion currentFrame3 = walk_animation.getKeyFrame(walkTime);
-            canvas.draw(currentFrame3,Color.WHITE, origin.x, origin.y,x,y-10, getAngle(),effect,1.0f);
-            nonMoveTime = 0;
+            yOffset = -10;
+            frame = walk_animation.getKeyFrame(walkTime);
         }
         //jump animation
         else if(state == State.JUMPING && !jump_animated){
             jump_animation.setPlayMode(Animation.PlayMode.REVERSED);
             jumpTime += Gdx.graphics.getDeltaTime();
-            TextureRegion currentFrame = jump_animation.getKeyFrame(jumpTime);
-            canvas.draw(currentFrame,Color.WHITE, origin.x, origin.y,x,y-15, getAngle(),effect,1.0f);
-            nonMoveTime = 0;
-            nonMoveTime = 0;
+            frame = jump_animation.getKeyFrame(jumpTime);
+            yOffset = -15;
         }
         //meow animation
         else if((isMeowing && !(state == State.JUMPING)) || meowTime != 0){
             meow_animation.setPlayMode(Animation.PlayMode.REVERSED);
             meowTime += Gdx.graphics.getDeltaTime();
-            TextureRegion currentFrame2 = meow_animation.getKeyFrame(meowTime);
-            canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x-(14*effect),y, getAngle(),effect,1.0f);
+            frame = meow_animation.getKeyFrame(meowTime);
             if (meowTime >= (0.05*5)){
                 meowTime = 0;
                 isMeowing = false;
             }
         }
-        //sit
-        else if(horizontalMovement == 0 && verticalMovement == 0){
-            if(nonMoveTime >= 10){
-                idle_animation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-                idleTime += Gdx.graphics.getDeltaTime();
-                TextureRegion currentFrame2 = idle_animation.getKeyFrame(idleTime);
-                canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x+54*effect,y-10, getAngle(),-effect,1.0f);
-            }
-            else if(nonMoveTime >= 5){
-                nonMoveTime += Gdx.graphics.getDeltaTime();
-                canvas.draw(sit_texture, Color.WHITE, origin.x, origin.y, x,y-5, getAngle(), effect, 1.0f);
-            }
-            else{
-                nonMoveTime += Gdx.graphics.getDeltaTime();
-                idle_stand_animation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-                standTime += Gdx.graphics.getDeltaTime();
-                TextureRegion currentFrame2 = idle_stand_animation.getKeyFrame(standTime);
-                canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x+54*effect,y-10, getAngle(),-effect,1.0f);
-            }
+        //jumping
+        else if ((state == State.JUMPING) || horizontalMovement != 0 || verticalMovement != 0) {
+            frame = jumping_texture;
         }
-        else{
-            if ((state == State.JUMPING) || (horizontalMovement != 0 || verticalMovement != 0)) {
-                canvas.draw(jumping_texture, Color.WHITE, origin.x, origin.y, x,y, getAngle(), effect, 1.0f);
-            }
-            nonMoveTime = 0;
-    }
+
+        canvas.draw(frame, Color.WHITE, origin.x, origin.y, x, y + yOffset, getAngle(), effect, 1.0f);
+
+        if (failedTicks < FAIL_ANIM_TICKS){
+            float xOffset = ((float) (Math.sin(-failedTicks/2) * Math.exp(-failedTicks/30)))*drawScale.x/2;
+            Color c = new Color(1, 0 , 0, 0.5f - Math.abs(failedTicks - FAIL_ANIM_TICKS/2)/FAIL_ANIM_TICKS);
+            canvas.draw(frame, c, origin.x, origin.y, x + xOffset, y + yOffset, getAngle(), effect, 1.0f);
+        }
     }
 
     /**
@@ -741,14 +724,18 @@ public class Cat extends CapsuleObstacle implements Moveable {
     }
 
     public void debugPrint() {
-        System.out.println("STATE: "+state);
-        System.out.println("GROUNDED: "+isGrounded);
-        System.out.println("DASH TIMER: "+dashTimer);
+//        System.out.println("STATE: "+state);
+//        System.out.println("GROUNDED: "+isGrounded);
+//        System.out.println("DASH TIMER: "+dashTimer);
     }
 
     public boolean isMoveable(){ return true; }
 
     public ObjectSet<Fixture> getGroundFixtures(){ return groundFixtures; }
+
+    public ObjectSet<SpiritRegion> getSpiritRegions() { return spiritRegions; }
+
+    public void failedSwitch() { failedTicks = 0f; }
 
     public static void setConstants(JsonValue constants){objectConstants = constants;}
 }

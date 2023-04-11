@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.audio.*;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -61,6 +62,8 @@ public class WorldController implements Screen {
 	private JsonValue nextJSON;
 	/** The AssetDirectory */
 	private AssetDirectory directory;
+	/** TiledMap */
+	private TiledMap tiledMap;
 
 	/**
 	 * Returns the canvas associated with the current LevelController

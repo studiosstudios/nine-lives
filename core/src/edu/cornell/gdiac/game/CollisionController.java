@@ -102,6 +102,10 @@ public class CollisionController implements ContactListener, ContactFilter {
                     }
                 }
 
+                if (bd2 instanceof SpiritRegion){
+                    cat.getSpiritRegions().add((SpiritRegion) bd2);
+                }
+
                 // Check for win condition
                 if (bd2 instanceof Exit) {
                     switch (((Exit) bd2).exitType()) {
@@ -134,6 +138,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                 //ensure fd1 is DeadBody
                 if (fd2 instanceof DeadBody) {
                     //don't need to swap fd1 and fd2 because we are assuming fd1 is dead body
+                    bd2 = bd1;
                     body2 = body1;
 
                     Object temp1 = fd1;
@@ -142,7 +147,7 @@ public class CollisionController implements ContactListener, ContactFilter {
 
                     Fixture temp2 = fix1;
                     fix1 = fix2;
-                    fix2 = temp2;
+                    fix2 = temp2;;
                 }
                 DeadBody db = (DeadBody) fd1;
                 if (fd2 instanceof Spikes) {
@@ -152,13 +157,19 @@ public class CollisionController implements ContactListener, ContactFilter {
                     db.setBurning(true);
                     db.addHazard();
                 }
+                if (bd2 instanceof SpiritRegion){
+                    System.out.println("add " + bd2 + " to " + db);
+                    db.getSpiritRegions().add((SpiritRegion) bd2);
+                }
             }
 
             // TODO: fix collisions when obstacles collide with top and bottom
             // Mob changes direction when hits a wall
-            if (bd1 instanceof Mob && !(fd2 instanceof Activator) && !(fd2 instanceof Checkpoint)) {
+            if (bd1 instanceof Mob && !(fd2 instanceof Activator) && !(fd2 instanceof Checkpoint)
+                    && !(bd2 instanceof SpiritRegion)) {
                 ((Mob) bd1).setFacingRight(!((Mob) bd1).isFacingRight());
-            } else if (bd2 instanceof Mob && !(fd1 instanceof Activator) && !(fd1 instanceof Checkpoint)) {
+            } else if (bd2 instanceof Mob && !(fd1 instanceof Activator) && !(fd1 instanceof Checkpoint)
+                    && !(bd1 instanceof SpiritRegion)) {
                 ((Mob) bd2).setFacingRight(!((Mob) bd2).isFacingRight());
             }
 
@@ -223,6 +234,10 @@ public class CollisionController implements ContactListener, ContactFilter {
                 }
             }
 
+            if (bd2 instanceof SpiritRegion){
+                cat.getSpiritRegions().remove((SpiritRegion) bd2);
+            }
+
             // Not handling case where there may be multiple walls at once
             if ((cat.getSideSensorName().equals(fd1) && cat != bd2) && (bd2 instanceof Wall) && ((Wall) bd2).isClimbable()) {
                 cat.decrementWalled();
@@ -236,12 +251,22 @@ public class CollisionController implements ContactListener, ContactFilter {
             if (fd2 instanceof DeadBody) {
                 //don't need to swap fd1 and fd2 because we are assuming fd1 is dead body
                 bd2 = bd1;
+                body2 = body1;
 
-                Object temp = fd1;
+                Object temp1 = fd1;
                 fd1 = fd2;
-                fd2 = temp;
+                fd2 = temp1;
+
+                Fixture temp2 = fix1;
+                fix1 = fix2;
+                fix2 = temp2;
             }
             DeadBody db = (DeadBody) fd1;
+
+            if (bd2 instanceof SpiritRegion){
+                System.out.println("remove " + bd2 + " from " + db);
+                db.getSpiritRegions().remove((SpiritRegion) bd2);
+            }
             if (fd2 instanceof Spikes) {
                 db.removeHazard();
             } else if (fd2 instanceof Flamethrower.Flame) {

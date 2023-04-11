@@ -8,9 +8,7 @@ import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.object.*;
-import edu.cornell.gdiac.game.obstacle.Obstacle;
 import edu.cornell.gdiac.util.Direction;
 
 import java.util.HashMap;
@@ -135,16 +133,33 @@ public class ActionController {
 
         updateSpiritLine(dt, ic.holdSwitch() && !ic.didSwitch());
 
+        if (ic.holdSwitch()) {
+            for (SpiritRegion sr : level.getSpiritRegionArray()) {
+                sr.setSpiritRegionColorOpacity(true);
+            }
+        } else {
+            for (SpiritRegion sr : level.getSpiritRegionArray()) {
+                sr.setSpiritRegionColorOpacity(false);
+            }
+        }
+
+        for (SpiritRegion spiritRegion : level.getSpiritRegionArray()) {
+            spiritRegion.update();
+        }
+
         if (ic.didSwitch()){
             //switch body
             DeadBody body = level.getNextBody();
-            if (body != null){
+            if (body != null && body.isSwitchable()){
+//                if (body != null && body.isSwitchable() && body.inSameSpiritRegion(cat.getSpiritRegions())){
                 level.spawnDeadBody();
                 cat.setPosition(body.getPosition());
                 cat.setLinearVelocity(body.getLinearVelocity());
                 cat.setFacingRight(body.isFacingRight());
                 body.markRemoved(true);
                 level.removeDeadBody(body);
+            } else {
+                cat.failedSwitch();
             }
         } else {
             cat.setHorizontalMovement(ic.getHorizontal());
@@ -217,6 +232,12 @@ public class ActionController {
                 DeadBody nextDeadBody = level.getNextBody();
                 if (nextDeadBody != null) {
                     spiritLine.endTarget.set(nextDeadBody.getPosition());
+                } else {
+                    spiritLine.endTarget.set(cat.getPosition());
+                    if (spiritLine.reachedTargets(1f)) {
+                        spiritLine.setEnd(cat.getPosition());
+                        spiritLine.resetMidpoints();
+                    }
                 }
             }
         } else {
@@ -224,6 +245,7 @@ public class ActionController {
                 //switch into spirit mode
                 spiritLine.setEnd(cat.getPosition());
                 spiritLine.setStart(cat.getPosition());
+                spiritLine.resetMidpoints();
             } else {
                 spiritLine.endTarget.set(cat.getPosition());
                 spiritLine.startTarget.set(cat.getPosition());

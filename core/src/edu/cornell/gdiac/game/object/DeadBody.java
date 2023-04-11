@@ -13,8 +13,10 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
+import sun.security.provider.ConfigFile;
 
 /**
  * Player avatar for the plaform game.
@@ -44,6 +46,8 @@ public class DeadBody extends BoxObstacle {
     /** If dead body is currently being hit by a laser.
      * This is necessary because laser collisions are done with raycasting.*/
     private boolean touchingLaser;
+    /** The set of spirit regions that this dead body is inside */
+    private ObjectSet<SpiritRegion> spiritRegions;
 
     /**
      * Returns ow hard the brakes are applied to get a dead body to stop moving
@@ -88,6 +92,20 @@ public class DeadBody extends BoxObstacle {
     public boolean isSwitchable(){
         return hazardsTouching == 0 && !touchingLaser;
     }
+
+    /**
+     * If the dead body is in the same spirit region.
+     * @return true if the dead body is in the same spirit region
+     */
+    public boolean inSameSpiritRegion(ObjectSet<SpiritRegion> otherRegions){
+        for (SpiritRegion region : otherRegions) {
+            if (spiritRegions.contains(region)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     /**
      * Sets if the dead body is being hit by a laser.
@@ -135,6 +153,7 @@ public class DeadBody extends BoxObstacle {
         burnTicks = 0;
         burning = false;
         faceRight = true;
+        spiritRegions = new ObjectSet<>();
         //create centre sensor (for fixing to spikes)
 
         setName("deadBody");
@@ -196,6 +215,11 @@ public class DeadBody extends BoxObstacle {
     public void setBurning(boolean burning){
         this.burning = burning;
     }
+
+    /**
+     * @return The set of spirit regions that this dead body is inside
+     */
+    public ObjectSet<SpiritRegion> getSpiritRegions() { return spiritRegions; }
 
     /**
      * Draws the physics object.

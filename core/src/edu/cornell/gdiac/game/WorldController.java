@@ -221,13 +221,13 @@ public class WorldController implements Screen {
 		soundAssetMap = new HashMap<>();
 		fontAssetMap = new HashMap<>();
 
-		String[] names = {"cat", "jumpingCat","barrier", "rope", "spikes", "button", "flame", "flamethrower", "laser", "laserBeam",
-				"deadCat", "checkpoint", "checkpointActive", "roboMob", "background", "steel", "goal",
-				"flame_anim","checkpoint_anim", "checkpoint_active_anim", "checkpoint_base", "checkpoint_base_active",
+		String[] names = {"cat", "sit", "deadCat", "jumpingCat", "jump_anim", "walk", "button_anim",
+				"spikes", "button", "flamethrower", "flame", "laser", "checkpoint", "checkpointActive",
+				"checkpoint_anim", "checkpoint_active_anim", "checkpoint_base", "checkpoint_base_active",
+				"background", "flame_anim", "roboMob",
 				"spirit_anim", "spirit_photon", "spirit_photon_cat", "spirit_region",
-				"button_anim", "jump_anim",
-				"meow_anim","sit","walk","idle_anim","idle_anim_stand",
-				"metal_tileset"};
+				"meow_anim", "idle_anim", "idle_anim_stand",
+				"metal_tileset", "steel"};
 
 		for (String n : names){
 			textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
@@ -317,14 +317,14 @@ public class WorldController implements Screen {
 	 */
 	public void render(float delta){
 		//FOR DEBUGGING
-		delta = 1/60f;
-		if (Gdx.input.isKeyPressed(Input.Keys.F)){
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-			}
-		}
+//		delta = 1/60f;
+//		if (Gdx.input.isKeyPressed(Input.Keys.F)){
+//			try {
+//				Thread.sleep(1000);
+//			} catch (InterruptedException e) {
+//				Thread.currentThread().interrupt();
+//			}
+//		}
 
 		if (preUpdate(delta)) {
 			currLevel.update(delta); // This is the one that must be defined.

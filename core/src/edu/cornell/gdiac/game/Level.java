@@ -645,8 +645,13 @@ public class Level {
         }
 
         // Create cat
-        float dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
-        float dheight = tMap.get("cat").getRegionHeight()/scale.y;
+        /** Float value to scale width */
+        float dwidth = tMap.get("cat").getRegionWidth() / scale.x;
+        /** Float value to scale height */
+        float dheight = tMap.get("cat").getRegionHeight() / scale.y;
+//        Texture[] arr = new Texture[6];
+        dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
+        dheight = tMap.get("cat").getRegionHeight()/scale.y;
         Texture[] arr = new Texture[8];
         arr[0] = tMap.get("cat").getTexture();
         arr[1] = tMap.get("jumpingCat").getTexture();

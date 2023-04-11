@@ -116,6 +116,7 @@ public class Door extends PolygonObstacle implements Activatable {
         }
     }
 
+
     /**
      * Creates the physics body for this object, adding them to the world. Immediately deactivates
      * self if necessary.

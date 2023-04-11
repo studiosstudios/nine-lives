@@ -62,6 +62,10 @@ public class Cat extends CapsuleObstacle implements Movable {
     private TextureRegion normal_texture;
     private TextureRegion jumping_texture;
     private TextureRegion sit_texture;
+    private float idleTime;
+    private float nonMoveTime;
+    private float standTime;
+    private int time;
     private boolean jump_animated;
     /** The amount to slow the character down */
     private final float damping;
@@ -385,6 +389,11 @@ public class Cat extends CapsuleObstacle implements Movable {
         walkTime = 0f;
         failedTicks = FAIL_ANIM_TICKS;
 
+        idleTime = 0f;
+        nonMoveTime = 0f;
+        standTime = 0f;
+        time = 0;
+
         // Gameplay attributes
         state = State.MOVING;
         setGravityScale(2f);
@@ -672,6 +681,10 @@ public class Cat extends CapsuleObstacle implements Movable {
             walkTime += Gdx.graphics.getDeltaTime();
             yOffset = -10;
             frame = walk_animation.getKeyFrame(walkTime);
+
+            TextureRegion currentFrame3 = walk_animation.getKeyFrame(walkTime);
+            canvas.draw(currentFrame3,Color.WHITE, origin.x, origin.y,x,y-10, getAngle(),effect,1.0f);
+            nonMoveTime = 0;
         }
         //jump animation
         else if(state == State.JUMPING && !jump_animated){
@@ -679,28 +692,50 @@ public class Cat extends CapsuleObstacle implements Movable {
             jumpTime += Gdx.graphics.getDeltaTime();
             frame = jump_animation.getKeyFrame(jumpTime);
             yOffset = -15;
+
+            TextureRegion currentFrame = jump_animation.getKeyFrame(jumpTime);
+            canvas.draw(currentFrame,Color.WHITE, origin.x, origin.y,x,y-15, getAngle(),effect,1.0f);
+            nonMoveTime = 0;
         }
         //meow animation
         else if((isMeowing && !(state == State.JUMPING)) || meowTime != 0){
             meow_animation.setPlayMode(Animation.PlayMode.REVERSED);
             meowTime += Gdx.graphics.getDeltaTime();
             frame = meow_animation.getKeyFrame(meowTime);
+
+            TextureRegion currentFrame2 = meow_animation.getKeyFrame(meowTime);
+            canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x-(14*effect),y, getAngle(),effect,1.0f);
             if (meowTime >= (0.05*5)){
                 meowTime = 0;
                 isMeowing = false;
             }
         }
-        //jumping
-        else if ((state == State.JUMPING) || horizontalMovement != 0 || verticalMovement != 0) {
-            frame = jumping_texture;
+
+        //sit
+        else if(horizontalMovement == 0 && verticalMovement == 0){
+            if(nonMoveTime >= 10){
+                idle_animation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+                idleTime += Gdx.graphics.getDeltaTime();
+                TextureRegion currentFrame2 = idle_animation.getKeyFrame(idleTime);
+                canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x+54*effect,y-10, getAngle(),-effect,1.0f);
+            }
+            else if(nonMoveTime >= 5){
+                nonMoveTime += Gdx.graphics.getDeltaTime();
+                canvas.draw(sit_texture, Color.WHITE, origin.x, origin.y, x,y-5, getAngle(), effect, 1.0f);
+            }
+            else{
+                nonMoveTime += Gdx.graphics.getDeltaTime();
+                idle_stand_animation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+                standTime += Gdx.graphics.getDeltaTime();
+                TextureRegion currentFrame2 = idle_stand_animation.getKeyFrame(standTime);
+                canvas.draw(currentFrame2,Color.WHITE, origin.x, origin.y,x+54*effect,y-10, getAngle(),-effect,1.0f);
+            }
         }
-
-        canvas.draw(frame, Color.WHITE, origin.x, origin.y, x, y + yOffset, getAngle(), effect, 1.0f);
-
-        if (failedTicks < FAIL_ANIM_TICKS){
-            float xOffset = ((float) (Math.sin(-failedTicks/2) * Math.exp(-failedTicks/30)))*drawScale.x/2;
-            Color c = new Color(1, 0 , 0, 0.5f - Math.abs(failedTicks - FAIL_ANIM_TICKS/2)/FAIL_ANIM_TICKS);
-            canvas.draw(frame, c, origin.x, origin.y, x + xOffset, y + yOffset, getAngle(), effect, 1.0f);
+        else {
+            if ((state == State.JUMPING) || (horizontalMovement != 0 || verticalMovement != 0)) {
+                canvas.draw(jumping_texture, Color.WHITE, origin.x, origin.y, x, y, getAngle(), effect, 1.0f);
+            }
+            nonMoveTime = 0;
         }
     }
 

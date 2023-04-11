@@ -15,6 +15,10 @@ public class Platform extends Wall implements Activatable {
     private boolean activated;
     /** Starting activation state */
     private boolean initialActivation;
+    /** The location of the platform when deactivated */
+    private Vector2 startPoint;
+    /** The location of the platform when activated */
+    private Vector2 endPoint;
     /** The displacement of the platform when moving */
     private Vector2 disp;
     /** 1 if moving towards end point, -1 if moving towards start point, 0 if static */
@@ -25,7 +29,6 @@ public class Platform extends Wall implements Activatable {
     private float damping;
     /** Target velocity for velocity update */
     private Vector2 targetVel = new Vector2();
-
     /**
      * Creates a new platform object.
      * @param texture  TextureRegion for drawing.
@@ -119,7 +122,7 @@ public class Platform extends Wall implements Activatable {
         targetVel.set(-disp.x, -disp.y).nor().scl(speed);
     }
 
-    @Override
+    //region ACTIVATBLE METHODS
     public void deactivated(World world){
         moving = 1;
         targetVel.set(disp.x, disp.y).nor().scl(speed);

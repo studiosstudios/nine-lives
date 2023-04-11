@@ -126,11 +126,27 @@ public class LevelController {
      *
      * @return the canvas associated with this controller
      */
+//    public GameCanvas getCanvas() {
+//        return canvas;
+//    }
+
+    /**
+=======
+    }
+
+    /**
+     * Returns the canvas associated with this controller
+     * <br><br>
+     * The canvas is shared across all controllers
+     *
+     * @return the canvas associated with this controller
+     */
     public GameCanvas getCanvas() {
         return canvas;
     }
 
     /**
+>>>>>>> origin/alpha
      * Returns true if returning to prev level
      *
      * @return true if returning to previous level

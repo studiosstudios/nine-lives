@@ -37,7 +37,6 @@ public class Door extends PolygonObstacle implements Activatable {
     private final float x;
     /** y position of the door when fully closed */
     private final float y;
-
     /**
      * Creates a new Door with specified width and height.
      * @param texture   TextureRegion for drawing.
@@ -60,11 +59,12 @@ public class Door extends PolygonObstacle implements Activatable {
         angle = Direction.angleToDir(data.getInt("angle"));
         totalTicks = data.getFloat("totalTicks");
         ticks = (int) totalTicks;
+        setX(data.get("pos").getFloat(0)+ objectConstants.get("offset").getFloat(0));
+        setY(data.get("pos").getFloat(1)+ objectConstants.get("offset").getFloat(1));
         x = data.get("pos").getFloat(0)+ objectConstants.get("offset").getFloat(0);
         y = data.get("pos").getFloat(1)+ objectConstants.get("offset").getFloat(1);
         setX(x);
         setY(y);
-        
         closing = 0;
         initActivations(data);
     }
@@ -83,7 +83,7 @@ public class Door extends PolygonObstacle implements Activatable {
      * Update fixture and texture shape if currently closing/opening.
      * @param dt Timing values from parent loop
      */
-    public void update(float dt){
+    public void update(float dt) {
         super.update(dt);
         ticks += closing;
         if (ticks <= 0){
@@ -114,7 +114,88 @@ public class Door extends PolygonObstacle implements Activatable {
                 setDimension(width * ticks / totalTicks,  height, true, width, height);
                 break;
         }
-    }
+        if (closing == 1) {
+            //closing
+            ticks++;
+            if (ticks == totalTicks) {
+                setDimension(width, height, true);
+                closing = 0;
+            } else {
+                switch (angle) {
+                    case DOWN:
+                        setY(getY() - height / totalTicks);
+                        setDimension(width, getHeight() + height / totalTicks, true, width, 0);
+                        break;
+                    case UP:
+                        setY(getY() + height / totalTicks);
+                        setDimension(width, getHeight() + height / totalTicks, true, width, height);
+                        break;
+                    case LEFT:
+                        setX(getX() - width / totalTicks);
+                        setDimension(getWidth() + width / totalTicks, height, true, 0, height);
+                        break;
+                    case RIGHT:
+                        setX(getX() + width / totalTicks);
+                        setDimension(getWidth() + width / totalTicks, height, true, width, height);
+                        break;
+                }
+            }
+        } else if (closing == -1) {
+            //opening
+            ticks--;
+            if (ticks == 0) {
+                setActive(false);
+                closing = 0;
+            } else {
+                switch (angle) {
+                    case DOWN:
+                        setY(getY() + height / totalTicks);
+                        setDimension(width, getHeight() - height / totalTicks, true, width, 0);
+                        break;
+                    case UP:
+                        setY(getY() - height / totalTicks);
+                        setDimension(width, getHeight() - height / totalTicks, true, width, height);
+                        break;
+                    case LEFT:
+                        setX(getX() + width / totalTicks);
+                        setDimension(getWidth() - width / totalTicks, height, true, 0, height);
+                        break;
+                    case RIGHT:
+                        setX(getX() - width / totalTicks);
+                        setDimension(getWidth() - width / totalTicks, height, true, width, height);
+                        break;
+                }
+            }
+            ticks += closing;
+            if (ticks == 0) {
+                setActive(false);
+                closing = 0;
+                return;
+            }
+            if (ticks == totalTicks) {
+                closing = 0;
+            }
+            switch (angle) {
+                case DOWN:
+                    setY(y + height * (1 - ticks / totalTicks));
+                    setDimension(width, height * ticks / totalTicks, true, width, 0);
+                    break;
+                case UP:
+                    setY(y - height * (1 - ticks / totalTicks));
+                    setDimension(width, height * ticks / totalTicks, true, width, height);
+                    break;
+                case LEFT:
+                    setX(x + width * (1 - ticks / totalTicks));
+                    setDimension(width * ticks / totalTicks, height, true, 0, height);
+                    break;
+                case RIGHT:
+                    setX(x - width * (1 - ticks / totalTicks));
+                    setDimension(width * ticks / totalTicks, height, true, width, height);
+                    break;
+                }
+            }
+        }
+
 
     /**
      * Creates the physics body for this object, adding them to the world. Immediately deactivates

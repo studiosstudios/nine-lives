@@ -34,6 +34,13 @@ public class Level {
     // Physics objects for the game
     /** Reference to the character cat */
     private Cat cat;
+    /** Reference to the goalDoor (for collision detection) */
+    private BoxObstacle goalDoor;
+    /**Reference to the returnDoor (for collision detection) */
+    private BoxObstacle retDoor;
+
+    /** Tiles of level */
+    protected Tiles tiles;
     /** All the objects in the world. */
     protected PooledList<Obstacle> objects  = new PooledList<>();
     /** Queue for adding objects */
@@ -322,6 +329,47 @@ public class Level {
     }
 
     /**
+     * Parses Tiled file
+     *
+     */
+    public void levelEditor(JsonValue tiledMap){
+
+        //parse through tmj layers : objects : which has platform width, height data stored in "s"
+        // TODO: need constant in TiledMap that says which biome it is for getting a specific the tileset asset
+        JsonValue layers = tiledMap.get("layers");
+        JsonValue data = layers.get(0);
+        JsonValue objects = layers.get(1).get("objects");
+
+        int tileSize = tiledMap.getInt("tilewidth");
+        int levelWidth = tiledMap.getInt("width");
+        int levelHeight = tiledMap.getInt("height");
+
+        tiles = new Tiles(data, tileSize, levelWidth, levelHeight, textureRegionAssetMap.get("tileset"));
+
+
+        Json levelJSON = new Json();
+
+        Array<Array<Integer>> shapeArray = new Array<>();
+
+        for (JsonValue obj : objects) {
+            JsonValue points = obj.get("polygon");
+            Array<Integer> shape = new Array<>();
+            for (JsonValue point : points) {
+                shape.add(point.getInt("x")/tileSize, point.getInt("y")/tileSize);
+                shapeArray.add(shape);
+            }
+        }
+    }
+
+    /**
+     * Reformat levelJV
+     * @param levelJV
+     */
+    public JsonValue reformatLevelJV(JsonValue levelJV) {
+        return levelJV;
+    }
+
+    /**
      * Lays out the game geography from the given JSON file
      * @param tMap Texture map for game objects
      * @param fMap Texture map for fonts
@@ -471,13 +519,18 @@ public class Level {
         float dwidth = tMap.get("cat").getRegionWidth() / scale.x;
         /** Float value to scale height */
         float dheight = tMap.get("cat").getRegionHeight() / scale.y;
-        Texture[] arr = new Texture[6];
+//        Texture[] arr = new Texture[6];
+        dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
+        dheight = tMap.get("cat").getRegionHeight()/scale.y;
+        Texture[] arr = new Texture[8];
         arr[0] = tMap.get("cat").getTexture();
         arr[1] = tMap.get("jumpingCat").getTexture();
         arr[2] = tMap.get("jump_anim").getTexture();
         arr[3] = tMap.get("meow_anim").getTexture();
         arr[4] = tMap.get("sit").getTexture();
         arr[5] = tMap.get("walk").getTexture();
+        arr[6] = tMap.get("idle_anim").getTexture();
+        arr[7] = tMap.get("idle_anim_stand").getTexture();
         cat = new Cat(levelJV.get("cat"), dwidth, dheight, ret, prevCat == null? null : prevCat.getPosition(),arr);
         cat.setDrawScale(scale);
         respawnPos = cat.getPosition();

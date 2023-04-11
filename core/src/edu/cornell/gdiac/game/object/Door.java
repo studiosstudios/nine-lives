@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.util.Direction;
@@ -84,85 +85,34 @@ public class Door extends PolygonObstacle implements Activatable {
      */
     public void update(float dt) {
         super.update(dt);
-        if (closing == 1) {
-            //closing
-            ticks++;
-            if (ticks == totalTicks) {
-                setDimension(width, height, true);
-                closing = 0;
-            } else {
-                switch (angle) {
-                    case DOWN:
-                        setY(getY() - height / totalTicks);
-                        setDimension(width, getHeight() + height / totalTicks, true, width, 0);
-                        break;
-                    case UP:
-                        setY(getY() + height / totalTicks);
-                        setDimension(width, getHeight() + height / totalTicks, true, width, height);
-                        break;
-                    case LEFT:
-                        setX(getX() - width / totalTicks);
-                        setDimension(getWidth() + width / totalTicks, height, true, 0, height);
-                        break;
-                    case RIGHT:
-                        setX(getX() + width / totalTicks);
-                        setDimension(getWidth() + width / totalTicks, height, true, width, height);
-                        break;
-                }
-            }
-        } else if (closing == -1) {
-            //opening
-            ticks--;
-            if (ticks == 0) {
-                setActive(false);
-                closing = 0;
-            } else {
-                switch (angle) {
-                    case DOWN:
-                        setY(getY() + height / totalTicks);
-                        setDimension(width, getHeight() - height / totalTicks, true, width, 0);
-                        break;
-                    case UP:
-                        setY(getY() - height / totalTicks);
-                        setDimension(width, getHeight() - height / totalTicks, true, width, height);
-                        break;
-                    case LEFT:
-                        setX(getX() + width / totalTicks);
-                        setDimension(getWidth() - width / totalTicks, height, true, 0, height);
-                        break;
-                    case RIGHT:
-                        setX(getX() - width / totalTicks);
-                        setDimension(getWidth() - width / totalTicks, height, true, width, height);
-                        break;
-                }
-            }
-            ticks += closing;
-            if (ticks == 0) {
-                setActive(false);
-                closing = 0;
-                return;
-            }
-            if (ticks == totalTicks) {
-                closing = 0;
-            }
-            switch (angle) {
-                case DOWN:
-                    setY(y + height * (1 - ticks / totalTicks));
-                    setDimension(width, height * ticks / totalTicks, true, width, 0);
-                    break;
-                case UP:
-                    setY(y - height * (1 - ticks / totalTicks));
-                    setDimension(width, height * ticks / totalTicks, true, width, height);
-                    break;
-                case LEFT:
-                    setX(x + width * (1 - ticks / totalTicks));
-                    setDimension(width * ticks / totalTicks, height, true, 0, height);
-                    break;
-                case RIGHT:
-                    setX(x - width * (1 - ticks / totalTicks));
-                    setDimension(width * ticks / totalTicks, height, true, width, height);
-                    break;
-            }
+        ticks += closing;
+        if (ticks <= 0){
+            setActive(false);
+            closing = 0;
+            ticks = 0;
+            return;
+        }
+        if (ticks >= totalTicks){
+            ticks = (int) totalTicks;
+            closing = 0;
+        }
+        switch (angle) {
+            case DOWN:
+                setY(y + height * (1-ticks / totalTicks));
+                setDimension(width,  height * ticks / totalTicks, true, width, 0);
+                break;
+            case UP:
+                setY(y - height * (1-ticks / totalTicks));
+                setDimension(width,  height * ticks / totalTicks, true, width, height);
+                break;
+            case LEFT:
+                setX(x + width * (1-ticks / totalTicks));
+                setDimension(width * ticks / totalTicks,  height, true, 0, height);
+                break;
+            case RIGHT:
+                setX(x - width * (1-ticks / totalTicks));
+                setDimension(width * ticks / totalTicks,  height, true, width, height);
+                break;
         }
     }
 
@@ -199,7 +149,6 @@ public class Door extends PolygonObstacle implements Activatable {
     @Override
     public void deactivated(World world){
         closing = -1;
-        setActive(true);
     }
 
     //region ACTIVATABLE METHODS
@@ -228,4 +177,18 @@ public class Door extends PolygonObstacle implements Activatable {
      * @param constants JSON storing the shared constants.
      */
     public static void setConstants(JsonValue constants) {objectConstants = constants;}
+
+    public ObjectMap<String, Object> storeState(){
+        ObjectMap<String, Object> stateMap = super.storeState();
+        stateMap.put("ticks", ticks);
+        stateMap.put("closing", closing);
+        stateMap.put("activated", activated);
+        return stateMap;
+    }
+
+    public void loadState(ObjectMap<String, Object> stateMap){
+        super.loadState(stateMap);
+        ticks = (int) stateMap.get("ticks");
+        closing = (float) stateMap.get("closing");
+    }
 }

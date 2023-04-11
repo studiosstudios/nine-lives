@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.game;
 
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.audio.*;
@@ -249,6 +250,12 @@ public class WorldController implements Screen {
 		currLevel.setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants, levelJSON(1));
 		currLevel.setTiledJSON(tiledJSON(1));
 		nextJSON = levelJSON(2);
+
+		//Set controls
+		InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
+
+//		InputController.getInstance().writeTo("inputLogs/debugPlatformUndo2.txt");
+//		InputController.getInstance().readFrom("inputLogs/debugPlatformUndo.txt");
 	}
 
 	/**
@@ -309,6 +316,16 @@ public class WorldController implements Screen {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	public void render(float delta){
+		//FOR DEBUGGING
+		delta = 1/60f;
+		if (Gdx.input.isKeyPressed(Input.Keys.F)){
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		}
+
 		if (preUpdate(delta)) {
 			currLevel.update(delta); // This is the one that must be defined.
 			currLevel.postUpdate(delta);

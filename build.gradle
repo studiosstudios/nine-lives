@@ -65,6 +65,6 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         implementation files("../dependencies/soundlib.jar")
-        
+        implementation 'com.google.code.gson:gson:2.10.1'
     }
 }

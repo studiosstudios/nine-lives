@@ -17,6 +17,8 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
 
@@ -322,5 +324,16 @@ public class Mob extends CapsuleObstacle {
         for (PolygonShape shape : sensorShapes) {
             canvas.drawPhysics(shape,Color.RED,getX()-xTranslate,getY()-yTranslate,getAngle(),drawScale.x,drawScale.y);
         }
+    }
+
+    public ObjectMap<String, Object> storeState(){
+        ObjectMap<String, Object> stateMap = super.storeState();
+        stateMap.put("faceRight", faceRight);
+        return stateMap;
+    }
+
+    public void loadState(ObjectMap<String, Object> stateMap){
+        super.loadState(stateMap);
+        faceRight = (boolean) stateMap.get("faceRight");
     }
 }

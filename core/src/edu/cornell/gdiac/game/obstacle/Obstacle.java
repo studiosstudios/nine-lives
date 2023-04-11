@@ -21,7 +21,10 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
+import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.*;  // For GameCanvas
+
+import java.util.HashMap;
 
 /**
  * Base model class to support collisions.
@@ -261,8 +264,15 @@ public abstract class Obstacle {
 	 * @param value  the base velocity for this physics body
 	 */
 	public void setBaseVelocity(Vector2 value) {
+		bodyinfo.linearVelocity.set(value.x - baseVelocity.x +  bodyinfo.linearVelocity.x, value.y - baseVelocity.y +  bodyinfo.linearVelocity.y);
 		baseVelocity.set(value);
-		bodyinfo.linearVelocity.set(value.add(relativeVelocity));
+	}
+
+	/**
+	 * Resets the base velocity of this physics body to zero without changing total linear velocity.
+	 */
+	public void resetBaseVelocity(){
+		baseVelocity.set(Vector2.Zero);
 	}
 
 	/**
@@ -271,8 +281,8 @@ public abstract class Obstacle {
 	 * @param value  the base x velocity for this physics body
 	 */
 	public void setBaseVX(float value){
+		bodyinfo.linearVelocity.x = value - baseVelocity.x + bodyinfo.linearVelocity.x;
 		baseVelocity.x = value;
-		bodyinfo.linearVelocity.x = value + relativeVelocity.x;
 	}
 
 	/**
@@ -281,8 +291,8 @@ public abstract class Obstacle {
 	 * @param value  the base y velocity for this physics body
 	 */
 	public void setBaseVY(float value){
+		bodyinfo.linearVelocity.x = value - baseVelocity.y + bodyinfo.linearVelocity.y;
 		baseVelocity.y = value;
-		bodyinfo.linearVelocity.y = value + relativeVelocity.y;
 	}
 
 	/**
@@ -1127,5 +1137,21 @@ public abstract class Obstacle {
 	 * @param canvas Drawing context
 	 */
 	public abstract void drawDebug(GameCanvas canvas);
+
+	public ObjectMap<String, Object> storeState(){
+		ObjectMap<String, Object> stateMap = new ObjectMap<>();
+		stateMap.put("position", bodyinfo.position);
+		stateMap.put("relativeVelocity", relativeVelocity);
+		stateMap.put("baseVelocity", baseVelocity);
+		stateMap.put("linearVelocity", bodyinfo.linearVelocity);
+		return stateMap;
+	}
+
+	public void loadState(ObjectMap<String, Object> stateMap){
+		bodyinfo.position.set((Vector2) stateMap.get("position"));
+		bodyinfo.linearVelocity.set((Vector2) stateMap.get("linearVelocity"));
+		relativeVelocity.set((Vector2) stateMap.get("relativeVelocity"));
+		baseVelocity.set((Vector2) stateMap.get("baseVelocity"));
+	}
 
 }

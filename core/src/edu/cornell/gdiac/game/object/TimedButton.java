@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
 
@@ -41,6 +42,17 @@ public class TimedButton extends Activator {
             pressedTicks = Math.max(0, pressedTicks - 1);
         }
         active = pressedTicks > 0;
+    }
+
+    public ObjectMap<String, Object> storeState(){
+        ObjectMap<String, Object> stateMap = super.storeState();
+        stateMap.put("pressedTicks", pressedTicks);
+        return stateMap;
+    }
+
+    public void loadState(ObjectMap<String, Object> stateMap){
+        super.loadState(stateMap);
+        pressedTicks = (int) stateMap.get("pressedTicks");
     }
 
 }

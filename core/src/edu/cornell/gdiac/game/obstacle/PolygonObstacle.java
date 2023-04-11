@@ -327,6 +327,7 @@ public class PolygonObstacle extends SimpleObstacle {
 	 * @param height The new height
 	 */
 	private void resize(float width, float height, boolean clip) {
+		System.out.println("polygon load");
 		float scalex = width/dimension.x;
 		float scaley = height/dimension.y;
 
@@ -448,6 +449,21 @@ public class PolygonObstacle extends SimpleObstacle {
 			float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
 			canvas.drawPhysics(tri,Color.YELLOW,getX()-xTranslate,getY()-yTranslate,getAngle(),drawScale.x,drawScale.y);
 		}
+	}
+
+	public ObjectMap<String, Object> storeState(){
+		ObjectMap<String, Object> stateMap = super.storeState();
+		stateMap.put("dimension", dimension);
+		stateMap.put("shapes", shapes);
+		stateMap.put("scaled", scaled);
+		return stateMap;
+	}
+
+	public void loadState(ObjectMap<String, Object> stateMap){
+		super.loadState(stateMap);
+		dimension.set((Vector2) stateMap.get("dimension"));
+		shapes = (PolygonShape[]) stateMap.get("shapes");
+		scaled = (float[]) stateMap.get("scaled");
 	}
 	
 }

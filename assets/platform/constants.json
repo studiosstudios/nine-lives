@@ -25,7 +25,8 @@
     "offset": [0.03125, -0.4]
   },
   "boxes": {
-    "friction" : 0.9,
+    "friction" : 1,
+    "restitution": 0,
     "mass" : 1,
     "density": 1,
     "offset": [0.5, 0.5]
@@ -34,7 +35,7 @@
     "flame_sensor_scale": [0.45, 0.5],
     "base_offset" : [0.5, 0.5],
     "flame_offset" : [0, 1.3],
-    "friction": 0.4,
+    "friction": 1,
     "density": 1,
     "mass": 1,
     "sensor_shape" : [-0.3, -0.6, 0.3, -0.6, 0.3, 0.9, -0.3, 0.9]
@@ -54,8 +55,9 @@
     "solid_width_scale": 1
   },
   "deadBody": {
-    "friction": 0.4,
+    "friction": 1,
     "density" : 1,
+    "mass" : 1,
     "damping" : 2,
     "offset": [0, 0],
     "burnTicks" : 300,

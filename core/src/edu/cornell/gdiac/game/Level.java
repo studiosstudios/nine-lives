@@ -14,7 +14,6 @@ import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.util.PooledList;
 
 import java.util.HashMap;
-
 /**
  * Represents a single level in our game
  * <br><br>
@@ -46,9 +45,8 @@ public class Level {
     protected PooledList<Obstacle> objects  = new PooledList<>();
     /** Queue for adding objects */
     protected PooledList<Obstacle> addQueue = new PooledList<>();
-    /** queue to add joints to the world created in beginContact() */
+    /** Queue to add joints to the world */
     protected PooledList<JointDef> jointQueue = new PooledList<>();
-
     /** Whether we have completed this level */
     private boolean complete;
     /** Whether we have failed at this world (and need a reset) */
@@ -60,11 +58,11 @@ public class Level {
     /** The max lives allowed */
     private final int maxLives;
 
-    /** hashmap to represent activator-spike relationships:
+    /** hashmap to represent activator-activatable relationships:
      *   keys are activator ids specified in JSON*/
     private HashMap<String, Array<Activatable>> activationRelations;
 
-    /** object lists - in the future this will be one list maybe */
+    /** object arrays */
     private final Array<Activator> activators;
     private final Array<Activatable> activatables;
     private final Array<DeadBody> deadBodyArray;
@@ -74,14 +72,8 @@ public class Level {
     private final Array<SpiritRegion> spiritRegionArray;
     /** The respawn position of the player */
     private Vector2 respawnPos;
-    /** Float value to scale width */
-    private float dwidth;
-    /** Float value to scale height */
-    private float dheight;
     /** The background texture */
     private Texture background;
-    /** JSON of the level */
-    private JsonValue levelJV;
 
     /** texture assets */
     private HashMap<String, TextureRegion> textureRegionAssetMap;
@@ -91,7 +83,8 @@ public class Level {
     /** The spirit line */
     private SpiritLine spiritLine;
     //endregion
-
+    /** the initial respawn position for this level */
+    private Vector2 startRespawnPos;
     /**
      * Returns the bounding rectangle for the physics world
      * <br><br>
@@ -131,15 +124,7 @@ public class Level {
         return cat;
     }
 
-
-    /**
-     * Returns a reference to the exit door
-     *
-     * @return a reference to the exit door
-     */
-    public BoxObstacle getExit() {
-        return goalDoor;
-    }
+    public Checkpoint getCheckpoint() {return currCheckpoint;}
 
     /**
      * Returns a reference to the array of activators
@@ -200,20 +185,6 @@ public class Level {
     public void setRespawnPos(Vector2 pos) { respawnPos = pos; }
 
     /**
-     * Returns a reference to the dwidth
-     *
-     * @return a reference to the dwidth
-     */
-    public float getDwidth() { return dwidth; }
-
-    /**
-     * Returns a reference to the dheight
-     *
-     * @return a reference to the dheight
-     */
-    public float getDheight() { return dheight; }
-
-    /**
      * Returns true if the level is completed.
      * <br><br>
      * If true, the level will advance after a countdown
@@ -245,20 +216,6 @@ public class Level {
     public void setFailure(boolean value) {
         failed = value;
     }
-
-    /**
-     * Returns a reference to the goal door
-     *
-     * @return a reference to the goal door
-     */
-    public Obstacle getGoalDoor() {  return goalDoor; }
-
-    /**
-     * Returns a reference to the return door
-     *
-     * @return a reference to the return door
-     */
-    public Obstacle getRetDoor() {  return retDoor; }
 
     /**
      * Sets the game world
@@ -356,11 +313,19 @@ public class Level {
      */
     public void updateCheckpoints(Checkpoint c){
         if(currCheckpoint != null){
-            currCheckpoint.setActive(false);
+            currCheckpoint.setCurrent(false);
         }
         currCheckpoint = c;
-        currCheckpoint.setActive(true);
+        currCheckpoint.setCurrent(true);
         respawnPos = currCheckpoint.getPosition();
+    }
+
+    public void resetCheckpoints(){
+        if(currCheckpoint != null){
+            currCheckpoint.setCurrent(false);
+        }
+        currCheckpoint = null;
+        respawnPos = startRespawnPos;
     }
 
     /**
@@ -547,7 +512,7 @@ public class Level {
      */
     public void populateLevel(HashMap<String, TextureRegion> tMap, HashMap<String, BitmapFont> fMap,
                                HashMap<String, Sound> sMap, JsonValue constants, JsonValue levelJV, boolean ret, Cat prevCat) {
-        this.levelJV = levelJV;
+        /** JSON of the level */
 
         activationRelations = new HashMap<>();
         background = tMap.get("background").getTexture();
@@ -680,8 +645,8 @@ public class Level {
         }
 
         // Create cat
-        dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
-        dheight = tMap.get("cat").getRegionHeight()/scale.y;
+        float dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
+        float dheight = tMap.get("cat").getRegionHeight()/scale.y;
         Texture[] arr = new Texture[8];
         arr[0] = tMap.get("cat").getTexture();
         arr[1] = tMap.get("jumpingCat").getTexture();
@@ -694,12 +659,12 @@ public class Level {
         cat = new Cat(levelJV.get("cat"), dwidth, dheight, ret, prevCat == null? null : prevCat.getPosition(),arr);
         cat.setDrawScale(scale);
         respawnPos = cat.getPosition();
+        startRespawnPos = respawnPos;
         addObject(cat);
 
         spiritMode = false;
         spiritLine = new SpiritLine(Color.WHITE, Color.CYAN, scale);
     }
-
     /**
      * TODO: MOVE TO LEVELCONTROLLER
      * @param constants
@@ -744,6 +709,7 @@ public class Level {
             world.dispose();
             world = null;
         }
+        currCheckpoint = null;
         setComplete(false);
         setFailure(false);
     }
@@ -814,8 +780,6 @@ public class Level {
             JointDef jdef = jointQueue.poll();
             Joint joint = world.createJoint(jdef);
 
-            //add joint to joint list of spikes
-            //this is very jank and should be factored out for all gameobjects
             if (jdef.bodyA.getUserData() instanceof Spikes){
                 ((Spikes) jdef.bodyA.getUserData()).addJoint(joint);
             } else if (jdef.bodyB.getUserData() instanceof Spikes) {
@@ -850,18 +814,11 @@ public class Level {
     }
 
     /**
-     * Draws the level to the given game canvas
-     * <br><br>
-     * If debug mode is true, it will outline all physics bodies as wireframes. Otherwise
-     * it will only draw the sprite representations.
+     * Draws the level to the given game canvas. Assumes <code>canvas.begin()</code> has already been called.
      *
      * @param canvas	the drawing context
      */
-    public void draw(GameCanvas canvas, boolean debug) {
-        canvas.clear();
-
-        canvas.begin();
-        canvas.applyViewport();
+    public void draw(GameCanvas canvas) {
         if (background != null) {
             //scales background with level size
             float scaleX = bounds.width/background.getWidth();
@@ -882,10 +839,11 @@ public class Level {
 
         spiritLine.draw(canvas);
 
-        for (DeadBody db : deadBodyArray){
+        for (DeadBody db : deadBodyArray) {
             db.draw(canvas);
         }
         cat.draw(canvas);
+
         for (SpiritRegion s : spiritRegionArray) {
             s.draw(canvas);
         }
@@ -893,33 +851,34 @@ public class Level {
         if (currCheckpoint != null) {
             currCheckpoint.drawBase(canvas);
         }
-
-        canvas.end();
-
-        canvas.begin();
-        if (debug) {
-            canvas.beginDebug();
-            //draw grid
-            Color lineColor = new Color(0.8f, 0.8f, 0.8f, 1);
-            float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/scale.x;
-            float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/scale.y;
-            for (int x = 0; x < bounds.width; x++) {
-                Vector2 p1 = new Vector2(x-xTranslate, 0-yTranslate);
-                Vector2 p2 = new Vector2(x-xTranslate, bounds.height-yTranslate);
-                canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
-            }
-            for (int y = 0; y < bounds.height; y++) {
-                Vector2 p1 = new Vector2(0-xTranslate, y-yTranslate);
-                Vector2 p2 = new Vector2(bounds.width-xTranslate, y-yTranslate);
-                canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
-            }
-            for (Obstacle obj : objects) {
-                obj.drawDebug(canvas);
-            }
-            canvas.endDebug();
-        }
-        canvas.end();
     }
+
+    /**
+     * Draws the wireframe debug of the level to the given game canvas. Assumes <code>canvas.beginDebug()</code> has already been called.
+     *
+     * @param canvas	the drawing context
+     */
+    public void drawDebug(GameCanvas canvas){
+        //draw grid
+        Color lineColor = new Color(0.8f, 0.8f, 0.8f, 1);
+        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/scale.x;
+        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/scale.y;
+        for (int x = 0; x < bounds.width; x++) {
+            Vector2 p1 = new Vector2(x-xTranslate, 0-yTranslate);
+            Vector2 p2 = new Vector2(x-xTranslate, bounds.height-yTranslate);
+            canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
+        }
+        for (int y = 0; y < bounds.height; y++) {
+            Vector2 p1 = new Vector2(0-xTranslate, y-yTranslate);
+            Vector2 p2 = new Vector2(bounds.width-xTranslate, y-yTranslate);
+            canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
+        }
+        for (Obstacle obj : objects) {
+            obj.drawDebug(canvas);
+        }
+    }
+
+
 
     /**
      * Spawns a dead body at the location of the cat
@@ -933,9 +892,21 @@ public class Level {
     }
 
     /**
+     * Loads a dead body into this level from a saved state.
+     * @param state Map of arguments for the dead body, called from storeState() in {@link DeadBody}.
+     */
+    public void loadDeadBodyState(ObjectMap<String, Object> state){
+        DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat"), scale, Vector2.Zero);
+        deadBody.loadState(state);
+        queueObject(deadBody);
+        deadBodyArray.add(deadBody);
+    }
+
+    /**
      * Removes a DeadBody from the dead body array
      * */
     public void removeDeadBody(DeadBody db){
+        db.markRemoved(true);
         deadBodyArray.removeValue(db, true);
     }
 

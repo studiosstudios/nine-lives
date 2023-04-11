@@ -47,6 +47,7 @@
     },
     "jsons"  : {
         "constants": "platform/constants.json",
+        "controls": "platform/controls.json",
         "level1": "platform/level1.json",
         "level2": "platform/level2.json",
         "level3": "platform/level3.json",

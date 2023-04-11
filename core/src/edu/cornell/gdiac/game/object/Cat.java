@@ -12,7 +12,6 @@ package edu.cornell.gdiac.game.object;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
@@ -30,7 +29,7 @@ import edu.cornell.gdiac.game.obstacle.*;
  * Note that this class returns to static loading.  That is because there are
  * no other subclasses that we might loop through.
  */
-public class Cat extends CapsuleObstacle implements Moveable {
+public class Cat extends CapsuleObstacle implements Movable {
     private enum State {
         MOVING, JUMPING, CLIMBING, DASHING
     }
@@ -729,7 +728,7 @@ public class Cat extends CapsuleObstacle implements Moveable {
 //        System.out.println("DASH TIMER: "+dashTimer);
     }
 
-    public boolean isMoveable(){ return true; }
+    public boolean isMovable(){ return true; }
 
     public ObjectSet<Fixture> getGroundFixtures(){ return groundFixtures; }
 

@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 
 /**
  * A Platform is a wall that can be moved.
@@ -73,7 +74,7 @@ public class Platform extends Wall implements Activatable {
 
         //check if passing through target pos: velocity is parallel to target velocity and target is between
         //current position and next position
-        if (targetVel.dot(getLinearVelocity()) >= 0 &&
+        if (targetVel.dot(getLinearVelocity()) >= 0 && !targetVel.equals(Vector2.Zero) &&
                 target.dst(getPosition()) < target.dst(getPosition().add(getLinearVelocity().scl(dt)))) {
             moving = 0;
             setPosition(target);
@@ -140,5 +141,18 @@ public class Platform extends Wall implements Activatable {
     @Override
     public boolean getInitialActivation() { return initialActivation; }
     //endregion
+
+    public ObjectMap<String, Object> storeState(){
+        ObjectMap<String, Object> stateMap = super.storeState();
+        stateMap.put("moving", moving);
+        stateMap.put("targetVel", targetVel.cpy());
+        return stateMap;
+    }
+
+    public void loadState(ObjectMap<String, Object> stateMap){
+        super.loadState(stateMap);
+        moving = (float) stateMap.get("moving");
+        targetVel.set((Vector2) stateMap.get("targetVel"));
+    }
 
 }

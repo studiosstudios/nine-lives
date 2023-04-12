@@ -78,6 +78,7 @@
     "restitution": 0.1
   },
   "platforms": {
+    "offset": [0.5, -1],
     "friction": 5,
     "density" : 1,
     "restitution": 0

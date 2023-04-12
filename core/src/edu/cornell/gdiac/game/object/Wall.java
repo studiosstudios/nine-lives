@@ -7,10 +7,13 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
 import edu.cornell.gdiac.game.obstacle.PolygonObstacle;
+
+import java.util.HashMap;
 
 public class Wall extends PolygonObstacle  {
     /** Constants that are shared between all instances of this class */

@@ -381,9 +381,9 @@ public class Level {
                 populateWalls(obstacleData, tileSize, levelHeight);
             }
             // Platforms
-//            else if (name.equals("platforms")) {
-//                populatePlatforms(obstacleData, tileSize, levelHeight);
-//            }
+            else if (name.equals("platforms")) {
+                populatePlatforms(obstacleData, tileSize, levelHeight);
+            }
             // Doors
             // Boxes
             // Checkpoints
@@ -425,7 +425,7 @@ public class Level {
             }
 
             // check climbable
-            Boolean isClimbable = false;
+            boolean isClimbable = false;
 
             if (obj.get("properties") != null) {
                 isClimbable = obj.get("properties").get(0).getBoolean("value");
@@ -438,21 +438,11 @@ public class Level {
 
     private void populatePlatforms(JsonValue data, int tileSize, int levelHeight){
         JsonValue objects = data.get("objects");
-
         for (JsonValue obj : objects) {
-            float x = obj.getFloat("x")/tileSize;
-            float y = levelHeight - obj.getFloat("y")/tileSize;
-            float width = obj.getFloat("width")/tileSize;
-            float height = obj.getFloat("height")/tileSize;
-            float[] shape = new float[]{x, y, x + width, y, x + width, y + height, x, y + height};
-
-            JsonValue properties = obj.get("properties");
-            Vector2 disp = new Vector2(properties.get(4).get("value").getFloat("x"), properties.get(3).get("value").getFloat("y"));
-            boolean isClimbable = obj.get("properties").get(0).getBoolean("value");
-            float speed = properties.get(5).get("value").getFloat("x");
-
+            readProperties(obj);
+            Platform platform = new Platform(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+            loadTiledActivatable(platform);
         }
-
     }
 
 
@@ -592,12 +582,12 @@ public class Level {
 //            }
 //        } catch (NullPointerException e) {}
 
-        try {
-            for (JsonValue platformJV : levelJV.get("platforms")){
-                Platform platform = new Platform(tMap.get("steel"), scale, platformJV);
-                loadActivatable(platform, platformJV);
-            }
-        } catch (NullPointerException e) {}
+//        try {
+//            for (JsonValue platformJV : levelJV.get("platforms")){
+//                Platform platform = new Platform(tMap.get("steel"), scale, platformJV);
+//                loadActivatable(platform, platformJV);
+//            }
+//        } catch (NullPointerException e) {}
 
         try {
             for (JsonValue activatorJV : levelJV.get("activators")){
@@ -854,6 +844,22 @@ public class Level {
         addObject((Obstacle) object);
 
         String activatorID = objectJV.getString("activatorID", "");
+        if (!activatorID.equals("")) {
+            if (activationRelations.containsKey(activatorID)) {
+                activationRelations.get(activatorID).add(object);
+            } else {
+                activationRelations.put(activatorID, new Array<>(new Activatable[]{object}));
+            }
+        }
+
+        activatables.add(object);
+    }
+
+    private void loadTiledActivatable(Activatable object){
+
+        addObject((Obstacle) object);
+
+        String activatorID = (String) propertiesMap.get("activatorID");
         if (!activatorID.equals("")) {
             if (activationRelations.containsKey(activatorID)) {
                 activationRelations.get(activatorID).add(object);

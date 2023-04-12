@@ -501,13 +501,24 @@ public class Level {
     }
 
 
-    private void readProperties(JsonValue properties){
+    private void readProperties(JsonValue objectJV){
         propertiesMap.clear();
-        for (JsonValue property : properties){
+
+        propertiesMap.put("x", objectJV.getFloat("x"));
+        propertiesMap.put("y", objectJV.getFloat("y"));
+        propertiesMap.put("width", objectJV.getFloat("width"));
+        propertiesMap.put("height", objectJV.getFloat("height"));
+        propertiesMap.put("rotation", objectJV.getFloat("rotation"));
+
+        //object specific properties (if there are any)
+        for (JsonValue property : objectJV.get("properties")){
             String name = property.getString("name");
             switch (property.getString("type")){
                 case "string":
                     propertiesMap.put(name, property.getString("value"));
+                    break;
+                case "int":
+                    propertiesMap.put(name, property.getInt("value"));
                     break;
                 case "bool":
                     propertiesMap.put(name, property.getBoolean("value"));
@@ -520,13 +531,13 @@ public class Level {
                     break;
                 case "class":
                     switch (property.getString("propertytype")){
-                        //currently only one class defined in tiled, but this allows us to be flexible to add more
+                        //currently only one class defined in our level editor, but this allows us to be flexible to add more
                         case "Vector2":
                             Vector2 v = new Vector2(property.get("value").getFloat("x"), property.get("value").getFloat("y"));
                             propertiesMap.put(name, v);
                             break;
                         default:
-                            throw new IllegalArgumentException("unexpected class: " + property.getString("propertytype"));
+                            throw new IllegalArgumentException("unexpected class: " + property.getString("type"));
                     }
                     break;
                 default:

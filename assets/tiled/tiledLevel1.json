@@ -65,12 +65,6 @@
               "x":0,
               "y":64
             }],
-          "properties":[
-            {
-              "name":"climbable",
-              "type":"bool",
-              "value":true
-            }],
           "rotation":0,
           "type":"",
           "visible":true,
@@ -1329,17 +1323,6 @@
           "width":32,
           "x":192,
           "y":224
-        },
-        {
-          "height":0,
-          "id":97,
-          "name":"",
-          "rotation":0,
-          "type":"",
-          "visible":true,
-          "width":0,
-          "x":768,
-          "y":256
         }],
       "opacity":1,
       "type":"objectgroup",
@@ -1358,12 +1341,12 @@
           "name":"",
           "properties":[
             {
-              "name":"color",
+              "name":"Color",
               "type":"color",
               "value":"#ffff0000"
             }],
           "rotation":0,
-          "type":"",
+          "type":"SpiritRegion",
           "visible":true,
           "width":288,
           "x":64,
@@ -1384,22 +1367,64 @@
           "height":64,
           "id":63,
           "name":"",
+          "properties":[
+            {
+              "name":"activatorID",
+              "type":"string",
+              "value":"button3"
+            },
+            {
+              "name":"active",
+              "type":"bool",
+              "value":true
+            },
+            {
+              "name":"closeAngle",
+              "type":"float",
+              "value":180
+            },
+            {
+              "name":"totalTicks",
+              "type":"int",
+              "value":45
+            }],
           "rotation":0,
-          "type":"",
+          "type":"Door",
           "visible":true,
           "width":64,
           "x":928,
           "y":64
         },
         {
-          "height":192,
+          "height":32,
           "id":69,
           "name":"",
-          "rotation":90,
-          "type":"",
+          "properties":[
+            {
+              "name":"activatorID",
+              "type":"string",
+              "value":"button2"
+            },
+            {
+              "name":"active",
+              "type":"bool",
+              "value":true
+            },
+            {
+              "name":"closeAngle",
+              "type":"float",
+              "value":90
+            },
+            {
+              "name":"totalTicks",
+              "type":"int",
+              "value":150
+            }],
+          "rotation":0,
+          "type":"Door",
           "visible":true,
-          "width":32,
-          "x":832,
+          "width":192,
+          "x":640,
           "y":352
         }],
       "opacity":1,
@@ -1426,7 +1451,7 @@
             {
               "name":"active",
               "type":"bool",
-              "value":false
+              "value":true
             },
             {
               "name":"climbable",
@@ -1440,21 +1465,21 @@
             },
             {
               "name":"disp",
-              "propertytype":"Vector",
+              "propertytype":"Vector2",
               "type":"class",
               "value":
               {
-                "x":-7,
+                "x":-13,
                 "y":0
               }
             },
             {
               "name":"speed",
               "type":"float",
-              "value":10
+              "value":6
             }],
           "rotation":0,
-          "type":"",
+          "type":"Platform",
           "visible":true,
           "width":32,
           "x":736,
@@ -1466,8 +1491,8 @@
       "x":0,
       "y":0
     }],
-  "nextlayerid":15,
-  "nextobjectid":98,
+  "nextlayerid":16,
+  "nextobjectid":110,
   "orientation":"orthogonal",
   "properties":[
     {
@@ -1476,7 +1501,7 @@
       "type":"string",
       "value":"metal"
     }],
-  "renderorder":"right-down",
+  "renderorder":"right-up",
   "tiledversion":"1.10.1",
   "tileheight":32,
   "tilesets":[

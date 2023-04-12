@@ -85,6 +85,9 @@ public class Level {
     //endregion
     /** the initial respawn position for this level */
     private Vector2 startRespawnPos;
+    /** properties map cache */
+    private ObjectMap<String, Object> propertiesMap = new ObjectMap<>();
+
     /**
      * Returns the bounding rectangle for the physics world
      * <br><br>
@@ -332,7 +335,7 @@ public class Level {
      * Parses Tiled file
      *
      */
-    public void levelEditor(JsonValue tiledMap){
+    public void populateTiled(JsonValue tiledMap){
 
         JsonValue layers = tiledMap.get("layers");
         JsonValue tileData = layers.get(0);
@@ -498,6 +501,39 @@ public class Level {
     }
 
 
+    private void readProperties(JsonValue properties){
+        propertiesMap.clear();
+        for (JsonValue property : properties){
+            String name = property.getString("name");
+            switch (property.getString("type")){
+                case "string":
+                    propertiesMap.put(name, property.getString("value"));
+                    break;
+                case "bool":
+                    propertiesMap.put(name, property.getBoolean("value"));
+                    break;
+                case "float":
+                    propertiesMap.put(name, property.getFloat("value"));
+                    break;
+                case "color":
+                    propertiesMap.put(name, Color.valueOf(property.getString("value")));
+                    break;
+                case "class":
+                    switch (property.getString("propertytype")){
+                        //currently only one class defined in tiled, but this allows us to be flexible to add more
+                        case "Vector2":
+                            Vector2 v = new Vector2(property.get("value").getFloat("x"), property.get("value").getFloat("y"));
+                            propertiesMap.put(name, v);
+                            break;
+                        default:
+                            throw new IllegalArgumentException("unexpected class: " + property.getString("propertytype"));
+                    }
+                    break;
+                default:
+                    throw new IllegalArgumentException("unexpected property type: " + property.getString("type"));
+            }
+        }
+    }
 
 
     /**
@@ -684,7 +720,7 @@ public class Level {
         Checkpoint.setConstants(constants.get("checkpoint"));
         Mirror.setConstants(constants.get("mirrors"));
         Wall.setConstants(constants.get("walls"));
-//        Platform.setConstants(constants.get("platforms"));
+        Platform.setConstants(constants.get("platforms"));
         Cat.setConstants(constants.get("cat"));
         Exit.setConstants(constants.get("exits"));
         Door.setConstants(constants.get("doors"));

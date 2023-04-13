@@ -165,8 +165,7 @@ public class SpiritRegion extends BoxObstacle {
 
         this.pos = new Vector2((float) properties.get("x")/tileSize + width/2, levelHeight - (float) properties.get("y")/tileSize - height/2);
 
-        setX(pos.x + width/2);
-        setY(pos.y + height/2);
+        setPosition(pos);
 
 
 //         PHOTON PARTICLES

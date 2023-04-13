@@ -69,7 +69,6 @@ public class Exit extends BoxObstacle {
         } else {
             exitType = ExitType.RETURN;
         }
-        System.out.println(getPosition());
         setName((String) properties.get("type"));
     }
 

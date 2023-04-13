@@ -81,7 +81,7 @@ public abstract class Activator extends PolygonObstacle {
         animationTime = 0f;
 
         setDrawScale(scale);
-//        setTexture(texture2);
+        setTexture(texture2);
         setFixedRotation(true);
 
         id = data.getString("id");

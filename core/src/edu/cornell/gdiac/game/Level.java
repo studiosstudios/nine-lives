@@ -351,7 +351,6 @@ public class Level {
 
         bounds.width = levelWidth*scale.x;
         bounds.height = levelHeight*scale.y;
-        System.out.println(bounds);
 
         Array<JsonValue> obstacleData = new Array<>();
 

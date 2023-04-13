@@ -1,13 +1,27 @@
 {
 	"size": [32, 26], //[width, height]
-	"spikes": [{"pos" : [1, 4], "angle": 180, "active": false, "activatorID": "switch1"}],
-	"doors": [{"width": 2, "height": 2, "pos": [28, 23], "angle": 180,
-		"totalTicks": 45, "activatorID": "button2", "active": true}],
+	"spikes": [{"pos" : [1, 4], "angle": 180, "active": false, "activatorID": "switch1"},
+		{"pos" : [6, 21], "angle": 0},
+		{"pos" : [7, 21], "angle": 0},
+		{"pos" : [10, 21], "angle": 0},
+		{"pos" : [11, 21], "angle": 0},
+		{"pos" : [14, 21], "angle": 0},
+		{"pos" : [15, 21], "angle": 0},
+		{"pos" : [18, 21], "angle": 0},
+		{"pos" : [19, 21], "angle": 0}
+	],
+	"doors": [
+		{"width": 6, "height": 1, "pos": [20, 14], "angle": 90,
+		"totalTicks": 150, "activatorID": "button2", "active": true},
+		{"width": 2, "height": 2, "pos": [29, 22], "angle": 180,
+		"totalTicks": 45, "activatorID": "button3", "active": true}
+	],
 	"activators": [
 		{"pos": [1, 11], "type": "switch", "id" : "switch1"},
 		{"pos": [1, 2], "type": "button", "id" : "button1"},
 		{"pos": [27, 2], "type": "switch", "id" : "switch2"},
-		{"pos": [11, 9], "type": "button", "id" : "button2"}],
+		{"pos": [11, 9], "type": "button", "id" : "button2"},
+		{"pos": [6, 18], "type": "button", "id" : "button3"}],
 	"lasers" : [
 		{"pos" :  [6, 16], "angle" : 180, "activatorID": "button1"}, // first half laser
 		// Left side
@@ -24,15 +38,21 @@
 		{"pos" :  [20, 11], "angle" : 270, "active":true, "activatorID": "switch2"},
 		{"pos" :  [20, 13], "angle" : 270, "active":true, "activatorID": "switch2"},
 	],
+	"flamethrowers" : [
+		{"pos": [18, 20], "pushable": false, "angle": 180},
+		{"pos": [19, 20], "pushable": false, "angle": 180}
+	],
 	"checkpoints" : [{"pos" : [9, 15], "angle": 0}],
-	"mobs" : [{"pos" : [28, 2], "facingRight":  true, "aggressive":  true}],
+	"mobs" : [{"pos" : [30, 2], "facingRight":  true, "aggressive":  true}],
 	"exits" : [{"type":  "goal", "height": 18, "pos": [32, 9]}],
 	"cat" : {
 		"pos": [1, 8],
 		"ret_pos": [31.5, 15.0]
 	},
+	"spiritRegions" : [{"pos": [2, 18], "width": 10, "height": 2, "color": [1,0,0]}],
 	"walls": 		[
 		{"shape":[0.0, 2.0, 0.0, 26.0, -1.0, 26.0, -1.0, 2]}, //invisible left side
+		{"shape":[32, 17, 32, 26.0, 33, 26.0, 33, 17]}, //invisible right side
 		{"shape":[28, 12, 31, 12, 31, 5, 32, 5,32,15, 28, 15]}, //left
 		{"shape":[0, 17.0, 7.0, 17.0, 7.0, 18.0, 0, 18.0]},
 		{"shape":[7, 2, 7, 15, 10, 15, 10, 14, 8, 14, 8, 2], "climbable": true}, //center wall with checkpoint on top
@@ -40,11 +60,8 @@
 		{"shape":[18, 15, 18, 2, 17, 2, 17, 15],"climbable":true},
 		{"shape":[19, 26, 19, 4, 20, 4, 20, 26]},
 		{"shape":[24,2,24,4,31,4,31,2,32,2,32,5,23,5,23,2]}, //jail
-		{"shape":[28, 15, 28, 23, 31, 23, 31, 15]},
+		{"shape":[28, 15, 28, 23, 31, 23, 31, 17, 30, 17, 30, 15]},
 		{"shape":[20, 25.0, 32.0, 25.0, 32.0, 26.0, 20, 26.0]} //top
-
-	],
-	"platforms":	[
 		{"shape":[0.0, 2.0, 35.0, 2.0, 35.0, 0.0, 0.0, 0.0]}, //main platform
 		{"shape":[0, 5, 5, 5, 5, 8, 0, 8]},
 		{"shape":[0, 10, 4, 10, 4, 11, 0, 11]},
@@ -55,5 +72,8 @@
 		{"shape":[25, 14, 25, 15, 28, 15, 28, 14]},
 		{"shape":[23, 17, 23, 18, 26, 18, 26, 17]},
 		{"shape":[21, 20, 21, 21, 24, 21, 24, 20]}
+	],
+	"platforms":	[
+		{"shape": [23, 18, 24, 18, 24, 20, 23, 20], "disp": [-13, 0], "activatorID": "switch2", "speed": 6, "damping": 0.1},
 	]
 }

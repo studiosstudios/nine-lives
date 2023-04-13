@@ -13,9 +13,6 @@ import edu.cornell.gdiac.game.obstacle.BoxObstacle;
 
 public class Checkpoint extends BoxObstacle
 {
-    /** The initializing data (to avoid magic numbers) */
-    private final JsonValue data;
-
     /** The origin position of the checkpoint */
     protected Vector2 origin;
     /** Whether this checkpoint is active or not */
@@ -47,17 +44,17 @@ public class Checkpoint extends BoxObstacle
      * drawing to work properly, you MUST set the drawScale. The drawScale
      * converts the physics units to pixels.
      *
-     * @param data the JSON data to read from
+     * @param pos the position of the checkpoint
+     * @param angle the angle of the checkpoint
      * @param scale the scale for drawing the texture
      * @param checkpointTexture the texture for the non-active checkpoint
      * @param activeCheckpointTexture the texture for the active checkpoint
      *
      */
-    public Checkpoint(JsonValue data, Vector2 scale, TextureRegion checkpointTexture, TextureRegion activeCheckpointTexture,
+    public Checkpoint(Vector2 pos, float angle, Vector2 scale, TextureRegion checkpointTexture, TextureRegion activeCheckpointTexture,
                       TextureRegion baseTexture, TextureRegion activeBaseTexture) {
 
         super(32/scale.x, 64/scale.y);
-        this.data = data;
         current = false;
         int spriteWidth = 32;
         int spriteHeight = 64;
@@ -72,13 +69,13 @@ public class Checkpoint extends BoxObstacle
 
         animation.setPlayMode(Animation.PlayMode.LOOP);
         animationTime = 0f;
-        setAngle(data.getFloat("angle"));
+        setAngle(angle);
         setMass(0);
         setName("checkpoint");
         setDrawScale(scale);
         setSensor(true);
-        setX(data.get("pos").getFloat(0)+objectConstants.get("offset").getFloat(0));
-        setY(data.get("pos").getFloat(1)+objectConstants.get("offset").getFloat(1));
+        setX(pos.x + objectConstants.get("offset").getFloat(0));
+        setY(pos.y + objectConstants.get("offset").getFloat(1));
         setSensor(true);
         setBodyType(BodyDef.BodyType.StaticBody);
         Vector2 solidCenter = new Vector2(0,0);
@@ -93,7 +90,7 @@ public class Checkpoint extends BoxObstacle
      * @return position of checkpoint base rather than checkpoint origin
      */
     public Vector2 getPosition(){
-        return new Vector2(getX()-objectConstants.get("offset").getFloat(0),getY()-objectConstants.get("offset").getFloat(1));
+        return new Vector2(getX()-objectConstants.get("base_offset").getFloat(0),getY()-objectConstants.get("base_offset").getFloat(1));
     }
 
     /**
@@ -177,7 +174,9 @@ public class Checkpoint extends BoxObstacle
 
     public void drawDebug(GameCanvas canvas){
         super.drawDebug(canvas);
-        canvas.drawPhysics(sensorShape, Color.RED, getX(), getY(), getAngle(), drawScale.x, drawScale.y);
+        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+        canvas.drawPhysics(sensorShape, Color.RED, getX()-xTranslate, getY()-yTranslate, getAngle(), drawScale.x, drawScale.y);
     }
 
     public String getSensorName(){ return sensorName; }
@@ -186,7 +185,7 @@ public class Checkpoint extends BoxObstacle
     public void loadState(ObjectMap<String, Object> state){
         super.loadState(state);
         Vector2 pos = (Vector2) state.get("position");
-        setX(pos.x + objectConstants.get("offset").getFloat(0));
-        setY(pos.y + objectConstants.get("offset").getFloat(1));
+        setX(pos.x + objectConstants.get("base_offset").getFloat(0));
+        setY(pos.y + objectConstants.get("base_offset").getFloat(1));
     }
 }

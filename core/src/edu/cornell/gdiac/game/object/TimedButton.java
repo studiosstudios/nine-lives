@@ -11,6 +11,8 @@ import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
 
+import java.util.HashMap;
+
 /**
  * An activator that stays active for a defined period of time after release.
  */
@@ -30,6 +32,13 @@ public class TimedButton extends Activator {
     public TimedButton(TextureRegion texture,TextureRegion texture2, Vector2 scale, JsonValue data){
         super(texture, texture2, scale, data);
         totalDurationTicks = data.getInt("duration");
+        pressedTicks = 0;
+        setName("timedButton");
+    }
+
+    public TimedButton(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
+        super(properties, tMap, scale, tileSize, levelHeight);
+        totalDurationTicks = (int) properties.get("duration");
         pressedTicks = 0;
         setName("timedButton");
     }

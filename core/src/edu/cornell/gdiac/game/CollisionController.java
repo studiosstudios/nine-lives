@@ -204,6 +204,10 @@ public class CollisionController implements ContactListener, ContactFilter {
                     if ((cat.getSideSensorName().equals(fd1) && cat != bd2) && (bd2 instanceof Wall) && ((Wall) bd2).isClimbable()) {
                         cat.decrementWalled();
                     }
+
+                    if (bd2 instanceof SpiritRegion){
+                        cat.getSpiritRegions().remove((SpiritRegion) bd2);
+                    }
                 }
 
                 //dead body collisions

@@ -7,10 +7,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
 
+import java.util.HashMap;
 import java.util.Random;
 
 public class SpiritRegion extends BoxObstacle {
@@ -44,13 +46,13 @@ public class SpiritRegion extends BoxObstacle {
     /** Respawn rate of the particles */
     public static final int PARTICLE_RESPAWN = 1;
     /** Opacity value for particles when spirit region not active on key press */
-    public static final float PARTICLE_OPACITY_INACTIVE = 0.25f;
+    public static final float PARTICLE_OPACITY_INACTIVE = 0.3f;
     /** Opacity value when spirit region not active on key press */
-    public static final float REGION_OPACITY_INACTIVE = 0.15f;
+    public static final float REGION_OPACITY_INACTIVE = 0.2f;
     /** Opacity value for particles when spirit region not active on key press */
-    public static final float PARTICLE_OPACITY_ACTIVE = 0.4f;
+    public static final float PARTICLE_OPACITY_ACTIVE = 0.5f;
     /** Opacity value when spirit region active on key press */
-    public static final float REGION_OPACITY_ACTIVE = 0.4f;
+    public static final float REGION_OPACITY_ACTIVE = 0.5f;
     /** Size of particles to scale */
     public static final float PARTICLE_SIZE = 6f;
 
@@ -134,13 +136,49 @@ public class SpiritRegion extends BoxObstacle {
         memory = new ParticlePool(capacity);
         for (int i = 0; i < capacity; i++){
             Particle item = addParticle();
-            try {
-                item.setY(random.nextFloat(item.getBottom() * drawScale.y, item.getTop() * drawScale.y - PARTICLE_SIZE));
-            } catch (Exception e) {
-                item.setY(item.getBottom());
-            }
+            float low = item.getBottom() * drawScale.y;
+            float high = item.getTop() * drawScale.y - PARTICLE_SIZE;
+            item.setY(random.nextFloat()*(high-low)+low);
         }
 
+    }
+
+    public SpiritRegion(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
+        super((float) properties.get("width")/tileSize, (float) properties.get("height")/tileSize);
+        this.photonTexture = tMap.get("spirit_photon").getTexture();
+        this.regionTexture = tMap.get("spirit_region").getTexture();
+
+        particleColor = (Color) properties.get("color", Color.RED);
+        particleColor.a = PARTICLE_OPACITY_INACTIVE;
+
+        regionColor = (Color) properties.get("color", Color.RED);
+        regionColor.a = REGION_OPACITY_INACTIVE;
+
+        setTexture(tMap.get("spirit_region"));
+        setDrawScale(scale);
+        setTextureScale(textureScale);
+        setSensor(true);
+        setBodyType(BodyDef.BodyType.StaticBody);
+
+        width = (float) properties.get("width")/tileSize;
+        height = (float) properties.get("height")/tileSize;
+
+        this.pos = new Vector2((float) properties.get("x")/tileSize + width/2, levelHeight - (float) properties.get("y")/tileSize - height/2);
+
+        setPosition(pos);
+
+
+//         PHOTON PARTICLES
+        random = new Random();
+        particles = new ObjectSet<Particle>();
+        int capacity = (int) width * (int) height * 2;
+        memory = new ParticlePool(capacity);
+        for (int i = 0; i < capacity; i++){
+            Particle item = addParticle();
+            float low = item.getBottom() * drawScale.y;
+            float high = item.getTop() * drawScale.y - PARTICLE_SIZE;
+            item.setY(random.nextFloat()*(high-low)+low);
+        }
     }
 
     private Particle addParticle(){

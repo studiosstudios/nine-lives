@@ -1,7 +1,5 @@
 package edu.cornell.gdiac.game;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.audio.*;
@@ -71,6 +69,8 @@ public class LevelController {
     private Color flashColor = new Color(1, 1, 1, 0);
 
 
+    private JsonValue tiledLevelJV;
+
     /**
      * Creates and initialize a new instance of a LevelController
      * <br><br>
@@ -126,11 +126,27 @@ public class LevelController {
      *
      * @return the canvas associated with this controller
      */
+//    public GameCanvas getCanvas() {
+//        return canvas;
+//    }
+
+    /**
+=======
+    }
+
+    /**
+     * Returns the canvas associated with this controller
+     * <br><br>
+     * The canvas is shared across all controllers
+     *
+     * @return the canvas associated with this controller
+     */
     public GameCanvas getCanvas() {
         return canvas;
     }
 
     /**
+>>>>>>> origin/alpha
      * Returns true if returning to prev level
      *
      * @return true if returning to previous level
@@ -158,6 +174,10 @@ public class LevelController {
      */
     public void setJSON(JsonValue level) { levelJV = level; }
 
+    /**
+     * blah
+     */
+    public void setTiledJSON(JsonValue levelJV) { tiledLevelJV = levelJV; }
 
     /**
      * Sets the hashmaps for Texture Regions, Sounds, Fonts, and sets JSON value constants
@@ -182,6 +202,7 @@ public class LevelController {
         actionController.setVolume(constantsJSON.get("defaults").getFloat("volume"));
         actionController.setAssets(sMap);
         level.setAssets(tMap);
+//        level.levelEditor();
     }
 
     /**
@@ -220,7 +241,9 @@ public class LevelController {
 
         boolean tempRet = isRet();
         setRet(false);
-        populateLevel(tempRet, prevCat);
+        level.populateTiled(tiledLevelJV);
+        actionController.setMobControllers(level);
+//        populateLevel(tempRet, prevCat);
         prevLivesState = new LevelState[9];
         canvas.getCamera().setLevelSize(level.bounds.width, level.bounds.height);
         canvas.getCamera().updateCamera(level.getCat().getPosition().x*scale.x, level.getCat().getPosition().y*scale.y, false);

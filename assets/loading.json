@@ -6,8 +6,17 @@
         "playGame" : "shared/playGame.png",
         "settings" : "shared/settings.png",
         "levelSelect" : "shared/levelSelect.png",
+            "mainMenu": "shared/mainMenu.png",
+            "resume": "shared/resume.png",
         "back" : "shared/back.png",
         "exit" : "shared/exitGame.png",
-      "jump": "shared/jump_animation.png"
+        "jump": "shared/jump_animation.png",
+        "mainMenuCat": "shared/mainMenuCat.png",
+        "bgBlur": "shared/bgBlur.png",
+        "bgPause": "shared/bgPause.png",
+        "bgLab": "shared/bgLab.png",
+        "bgSelect": "shared/bgSelect.png",
+            "one": "shared/one.png",
+            "two": "shared/two.png"
 	}
 }

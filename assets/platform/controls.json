@@ -1,0 +1,19 @@
+{
+  "pan": "TAB",
+  "reset": "R",
+  "debug": "B",
+  "up": "UP",
+  "down": "DOWN",
+  "left": "LEFT",
+  "right": "RIGHT",
+  "jump": "C",
+  "dash": "X",
+  "climb": "Z",
+  "switch": "SHIFT_LEFT",
+  "cancel": "CONTROL_LEFT",
+  "undo": "U",
+  "exit": "ESCAPE",
+  "meow": "M",
+  "next": "N",
+  "previous": "P"
+}

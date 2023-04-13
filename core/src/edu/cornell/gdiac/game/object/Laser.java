@@ -6,10 +6,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
 import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.util.Direction;
+
+import java.util.HashMap;
 
 public class Laser extends BoxObstacle implements Activatable{
 
@@ -76,6 +79,45 @@ public class Laser extends BoxObstacle implements Activatable{
         color = Color.RED;
         points = new Array<>();
         initActivations(data);
+    }
+
+    public Laser(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
+        super(tMap.get("laser").getRegionWidth()/scale.x,
+                tMap.get("laser").getRegionHeight()/scale.y);
+
+        setBodyType(BodyDef.BodyType.StaticBody);
+        setName("laser");
+        setDrawScale(scale);
+        setTexture(tMap.get("laser"));
+
+        setRestitution(objectConstants.getFloat("restitution", 0));
+        setFriction(objectConstants.getFloat("friction", 0));
+        setDensity(objectConstants.getFloat("density", 0));
+        setMass(objectConstants.getFloat("mass", 0));
+        setX((float) properties.get("x")/tileSize+objectConstants.get("offset").getFloat(0));
+        setY(levelHeight - (float) properties.get("y")/tileSize+objectConstants.get("offset").getFloat(1));
+        setAngle((float) ((float) properties.get("rotation") * Math.PI/180));
+        setSensor(true);
+        setFixedRotation(true);
+        dir = Direction.angleToDir((int) ((float) properties.get("rotation")));
+        switch (dir){
+            case UP:
+                beamOffset = new Vector2(objectConstants.get("beamOffset").getFloat(0), objectConstants.get("beamOffset").getFloat(1));
+                break;
+            case DOWN:
+                beamOffset = new Vector2(objectConstants.get("beamOffset").getFloat(0), -objectConstants.get("beamOffset").getFloat(1));
+                break;
+            case LEFT:
+                beamOffset = new Vector2(-objectConstants.get("beamOffset").getFloat(1), objectConstants.get("beamOffset").getFloat(0));
+                break;
+            case RIGHT:
+                beamOffset = new Vector2(objectConstants.get("beamOffset").getFloat(1), -objectConstants.get("beamOffset").getFloat(0));
+                break;
+        }
+        totalTime = 0;
+        color = Color.RED;
+        points = new Array<>();
+        initTiledActivations(properties);
     }
 
     /**

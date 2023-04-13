@@ -12,6 +12,10 @@ import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.math.Path2;
 import edu.cornell.gdiac.math.PathExtruder;
 import edu.cornell.gdiac.math.PathFactory;
+import edu.cornell.gdiac.math.PolyFactory;
+import edu.cornell.gdiac.math.*;
+
+import java.util.ArrayList;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
@@ -63,8 +67,14 @@ public class GameCanvas {
 	/** extruder for path rendering */
 	private PathExtruder extruder;
 
+	/** Polygon rendering */
+	private PolyFactory polyFactory;
+
 	/** region used for drawing paths */
 	private TextureRegion region;
+
+	/** draws beziers */
+	private SplinePather pather;
 	
 	/** Rendering context for the debug outlines */
 	private ShapeRenderer debugRender;
@@ -94,7 +104,7 @@ public class GameCanvas {
 	private Vector2 vertex;
 	/** Cache object to handle raw textures */
 	private TextureRegion holder;
-	private final float CAMERA_ZOOM = 0.85f;
+	private final float CAMERA_ZOOM = 0.8f;
 
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
@@ -108,6 +118,8 @@ public class GameCanvas {
 		spriteBatch = new PolygonSpriteBatch();
 		debugRender = new ShapeRenderer();
 		pathFactory = new PathFactory();
+		polyFactory = new PolyFactory();
+		pather = new SplinePather();
 		extruder = new PathExtruder();
 		region = new TextureRegion(new Texture("white.png"));
 		
@@ -1204,6 +1216,48 @@ public class GameCanvas {
 			start = points.get(i);
 		}
 		points.iterator();
+	}
+
+	public void drawRectangle(float x, float y, float w, float h, Color color, float sx, float sy){
+		if (active != DrawPass.STANDARD) {
+			Gdx.app.error("GameCanvas", "Cannot draw without active begin", new IllegalStateException());
+			return;
+		}
+		PolygonRegion rect = polyFactory.makeRect(x*sx, y*sy, w*sx, h*sy).makePolyRegion(region);
+		spriteBatch.setColor(color);
+		spriteBatch.draw(rect, 0,0);
+	}
+	/**
+	 *
+	 */
+	public void drawSpline(Array<Vector2> points, float thickness, Color color, float sx, float sy){
+		if (active != DrawPass.STANDARD) {
+			Gdx.app.error("GameCanvas", "Cannot draw without active begin", new IllegalStateException());
+			return;
+		}
+
+		if (points.size <= 2 || points.size % 3 != 1){
+			Gdx.app.error("GameCanvas", "Incorrect number of points for spline", new IllegalStateException());
+			return;
+		}
+		float[] vert = getPoints(points, sx, sy);
+		Spline2 spline2 = new Spline2(vert);
+		pather = new SplinePather(spline2);
+		pather.calculate();
+		Path2 splinePath = pather.getPath();
+		extruder.set(splinePath);
+		extruder.calculate(thickness);
+		spriteBatch.setColor(color);
+		spriteBatch.draw(extruder.getPolygon().makePolyRegion(region), 0, 0);
+	}
+
+	private float[] getPoints(Array<Vector2> points, float sx, float sy){
+		float[] vert = new float[points.size*2];
+		for (int i=0; i<points.size; i++){
+			vert[2*i] = points.get(i).x*sx;
+			vert[2*i+1] = points.get(i).y*sy;
+		}
+		return vert;
 	}
     
 	/**

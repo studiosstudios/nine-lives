@@ -14,7 +14,6 @@ import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.util.PooledList;
 
 import java.util.HashMap;
-
 /**
  * Represents a single level in our game
  * <br><br>
@@ -40,13 +39,14 @@ public class Level {
     /**Reference to the returnDoor (for collision detection) */
     private BoxObstacle retDoor;
 
+    /** Tiles of level */
+    protected Tiles tiles;
     /** All the objects in the world. */
     protected PooledList<Obstacle> objects  = new PooledList<>();
     /** Queue for adding objects */
     protected PooledList<Obstacle> addQueue = new PooledList<>();
-    /** queue to add joints to the world created in beginContact() */
+    /** Queue to add joints to the world */
     protected PooledList<JointDef> jointQueue = new PooledList<>();
-
     /** Whether we have completed this level */
     private boolean complete;
     /** Whether we have failed at this world (and need a reset) */
@@ -58,37 +58,35 @@ public class Level {
     /** The max lives allowed */
     private final int maxLives;
 
-    /** hashmap to represent activator-spike relationships:
+    /** hashmap to represent activator-activatable relationships:
      *   keys are activator ids specified in JSON*/
     private HashMap<String, Array<Activatable>> activationRelations;
 
-    /** object lists - in the future this will be one list maybe */
+    /** object arrays */
     private final Array<Activator> activators;
     private final Array<Activatable> activatables;
     private final Array<DeadBody> deadBodyArray;
     private final Array<Mob> mobArray;
     private Checkpoint currCheckpoint;
     private final Array<Laser> lasers;
+    private final Array<SpiritRegion> spiritRegionArray;
     /** The respawn position of the player */
     private Vector2 respawnPos;
-    /** Float value to scale width */
-    private float dwidth;
-    /** Float value to scale height */
-    private float dheight;
     /** The background texture */
     private Texture background;
-    /** JSON of the level */
-    private JsonValue levelJV;
 
     /** texture assets */
     private HashMap<String, TextureRegion> textureRegionAssetMap;
 
     //region Spirit mode stuff
-    /** next dead body to switch into */
-    private DeadBody nextDeadBody;
     private boolean spiritMode;
+    /** The spirit line */
     private SpiritLine spiritLine;
     //endregion
+    /** the initial respawn position for this level */
+    private Vector2 startRespawnPos;
+    /** properties map cache */
+    private ObjectMap<String, Object> propertiesMap = new ObjectMap<>();
 
     /**
      * Returns the bounding rectangle for the physics world
@@ -129,15 +127,7 @@ public class Level {
         return cat;
     }
 
-
-    /**
-     * Returns a reference to the exit door
-     *
-     * @return a reference to the exit door
-     */
-    public BoxObstacle getExit() {
-        return goalDoor;
-    }
+    public Checkpoint getCheckpoint() {return currCheckpoint;}
 
     /**
      * Returns a reference to the array of activators
@@ -177,6 +167,13 @@ public class Level {
     public Array<Mob> getMobArray() { return mobArray; }
 
     /**
+     * Returns a reference to the array of spirit regions
+     *
+     * @return a reference to the spirit region array
+     */
+    public Array<SpiritRegion> getSpiritRegionArray() { return spiritRegionArray; }
+
+    /**
      * Returns a reference to the respawn position
      *
      * @return a reference to the respawn position
@@ -189,20 +186,6 @@ public class Level {
      * @param pos the Vector2 value to set respawn position to
      */
     public void setRespawnPos(Vector2 pos) { respawnPos = pos; }
-
-    /**
-     * Returns a reference to the dwidth
-     *
-     * @return a reference to the dwidth
-     */
-    public float getDwidth() { return dwidth; }
-
-    /**
-     * Returns a reference to the dheight
-     *
-     * @return a reference to the dheight
-     */
-    public float getDheight() { return dheight; }
 
     /**
      * Returns true if the level is completed.
@@ -236,20 +219,6 @@ public class Level {
     public void setFailure(boolean value) {
         failed = value;
     }
-
-    /**
-     * Returns a reference to the goal door
-     *
-     * @return a reference to the goal door
-     */
-    public Obstacle getGoalDoor() {  return goalDoor; }
-
-    /**
-     * Returns a reference to the return door
-     *
-     * @return a reference to the return door
-     */
-    public Obstacle getRetDoor() {  return retDoor; }
 
     /**
      * Sets the game world
@@ -325,6 +294,7 @@ public class Level {
         deadBodyArray = new Array<>();
         lasers = new Array<>();
         mobArray = new Array<>();
+        spiritRegionArray = new Array<>();
         activationRelations = new HashMap<>();
     }
 
@@ -346,11 +316,360 @@ public class Level {
      */
     public void updateCheckpoints(Checkpoint c){
         if(currCheckpoint != null){
-            currCheckpoint.setActive(false);
+            currCheckpoint.setCurrent(false);
         }
         currCheckpoint = c;
-        currCheckpoint.setActive(true);
+        currCheckpoint.setCurrent(true);
         respawnPos = currCheckpoint.getPosition();
+    }
+
+    public void resetCheckpoints(){
+        if(currCheckpoint != null){
+            currCheckpoint.setCurrent(false);
+        }
+        currCheckpoint = null;
+        respawnPos = startRespawnPos;
+    }
+
+    /**
+     * Parses Tiled file
+     *
+     */
+    public void populateTiled(JsonValue tiledMap){
+
+
+        world.setGravity( new Vector2(0,tiledMap.getFloat("gravity",-14.7f)) );
+        activationRelations = new HashMap<>();
+        background = textureRegionAssetMap.get("background").getTexture();
+
+        JsonValue layers = tiledMap.get("layers");
+        JsonValue tileData = layers.get(0);
+
+        int tileSize = tiledMap.getInt("tilewidth");
+        int levelWidth = tiledMap.getInt("width");
+        int levelHeight = tiledMap.getInt("height");
+
+        bounds.width = levelWidth*scale.x;
+        bounds.height = levelHeight*scale.y;
+
+        Array<JsonValue> obstacleData = new Array<>();
+
+        for (JsonValue layer : layers) {
+            if (layer.getInt("id") != 1) {
+                obstacleData.add(layer);
+            }
+        }
+
+        populateObstacles(obstacleData, tileSize, levelHeight);
+
+        String biome = tiledMap.get("properties").get(0).getString("value");
+
+        TextureRegion tileset = new TextureRegion();
+
+        if (biome.equals("metal")) {
+            tileset = textureRegionAssetMap.get("metal_tileset");
+        }
+        else if (biome.equals("forest")) {
+            // TODO: change this in future
+            tileset = textureRegionAssetMap.get("metal_tileset");
+        }
+
+        tiles = new Tiles(tileData, tileSize, levelWidth, levelHeight, tileset, new Vector2(1/32f, 1/32f));
+
+        spiritMode = false;
+        spiritLine = new SpiritLine(Color.WHITE, Color.CYAN, scale);
+    }
+
+    /**
+     * blah
+     * @param data
+     */
+    public void populateObstacles(Array<JsonValue> data, int tileSize, int levelHeight) {
+        for (JsonValue obstacleData : data) {
+            String name = obstacleData.getString("name");
+            // Walls
+            if (name.equals("wall-poly")) {
+                populateWalls(obstacleData, tileSize, levelHeight);
+            }
+            // Platforms
+            else if (name.equals("platforms")) {
+                populatePlatforms(obstacleData, tileSize, levelHeight);
+            }
+            // Doors
+            // Boxes
+            // Checkpoints
+            else if (name.equals("checkpoints")) {
+                populateCheckpoints(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("activators")) {
+                populateActivators(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("lasers")) {
+                populateLasers(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("spikes")) {
+                populateSpikes(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("flamethrowers")){
+                populateFlamethrowers(obstacleData, tileSize, levelHeight);
+            }  else if (name.equals("doors")) {
+                populateDoors(obstacleData, tileSize, levelHeight);
+            }  else if (name.equals("spiritRegions")) {
+                populateSpiritRegions(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("mobs")) {
+                populateMobs(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("boxes")) {
+                populateBoxes(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("mirrors")) {
+                populateMirrors(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("cat")) {
+                populateCat(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("exits")) {
+                populateExits(obstacleData, tileSize, levelHeight);
+            }
+
+
+        }
+    }
+
+    private void populateWalls(JsonValue data, int tileSize, int levelHeight) {
+
+        JsonValue objects = data.get("objects");
+
+        for (JsonValue obj : objects) {
+            JsonValue points = obj.get("polygon");
+            float x = obj.getFloat("x");
+            float y = obj.getFloat("y");
+            float[] shape = new float[points.size*2];
+
+            int i = 0;
+            for (JsonValue point : points) {
+
+                shape[i] = (x + point.getFloat("x"))/tileSize;
+
+                shape[i+1] = levelHeight - (y + point.getFloat("y"))/tileSize;
+                i+=2;
+            }
+
+            // check climbable
+            boolean isClimbable = false;
+
+            if (obj.get("properties") != null) {
+                isClimbable = obj.get("properties").get(0).getBoolean("value");
+            }
+            Wall wall = new Wall(textureRegionAssetMap.get("steel"), scale, shape, isClimbable);
+            addObject(wall);
+        }
+    }
+
+
+    private void populatePlatforms(JsonValue data, int tileSize, int levelHeight){
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize);
+            Platform platform = new Platform(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+            loadTiledActivatable(platform);
+        }
+    }
+
+
+    private void populateCheckpoints(JsonValue data, int tileSize, int levelHeight) {
+
+        JsonValue objects = data.get("objects");
+
+        for (JsonValue obj : objects) {
+            float x = obj.getFloat("x");
+            float y = obj.getFloat("y");
+
+            Vector2 pos = new Vector2(x/tileSize, levelHeight - y/tileSize);
+            float angle = (float) ((360-obj.getFloat("rotation")) * Math.PI/180);
+
+            Checkpoint checkpoint = new Checkpoint(pos, angle, scale, textureRegionAssetMap.get("checkpoint_anim"),
+                    textureRegionAssetMap.get("checkpoint_active_anim"), textureRegionAssetMap.get("checkpoint_base"),
+                    textureRegionAssetMap.get("checkpoint_base_active"));
+            addObject(checkpoint);
+        }
+    }
+
+    private void populateActivators(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize);
+            Activator activator;
+            switch ((String) propertiesMap.get("type")){
+                case "button":
+                    activator = new Button(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+                    break;
+                case "switch":
+                    activator = new Switch(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+                    break;
+                case "timed":
+                    activator = new TimedButton(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+                    break;
+                default:
+                    throw new RuntimeException("unrecognised activator type");
+            }
+            activators.add(activator);
+            addObject(activator);
+        }
+    }
+
+    private void populateSpikes(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize);
+            Spikes spikes = new Spikes(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight, new Vector2(1/64f, 1/64f));
+            loadTiledActivatable(spikes);
+        }
+    }
+
+    private void populateFlamethrowers(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize);
+            Flamethrower flamethrower = new Flamethrower(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight, new Vector2(1/64f, 1/64f));
+            loadTiledActivatable(flamethrower);
+        }
+    }
+
+
+    private void populateLasers(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize);
+            Laser laser = new Laser(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+            loadTiledActivatable(laser);
+            lasers.add(laser);
+        }
+    }
+
+    private void populateDoors(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize);
+            Door door = new Door(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+            loadTiledActivatable(door);
+        }
+    }
+
+    private void populateSpiritRegions(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize);
+            SpiritRegion spiritRegion = new SpiritRegion(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+            spiritRegionArray.add(spiritRegion);
+            addObject(spiritRegion);
+        }
+    }
+
+    private void populateMobs(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize);
+            Mob mob = new Mob(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight, new Vector2(1/32f, 1/32f));
+            mobArray.add(mob);
+            addObject(mob);
+        }
+    }
+
+    private void populateBoxes(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize);
+            PushableBox box = new PushableBox(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+            addObject(box);
+        }
+    }
+
+    private void populateMirrors(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize);
+            Mirror mirror = new Mirror(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+            addObject(mirror);
+        }
+    }
+
+    private void populateExits(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize);
+            Exit exit = new Exit(propertiesMap, scale, tileSize, levelHeight);
+            addObject(exit);
+        }
+    }
+
+    private void populateCat(JsonValue data, int tileSize, int levelHeight){
+        JsonValue objects = data.get("objects");
+        JsonValue catJV = objects.get(0);
+        readProperties(catJV, tileSize);
+        cat = new Cat(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+        respawnPos = cat.getPosition();
+        startRespawnPos = respawnPos;
+        addObject(cat);
+    }
+
+
+    private void readProperties(JsonValue objectJV, int tileSize){
+        propertiesMap.clear();
+
+        propertiesMap.put("width", objectJV.getFloat("width"));
+        propertiesMap.put("height", objectJV.getFloat("height"));
+        float angle = (360 - objectJV.getFloat("rotation")) % 360;
+        propertiesMap.put("rotation", angle);
+
+        switch ((int) angle) {
+            default:
+            case 0:
+                propertiesMap.put("x", objectJV.getFloat("x"));
+                propertiesMap.put("y", objectJV.getFloat("y"));
+                break;
+            case 90:
+                propertiesMap.put("x", objectJV.getFloat("x"));
+                propertiesMap.put("y", objectJV.getFloat("y") - tileSize);
+                break;
+            case 180:
+                propertiesMap.put("x", objectJV.getFloat("x") - tileSize);
+                propertiesMap.put("y", objectJV.getFloat("y") - tileSize);
+                break;
+            case 270:
+                propertiesMap.put("x", objectJV.getFloat("x") - tileSize);
+                propertiesMap.put("y", objectJV.getFloat("y"));
+                break;
+        }
+
+        //object specific properties (if there are any)
+        JsonValue properties = objectJV.get("properties");
+        if (properties == null) { return; }
+        for (JsonValue property : properties){
+            String name = property.getString("name");
+            switch (property.getString("type")){
+                case "string":
+                    propertiesMap.put(name, property.getString("value"));
+                    break;
+                case "int":
+                    propertiesMap.put(name, property.getInt("value"));
+                    break;
+                case "bool":
+                    propertiesMap.put(name, property.getBoolean("value"));
+                    break;
+                case "float":
+                    propertiesMap.put(name, property.getFloat("value"));
+                    break;
+                case "color":
+                    propertiesMap.put(name, Color.valueOf(property.getString("value")));
+                    break;
+                case "class":
+                    switch (property.getString("propertytype")){
+                        //currently only one class defined in our level editor, but this allows us to be flexible to add more
+                        case "Vector2":
+                            Vector2 v = new Vector2(property.get("value").getFloat("x"), property.get("value").getFloat("y"));
+                            propertiesMap.put(name, v);
+                            break;
+                        default:
+                            throw new IllegalArgumentException("unexpected class: " + property.getString("type"));
+                    }
+                    break;
+                default:
+                    throw new IllegalArgumentException("unexpected property type: " + property.getString("type"));
+            }
+        }
     }
 
 
@@ -366,19 +685,14 @@ public class Level {
      */
     public void populateLevel(HashMap<String, TextureRegion> tMap, HashMap<String, BitmapFont> fMap,
                                HashMap<String, Sound> sMap, JsonValue constants, JsonValue levelJV, boolean ret, Cat prevCat) {
-        this.levelJV = levelJV;
+        /** JSON of the level */
 
-        activationRelations = new HashMap<>();
-        background = tMap.get("background").getTexture();
-
-        JsonValue size = levelJV.get("size");
-        bounds.width = size.getFloat(0)*scale.x;
-        bounds.height = size.getFloat(1)*scale.y;
-
-        JsonValue offset = levelJV.get("offset");
-        bounds.x = offset.getFloat(0)*scale.x;
-        bounds.y = offset.getFloat(1)*scale.y;
-
+//        activationRelations = new HashMap<>();
+//        background = tMap.get("background").getTexture();
+//
+//        JsonValue size = levelJV.get("size");
+//        bounds.width = size.getFloat(0)*scale.x;
+//        bounds.height = size.getFloat(1)*scale.y;
         /*
         TODO: Remove try-catches
         We use try-catches here so that the level JSONs don't need to contain empty fields for objects that they don't have.
@@ -386,132 +700,149 @@ public class Level {
         every object in the game, even if they're empty. At that point, we should remove these try-catches
         so that we can enforce a stronger format for our level JSONs.
          */
-        try {
-            for (JsonValue exitJV : levelJV.get("exits")){
-                Exit exit = new Exit(scale, exitJV);
-                addObject(exit);
-            }
-        } catch (NullPointerException e) {}
+//        try {
+//            for (JsonValue exitJV : levelJV.get("exits")){
+//                Exit exit = new Exit(scale, exitJV);
+//                addObject(exit);
+//            }
+//        } catch (NullPointerException e) {}
 
-        JsonValue defaults = constants.get("defaults");
-        // This world is heavier
-        world.setGravity( new Vector2(0,defaults.getFloat("gravity",0)) );
+//        JsonValue defaults = constants.get("defaults");
+//        // This world is heavier
+//        world.setGravity( new Vector2(0,defaults.getFloat("gravity",0)) );
 
-        try {
-            for (JsonValue wallJV : levelJV.get("walls")){
-                Wall wall = new Wall(tMap.get("steel"), scale, wallJV);
-                addObject(wall);
-            }
-        } catch (NullPointerException e) {}
+//        try {
+//            for (JsonValue wallJV : levelJV.get("walls")){
+//                Wall wall = new Wall(tMap.get("steel"), scale, wallJV);
+//                addObject(wall);
+//            }
+//        } catch (NullPointerException e) {}
 
-        try {
-            for (JsonValue platformJV : levelJV.get("platforms")){
-                Platform platform = new Platform(tMap.get("steel"), scale, platformJV);
-                loadActivatable(platform, platformJV);
-            }
-        } catch (NullPointerException e) {}
+//        try {
+//            for (JsonValue platformJV : levelJV.get("platforms")){
+//                Platform platform = new Platform(tMap.get("steel"), scale, platformJV);
+//                loadActivatable(platform, platformJV);
+//            }
+//        } catch (NullPointerException e) {}
 
-        try {
-            for (JsonValue activatorJV : levelJV.get("activators")){
-                Activator activator;
-                switch (activatorJV.getString("type")){
-                    case "button":
-                        activator = new Button(tMap.get("button_anim"), tMap.get("button"), scale, activatorJV);
-                        break;
-                    case "switch":
-                        activator = new Switch(tMap.get("button_anim"), tMap.get("button"),scale, activatorJV);
-                        break;
-                    case "timed":
-                        activator = new TimedButton(tMap.get("button_anim"), tMap.get("button"),scale, activatorJV);
-                        break;
-                    default:
-                        throw new RuntimeException("unrecognised activator type");
-                }
-                activators.add(activator);
-                addObject(activator);
-            }
-        } catch (NullPointerException e) {}
+//        try {
+//            for (JsonValue activatorJV : levelJV.get("activators")){
+//                Activator activator;
+//                switch (activatorJV.getString("type")){
+//                    case "button":
+//                        activator = new Button(tMap.get("button_anim"), tMap.get("button"), scale, activatorJV);
+//                        break;
+//                    case "switch":
+//                        activator = new Switch(tMap.get("button_anim"), tMap.get("button"),scale, activatorJV);
+//                        break;
+//                    case "timed":
+//                        activator = new TimedButton(tMap.get("button_anim"), tMap.get("button"),scale, activatorJV);
+//                        break;
+//                    default:
+//                        throw new RuntimeException("unrecognised activator type");
+//                }
+//                activators.add(activator);
+//                addObject(activator);
+//            }
+//        } catch (NullPointerException e) {}
 
-        try {
-            for (JsonValue spikeJV : levelJV.get("spikes")) {
-                Spikes spike = new Spikes(tMap.get("spikes"), scale, new Vector2(1f/64, 1f/64), spikeJV);
-                loadActivatable(spike, spikeJV);
-            }
-        } catch (NullPointerException e) {}
+//        try {
+//            for (JsonValue spikeJV : levelJV.get("spikes")) {
+//                Spikes spike = new Spikes(tMap.get("spikes"), scale, new Vector2(1f/64, 1f/64), spikeJV);
+//                loadActivatable(spike, spikeJV);
+//            }
+//        } catch (NullPointerException e) {}
 
-        try {
-            for (JsonValue checkpointJV : levelJV.get("checkpoints")){
-                Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint"), tMap.get("checkpointActive"));
-                addObject(checkpoint);
-            }
-        } catch (NullPointerException e) {}
+//        try {
+//            for (JsonValue checkpointJV : levelJV.get("checkpoints")){
+//                Checkpoint checkpoint = new Checkpoint(checkpointJV, scale, tMap.get("checkpoint_anim"), tMap.get("checkpoint_active_anim"),
+//                        tMap.get("checkpoint_base"), tMap.get("checkpoint_base_active"));
+//                addObject(checkpoint);
+//            }
+//        } catch (NullPointerException e) {}
 
-        try {
-            for(JsonValue boxJV : levelJV.get("boxes")){
-                PushableBox box = new PushableBox(tMap.get("steel"), scale, boxJV);
-                addObject(box);
-            }
-        } catch (NullPointerException e) {}
+//        try {
+//            for(JsonValue boxJV : levelJV.get("boxes")){
+//                PushableBox box = new PushableBox(tMap.get("steel"), scale, boxJV);
+//                addObject(box);
+//            }
+//        } catch (NullPointerException e) {}
 
-        try {
-            for (JsonValue flamethrowerJV : levelJV.get("flamethrowers")){
-                Flamethrower flamethrower = new Flamethrower(tMap.get("flamethrower"), new Vector2(1f/64, 1f/64),
-                        tMap.get("flame_anim"), new Vector2(1, 1), scale, flamethrowerJV);
-                loadActivatable(flamethrower, flamethrowerJV);
-            }
-        } catch (NullPointerException e) {}
+//        try {
+//            for (JsonValue flamethrowerJV : levelJV.get("flamethrowers")){
+//                Flamethrower flamethrower = new Flamethrower(tMap.get("flamethrower"), new Vector2(1f/64, 1f/64),
+//                        tMap.get("flame_anim"), new Vector2(1, 1), scale, flamethrowerJV);
+//                loadActivatable(flamethrower, flamethrowerJV);
+//            }
+//        } catch (NullPointerException e) {}
 
-        try {
-            for (JsonValue laserJV : levelJV.get("lasers")){
-                Laser laser = new Laser(tMap.get("laser"), scale, laserJV);
-                loadActivatable(laser, laserJV);
-                lasers.add(laser);
-            }
-        } catch (NullPointerException e) {}
-
-        try {
-            for (JsonValue mirrorJV : levelJV.get("mirrors")){
-                Mirror mirror = new Mirror(tMap.get("steel"), scale, mirrorJV);
-                addObject(mirror);
-            }
-        } catch (NullPointerException e) {}
+//        try {
+//            for (JsonValue laserJV : levelJV.get("lasers")){
+//                Laser laser = new Laser(tMap.get("laser"), scale, laserJV);
+//                loadActivatable(laser, laserJV);
+//                lasers.add(laser);
+//            }
+//        } catch (NullPointerException e) {}
+//
+//        try {
+//            for (JsonValue mirrorJV : levelJV.get("mirrors")){
+//                Mirror mirror = new Mirror(tMap.get("steel"), scale, mirrorJV);
+//                addObject(mirror);
+//            }
+//        } catch (NullPointerException e) {}
 
         // Create mobs
-        try {
-            for (JsonValue mobJV : levelJV.get("mobs")){
-                Mob mob = new Mob(tMap.get("roboMob"), scale, new Vector2(1f/32, 1f/32), mobJV);
-                mobArray.add(mob);
-                addObject(mob);
-            }
-        } catch (NullPointerException e) {}
+//        try {
+//            for (JsonValue mobJV : levelJV.get("mobs")){
+//                Mob mob = new Mob(tMap.get("roboMob"), scale, new Vector2(1f/32, 1f/32), mobJV);
+//                mobArray.add(mob);
+//                addObject(mob);
+//            }
+//        } catch (NullPointerException e) {}
 
-        try {
-            for (JsonValue doorJV : levelJV.get("doors")){
-                Door door = new Door(tMap.get("steel"), scale, doorJV);
-                loadActivatable(door,doorJV);
-            }
-        } catch (NullPointerException e) {}
+//        try {
+//            for (JsonValue doorJV : levelJV.get("doors")){
+//                Door door = new Door(tMap.get("steel"), scale, doorJV);
+//                loadActivatable(door,doorJV);
+//            }
+//        } catch (NullPointerException e) {}
+
+//        try {
+//            for (JsonValue spiritJV : levelJV.get("spiritRegions")){
+//                SpiritRegion spiritRegion = new SpiritRegion(tMap.get("spirit_region"), tMap.get("spirit_photon"), scale, new Vector2(1, 1), spiritJV);
+//                addObject(spiritRegion);
+//                spiritRegionArray.add(spiritRegion);
+//            }
+//        } catch (NullPointerException e) {
+//            e.printStackTrace();
+//        }
 
         // Create cat
-        dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
-        dheight = tMap.get("cat").getRegionHeight()/scale.y;
-        Texture[] arr = new Texture[6];
-        arr[0] = tMap.get("cat").getTexture();
-        arr[1] = tMap.get("jumpingCat").getTexture();
-        arr[2] = tMap.get("jump_anim").getTexture();
-        arr[3] = tMap.get("meow_anim").getTexture();
-        arr[4] = tMap.get("sit").getTexture();
-        arr[5] = tMap.get("walk").getTexture();
-        cat = new Cat(levelJV.get("cat"), dwidth, dheight, ret, prevCat == null? null : prevCat.getPosition(),arr);
-        cat.setDrawScale(scale);
-//        cat.setTexture(tMap.get("cat"));
-        respawnPos = cat.getPosition();
-        addObject(cat);
+//        /** Float value to scale width */
+//        float dwidth = tMap.get("cat").getRegionWidth() / scale.x;
+//        /** Float value to scale height */
+//        float dheight = tMap.get("cat").getRegionHeight() / scale.y;
+////        Texture[] arr = new Texture[6];
+//        dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
+//        dheight = tMap.get("cat").getRegionHeight()/scale.y;
+//        Texture[] arr = new Texture[8];
+//        arr[0] = tMap.get("cat").getTexture();
+//        arr[1] = tMap.get("jumpingCat").getTexture();
+//        arr[2] = tMap.get("jump_anim").getTexture();
+//        arr[3] = tMap.get("meow_anim").getTexture();
+//        arr[4] = tMap.get("sit").getTexture();
+//        arr[5] = tMap.get("walk").getTexture();
+//        arr[6] = tMap.get("idle_anim").getTexture();
+//        arr[7] = tMap.get("idle_anim_stand").getTexture();
+//        cat = new Cat(levelJV.get("cat"), dwidth, dheight, ret, prevCat == null? null : prevCat.getPosition(),arr);
+//        cat.setDrawScale(scale);
+//        respawnPos = cat.getPosition();
+//        startRespawnPos = respawnPos;
+//        addObject(cat);
 
-        spiritMode = false;
-        spiritLine = new SpiritLine(Color.WHITE, Color.CYAN, scale);
+//        spiritMode = false;
+//        spiritLine = new SpiritLine(Color.WHITE, Color.CYAN, scale);
     }
-
     /**
      * TODO: MOVE TO LEVELCONTROLLER
      * @param constants
@@ -530,6 +861,7 @@ public class Level {
         Cat.setConstants(constants.get("cat"));
         Exit.setConstants(constants.get("exits"));
         Door.setConstants(constants.get("doors"));
+        Mob.setConstants(constants.get("mobs"));
     }
 
     /**
@@ -549,11 +881,14 @@ public class Level {
         deadBodyArray.clear();
         activatables.clear();
         mobArray.clear();
+        spiritRegionArray.clear();
         numLives = maxLives;
+        currCheckpoint = null;
         if (world != null) {
             world.dispose();
             world = null;
         }
+        currCheckpoint = null;
         setComplete(false);
         setFailure(false);
     }
@@ -624,8 +959,6 @@ public class Level {
             JointDef jdef = jointQueue.poll();
             Joint joint = world.createJoint(jdef);
 
-            //add joint to joint list of spikes
-            //this is very jank and should be factored out for all gameobjects
             if (jdef.bodyA.getUserData() instanceof Spikes){
                 ((Spikes) jdef.bodyA.getUserData()).addJoint(joint);
             } else if (jdef.bodyB.getUserData() instanceof Spikes) {
@@ -659,19 +992,28 @@ public class Level {
         activatables.add(object);
     }
 
+    private void loadTiledActivatable(Activatable object){
+
+        addObject((Obstacle) object);
+
+        String activatorID = (String) propertiesMap.get("activatorID", "");
+        if (!activatorID.equals("")) {
+            if (activationRelations.containsKey(activatorID)) {
+                activationRelations.get(activatorID).add(object);
+            } else {
+                activationRelations.put(activatorID, new Array<>(new Activatable[]{object}));
+            }
+        }
+
+        activatables.add(object);
+    }
+
     /**
-     * Draws the level to the given game canvas
-     * <br><br>
-     * If debug mode is true, it will outline all physics bodies as wireframes. Otherwise
-     * it will only draw the sprite representations.
+     * Draws the level to the given game canvas. Assumes <code>canvas.begin()</code> has already been called.
      *
      * @param canvas	the drawing context
      */
-    public void draw(GameCanvas canvas, boolean debug) {
-        canvas.clear();
-
-        canvas.begin();
-        canvas.applyViewport();
+    public void draw(GameCanvas canvas) {
         if (background != null) {
             //scales background with level size
             float scaleX = bounds.width/background.getWidth();
@@ -679,45 +1021,59 @@ public class Level {
             canvas.draw(background, Color.WHITE, 0, 0, background.getWidth()*Float.max(scaleX,scaleY), background.getHeight()*Float.max(scaleX,scaleY));
 //            canvas.draw(background, 0, 0);
         }
-        //draw everything except cat and dead bodies
+
+        tiles.draw(canvas);
+
+        //draw everything except cat, dead bodies and spirit region
         for(Obstacle obj : objects) {
-            if (obj != cat && !(obj instanceof DeadBody)){
+            if (obj != cat && !(obj instanceof DeadBody) && !(obj instanceof SpiritRegion)
+                    && !(obj instanceof Wall && !(obj instanceof Platform)) ){
                 obj.draw(canvas);
             }
         }
 
         spiritLine.draw(canvas);
 
-        for (DeadBody db : deadBodyArray){
+        for (DeadBody db : deadBodyArray) {
             db.draw(canvas);
         }
         cat.draw(canvas);
-        canvas.end();
 
-        canvas.begin();
-        if (debug) {
-            canvas.beginDebug();
-            //draw grid
-            Color lineColor = new Color(0.8f, 0.8f, 0.8f, 1);
-            float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/scale.x;
-            float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/scale.y;
-            for (int x = 0; x < bounds.width; x++) {
-                Vector2 p1 = new Vector2(x-xTranslate, 0-yTranslate);
-                Vector2 p2 = new Vector2(x-xTranslate, bounds.height-yTranslate);
-                canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
-            }
-            for (int y = 0; y < bounds.height; y++) {
-                Vector2 p1 = new Vector2(0-xTranslate, y-yTranslate);
-                Vector2 p2 = new Vector2(bounds.width-xTranslate, y-yTranslate);
-                canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
-            }
-            for (Obstacle obj : objects) {
-                obj.drawDebug(canvas);
-            }
-            canvas.endDebug();
+        for (SpiritRegion s : spiritRegionArray) {
+            s.draw(canvas);
         }
-        canvas.end();
+
+        if (currCheckpoint != null) {
+            currCheckpoint.drawBase(canvas);
+        }
     }
+
+    /**
+     * Draws the wireframe debug of the level to the given game canvas. Assumes <code>canvas.beginDebug()</code> has already been called.
+     *
+     * @param canvas	the drawing context
+     */
+    public void drawDebug(GameCanvas canvas){
+        //draw grid
+        Color lineColor = new Color(0.8f, 0.8f, 0.8f, 1);
+        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/scale.x;
+        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/scale.y;
+        for (int x = 0; x < bounds.width; x++) {
+            Vector2 p1 = new Vector2(x-xTranslate, 0-yTranslate);
+            Vector2 p2 = new Vector2(x-xTranslate, bounds.height-yTranslate);
+            canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
+        }
+        for (int y = 0; y < bounds.height; y++) {
+            Vector2 p1 = new Vector2(0-xTranslate, y-yTranslate);
+            Vector2 p2 = new Vector2(bounds.width-xTranslate, y-yTranslate);
+            canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
+        }
+        for (Obstacle obj : objects) {
+            obj.drawDebug(canvas);
+        }
+    }
+
+
 
     /**
      * Spawns a dead body at the location of the cat
@@ -731,9 +1087,21 @@ public class Level {
     }
 
     /**
+     * Loads a dead body into this level from a saved state.
+     * @param state Map of arguments for the dead body, called from storeState() in {@link DeadBody}.
+     */
+    public void loadDeadBodyState(ObjectMap<String, Object> state){
+        DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat"), scale, Vector2.Zero);
+        deadBody.loadState(state);
+        queueObject(deadBody);
+        deadBodyArray.add(deadBody);
+    }
+
+    /**
      * Removes a DeadBody from the dead body array
      * */
     public void removeDeadBody(DeadBody db){
+        db.markRemoved(true);
         deadBodyArray.removeValue(db, true);
     }
 
@@ -746,7 +1114,7 @@ public class Level {
         float minDist = Float.MAX_VALUE;
         DeadBody nextdb = null;
         for (DeadBody db : deadBodyArray){
-            if (db.isSwitchable()){
+            if (sharesSpriritRegion(db.getSpiritRegions(), cat.getSpiritRegions())){
                 float dist = cat.getPosition().dst(db.getPosition());
                 if (dist < minDist){
                     minDist = dist;
@@ -755,6 +1123,14 @@ public class Level {
             }
         }
         return nextdb;
+    }
+
+    private boolean sharesSpriritRegion(ObjectSet<SpiritRegion> s1, ObjectSet<SpiritRegion> s2){
+        if (s1.isEmpty() && s2.isEmpty()) return true;
+        for (SpiritRegion r : s1){
+            if (s2.contains(r)) return true;
+        }
+        return false;
     }
 
     /**

@@ -4,11 +4,14 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.ObjectMap;
 
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
+
+import java.util.HashMap;
 
 //TODO: make this a ComplexObstacle
 public class Spikes extends BoxObstacle implements Activatable {
@@ -67,6 +70,40 @@ public class Spikes extends BoxObstacle implements Activatable {
         setAngle((float) (data.getFloat("angle") * Math.PI/180));
 
         initActivations(data);
+    }
+
+    public Spikes(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale,
+                  int tileSize, int levelHeight, Vector2 textureScale){
+        super(tMap.get("spikes").getRegionWidth()/scale.x*textureScale.x,
+                tMap.get("spikes").getRegionHeight()/scale.y*textureScale.y);
+
+        setBodyType(BodyDef.BodyType.StaticBody);
+        setSensor(true);
+        setFixedRotation(true);
+        setName("spikes");
+        setDrawScale(scale);
+        setTextureScale(textureScale);
+        setTexture(tMap.get("spikes"));
+
+        Vector2 sensorCenter = new Vector2(objectConstants.get("sensor_offset").getFloat(0),
+                objectConstants.get("sensor_offset").getFloat(1));
+        sensorShape = new PolygonShape();
+        sensorShape.setAsBox(getWidth() / 2 * objectConstants.getFloat("sensor_width_scale"),
+                getHeight() / 2 * objectConstants.getFloat("sensor_height_scale"),
+                sensorCenter, 0.0f);
+
+        Vector2 solidCenter = new Vector2(objectConstants.get("solid_offset").getFloat(0),
+                objectConstants.get("solid_offset").getFloat(1));
+        solidShape = new PolygonShape();
+        solidShape.setAsBox(getWidth() / 2 * objectConstants.getFloat("solid_width_scale"),
+                getHeight() / 2 * objectConstants.getFloat("solid_height_scale"),
+                solidCenter, 0.0f);
+
+        setX((float) properties.get("x")/tileSize+objectConstants.get("offset").getFloat(0));
+        setY(levelHeight - (float) properties.get("y")/tileSize+objectConstants.get("offset").getFloat(1));
+        setAngle((float) ((float) properties.get("rotation") * Math.PI/180));
+//        System.out.println(getPosition());
+        initTiledActivations(properties);
     }
 
     /**

@@ -9,10 +9,8 @@ import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.game.object.*;
 
 import edu.cornell.gdiac.game.obstacle.*;
-import edu.cornell.gdiac.util.PooledList;
 
 import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  * Gameplay controller handling the in-game operations of the current level.
@@ -68,14 +66,24 @@ public class LevelController {
      * PLAYER_PAN: Camera zooms out and player is free to pan around the level (all other gameplay controls stripped from user)
      * PAN: Camera movement not controlled by player (e.g. when activator is pressed or at beginning of level)
      */
-    enum LevelState{
+    enum GameplayState{
         PLAY,
         LEVEL_SWITCH,
         PLAYER_PAN,
         PAN
     }
     /** State of gameplay */
-    private LevelState state;
+    private GameplayState gameplayState;
+    /** Array storing level states of past lives. The ith element of this array is the state
+     * of the level at the instant the player had died i times. */
+    private LevelState[] prevLivesState = new LevelState[9];
+    /** If we have respawned in preUpdate(). Needed in postUpdate() for saving level state. */
+    private boolean justRespawned;
+    /** The color of the flash animation after resetting/undoing */
+    private Color flashColor = new Color(1, 1, 1, 0);
+
+
+    private JsonValue tiledLevelJV;
 
     /**
      * Creates and initialize a new instance of a LevelController
@@ -101,7 +109,7 @@ public class LevelController {
         collisionController = new CollisionController(actionController);
         collisionController.setLevel(level);
 
-        state = LevelState.PLAY;
+        gameplayState = GameplayState.PLAY;
     }
 
     /**
@@ -134,11 +142,27 @@ public class LevelController {
      *
      * @return the canvas associated with this controller
      */
+//    public GameCanvas getCanvas() {
+//        return canvas;
+//    }
+
+    /**
+=======
+    }
+
+    /**
+     * Returns the canvas associated with this controller
+     * <br><br>
+     * The canvas is shared across all controllers
+     *
+     * @return the canvas associated with this controller
+     */
     public GameCanvas getCanvas() {
         return canvas;
     }
 
     /**
+>>>>>>> origin/alpha
      * Returns true if returning to prev level
      *
      * @return true if returning to previous level
@@ -166,7 +190,10 @@ public class LevelController {
      */
     public void setJSON(JsonValue level) { levelJV = level; }
 
-
+    /**
+     * blah
+     */
+    public void setTiledJSON(JsonValue levelJV) { tiledLevelJV = levelJV; }
 
     /**
      * Sets the hashmaps for Texture Regions, Sounds, Fonts, and sets JSON value constants
@@ -191,6 +218,7 @@ public class LevelController {
         actionController.setVolume(constantsJSON.get("defaults").getFloat("volume"));
         actionController.setAssets(sMap);
         level.setAssets(tMap);
+//        level.levelEditor();
     }
 
     /**
@@ -205,6 +233,7 @@ public class LevelController {
         level.getCat().setFacingRight(true);
         level.getCat().setJumpPressed(false);
         level.getCat().setGrounded(true);
+        justRespawned = true;
     }
 
     /**
@@ -216,6 +245,7 @@ public class LevelController {
     public void reset(Cat prevCat) {
 
         Vector2 gravity = new Vector2( world.getGravity() );
+        justRespawned = true;
         level.dispose();
         world = new World(gravity,false);
         level.setWorld(world);
@@ -227,7 +257,10 @@ public class LevelController {
 
         boolean tempRet = isRet();
         setRet(false);
-        populateLevel(tempRet, prevCat);
+        level.populateTiled(levelJV);
+        actionController.setMobControllers(level);
+//        populateLevel(tempRet, prevCat);
+        prevLivesState = new LevelState[9];
         canvas.getCamera().setLevelBounds(level.bounds);
         canvas.getCamera().updateCamera(level.getCat().getPosition().x*scale.x, level.getCat().getPosition().y*scale.y, false);
     }
@@ -266,7 +299,7 @@ public class LevelController {
         InputController input = InputController.getInstance();
         input.readInput(bounds, scale);
         if(input.didPan()){
-            state = LevelState.PLAYER_PAN;
+            gameplayState = GameplayState.PLAYER_PAN;
             Camera cam = canvas.getCamera();
             cam.zoomOut(true);
             //move camera
@@ -274,7 +307,7 @@ public class LevelController {
         }
         else{
             canvas.getCamera().zoomOut(false);
-            state = LevelState.PLAY;
+            gameplayState = GameplayState.PLAY;
         }
         // Toggle debug
         if (input.didDebug()) {
@@ -283,6 +316,7 @@ public class LevelController {
         }
         // Handle resets
         if (input.didReset()) {
+//            flashColor.set(0, 0, 0, 1);
             reset(null);
         }
 
@@ -308,15 +342,15 @@ public class LevelController {
             setRet(true);
         }
         actionController.update(dt);
-        if(state == LevelState.PLAY){
+        flashColor.a -= flashColor.a/10;
+        if(gameplayState == GameplayState.PLAY){
             float x_pos = level.getCat().getPosition().x*scale.x;
             float y_pos = level.getCat().getPosition().y*scale.y;
             canvas.getCamera().updateCamera(x_pos, y_pos, true);
         }
-        else if(state == LevelState.LEVEL_SWITCH){
+        else if(gameplayState == GameplayState.LEVEL_SWITCH){
             /**
-             * TODO:
-             * Seamless Level Switching
+             * TODO: Seamless Level Switching
              */
             float x_pos = level.getCat().getPosition().x*scale.x; //needs to be relative to cat's new position in larger world
             float y_pos = level.getCat().getPosition().y*scale.y; //needs to be relative to cat's new position in larger world
@@ -325,14 +359,14 @@ public class LevelController {
     }
 
     /**
-     * @param state "PLAY" or "SWITCH"
+     * @param gameplayState "PLAY" or "SWITCH"
      */
-    public void setState(String state){
-        if(state.equals("PLAY")){
-            this.state = LevelState.PLAY;
+    public void setGameplayState(String gameplayState){
+        if(gameplayState.equals("PLAY")){
+            this.gameplayState = GameplayState.PLAY;
         }
-        else if(state.equals("SWITCH")){
-            this.state = LevelState.LEVEL_SWITCH;
+        else if(gameplayState.equals("SWITCH")){
+            this.gameplayState = GameplayState.LEVEL_SWITCH;
         }
     }
 
@@ -353,38 +387,30 @@ public class LevelController {
         // Turn the physics engine crank.
         world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
 
-        // Garbage collect the deleted objects.
-        // Note how we use the linked list nodes to delete O(1) in place.
-        // This is O(n) without copying.
-        Iterator<PooledList<Obstacle>.Entry> iterator = level.getObjects().entryIterator();
-        while (iterator.hasNext()) {
-            PooledList<Obstacle>.Entry entry = iterator.next();
-            Obstacle obj = entry.getValue();
-            if (obj.isRemoved()) {
-                if (obj instanceof DeadBody){
-                  level.removeDeadBody((DeadBody) obj);
-                }
-                obj.deactivatePhysics(world);
-                entry.remove();
-            } else {
-                // Note that update is called last!
-                obj.update(dt);
+        // Update objects
+        actionController.postUpdate(dt);
 
-                //update base velocity
-                if (obj instanceof Moveable) {
-                    Vector2 baseVel = new Vector2();
-                    ObjectSet<Fixture> fixtures =  ((Moveable) obj).getGroundFixtures();
+        //Save level state if necessary. This must be done here so that we can save dead bodies after they are added
+        //to the world. Ideally we could do this in respawn(), but that would involve rearranging the order of everything
+        //which may be a pain. Also it does seem like saving state after stepping the world has better results - will need
+        //testing.
 
-                    //set base velocity to average of linear velocities of grounds
-                    if (fixtures.size > 0) {
-                        for (Fixture f : fixtures) {
-                            baseVel.add((((Obstacle) f.getBody().getUserData()).getLinearVelocity()));
-                        }
-                        baseVel.scl(1f / (float) fixtures.size);
-                    }
-                    obj.setBaseVelocity(baseVel);
-                }
+//        if (InputController.getInstance().didUndo()) {
+//            if (level.getNumLives() < 9) {
+//                loadLevelState(prevLivesState[8 - level.getNumLives()]);
+//                flashColor.set(1, 1, 1, 1);
+//            }
+//        }
+        if (justRespawned) {
+            prevLivesState[9 - level.getNumLives()] = new LevelState(level);
+            justRespawned = false;
+        }
 
+
+        if (InputController.getInstance().didUndo()) {
+            if (level.getNumLives() < 9) {
+                loadLevelState(prevLivesState[8 - level.getNumLives()]);
+                flashColor.set(1, 1, 1, 1);
             }
         }
     }
@@ -410,13 +436,78 @@ public class LevelController {
      * @param dt	Number of seconds since last animation frame
      */
     public void draw(float dt) {
-        level.draw(canvas, debug);
+        canvas.clear();
 
-        // Final message
-        if (level.isComplete() && !level.isFailure()) {
-            displayFont.setColor(Color.YELLOW);
-            canvas.begin(); // DO NOT SCALE
-            canvas.end();
+        canvas.begin();
+        canvas.applyViewport();
+        level.draw(canvas);
+        canvas.drawRectangle(0, 0, bounds.width,bounds.height, flashColor, scale.x, scale.y);
+        canvas.end();
+
+        if (debug) {
+            canvas.beginDebug();
+            level.drawDebug(canvas);
+            canvas.endDebug();
+        }
+
+    }
+
+
+    /**
+     * Stores a snapshot of the state of a level.
+     */
+    private static class LevelState {
+        public ObjectMap<Obstacle, ObjectMap<String, Object>> obstacleData = new ObjectMap<>();
+        public int numLives;
+        public Checkpoint checkpoint;
+        public Array<ObjectMap<String, Object>> deadBodyData = new Array<>();
+
+        public LevelState(Level level){
+            this.numLives = level.getNumLives();
+            this.checkpoint = level.getCheckpoint();
+            for (Obstacle obs : level.getObjects()) {
+                if (obs instanceof DeadBody) {
+                    deadBodyData.add(obs.storeState());
+                } else {
+                    obstacleData.put(obs, obs.storeState());
+                }
+            }
+        }
+    }
+
+    /**
+     * Loads in a previously stored level state. The <code>LevelState</code> that is loaded in must
+     * consist of references to the same objects as the current level, i.e. the saved level cannot
+     * have been reset or disposed.
+     * @param state LevelState to load in
+     */
+    private void loadLevelState(LevelState state){
+        level.setNumLives(state.numLives);
+        if (state.checkpoint != null) {
+            level.updateCheckpoints(state.checkpoint);
+        } else {
+            level.resetCheckpoints();
+        }
+        for (Obstacle obs : level.getObjects()){
+
+            if (obs instanceof DeadBody){
+                //need to remove and rebuild dead body array because number of dead bodies can change between saved states
+                DeadBody db = (DeadBody) obs;
+                level.removeDeadBody(db);
+            } else {
+
+                obs.loadState(state.obstacleData.get(obs));
+
+                //TODO: test if spike and dead body weld joints still work after loading
+                if (obs instanceof Spikes){
+                    ((Spikes) obs).destroyJoints(world);
+                }
+            }
+        }
+
+        // rebuild dead body array
+        for (ObjectMap<String, Object> dbState : state.deadBodyData){
+            level.loadDeadBodyState(dbState);
         }
     }
 }

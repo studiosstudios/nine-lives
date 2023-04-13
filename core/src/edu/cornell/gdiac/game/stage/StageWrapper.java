@@ -16,6 +16,8 @@ public abstract class StageWrapper extends Stage {
     static int STANDARD_HEIGHT = 576;
     /** x-coordinate for center of button list */
     public int buttonX;
+    public int xHalf;
+    public int yHalf;
     /** y-coordinate for top button */
     public int buttonY;
 
@@ -24,6 +26,8 @@ public abstract class StageWrapper extends Stage {
         this.internal = internal;
         buttonX = (int)(3f/5 * STANDARD_WIDTH);
         buttonY = (int)(1f/2 * STANDARD_HEIGHT);
+        xHalf = (int) (1f/2 * STANDARD_WIDTH);
+        yHalf = (int) (1f/2 * STANDARD_HEIGHT);
         if (createActors) {
             createActors();
         }

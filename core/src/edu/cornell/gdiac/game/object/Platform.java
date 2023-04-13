@@ -5,15 +5,24 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
+import edu.cornell.gdiac.game.obstacle.BoxObstacle;
+import edu.cornell.gdiac.game.obstacle.PolygonObstacle;
+
+import java.util.HashMap;
 
 /**
- * A Platform is a wall that can be moved.
+ * A Platform is a kinematic body that can move between two points.
  */
-public class Platform extends Wall implements Activatable {
+public class Platform extends PolygonObstacle implements Activatable {
     /** Current activation state */
     private boolean activated;
     /** Starting activation state */
     private boolean initialActivation;
+    /** Constants that are shared between all instances of this class */
+    private static JsonValue objectConstants;
+    /** If this wall is climbable */
+    private boolean isClimbable;
     /** The displacement of the platform when moving */
     private Vector2 disp;
     /** 1 if moving towards end point, -1 if moving towards start point, 0 if static */
@@ -24,25 +33,38 @@ public class Platform extends Wall implements Activatable {
     private float damping;
     /** Target velocity for velocity update */
     private Vector2 targetVel = new Vector2();
+    /** Target position */
+    private Vector2 target;
+
+    private Vector2 startPos;
 
     /**
      * Creates a new platform object.
-     * @param texture  TextureRegion for drawing.
-     * @param scale    Draw scale for drawing.
-     * @param data     JSON for loading.
      */
-    public Platform(TextureRegion texture, Vector2 scale, JsonValue data) {
-        super(texture, scale, data);
+    public Platform(float width, float height, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
+        super(new float[]{0, 0, width, 0, width, height, 0, height});
         setName("platform");
         setBodyType(BodyDef.BodyType.KinematicBody);
-        try {
-            disp = new Vector2(data.get("disp").getFloat( 0), data.get("disp").getFloat( 1));
-        } catch (NullPointerException e) {
-            disp = new Vector2();
-        }
-        speed = data.getFloat("speed", 5);
-        damping = data.getFloat("damping", 0.1f);
-        initActivations(data);
+        setDensity(objectConstants.getFloat( "density", 0.0f ));
+        setFriction(objectConstants.getFloat( "friction", 0.0f ));
+        setRestitution(objectConstants.getFloat( "restitution", 0.0f ));
+        setDrawScale(scale);
+        setTexture(tMap.get("steel"));
+
+        setX((float) properties.get("x")/tileSize);
+        setY(levelHeight - (float) properties.get("y")/tileSize - height);
+        startPos = getPosition().cpy();
+        speed = (float) properties.get("speed", 5);
+        damping = (float) properties.get("damping", 0.1f);
+        disp = (Vector2) properties.get("disp");
+        isClimbable = (boolean) properties.get("climbable", false);
+        target = new Vector2();
+        initTiledActivations(properties);
+    }
+
+    public Platform(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
+        this((float) properties.get("width")/tileSize, (float) properties.get("height")/tileSize,
+                properties, tMap, scale, tileSize, levelHeight);
     }
 
     /**
@@ -52,7 +74,12 @@ public class Platform extends Wall implements Activatable {
     public void update(float dt){
         super.update(dt);
         if (moving == 0) { return; }
-        Vector2 target = moving == 1 ? disp : Vector2.Zero;
+        if (moving == 1){
+            target.set(disp.x + startPos.x, disp.y + startPos.y);
+        } else {
+            target.set(startPos);
+        }
+
 
         //check if should start slowing down to 0
         if (target.dst(getPosition()) - estimateDist(dt) <= 0){
@@ -70,7 +97,7 @@ public class Platform extends Wall implements Activatable {
 
         //check if passing through target pos: velocity is parallel to target velocity and target is between
         //current position and next position
-        if (targetVel.dot(getLinearVelocity()) >= 0 &&
+        if (targetVel.dot(getLinearVelocity()) >= 0 && !targetVel.equals(Vector2.Zero) &&
                 target.dst(getPosition()) < target.dst(getPosition().add(getLinearVelocity().scl(dt)))) {
             moving = 0;
             setPosition(target);
@@ -106,8 +133,8 @@ public class Platform extends Wall implements Activatable {
         }
         if (!activated) {
             deactivated(world);
+            setPosition(startPos.x + disp.x, startPos.y + disp.y);
         }
-        setPosition(activated ? Vector2.Zero : disp);
         moving = 0;
         return true;
     }
@@ -118,7 +145,7 @@ public class Platform extends Wall implements Activatable {
         targetVel.set(-disp.x, -disp.y).nor().scl(speed);
     }
 
-    @Override
+    //region ACTIVATABLE METHODS
     public void deactivated(World world){
         moving = 1;
         targetVel.set(disp.x, disp.y).nor().scl(speed);
@@ -137,5 +164,24 @@ public class Platform extends Wall implements Activatable {
     @Override
     public boolean getInitialActivation() { return initialActivation; }
     //endregion
+
+    /**
+     * Sets the shared constants for all instances of this class.
+     * @param constants JSON storing the shared constants.
+     */
+    public static void setConstants(JsonValue constants) {objectConstants = constants;}
+
+    public ObjectMap<String, Object> storeState(){
+        ObjectMap<String, Object> stateMap = super.storeState();
+        stateMap.put("moving", moving);
+        stateMap.put("targetVel", targetVel.cpy());
+        return stateMap;
+    }
+
+    public void loadState(ObjectMap<String, Object> stateMap){
+        super.loadState(stateMap);
+        moving = (float) stateMap.get("moving");
+        targetVel.set((Vector2) stateMap.get("targetVel"));
+    }
 
 }

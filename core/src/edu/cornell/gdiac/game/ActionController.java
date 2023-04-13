@@ -8,12 +8,15 @@ import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.object.*;
 import edu.cornell.gdiac.game.obstacle.Obstacle;
 import edu.cornell.gdiac.util.Direction;
+import edu.cornell.gdiac.util.PooledList;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Controller that processes in-world player actions and interactions.
@@ -87,7 +90,7 @@ public class ActionController {
     public void setMobControllers(Level level) {
         mobControllers.clear();
         for (Mob mob : level.getMobArray()) {
-            mobControllers.add(new AIController(bounds, level, mob, mob.isAggressive()));
+            mobControllers.add(new AIController(bounds, level, mob));
         }
     }
 
@@ -135,16 +138,32 @@ public class ActionController {
 
         updateSpiritLine(dt, ic.holdSwitch() && !ic.didSwitch());
 
+        if (ic.holdSwitch()) {
+            for (SpiritRegion sr : level.getSpiritRegionArray()) {
+                sr.setSpiritRegionColorOpacity(true);
+            }
+        } else {
+            for (SpiritRegion sr : level.getSpiritRegionArray()) {
+                sr.setSpiritRegionColorOpacity(false);
+            }
+        }
+
+        for (SpiritRegion spiritRegion : level.getSpiritRegionArray()) {
+            spiritRegion.update();
+        }
+
         if (ic.didSwitch()){
             //switch body
             DeadBody body = level.getNextBody();
-            if (body != null){
+            if (body != null && body.isSwitchable()){
+//                if (body != null && body.isSwitchable() && body.inSameSpiritRegion(cat.getSpiritRegions())){
                 level.spawnDeadBody();
                 cat.setPosition(body.getPosition());
                 cat.setLinearVelocity(body.getLinearVelocity());
                 cat.setFacingRight(body.isFacingRight());
-                body.markRemoved(true);
                 level.removeDeadBody(body);
+            } else {
+                cat.failedSwitch();
             }
         } else {
             cat.setHorizontalMovement(ic.getHorizontal());
@@ -167,6 +186,9 @@ public class ActionController {
         //Prepare dead bodies for raycasting
         for (DeadBody d: level.getdeadBodyArray()){
             d.setTouchingLaser(false);
+            if (d.isRemoved()){
+                level.getdeadBodyArray().removeValue(d, true);
+            }
         }
 
         //Raycast lasers
@@ -217,6 +239,12 @@ public class ActionController {
                 DeadBody nextDeadBody = level.getNextBody();
                 if (nextDeadBody != null) {
                     spiritLine.endTarget.set(nextDeadBody.getPosition());
+                } else {
+                    spiritLine.endTarget.set(cat.getPosition());
+                    if (spiritLine.reachedTargets(1f)) {
+                        spiritLine.setEnd(cat.getPosition());
+                        spiritLine.resetMidpoints();
+                    }
                 }
             }
         } else {
@@ -224,6 +252,7 @@ public class ActionController {
                 //switch into spirit mode
                 spiritLine.setEnd(cat.getPosition());
                 spiritLine.setStart(cat.getPosition());
+                spiritLine.resetMidpoints();
             } else {
                 spiritLine.endTarget.set(cat.getPosition());
                 spiritLine.startTarget.set(cat.getPosition());
@@ -231,6 +260,83 @@ public class ActionController {
         }
         level.setSpiritMode(spiritMode);
         spiritLine.update(dt, spiritMode);
+    }
+
+    /**
+     * Updates all objects in the level.
+     * @param dt  Number of seconds since last animation frame
+     */
+    public void postUpdate(float dt){
+        // Garbage collect the deleted objects.
+        // Note how we use the linked list nodes to delete O(1) in place.
+        // This is O(n) without copying.
+        Iterator<PooledList<Obstacle>.Entry> iterator = level.getObjects().entryIterator();
+        ObjectMap<Obstacle, Boolean> grounded = new ObjectMap<>();
+        while (iterator.hasNext()) {
+            PooledList<Obstacle>.Entry entry = iterator.next();
+            Obstacle obj = entry.getValue();
+            if (obj.isRemoved()) {
+                obj.deactivatePhysics(level.getWorld());
+                entry.remove();
+            } else {
+                // Note that update is called last!
+                obj.update(dt);
+
+                // Update base velocity.
+                if (obj instanceof Movable && ((Movable) obj).isMovable()) {
+                    updateBaseVelocity(obj, grounded);
+                }
+
+            }
+        }
+    }
+
+    /**
+     * Updates the base velocity of a movable obstacle. If the obstacle is not grounded, resets its base velocity to
+     * zero without modifying its linear velocity. If the obstacle is grounded, its base velocity is set to the average
+     * of the linear velocities of its grounds, and its linear velocity is changed accordingly.
+     * <br><br>
+     * If any of the ground fixtures of this obstacle are also movable, this method first recursively updates their
+     * base velocities and stores the result in a hashmap. An obstacle is therefore considered grounded if either it
+     * has no ground fixtures, or any of its ground fixtures are grounded.
+     *
+     * @param obj       The obstacle to update
+     * @param grounded  Map where keys are updated obstacles (at this tick), and values are if obstacle is grounded.
+     *                  This prev
+     * @return          True if obstacle is grounded
+     */
+    public boolean updateBaseVelocity(Obstacle obj, ObjectMap<Obstacle, Boolean> grounded){
+        if (grounded.containsKey(obj)) { return grounded.get(obj); }
+
+        Vector2 baseVel = new Vector2();
+        ObjectSet<Fixture> fixtures =  ((Movable) obj).getGroundFixtures();
+        float numGrounded = 0;
+
+        if (fixtures.size > 0) {
+
+            for (Fixture f : fixtures) {
+                Obstacle groundObs = (Obstacle) f.getBody().getUserData();
+                //this can cause a stack overflow error if two objects are each other's grounds, which can happen if objects are moving very very fast
+                grounded.put(obj, false);
+                if (!(groundObs instanceof Movable) || updateBaseVelocity(groundObs, grounded)){
+                    numGrounded++;
+                    baseVel.add(groundObs.getLinearVelocity());
+                }
+            }
+
+            //object is grounded, update base velocity to be average of velocities of grounds
+            if (numGrounded > 0 && !baseVel.scl(1f / numGrounded).epsilonEquals(Vector2.Zero, 0.001f)) {
+                obj.setBaseVelocity(baseVel);
+                grounded.put(obj, true);
+                return true;
+            }
+
+        }
+
+        //object is no longer grounded
+        obj.resetBaseVelocity();
+        return false;
+
     }
 
     /**

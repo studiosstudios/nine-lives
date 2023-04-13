@@ -7,8 +7,11 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
+
+import java.util.HashMap;
 
 /**
  * An activator that toggles activation on press.
@@ -30,12 +33,29 @@ public class Switch extends Activator {
         setName("switch");
     }
 
+    public Switch(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
+        super(properties, tMap, scale, tileSize, levelHeight);
+        prevPressed = false;
+        setName("switch");
+    }
+
     /** For a switch, active is toggled every time button is pressed */
     public void updateActivated(){
         if (isPressed() && !prevPressed) {
             active = !active;
         }
         prevPressed = isPressed();
+    }
+
+    public ObjectMap<String, Object> storeState(){
+        ObjectMap<String, Object> stateMap = super.storeState();
+        stateMap.put("prevPressed", prevPressed);
+        return stateMap;
+    }
+
+    public void loadState(ObjectMap<String, Object> stateMap){
+        super.loadState(stateMap);
+        prevPressed = (boolean) stateMap.get("prevPressed");
     }
 
 }

@@ -22,6 +22,7 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
+import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 
 /**
@@ -216,89 +217,95 @@ public abstract class SimpleObstacle extends Obstacle {
 	}
 
 	/**
-	 * Sets the base velocity for this physics body. Note that this does not change the total linear velocity,
-	 * instead it subtracts the relative velocity.
+	 * Sets the base velocity for this physics body, and changes the linear velocity accordingly.
 	 *
 	 * @param value  the base velocity for this physics body
 	 */
 	public void setBaseVelocity(Vector2 value){
 		if (body != null) {
+			body.setLinearVelocity(value.x - baseVelocity.x + getLinearVelocity().x, value.y - baseVelocity.y + getLinearVelocity().y);
 			baseVelocity.set(value);
-			relativeVelocity.set(getLinearVelocity().sub(baseVelocity));
+			relativeVelocity.set(getLinearVelocity().sub(value));
 		} else {
-			super.setLinearVelocity(value);
+			super.setBaseVelocity(value);
 		}
 	}
 
 	/**
-	 * Sets the relative velocity for this physics body, and then updates linear velocity accordingly.
+	 * Resets the base velocity of this physics body to zero without changing total linear velocity.
+	 */
+	public void resetBaseVelocity(){
+		if (body != null) {
+			baseVelocity.set(Vector2.Zero);
+		} else {
+			super.resetBaseVelocity();
+		}
+	}
+
+	/**
+	 * Updates linear velocity according to new relative velocity and current base velocity of this physics body.
 	 *
 	 * @param value  the relative velocity for this physics body
 	 */
 	public void setRelativeVelocity(Vector2 value){
 		if (body != null) {
-			relativeVelocity.set(value);
-			body.setLinearVelocity(value.add(baseVelocity));
+			setLinearVelocity(value.add(baseVelocity));
 		} else {
-			super.setLinearVelocity(value);
+			super.setRelativeVelocity(value);
 		}
 	}
 
 	/**
-	 * Sets the base x velocity for this physics body. Note that this does not change the total linear velocity,
-	 * instead it subtracts the relative velocity.
+	 * Sets the base x velocity for this physics body, and changes the linear velocity accordingly.
 	 *
 	 * @param value  the base x velocity for this physics body
 	 */
 	public void setBaseVX(float value){
 		if (body != null) {
+			body.setLinearVelocity(value - baseVelocity.x + getLinearVelocity().x, getLinearVelocity().y);
 			baseVelocity.x = value;
-			relativeVelocity.x -= value;
+			relativeVelocity.x = getLinearVelocity().x - value;
 		} else {
 			super.setBaseVX(value);
 		}
 	}
 
 	/**
-	 * Sets the base y velocity for this physics body. Note that this does not change the total linear velocity,
-	 * instead it subtracts the relative velocity.
+	 * Sets the base y velocity for this physics body, and changes the linear velocity accordingly.
 	 *
 	 * @param value  the base y velocity for this physics body
 	 */
 	public void setBaseVY(float value){
 		if (body != null) {
+			body.setLinearVelocity(getLinearVelocity().x, value - baseVelocity.y + getLinearVelocity().y);
 			baseVelocity.y = value;
-			relativeVelocity.y -= value;
+			relativeVelocity.y = getLinearVelocity().y - value;
 		} else {
 			super.setBaseVY(value);
 		}
 	}
 
 	/**
-	 * Sets the relative x velocity for this physics body, and then updates linear velocity accordingly.
+	 * Updates linear velocity according to new relative x velocity and current base velocity of this physics body.
 	 *
 	 * @param value  the relative x velocity for this physics body
 	 */
 	public void setRelativeVX(float value){
 		if (body != null) {
-			relativeVelocity.x = value;
-			velocityCache.set(value + baseVelocity.x,body.getLinearVelocity().y);
-			body.setLinearVelocity(velocityCache);
+			setVX(value + baseVelocity.x);
 		} else {
 			super.setRelativeVX(value);
 		}
 	}
 
 	/**
-	 * Sets the relative y velocity for this physics body, and then updates linear velocity accordingly.
+	 * Updates linear y velocity according to new relative velocity and current base velocity of this physics body.
 	 *
 	 * @param value  the relative x velocity for this physics body
 	 */
 	public void setRelativeVY(float value){
 		if (body != null) {
-			relativeVelocity.y = value;
-			velocityCache.set(body.getLinearVelocity().x, value + baseVelocity.y);
-			body.setLinearVelocity(velocityCache);
+			setVY(value + baseVelocity.y);
 		} else {
 			super.setRelativeVY(value);
 		}
@@ -976,6 +983,32 @@ public abstract class SimpleObstacle extends Obstacle {
 		// Recreate the fixture object if dimensions changed.
 		if (isDirty()) {
 			createFixtures();
+		}
+	}
+
+	public ObjectMap<String, Object> storeState(){
+		if (body != null){
+			ObjectMap<String, Object> stateMap = new ObjectMap<>();
+			stateMap.put("position", getPosition().cpy());
+			stateMap.put("relativeVelocity", relativeVelocity.cpy());
+			stateMap.put("baseVelocity", baseVelocity.cpy());
+			stateMap.put("linearVelocity", getLinearVelocity().cpy());
+			stateMap.put("active", isActive());
+			return stateMap;
+		} else {
+			return super.storeState();
+		}
+	}
+
+	public void loadState(ObjectMap<String, Object> stateMap){
+		if (body != null) {
+			setPosition((Vector2) stateMap.get("position"));
+			setLinearVelocity((Vector2) stateMap.get("linearVelocity"));
+			relativeVelocity.set((Vector2) stateMap.get("relativeVelocity"));
+			baseVelocity.set((Vector2) stateMap.get("baseVelocity"));
+			setActive((boolean) stateMap.get("active"));
+		} else {
+			super.loadState(stateMap);
 		}
 	}
 

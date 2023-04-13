@@ -96,7 +96,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
 
         this.flameTexture = tMap.get("flame_anim");
 
-        flameBase = new BoxObstacle(tMap.get("flamethrower").getRegionWidth()/drawScale.x*textureScale.x, tMap.get("flamethrower").getRegionHeight()/drawScale.y*drawScale.y);
+        flameBase = new BoxObstacle(tMap.get("flamethrower").getRegionWidth()/drawScale.x*textureScale.x, tMap.get("flamethrower").getRegionHeight()/drawScale.y*textureScale.y);
         setDrawScale(drawScale);
         flameBase.setDrawScale(drawScale);
         flameBase.setTextureScale(textureScale);
@@ -126,9 +126,6 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
             flameBase.setBodyType(BodyDef.BodyType.StaticBody);
         }
 
-        System.out.println(flameBase.getDimension().x);
-        System.out.println(flameBase.getDimension().y);
-        System.out.println(flameBase.getPosition());
 
         bodies.add(flameBase);
         bodies.add(flame);

@@ -5,9 +5,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.util.Direction;
+
+import java.util.HashMap;
 
 public class Mirror extends PolygonObstacle {
     /** Constants that are shared between all instances of this class*/
@@ -75,6 +78,48 @@ public class Mirror extends PolygonObstacle {
         setY(data.get("pos").getFloat(1)+yOffset);
     }
 
+
+    public Mirror(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
+        super(objectConstants.get("shape").asFloatArray());
+
+        setBodyType((boolean) properties.get("pushable", false) ? BodyDef.BodyType.DynamicBody : BodyDef.BodyType.StaticBody);
+        setFixedRotation(true);
+        setName("mirror");
+        setDrawScale(scale);
+        setTexture(tMap.get("steel"));
+        setAngle((float) ((float) properties.get("rotation") * Math.PI/180));
+        dir = Direction.angleToDir((int) ((float) properties.get("rotation")));
+
+        setRestitution(objectConstants.getFloat("restitution", 0));
+        setFriction(objectConstants.getFloat("friction", 0));
+        setDensity(objectConstants.getFloat("density", 0));
+        setMass(objectConstants.getFloat("mass", 0));
+
+        //this is ugly but it's easy
+        float xOffset, yOffset;
+        switch (dir) {
+            case UP:
+                xOffset = 0;
+                yOffset = 0;
+                break;
+            case LEFT:
+                xOffset = 0;
+                yOffset = -1;
+                break;
+            case DOWN:
+                xOffset = 1;
+                yOffset = -1;
+                break;
+            case RIGHT:
+                xOffset = 1;
+                yOffset = 0;
+                break;
+            default:
+                throw new IllegalArgumentException("undefined angle");
+        }
+        setX((float) properties.get("x")/tileSize+objectConstants.get("offset").getFloat(0) + xOffset);
+        setY(levelHeight - (float) properties.get("y")/tileSize+objectConstants.get("offset").getFloat(1) + yOffset);
+    }
 
     /**
      * Returns the direction a laser beam should reflect if it hits this mirror.

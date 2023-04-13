@@ -241,8 +241,8 @@ public class LevelController {
 
         boolean tempRet = isRet();
         setRet(false);
-        populateLevel(tempRet, prevCat);
         level.populateTiled(tiledLevelJV);
+        populateLevel(tempRet, prevCat);
         prevLivesState = new LevelState[9];
         canvas.getCamera().setLevelSize(level.bounds.width, level.bounds.height);
         canvas.getCamera().updateCamera(level.getCat().getPosition().x*scale.x, level.getCat().getPosition().y*scale.y, false);

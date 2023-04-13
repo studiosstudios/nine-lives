@@ -337,6 +337,11 @@ public class Level {
      */
     public void populateTiled(JsonValue tiledMap){
 
+
+        world.setGravity( new Vector2(0,tiledMap.getFloat("gravity",-14.7f)) );
+        activationRelations = new HashMap<>();
+        background = textureRegionAssetMap.get("background").getTexture();
+
         JsonValue layers = tiledMap.get("layers");
         JsonValue tileData = layers.get(0);
 
@@ -367,6 +372,9 @@ public class Level {
         }
 
         tiles = new Tiles(tileData, tileSize, levelWidth, levelHeight, tileset, new Vector2(1/32f, 1/32f));
+
+        spiritMode = false;
+        spiritLine = new SpiritLine(Color.WHITE, Color.CYAN, scale);
     }
 
     /**
@@ -397,17 +405,17 @@ public class Level {
                 populateSpikes(obstacleData, tileSize, levelHeight);
             } else if (name.equals("flamethrowers")){
                 populateFlamethrowers(obstacleData, tileSize, levelHeight);
+            }  else if (name.equals("doors")) {
+                populateDoors(obstacleData, tileSize, levelHeight);
+            }  else if (name.equals("spiritRegions")) {
+                populateSpiritRegions(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("mobs")) {
+                populateMobs(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("boxes")) {
+                populateBoxes(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("mirrors")) {
+                populateMirrors(obstacleData, tileSize, levelHeight);
             }
-
-            // Activators
-            // Spikes
-            // Flamethrowers
-//            else if (name.equals("flamethrowers")) {
-//                populateFlamethrowers(obstacleData, tileSize, levelHeight);
-//            }
-            // Lasers
-            // Mobs
-            // Cat
 
 
         }
@@ -524,6 +532,53 @@ public class Level {
         }
     }
 
+    private void populateDoors(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize);
+            Door door = new Door(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+            loadTiledActivatable(door);
+        }
+    }
+
+    private void populateSpiritRegions(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize);
+            SpiritRegion spiritRegion = new SpiritRegion(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+            spiritRegionArray.add(spiritRegion);
+            addObject(spiritRegion);
+        }
+    }
+
+    private void populateMobs(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize);
+            Mob mob = new Mob(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight, new Vector2(1/32f, 1/32f));
+            mobArray.add(mob);
+            addObject(mob);
+        }
+    }
+
+    private void populateBoxes(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize);
+            PushableBox box = new PushableBox(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+            addObject(box);
+        }
+    }
+
+    private void populateMirrors(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize);
+            Mirror mirror = new Mirror(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+            addObject(mirror);
+        }
+    }
+
 
     private void readProperties(JsonValue objectJV, int tileSize){
         propertiesMap.clear();
@@ -606,7 +661,7 @@ public class Level {
                                HashMap<String, Sound> sMap, JsonValue constants, JsonValue levelJV, boolean ret, Cat prevCat) {
         /** JSON of the level */
 
-        activationRelations = new HashMap<>();
+//        activationRelations = new HashMap<>();
         background = tMap.get("background").getTexture();
 
         JsonValue size = levelJV.get("size");
@@ -626,9 +681,9 @@ public class Level {
             }
         } catch (NullPointerException e) {}
 
-        JsonValue defaults = constants.get("defaults");
-        // This world is heavier
-        world.setGravity( new Vector2(0,defaults.getFloat("gravity",0)) );
+//        JsonValue defaults = constants.get("defaults");
+//        // This world is heavier
+//        world.setGravity( new Vector2(0,defaults.getFloat("gravity",0)) );
 
 //        try {
 //            for (JsonValue wallJV : levelJV.get("walls")){
@@ -680,12 +735,12 @@ public class Level {
 //            }
 //        } catch (NullPointerException e) {}
 
-        try {
-            for(JsonValue boxJV : levelJV.get("boxes")){
-                PushableBox box = new PushableBox(tMap.get("steel"), scale, boxJV);
-                addObject(box);
-            }
-        } catch (NullPointerException e) {}
+//        try {
+//            for(JsonValue boxJV : levelJV.get("boxes")){
+//                PushableBox box = new PushableBox(tMap.get("steel"), scale, boxJV);
+//                addObject(box);
+//            }
+//        } catch (NullPointerException e) {}
 
 //        try {
 //            for (JsonValue flamethrowerJV : levelJV.get("flamethrowers")){
@@ -702,39 +757,39 @@ public class Level {
 //                lasers.add(laser);
 //            }
 //        } catch (NullPointerException e) {}
-
-        try {
-            for (JsonValue mirrorJV : levelJV.get("mirrors")){
-                Mirror mirror = new Mirror(tMap.get("steel"), scale, mirrorJV);
-                addObject(mirror);
-            }
-        } catch (NullPointerException e) {}
+//
+//        try {
+//            for (JsonValue mirrorJV : levelJV.get("mirrors")){
+//                Mirror mirror = new Mirror(tMap.get("steel"), scale, mirrorJV);
+//                addObject(mirror);
+//            }
+//        } catch (NullPointerException e) {}
 
         // Create mobs
-        try {
-            for (JsonValue mobJV : levelJV.get("mobs")){
-                Mob mob = new Mob(tMap.get("roboMob"), scale, new Vector2(1f/32, 1f/32), mobJV);
-                mobArray.add(mob);
-                addObject(mob);
-            }
-        } catch (NullPointerException e) {}
+//        try {
+//            for (JsonValue mobJV : levelJV.get("mobs")){
+//                Mob mob = new Mob(tMap.get("roboMob"), scale, new Vector2(1f/32, 1f/32), mobJV);
+//                mobArray.add(mob);
+//                addObject(mob);
+//            }
+//        } catch (NullPointerException e) {}
 
-        try {
-            for (JsonValue doorJV : levelJV.get("doors")){
-                Door door = new Door(tMap.get("steel"), scale, doorJV);
-                loadActivatable(door,doorJV);
-            }
-        } catch (NullPointerException e) {}
+//        try {
+//            for (JsonValue doorJV : levelJV.get("doors")){
+//                Door door = new Door(tMap.get("steel"), scale, doorJV);
+//                loadActivatable(door,doorJV);
+//            }
+//        } catch (NullPointerException e) {}
 
-        try {
-            for (JsonValue spiritJV : levelJV.get("spiritRegions")){
-                SpiritRegion spiritRegion = new SpiritRegion(tMap.get("spirit_region"), tMap.get("spirit_photon"), scale, new Vector2(1, 1), spiritJV);
-                addObject(spiritRegion);
-                spiritRegionArray.add(spiritRegion);
-            }
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            for (JsonValue spiritJV : levelJV.get("spiritRegions")){
+//                SpiritRegion spiritRegion = new SpiritRegion(tMap.get("spirit_region"), tMap.get("spirit_photon"), scale, new Vector2(1, 1), spiritJV);
+//                addObject(spiritRegion);
+//                spiritRegionArray.add(spiritRegion);
+//            }
+//        } catch (NullPointerException e) {
+//            e.printStackTrace();
+//        }
 
         // Create cat
         /** Float value to scale width */
@@ -780,6 +835,7 @@ public class Level {
         Cat.setConstants(constants.get("cat"));
         Exit.setConstants(constants.get("exits"));
         Door.setConstants(constants.get("doors"));
+        Mob.setConstants(constants.get("mobs"));
     }
 
     /**

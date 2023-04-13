@@ -7,10 +7,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
 
+import java.util.HashMap;
 import java.util.Random;
 
 public class SpiritRegion extends BoxObstacle {
@@ -139,6 +141,45 @@ public class SpiritRegion extends BoxObstacle {
             item.setY(random.nextFloat()*(high-low)+low);
         }
 
+    }
+
+    public SpiritRegion(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
+        super((float) properties.get("width")/tileSize, (float) properties.get("height")/tileSize);
+        this.photonTexture = tMap.get("spirit_photon").getTexture();
+        this.regionTexture = tMap.get("spirit_region").getTexture();
+
+        particleColor = (Color) properties.get("color", Color.RED);
+        particleColor.a = PARTICLE_OPACITY_INACTIVE;
+
+        regionColor = (Color) properties.get("color", Color.RED);
+        regionColor.a = REGION_OPACITY_INACTIVE;
+
+        setTexture(tMap.get("spirit_region"));
+        setDrawScale(scale);
+        setTextureScale(textureScale);
+        setSensor(true);
+        setBodyType(BodyDef.BodyType.StaticBody);
+
+        width = (float) properties.get("width")/tileSize;
+        height = (float) properties.get("height")/tileSize;
+
+        this.pos = new Vector2((float) properties.get("x")/tileSize + width/2, levelHeight - (float) properties.get("y")/tileSize - height/2);
+
+        setX(pos.x + width/2);
+        setY(pos.y + height/2);
+
+
+//         PHOTON PARTICLES
+        random = new Random();
+        particles = new ObjectSet<Particle>();
+        int capacity = (int) width * (int) height * 2;
+        memory = new ParticlePool(capacity);
+        for (int i = 0; i < capacity; i++){
+            Particle item = addParticle();
+            float low = item.getBottom() * drawScale.y;
+            float high = item.getTop() * drawScale.y - PARTICLE_SIZE;
+            item.setY(random.nextFloat()*(high-low)+low);
+        }
     }
 
     private Particle addParticle(){

@@ -57,6 +57,8 @@ public class InputController {
 	private BufferedReader readFile;
 	/** For writing input to a text file */
 	private BufferedWriter writeFile;
+	/** Json specifying controls */
+	private JsonValue controlsJSON;
 
 	/**
 	 * Sets the keybindings from a JSON. The JSON must be a single object consisting only of string-string pairs, where
@@ -64,9 +66,10 @@ public class InputController {
 	 * @param controlsJSON keybindings JSON
 	 */
 	public void setControls(JsonValue controlsJSON){
+		this.controlsJSON = controlsJSON;
 		for (JsonValue entry : controlsJSON){
 			try {
-				String keyName = entry.asString();
+				String keyName = entry.get("key").asString();
 				controls.put(entry.name, Input.Keys.class.getField(keyName).getInt(Input.Keys.class.getField(keyName)));
 			} catch (Exception e){
 				controls.put(entry.name, Keys.UNKNOWN);
@@ -412,10 +415,12 @@ public class InputController {
 	private void readKeyboard(Rectangle bounds, Vector2 scale) {
 		pressedMap.put("pan", Gdx.input.isKeyPressed(controls.get("pan")));
 		for (String control : controlNames){
-			if(control.equals("pan")){
-				continue;
+			if(pressedMap.get("pan")) {
+				pressedMap.put(control, !controlsJSON.get(control).get("disableWhenPan").asBoolean() && Gdx.input.isKeyPressed(controls.get(control)));
 			}
-			pressedMap.put(control, !pressedMap.get("pan") && Gdx.input.isKeyPressed(controls.get(control)));
+			else {
+				pressedMap.put(control, Gdx.input.isKeyPressed(controls.get(control)));
+			}
 		}
 
 		// Mouse results

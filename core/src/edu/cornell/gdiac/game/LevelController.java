@@ -62,10 +62,19 @@ public class LevelController {
     private CollisionController collisionController;
     /** The Level model */
     private Level level;
+    /**
+     * PLAY: User has all controls and is in game
+     * LEVEL_SWITCH: Camera transition to next level (all controls stripped from user)
+     * PLAYER_PAN: Camera zooms out and player is free to pan around the level (all other gameplay controls stripped from user)
+     * PAN: Camera movement not controlled by player (e.g. when activator is pressed or at beginning of level)
+     */
     enum LevelState{
         PLAY,
-        SWITCH_LEVEL
+        LEVEL_SWITCH,
+        PLAYER_PAN,
+        PAN
     }
+    /** State of gameplay */
     private LevelState state;
 
     /**
@@ -256,13 +265,22 @@ public class LevelController {
 
         InputController input = InputController.getInstance();
         input.readInput(bounds, scale);
-
+        if(input.didPan()){
+            state = LevelState.PLAYER_PAN;
+            Camera cam = canvas.getCamera();
+            cam.zoomOut(true);
+            //move camera
+            cam.updateCamera(cam.getX()+input.getCamHorizontal(),cam.getY()+ input.getCamVertical(),false);
+        }
+        else{
+            canvas.getCamera().zoomOut(false);
+            state = LevelState.PLAY;
+        }
         // Toggle debug
         if (input.didDebug()) {
             debug = !debug;
 //            canvas.getCamera().debugCamera(debug);
         }
-
         // Handle resets
         if (input.didReset()) {
             reset(null);
@@ -295,13 +313,11 @@ public class LevelController {
             float y_pos = level.getCat().getPosition().y*scale.y;
             canvas.getCamera().updateCamera(x_pos, y_pos, true);
         }
-        else if(state == LevelState.SWITCH_LEVEL){
-            //Add offset field to json, make sure all draw methods factors in this offset
-            //Add lower point to camera to denote origin (used to always assume 0,0)
-            //Rename setLevelSize to setLevelBounds
-            //Call reset to draw/populate level (everything should be loaded at an offset
-            //setLevelBounds in camera to be this next level with the offsets accounted for
-            //Below should cause camera should slowly glide to next level
+        else if(state == LevelState.LEVEL_SWITCH){
+            /**
+             * TODO:
+             * Seamless Level Switching
+             */
             float x_pos = level.getCat().getPosition().x*scale.x; //needs to be relative to cat's new position in larger world
             float y_pos = level.getCat().getPosition().y*scale.y; //needs to be relative to cat's new position in larger world
             canvas.getCamera().updateCamera(x_pos, y_pos, true);
@@ -316,7 +332,7 @@ public class LevelController {
             this.state = LevelState.PLAY;
         }
         else if(state.equals("SWITCH")){
-            this.state = LevelState.SWITCH_LEVEL;
+            this.state = LevelState.LEVEL_SWITCH;
         }
     }
 

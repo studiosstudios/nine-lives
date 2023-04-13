@@ -15,12 +15,14 @@ public class Camera {
     private float viewportHeight;
     /** Bounds of current level **/
     private Rectangle levelBounds;
-    /** Camera x-coordinate **/
+    /** Camera center x-coordinate **/
     private float x;
-    /** Camera y-coordinate **/
+    /** Camera center y-coordinate **/
     private float y;
     /** Rate at which camera glides towards destination coordinates**/
     private final float CAMERA_GLIDE_RATE = 0.075f;
+    /** Gameplay zoom **/
+    private float zoom;
 
     /**
      * Wrapper for the OrthographicCamera class that takes into account dynamic level metadata.
@@ -32,6 +34,7 @@ public class Camera {
         camera = new OrthographicCamera(viewportWidth, viewportHeight);
         camera.setToOrtho(false, viewportWidth, viewportHeight);
         camera.zoom = zoom;
+        this.zoom = zoom;
         this.viewportWidth = viewportWidth;
         this.viewportHeight = viewportHeight;
         x = camera.position.x;
@@ -91,18 +94,18 @@ public class Camera {
         levelBounds = bounds;
     }
 
-//
-//    /**
-//     * For internal uses
-//     * Camera either zooms out for debugging or returns to original zoom for gameplay
-//     * @param debug Whether debug mode is active
-//     */
-//    public void debugCamera(boolean debug){
-//        if (debug)
-//            camera.zoom = 1;
-//        else
-//            camera.zoom = zoom;
-//    }
+    /**
+     * Zooms camera out to x1
+     * @param z true if we want to zoom out
+     */
+    public void zoomOut(boolean z){
+        if(z){
+            camera.zoom = 1;
+        }
+        else{
+            camera.zoom = zoom;
+        }
+    }
 
     /**
      * @return x-coordinate of camera position

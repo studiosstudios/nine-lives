@@ -87,7 +87,12 @@ public class InputController {
 	private boolean didCancel;
 	/** if the switch has been cancelled */
 	private boolean cancelled;
-	
+	/** Whether level panning button was pressed. */
+	private boolean panPressed;
+	/** How much did camera move horizontally? **/
+	private float camHorizontal;
+	/** How much did camera move vertically? **/
+	private float camVertical;
 	/** How much did we move horizontally? */
 	private float horizontal;
 	/** How much did we move vertically? */
@@ -120,7 +125,24 @@ public class InputController {
 	public float getVertical() {
 		return vertical;
 	}
-	
+
+	/**
+	 * Returns the amount of camera sideways movement.
+	 *
+	 * @return the amount of camera sideways movement.
+	 */
+	public float getCamHorizontal() {
+		return camHorizontal;
+	}
+
+	/**
+	 * Returns the amount of camera vertical movement.
+	 *
+	 * @return the amount of camera vertical movement.
+	 */
+	public float getCamVertical() {
+		return camVertical;
+	}
 	/**
 	 * Returns the current position of the crosshairs on the screen.
 	 *
@@ -224,6 +246,10 @@ public class InputController {
 	 */
 	public boolean didDebug() {
 		return debugPressed && !debugPrevious;
+	}
+
+	public boolean didPan() {
+		return panPressed;
 	}
 
 	/**
@@ -339,28 +365,29 @@ public class InputController {
 	 *
 	 */
 	private void readKeyboard(Rectangle bounds, Vector2 scale) {
-		resetPressed = (Gdx.input.isKeyPressed(Input.Keys.R));
-		debugPressed = (Gdx.input.isKeyPressed(Input.Keys.B));
-		jumpPressed = (Gdx.input.isKeyPressed(Keys.C));
-		secondPressed = (Gdx.input.isKeyPressed(Input.Keys.SPACE));
-		dashPressed = (Gdx.input.isKeyPressed(Keys.X));
-		climbPressed = (Gdx.input.isKeyPressed(Keys.Z));
-		exitPressed  = (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
-		meowPressed = (Gdx.input.isKeyPressed(Input.Keys.M));
-		switchPressed = (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT));
-		cancelPressed = (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT));
+		panPressed = (Gdx.input.isKeyPressed(Keys.TAB));
+		resetPressed = !panPressed && (Gdx.input.isKeyPressed(Input.Keys.R));
+		jumpPressed = !panPressed && (Gdx.input.isKeyPressed(Keys.C));
+		secondPressed = !panPressed && (Gdx.input.isKeyPressed(Input.Keys.SPACE));
+		dashPressed = !panPressed && (Gdx.input.isKeyPressed(Keys.X));
+		climbPressed = !panPressed && (Gdx.input.isKeyPressed(Keys.Z));
+		exitPressed  = !panPressed && (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
+		meowPressed = !panPressed && (Gdx.input.isKeyPressed(Input.Keys.M));
+		switchPressed = !panPressed && (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT));
+		cancelPressed = !panPressed && (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT));
 
 		//useful keys for testing/debugging
+		debugPressed = (Gdx.input.isKeyPressed(Input.Keys.B));
 		nextPressed = (Gdx.input.isKeyPressed(Input.Keys.N));
 		prevPressed  = (Gdx.input.isKeyPressed(Input.Keys.P));
 
-
-
 		// Directional controls
 		horizontal = 0.0f;
-
 		vertical = 0.0f;
-		if (!pause) {
+		camHorizontal = 0.0f;
+		camVertical = 0.0f;
+
+		if (!pause && !panPressed) {
 			if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
 				horizontal += 1.0f;
 			}
@@ -373,7 +400,22 @@ public class InputController {
 			if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
 				vertical -= 1.0f;
 			}
-		} else {
+		}
+		else if(panPressed){
+			if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+				camHorizontal += 4f;
+			}
+			if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+				camHorizontal -= 4f;
+			}
+			if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+				camVertical += 4f;
+			}
+			if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+				camVertical -= 4f;
+			}
+		}
+		else {
 			pause = Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.DOWN) ||
 					Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.UP) ||
 					Gdx.input.isKeyPressed(Keys.SHIFT_LEFT);

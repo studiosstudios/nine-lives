@@ -391,6 +391,12 @@ public class Level {
                 populateCheckpoints(obstacleData, tileSize, levelHeight);
             } else if (name.equals("activators")) {
                 populateActivators(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("lasers")) {
+                populateLasers(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("spikes")) {
+                populateSpikes(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("flamethrowers")){
+                populateFlamethrowers(obstacleData, tileSize, levelHeight);
             }
 
             // Activators
@@ -441,7 +447,7 @@ public class Level {
     private void populatePlatforms(JsonValue data, int tileSize, int levelHeight){
         JsonValue objects = data.get("objects");
         for (JsonValue objJV : objects) {
-            readProperties(objJV);
+            readProperties(objJV, tileSize);
             Platform platform = new Platform(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
             loadTiledActivatable(platform);
         }
@@ -469,8 +475,7 @@ public class Level {
     private void populateActivators(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         for (JsonValue objJV : objects) {
-            readProperties(objJV);
-            System.out.println(propertiesMap);
+            readProperties(objJV, tileSize);
             Activator activator;
             switch ((String) propertiesMap.get("type")){
                 case "button":
@@ -491,39 +496,67 @@ public class Level {
     }
 
     private void populateSpikes(JsonValue data, int tileSize, int levelHeight) {
-
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize);
+            Spikes spikes = new Spikes(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight, new Vector2(1/64f, 1/64f));
+            loadTiledActivatable(spikes);
+        }
     }
 
     private void populateFlamethrowers(JsonValue data, int tileSize, int levelHeight) {
-
-//        JsonValue objects = data.get("objects");
-//
-//        for (JsonValue obj : objects) {
-//            Flamethrower flamethrower = new Flamethrower(textureRegionAssetMap.get("flamethrower"),
-//                    new Vector2(1f/64, 1f/64), textureRegionAssetMap.get("flame_anim"),
-//                    new Vector2(1, 1), scale, obj);
-//            loadActivatable(flamethrower, obj);
-//        }
-
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize);
+            Flamethrower flamethrower = new Flamethrower(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight, new Vector2(1/64f, 1/64f));
+            loadTiledActivatable(flamethrower);
+        }
     }
 
 
     private void populateLasers(JsonValue data, int tileSize, int levelHeight) {
-
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize);
+            Laser laser = new Laser(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+            loadTiledActivatable(laser);
+            lasers.add(laser);
+        }
     }
 
 
-    private void readProperties(JsonValue objectJV){
+    private void readProperties(JsonValue objectJV, int tileSize){
         propertiesMap.clear();
 
-        propertiesMap.put("x", objectJV.getFloat("x"));
-        propertiesMap.put("y", objectJV.getFloat("y"));
         propertiesMap.put("width", objectJV.getFloat("width"));
         propertiesMap.put("height", objectJV.getFloat("height"));
-        propertiesMap.put("rotation", objectJV.getFloat("rotation"));
+        float angle = (360 - objectJV.getFloat("rotation")) % 360;
+        propertiesMap.put("rotation", angle);
+
+        switch ((int) angle) {
+            default:
+            case 0:
+                propertiesMap.put("x", objectJV.getFloat("x"));
+                propertiesMap.put("y", objectJV.getFloat("y"));
+                break;
+            case 90:
+                propertiesMap.put("x", objectJV.getFloat("x"));
+                propertiesMap.put("y", objectJV.getFloat("y") - tileSize);
+                break;
+            case 180:
+                propertiesMap.put("x", objectJV.getFloat("x") - tileSize);
+                propertiesMap.put("y", objectJV.getFloat("y") - tileSize);
+                break;
+            case 270:
+                propertiesMap.put("x", objectJV.getFloat("x") - tileSize);
+                propertiesMap.put("y", objectJV.getFloat("y"));
+                break;
+        }
 
         //object specific properties (if there are any)
-        for (JsonValue property : objectJV.get("properties")){
+        JsonValue properties = objectJV.get("properties");
+        if (properties == null) { return; }
+        for (JsonValue property : properties){
             String name = property.getString("name");
             switch (property.getString("type")){
                 case "string":
@@ -632,12 +665,12 @@ public class Level {
 //            }
 //        } catch (NullPointerException e) {}
 
-        try {
-            for (JsonValue spikeJV : levelJV.get("spikes")) {
-                Spikes spike = new Spikes(tMap.get("spikes"), scale, new Vector2(1f/64, 1f/64), spikeJV);
-                loadActivatable(spike, spikeJV);
-            }
-        } catch (NullPointerException e) {}
+//        try {
+//            for (JsonValue spikeJV : levelJV.get("spikes")) {
+//                Spikes spike = new Spikes(tMap.get("spikes"), scale, new Vector2(1f/64, 1f/64), spikeJV);
+//                loadActivatable(spike, spikeJV);
+//            }
+//        } catch (NullPointerException e) {}
 
 //        try {
 //            for (JsonValue checkpointJV : levelJV.get("checkpoints")){
@@ -654,21 +687,21 @@ public class Level {
             }
         } catch (NullPointerException e) {}
 
-        try {
-            for (JsonValue flamethrowerJV : levelJV.get("flamethrowers")){
-                Flamethrower flamethrower = new Flamethrower(tMap.get("flamethrower"), new Vector2(1f/64, 1f/64),
-                        tMap.get("flame_anim"), new Vector2(1, 1), scale, flamethrowerJV);
-                loadActivatable(flamethrower, flamethrowerJV);
-            }
-        } catch (NullPointerException e) {}
+//        try {
+//            for (JsonValue flamethrowerJV : levelJV.get("flamethrowers")){
+//                Flamethrower flamethrower = new Flamethrower(tMap.get("flamethrower"), new Vector2(1f/64, 1f/64),
+//                        tMap.get("flame_anim"), new Vector2(1, 1), scale, flamethrowerJV);
+//                loadActivatable(flamethrower, flamethrowerJV);
+//            }
+//        } catch (NullPointerException e) {}
 
-        try {
-            for (JsonValue laserJV : levelJV.get("lasers")){
-                Laser laser = new Laser(tMap.get("laser"), scale, laserJV);
-                loadActivatable(laser, laserJV);
-                lasers.add(laser);
-            }
-        } catch (NullPointerException e) {}
+//        try {
+//            for (JsonValue laserJV : levelJV.get("lasers")){
+//                Laser laser = new Laser(tMap.get("laser"), scale, laserJV);
+//                loadActivatable(laser, laserJV);
+//                lasers.add(laser);
+//            }
+//        } catch (NullPointerException e) {}
 
         try {
             for (JsonValue mirrorJV : levelJV.get("mirrors")){
@@ -881,7 +914,7 @@ public class Level {
 
         addObject((Obstacle) object);
 
-        String activatorID = (String) propertiesMap.get("activatorID");
+        String activatorID = (String) propertiesMap.get("activatorID", "");
         if (!activatorID.equals("")) {
             if (activationRelations.containsKey(activatorID)) {
                 activationRelations.get(activatorID).add(object);

@@ -15,7 +15,7 @@
     "solid_width_scale": 1,
     "offset": [
       0.5,
-      0.5
+      -0.5
     ]
   },
   "activators": {
@@ -33,7 +33,7 @@
   },
   "flamethrowers": {
     "flame_sensor_scale": [0.45, 0.5],
-    "base_offset" : [0.5, 0.5],
+    "base_offset" : [0.5, -0.5],
     "flame_offset" : [0, 1.3],
     "friction": 1,
     "density": 1,
@@ -41,7 +41,7 @@
     "sensor_shape" : [-0.3, -0.6, 0.3, -0.6, 0.3, 0.9, -0.3, 0.9]
   },
   "lasers": {
-    "offset": [0.5, 0.5],
+    "offset": [0.5, -0.5],
     "beamOffset": [0, -0.2],
     "thickness": 3,
     "friction": 0.4,

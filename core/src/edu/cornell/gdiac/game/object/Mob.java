@@ -225,11 +225,16 @@ public class Mob extends CapsuleObstacle {
         detectorRay = new MobDetector(this);
     }
 
-    /**
-     * Returns the sensor name of the mob
-     *
-     * @return sensorName
-     */
+//    public Mob(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
+//
+//    }
+
+
+        /**
+         * Returns the sensor name of the mob
+         *
+         * @return sensorName
+         */
     public static String getSensorName() {
         return sensorName;
     }

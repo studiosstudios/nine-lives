@@ -559,6 +559,8 @@ public class Cat extends CapsuleObstacle implements Movable {
                     state = State.DASHING;
                     setGravityScale(0);
                     calculateDashVector();
+                    setRelativeVX(dashCache.x);
+                    setRelativeVY(dashCache.y);
                     return;
                 }
                 break;
@@ -579,6 +581,8 @@ public class Cat extends CapsuleObstacle implements Movable {
                     state = State.DASHING;
                     setGravityScale(0);
                     calculateDashVector();
+                    setRelativeVX(dashCache.x);
+                    setRelativeVY(dashCache.y);
                     return;
                 }
                 break;
@@ -593,7 +597,7 @@ public class Cat extends CapsuleObstacle implements Movable {
             case DASHING:
                 // DASHING -> MOVING
                 dashTimer++;
-                if (dashTimer >= 10) {
+                if (relativeVelocity.epsilonEquals(Vector2.Zero, 1f)) {
                     state = State.MOVING;
                     setVX(0);
                     setVY(0);
@@ -621,15 +625,19 @@ public class Cat extends CapsuleObstacle implements Movable {
                 forceCache.set(0, jumpMovement);
                 body.applyLinearImpulse(forceCache,getPosition(),true);
             case MOVING:
-                setRelativeVX(horizontalMovement * 0.25f);
+                if (horizontalMovement == 0){
+                    setRelativeVX(getRelativeVelocity().x * 0.7f);
+                } else {
+                    setRelativeVX(0.8f * (getRelativeVelocity().x + horizontalMovement * 0.06f));
+                }
                 break;
             case CLIMBING:
                 setRelativeVX(0);
-                setRelativeVY(verticalMovement / 3f);
+                setRelativeVY(verticalMovement / 4f);
                 break;
             case DASHING:
-                setRelativeVX(dashCache.x);
-                setRelativeVY(dashCache.y);
+                setRelativeVX(relativeVelocity.x*0.8f);
+                setRelativeVY(relativeVelocity.y*0.8f);
                 break;
         }
 //        float speedTarget = getMovement() * getMaxSpeed();
@@ -703,8 +711,8 @@ public class Cat extends CapsuleObstacle implements Movable {
     }
 
     private void calculateDashVector() {
-        float hMove = horizontalMovement / 2f;
-        float vMove = verticalMovement / 2f;
+        float hMove = horizontalMovement / 0.65f;
+        float vMove = verticalMovement / 0.65f;
         if (horizontalMovement != 0 && verticalMovement != 0) {
             dashCache.set(hMove / (float)Math.sqrt(2), vMove / (float)Math.sqrt(2));
         } else {

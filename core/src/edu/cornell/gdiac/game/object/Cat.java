@@ -670,7 +670,11 @@ public class Cat extends CapsuleObstacle implements Movable {
                 forceCache.set(0, jumpMovement);
                 body.applyLinearImpulse(forceCache, getPosition(), true);
             case MOVING:
-                setRelativeVX(horizontalMovement * 0.25f);
+                if (horizontalMovement == 0){
+                    setRelativeVX(getRelativeVelocity().x * 0.7f);
+                } else {
+                    setRelativeVX(0.8f * (getRelativeVelocity().x + horizontalMovement * 0.06f));
+                }
                 break;
             case CLIMBING:
                 setRelativeVX(0);

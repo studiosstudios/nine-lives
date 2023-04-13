@@ -152,7 +152,7 @@ public class ActionController {
             spiritRegion.update();
         }
 
-        if (ic.didSwitch()){
+        if (ic.didSwitch()) {
             //switch body
             DeadBody body = level.getNextBody();
             if (body != null && body.isSwitchable()){
@@ -171,16 +171,14 @@ public class ActionController {
             cat.setJumpPressed(ic.didJump());
             cat.setClimbingPressed(ic.didClimb());
             cat.setDashPressed(ic.didDash());
+            cat.setMeowing(ic.didMeow());
 
             cat.updateState();
             cat.applyForce();
-            if (cat.isJumping()) {
-                jumpId = playSound(soundAssetMap.get("jump"), jumpId, volume);
+
+            while (cat.getSoundBuffer().size > 0) {
+                soundAssetMap.get(cat.getSoundBuffer().removeLast()).play();
             }
-        }
-        if (ic.didMeow()){
-            cat.setMeowing(true);
-            meowId = playSound(soundAssetMap.get("meow"), meowId, volume);
         }
 
         //Prepare dead bodies for raycasting

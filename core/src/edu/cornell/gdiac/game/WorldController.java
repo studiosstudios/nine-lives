@@ -233,7 +233,7 @@ public class WorldController implements Screen {
 			textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
 		}
 
-		names = new String[]{"jump", "pew", "plop", "meow"};
+		names = new String[]{"jump", "dash", "metalLanding", "pew", "plop", "meow"};
 		for (String n : names){
 			soundAssetMap.put(n, directory.getEntry(n, Sound.class));
 		}

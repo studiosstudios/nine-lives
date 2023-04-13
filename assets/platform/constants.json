@@ -86,13 +86,13 @@
   "cat": {
     "shrink": [0.7, 0.95],
     "force": 30.0,
-    "damping": 30.0,
+    "horizontalDamping": 30.0,
     "density": 1.0,
     "friction": 0,
-    "maxspeed": 6.5,
-    "jump_force": 2.5,
-    "jump_damping": 0.8,
-    "dash_force": 1.5,
+    "maxSpeed": 6.5,
+    "jumpForce": 2.5,
+    "jumpDamping": 0.8,
+    "dashForce": 1.5,
     "sensor": {
       "shrink": 0.9
     },

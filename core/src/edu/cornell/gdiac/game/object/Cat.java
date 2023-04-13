@@ -79,7 +79,7 @@ public class Cat extends CapsuleObstacle implements Movable {
     private final float jump_force;
     /** Damping multiplier to slow down jump */
     private final float jumpDamping;
-
+    private final float tileSize;
 
     /** The current vertical movement of the character */
     private float   verticalMovement;
@@ -339,80 +339,14 @@ public class Cat extends CapsuleObstacle implements Movable {
      * drawing to work properly, you MUST set the drawScale. The drawScale
      * converts the physics units to pixels.
      *
-     * @param data  	The physics constants for this cat
-     * @param width		The object width in physics units
-     * @param height	The object width in physics units
      */
-    public Cat(JsonValue data, float width, float height, boolean ret, Vector2 prev_pos,
-               Texture[] arr) {
-        // The shrink factors fit the image to a tigher hitbox
-        super(data.get(ret?"ret_pos":"pos").getFloat(0),
-                prev_pos == null ? data.get(ret?"ret_pos":"pos").getFloat(1) : prev_pos.y,
-                width*objectConstants.get("shrink").getFloat( 0 ),
-                height*objectConstants.get("shrink").getFloat( 1 ),
-                Orientation.TOP);
-        setDensity(objectConstants.getFloat("density", 0));
-        setFriction(objectConstants.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
-        setFixedRotation(true);
-        maxspeed = objectConstants.getFloat("maxspeed", 0);
-        damping = objectConstants.getFloat("damping", 0);
-        force = objectConstants.getFloat("force", 0);
-        jump_force = objectConstants.getFloat( "jump_force", 0 );
-        dash_force = objectConstants.getFloat( "dash_force", 0 );;
-        jumpDamping = objectConstants.getFloat("jump_damping", 0);
-        groundSensorName = "catGroundSensor";
-        sideSensorName = "catSideSensor";
-        sensorShapes = new Array<>();
-        groundFixtures = new ObjectSet<>();
-        spiritRegions = new ObjectSet<>();
-
-        jump_animated = false;
-        normal_texture = new TextureRegion(arr[0]);
-        jumping_texture = new TextureRegion(arr[1]);
-        sit_texture = new TextureRegion(arr[4]);
-
-        spriteFrames = TextureRegion.split(arr[2], 65, 65);
-        spriteFrames2 = TextureRegion.split(arr[3], 62, 42);
-        spriteFrames3 = TextureRegion.split(arr[5], 62, 62);
-        spriteFrames4 = TextureRegion.split(arr[6],62,62);
-        spriteFrames5 = TextureRegion.split(arr[7],64,64);
-
-        jump_animation = new Animation<>(0.025f, spriteFrames[0]);
-        meow_animation = new Animation<>(0.05f, spriteFrames2[0]);
-        walk_animation = new Animation<>(0.15f, spriteFrames3[0]);
-        idle_animation = new Animation<>(0.15f, spriteFrames4[0]);
-        idle_stand_animation = new Animation<>(0.15f, spriteFrames5[0]);
-
-        jumpTime = 0f;
-        meowTime = 0f;
-        walkTime = 0f;
-        failedTicks = FAIL_ANIM_TICKS;
-
-        idleTime = 0f;
-        nonMoveTime = 0f;
-        standTime = 0f;
-        time = 0;
-
-        // Gameplay attributes
-        state = State.MOVING;
-        setGravityScale(2f);
-        isGrounded = false;
-        canDash = true;
-        jumpPressed = false;
-        isMeowing = false;
-        if(ret)
-            faceRight = false;
-        else
-            faceRight = true;
-        setName("cat");
-    }
 
     public Cat(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
         super((float) properties.get("x")/tileSize + objectConstants.get("offset").getFloat(0),
                 levelHeight - (float) properties.get("y")/tileSize + objectConstants.get("offset").getFloat(1),
                 tMap.get("cat").getRegionWidth()/scale.x*objectConstants.get("shrink").getFloat( 0 ),
                 tMap.get("cat").getRegionHeight()/scale.y*objectConstants.get("shrink").getFloat( 1 ), Orientation.TOP);
-
+        this.tileSize = tileSize;
         setDrawScale(scale);
         setDensity(objectConstants.getFloat("density", 0));
         setFriction(objectConstants.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
@@ -434,14 +368,14 @@ public class Cat extends CapsuleObstacle implements Movable {
         jumping_texture = tMap.get("jumpingCat");
         sit_texture = tMap.get("sit");
 
-        spriteFrames = TextureRegion.split(tMap.get("jump_anim").getTexture(), 65, 65);
-        spriteFrames2 = TextureRegion.split(tMap.get("meow_anim").getTexture(), 62, 42);
-        spriteFrames3 = TextureRegion.split(tMap.get("walk").getTexture(), 62, 62);
-        spriteFrames4 = TextureRegion.split(tMap.get("idle_anim").getTexture(),62,62);
-        spriteFrames5 = TextureRegion.split(tMap.get("idle_anim_stand").getTexture(),64,64);
+        spriteFrames = TextureRegion.split(tMap.get("jump_anim").getTexture(), 2048,2048);
+        spriteFrames2 = TextureRegion.split(tMap.get("meow_anim").getTexture(), 2048, 2048);
+        spriteFrames3 = TextureRegion.split(tMap.get("walk").getTexture(), 2048, 2048);
+        spriteFrames4 = TextureRegion.split(tMap.get("idle_anim").getTexture(),2048,2048);
+        spriteFrames5 = TextureRegion.split(tMap.get("idle_anim_stand").getTexture(),2048,2048);
 
         jump_animation = new Animation<>(0.025f, spriteFrames[0]);
-        meow_animation = new Animation<>(0.05f, spriteFrames2[0]);
+        meow_animation = new Animation<>(0.1f, spriteFrames2[0]);
         walk_animation = new Animation<>(0.15f, spriteFrames3[0]);
         idle_animation = new Animation<>(0.15f, spriteFrames4[0]);
         idle_stand_animation = new Animation<>(0.15f, spriteFrames5[0]);
@@ -731,7 +665,7 @@ public class Cat extends CapsuleObstacle implements Movable {
     public void draw(GameCanvas canvas) {
         float effect = faceRight ? 1.0f : -1.0f;
         float x = getX() * drawScale.x - effect*25;
-        float y = getY()*drawScale.y-20;
+        float y = getY()* drawScale.y-20;
         //walking animation
         TextureRegion frame = sit_texture;
         float xOffset = 0;
@@ -756,12 +690,12 @@ public class Cat extends CapsuleObstacle implements Movable {
         }
         //meow animation
         else if((isMeowing && !(state == State.JUMPING)) || meowTime != 0){
-            meow_animation.setPlayMode(Animation.PlayMode.REVERSED);
+            meow_animation.setPlayMode(Animation.PlayMode.LOOP);
             meowTime += Gdx.graphics.getDeltaTime();
-
-            xOffset  = (14*effect);
+            xOffset = (11*-effect);
+            yOffset = -11;
             frame = meow_animation.getKeyFrame(meowTime);
-            if (meowTime >= (0.05*5)){
+            if (meowTime >= (0.6)){
                 meowTime = 0;
                 isMeowing = false;
             }
@@ -769,17 +703,17 @@ public class Cat extends CapsuleObstacle implements Movable {
 
         //sit
         else if(horizontalMovement == 0 && verticalMovement == 0){
+            yOffset = -11;
             if(nonMoveTime >= 10){
                 idle_animation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
                 idleTime += Gdx.graphics.getDeltaTime();
                 frame = idle_animation.getKeyFrame(idleTime);
                 flip = -1;
                 xOffset = (54*effect);
-                yOffset = -10;
             }
             else if(nonMoveTime >= 5){
                 nonMoveTime += Gdx.graphics.getDeltaTime();
-                yOffset = -5;
+                xOffset = (11*-effect);
             }
             else{
                 nonMoveTime += Gdx.graphics.getDeltaTime();
@@ -788,7 +722,6 @@ public class Cat extends CapsuleObstacle implements Movable {
                 frame = idle_stand_animation.getKeyFrame(standTime);
                 flip = -1;
                 xOffset = (54*effect);
-                yOffset = -10;
             }
         }
         else {
@@ -796,7 +729,7 @@ public class Cat extends CapsuleObstacle implements Movable {
             nonMoveTime = 0;
         }
 
-        canvas.draw(frame, Color.WHITE, origin.x, origin.y, x + xOffset, y + yOffset, getAngle(), effect * flip, 1.0f);
+        canvas.draw(frame, Color.WHITE, origin.x, origin.y, x + xOffset, y + yOffset, getAngle(), effect * flip /tileSize, (float)1/tileSize);
         if (failedTicks < FAIL_ANIM_TICKS){
             xOffset += ((float) (Math.sin(-failedTicks/2) * Math.exp(-failedTicks/30)))*drawScale.x/2;
             Color c = new Color(1, 0 , 0, 0.5f - Math.abs(failedTicks - FAIL_ANIM_TICKS/2)/FAIL_ANIM_TICKS);

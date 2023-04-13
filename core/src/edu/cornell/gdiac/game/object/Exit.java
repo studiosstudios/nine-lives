@@ -1,12 +1,16 @@
 package edu.cornell.gdiac.game.object;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
+
+import java.util.HashMap;
 
 /**
  * A simple BoxObstacle that represents an exit (goal or return) of a level.
@@ -48,6 +52,25 @@ public class Exit extends BoxObstacle {
                 throw new RuntimeException("unrecognized exit type");
         }
         setName(data.getString("type"));
+    }
+
+    public Exit(ObjectMap<String, Object> properties, Vector2 scale, int tileSize, int levelHeight){
+        super((float) properties.get("width")/tileSize, (float) properties.get("height")/tileSize);
+        setBodyType(BodyDef.BodyType.StaticBody);
+        setDensity(0);
+        setFriction(0);
+        setRestitution(0);
+        setSensor(true);
+        setX((float) properties.get("x")/tileSize + getDimension().x/2);
+        setY(levelHeight - (float) properties.get("y")/tileSize - getDimension().y/2);
+        setDrawScale(scale);
+        if (((properties.get("type", "goal")).equals("goal"))){
+            exitType = ExitType.GOAL;
+        } else {
+            exitType = ExitType.RETURN;
+        }
+        System.out.println(getPosition());
+        setName((String) properties.get("type"));
     }
 
     @Override

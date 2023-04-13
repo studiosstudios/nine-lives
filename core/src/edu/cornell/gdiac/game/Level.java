@@ -349,6 +349,10 @@ public class Level {
         int levelWidth = tiledMap.getInt("width");
         int levelHeight = tiledMap.getInt("height");
 
+        bounds.width = levelWidth*scale.x;
+        bounds.height = levelHeight*scale.y;
+        System.out.println(bounds);
+
         Array<JsonValue> obstacleData = new Array<>();
 
         for (JsonValue layer : layers) {
@@ -415,6 +419,10 @@ public class Level {
                 populateBoxes(obstacleData, tileSize, levelHeight);
             } else if (name.equals("mirrors")) {
                 populateMirrors(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("cat")) {
+                populateCat(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("exits")) {
+                populateExits(obstacleData, tileSize, levelHeight);
             }
 
 
@@ -579,6 +587,25 @@ public class Level {
         }
     }
 
+    private void populateExits(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize);
+            Exit exit = new Exit(propertiesMap, scale, tileSize, levelHeight);
+            addObject(exit);
+        }
+    }
+
+    private void populateCat(JsonValue data, int tileSize, int levelHeight){
+        JsonValue objects = data.get("objects");
+        JsonValue catJV = objects.get(0);
+        readProperties(catJV, tileSize);
+        cat = new Cat(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+        respawnPos = cat.getPosition();
+        startRespawnPos = respawnPos;
+        addObject(cat);
+    }
+
 
     private void readProperties(JsonValue objectJV, int tileSize){
         propertiesMap.clear();
@@ -662,11 +689,11 @@ public class Level {
         /** JSON of the level */
 
 //        activationRelations = new HashMap<>();
-        background = tMap.get("background").getTexture();
-
-        JsonValue size = levelJV.get("size");
-        bounds.width = size.getFloat(0)*scale.x;
-        bounds.height = size.getFloat(1)*scale.y;
+//        background = tMap.get("background").getTexture();
+//
+//        JsonValue size = levelJV.get("size");
+//        bounds.width = size.getFloat(0)*scale.x;
+//        bounds.height = size.getFloat(1)*scale.y;
         /*
         TODO: Remove try-catches
         We use try-catches here so that the level JSONs don't need to contain empty fields for objects that they don't have.
@@ -674,12 +701,12 @@ public class Level {
         every object in the game, even if they're empty. At that point, we should remove these try-catches
         so that we can enforce a stronger format for our level JSONs.
          */
-        try {
-            for (JsonValue exitJV : levelJV.get("exits")){
-                Exit exit = new Exit(scale, exitJV);
-                addObject(exit);
-            }
-        } catch (NullPointerException e) {}
+//        try {
+//            for (JsonValue exitJV : levelJV.get("exits")){
+//                Exit exit = new Exit(scale, exitJV);
+//                addObject(exit);
+//            }
+//        } catch (NullPointerException e) {}
 
 //        JsonValue defaults = constants.get("defaults");
 //        // This world is heavier
@@ -792,30 +819,30 @@ public class Level {
 //        }
 
         // Create cat
-        /** Float value to scale width */
-        float dwidth = tMap.get("cat").getRegionWidth() / scale.x;
-        /** Float value to scale height */
-        float dheight = tMap.get("cat").getRegionHeight() / scale.y;
-//        Texture[] arr = new Texture[6];
-        dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
-        dheight = tMap.get("cat").getRegionHeight()/scale.y;
-        Texture[] arr = new Texture[8];
-        arr[0] = tMap.get("cat").getTexture();
-        arr[1] = tMap.get("jumpingCat").getTexture();
-        arr[2] = tMap.get("jump_anim").getTexture();
-        arr[3] = tMap.get("meow_anim").getTexture();
-        arr[4] = tMap.get("sit").getTexture();
-        arr[5] = tMap.get("walk").getTexture();
-        arr[6] = tMap.get("idle_anim").getTexture();
-        arr[7] = tMap.get("idle_anim_stand").getTexture();
-        cat = new Cat(levelJV.get("cat"), dwidth, dheight, ret, prevCat == null? null : prevCat.getPosition(),arr);
-        cat.setDrawScale(scale);
-        respawnPos = cat.getPosition();
-        startRespawnPos = respawnPos;
-        addObject(cat);
+//        /** Float value to scale width */
+//        float dwidth = tMap.get("cat").getRegionWidth() / scale.x;
+//        /** Float value to scale height */
+//        float dheight = tMap.get("cat").getRegionHeight() / scale.y;
+////        Texture[] arr = new Texture[6];
+//        dwidth  = tMap.get("cat").getRegionWidth()/scale.x;
+//        dheight = tMap.get("cat").getRegionHeight()/scale.y;
+//        Texture[] arr = new Texture[8];
+//        arr[0] = tMap.get("cat").getTexture();
+//        arr[1] = tMap.get("jumpingCat").getTexture();
+//        arr[2] = tMap.get("jump_anim").getTexture();
+//        arr[3] = tMap.get("meow_anim").getTexture();
+//        arr[4] = tMap.get("sit").getTexture();
+//        arr[5] = tMap.get("walk").getTexture();
+//        arr[6] = tMap.get("idle_anim").getTexture();
+//        arr[7] = tMap.get("idle_anim_stand").getTexture();
+//        cat = new Cat(levelJV.get("cat"), dwidth, dheight, ret, prevCat == null? null : prevCat.getPosition(),arr);
+//        cat.setDrawScale(scale);
+//        respawnPos = cat.getPosition();
+//        startRespawnPos = respawnPos;
+//        addObject(cat);
 
-        spiritMode = false;
-        spiritLine = new SpiritLine(Color.WHITE, Color.CYAN, scale);
+//        spiritMode = false;
+//        spiritLine = new SpiritLine(Color.WHITE, Color.CYAN, scale);
     }
     /**
      * TODO: MOVE TO LEVELCONTROLLER

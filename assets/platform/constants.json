@@ -84,6 +84,7 @@
     "restitution": 0
   },
   "cat": {
+    "offset": [0.5, -0.5],
     "shrink": [0.7, 0.95],
     "force": 30.0,
     "damping": 30.0,

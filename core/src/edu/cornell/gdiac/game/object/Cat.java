@@ -19,9 +19,12 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
+
+import java.util.HashMap;
 
 /**
  * Player avatar for the plaform game.
@@ -34,9 +37,6 @@ public class Cat extends CapsuleObstacle implements Movable {
         MOVING, JUMPING, CLIMBING, DASHING
     }
     private State state;
-
-    /** The initializing data (to avoid magic numbers) */
-    private final JsonValue data;
 
     private static JsonValue objectConstants;
 
@@ -365,7 +365,6 @@ public class Cat extends CapsuleObstacle implements Movable {
         sensorShapes = new Array<>();
         groundFixtures = new ObjectSet<>();
         spiritRegions = new ObjectSet<>();
-        this.data = data;
 
         jump_animated = false;
         normal_texture = new TextureRegion(arr[0]);
@@ -405,6 +404,66 @@ public class Cat extends CapsuleObstacle implements Movable {
             faceRight = false;
         else
             faceRight = true;
+        setName("cat");
+    }
+
+    public Cat(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
+        super((float) properties.get("x")/tileSize + objectConstants.get("offset").getFloat(0),
+                levelHeight - (float) properties.get("y")/tileSize + objectConstants.get("offset").getFloat(1),
+                tMap.get("cat").getRegionWidth()/scale.x*objectConstants.get("shrink").getFloat( 0 ),
+                tMap.get("cat").getRegionHeight()/scale.y*objectConstants.get("shrink").getFloat( 1 ), Orientation.TOP);
+
+        setDrawScale(scale);
+        setDensity(objectConstants.getFloat("density", 0));
+        setFriction(objectConstants.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
+        setFixedRotation(true);
+        maxspeed = objectConstants.getFloat("maxspeed", 0);
+        damping = objectConstants.getFloat("damping", 0);
+        force = objectConstants.getFloat("force", 0);
+        jump_force = objectConstants.getFloat( "jump_force", 0 );
+        dash_force = objectConstants.getFloat( "dash_force", 0 );;
+        jumpDamping = objectConstants.getFloat("jump_damping", 0);
+        groundSensorName = "catGroundSensor";
+        sideSensorName = "catSideSensor";
+        sensorShapes = new Array<>();
+        groundFixtures = new ObjectSet<>();
+        spiritRegions = new ObjectSet<>();
+
+        jump_animated = false;
+        normal_texture = tMap.get("cat");
+        jumping_texture = tMap.get("jumpingCat");
+        sit_texture = tMap.get("sit");
+
+        spriteFrames = TextureRegion.split(tMap.get("jump_anim").getTexture(), 65, 65);
+        spriteFrames2 = TextureRegion.split(tMap.get("meow_anim").getTexture(), 62, 42);
+        spriteFrames3 = TextureRegion.split(tMap.get("walk").getTexture(), 62, 62);
+        spriteFrames4 = TextureRegion.split(tMap.get("idle_anim").getTexture(),62,62);
+        spriteFrames5 = TextureRegion.split(tMap.get("idle_anim_stand").getTexture(),64,64);
+
+        jump_animation = new Animation<>(0.025f, spriteFrames[0]);
+        meow_animation = new Animation<>(0.05f, spriteFrames2[0]);
+        walk_animation = new Animation<>(0.15f, spriteFrames3[0]);
+        idle_animation = new Animation<>(0.15f, spriteFrames4[0]);
+        idle_stand_animation = new Animation<>(0.15f, spriteFrames5[0]);
+
+        jumpTime = 0f;
+        meowTime = 0f;
+        walkTime = 0f;
+        failedTicks = FAIL_ANIM_TICKS;
+
+        idleTime = 0f;
+        nonMoveTime = 0f;
+        standTime = 0f;
+        time = 0;
+
+        // Gameplay attributes
+        state = State.MOVING;
+        setGravityScale(2f);
+        isGrounded = false;
+        canDash = true;
+        jumpPressed = false;
+        isMeowing = false;
+        faceRight = true;
         setName("cat");
     }
     /**

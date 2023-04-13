@@ -241,7 +241,7 @@ public class LevelController {
 
         boolean tempRet = isRet();
         setRet(false);
-        level.populateTiled(tiledLevelJV);
+        level.populateTiled(levelJV);
         actionController.setMobControllers(level);
 //        populateLevel(tempRet, prevCat);
         prevLivesState = new LevelState[9];

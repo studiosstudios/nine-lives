@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.*;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import edu.cornell.gdiac.assets.*;
 import edu.cornell.gdiac.game.stage.*;
 import edu.cornell.gdiac.util.*;
@@ -41,6 +43,7 @@ public class StageController implements Screen {
 	/** Whether this player mode is still active */
 	private boolean active;
 	public boolean pause;
+	public boolean loading;
 
 	/** The current stage being rendered on the screen */
 	private StageWrapper stage;
@@ -54,6 +57,8 @@ public class StageController implements Screen {
 	private PauseStage pauseStage;
 	/** The stage for the level select menu */
 	private LevelSelectStage levelSelectStage;
+	private LoadingStage loadingStage;
+	private StageWrapper prev;
 
 	private float animationTime;
 	/** Background texture for start-up */
@@ -64,6 +69,7 @@ public class StageController implements Screen {
 
 	public LevelController currLevel;
 	private int selectedLevel;
+	private Actor loadScreen;
 
 	public int getSelectedLevel() { return selectedLevel; }
 	public void setSelectedLevel(int level) { selectedLevel = level; }
@@ -148,11 +154,13 @@ public class StageController implements Screen {
 		float frameDuration = 0.05f;
 		animation = new Animation<>(frameDuration, spriteFrames[0]);
 		animationTime = 0f;
+		loadScreen = new Image(internal.getEntry("loadingTutorial", Texture.class));
 
 		mainMenuStage = new MainMenuStage(internal, false);
 		settingsStage = new SettingsStage(internal, true);
 		pauseStage = new PauseStage(internal, true);
 		levelSelectStage = new LevelSelectStage(internal, true);
+		loadingStage = new LoadingStage(internal, true);
 
 		stage = mainMenuStage;
 
@@ -177,6 +185,19 @@ public class StageController implements Screen {
 		assets = new AssetDirectory("assets.json");
 		assets.loadAssets();
 		assets.finishLoading();
+	}
+
+	public void addLoading() {
+		prev = getStage();
+		changeStage(loadingStage);
+//		getStage().addActor(loading);
+//		getStage().act();
+//		getStage().draw();
+
+	}
+	public void removeLoading() {
+//		loading.remove();
+		changeStage(prev);
 	}
 	
 	/**
@@ -208,10 +229,10 @@ public class StageController implements Screen {
 		if (!pause) {
 			Gdx.gl.glClearColor(0, 0, 0, 1.0f);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-			animation.setPlayMode(Animation.PlayMode.LOOP);
-			animationTime += Gdx.graphics.getDeltaTime();
-			TextureRegion currentFrame = animation.getKeyFrame(animationTime);
 		}
+		animation.setPlayMode(Animation.PlayMode.LOOP);
+		animationTime += Gdx.graphics.getDeltaTime();
+		TextureRegion currentFrame = animation.getKeyFrame(animationTime);
 		canvas.begin();
 		stage.getViewport().apply();
 		stage.act();
@@ -240,10 +261,37 @@ public class StageController implements Screen {
 				pauseStage.currLevel = this.currLevel;
 				changeStage(pauseStage);
 			}
+			if(loading) {
+				loading = false;
+//				TODO animate the loading ... and just movement on the screen
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
+
+				listener.exitScreen(this, 77);
+			}
 
 			// We are ready, notify our listener
 			if (mainMenuStage.isPlay() && listener != null) {
-				listener.exitScreen(this, 77);
+				changeStage(loadingStage);
+				loading = true;
+//				try {
+//					Thread.sleep(250);
+//				} catch (InterruptedException e) {
+//					Thread.currentThread().interrupt();
+//				}
+				getStage().act();
+				getStage().draw();
+				draw();
+//				try {
+//					Thread.sleep(2000);
+//				} catch (InterruptedException e) {
+//					Thread.currentThread().interrupt();
+//				}
+//
+//				listener.exitScreen(this, 77);
 			} else if (mainMenuStage.isSettings()) {
 				mainMenuStage.setSettingsState(0);
 				changeStage(settingsStage);
@@ -273,6 +321,7 @@ public class StageController implements Screen {
 			} else if (mainMenuStage.isExit() && listener != null) {
 				listener.exitScreen(this, 99);
 			}
+//			draw();
 		}
 	}
 

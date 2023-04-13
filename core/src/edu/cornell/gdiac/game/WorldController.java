@@ -285,6 +285,7 @@ public class WorldController implements Screen {
 			return false;
 		}
 		if (currLevel.getLevel().isFailure()) {
+//			TODO pause and display a death screen with a menu selection
 			currLevel.reset(null);
 		} else if (currLevel.getLevel().isComplete() || InputController.getInstance().didNext()) {
 			pause();

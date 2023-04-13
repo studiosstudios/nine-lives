@@ -1268,6 +1268,12 @@
               "name":"id",
               "type":"string",
               "value":"button2"
+            },
+            {
+              "name":"type",
+              "propertytype":"activators",
+              "type":"string",
+              "value":"button"
             }],
           "rotation":0,
           "type":"",

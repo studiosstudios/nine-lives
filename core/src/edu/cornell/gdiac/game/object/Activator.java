@@ -6,9 +6,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.*;
 import com.badlogic.gdx.Gdx;
+
+import java.util.HashMap;
 
 /**
  * An abstract class that represents objects that can be pressed and activate other objects. The exact behaviour of
@@ -78,12 +81,34 @@ public abstract class Activator extends PolygonObstacle {
         animationTime = 0f;
 
         setDrawScale(scale);
-        setTexture(texture2);
+//        setTexture(texture2);
         setFixedRotation(true);
 
         id = data.getString("id");
         setX(data.get("pos").getFloat(0)+objectConstants.get("offset").getFloat(0));
         setY(data.get("pos").getFloat(1)+objectConstants.get("offset").getFloat(1));
+        active = false;
+    }
+
+    public Activator(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
+        super(objectConstants.get("body_shape").asFloatArray());
+        setDrawScale(scale);
+        int spriteWidth = 32;
+        int spriteHeight = 32;
+        spriteFrames = TextureRegion.split(tMap.get("button_anim").getTexture(), spriteWidth, spriteHeight);
+        float frameDuration = 0.2f;
+        animation = new Animation<>(frameDuration, spriteFrames[0]);
+        setBodyType(BodyDef.BodyType.StaticBody);
+        animation.setPlayMode(Animation.PlayMode.REVERSED);
+        animationTime = 0f;
+
+        setDrawScale(scale);
+        setTexture(tMap.get("button"));
+        setFixedRotation(true);
+
+        id = (String) properties.get("id");
+        setX((float) properties.get("x")/tileSize+objectConstants.get("offset").getFloat(0));
+        setY(levelHeight - (float) properties.get("y")/tileSize+objectConstants.get("offset").getFloat(1));
         active = false;
     }
 

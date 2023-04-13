@@ -11,6 +11,8 @@ import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
 
+import java.util.HashMap;
+
 /**
  * An activator that toggles activation on press.
  */
@@ -27,6 +29,12 @@ public class Switch extends Activator {
      */
     public Switch(TextureRegion texture, TextureRegion texture2, Vector2 scale, JsonValue data){
         super(texture, texture2, scale, data);
+        prevPressed = false;
+        setName("switch");
+    }
+
+    public Switch(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
+        super(properties, tMap, scale, tileSize, levelHeight);
         prevPressed = false;
         setName("switch");
     }

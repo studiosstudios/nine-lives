@@ -389,6 +389,8 @@ public class Level {
             // Checkpoints
             else if (name.equals("checkpoints")) {
                 populateCheckpoints(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("activators")) {
+                populateActivators(obstacleData, tileSize, levelHeight);
             }
 
             // Activators
@@ -438,8 +440,8 @@ public class Level {
 
     private void populatePlatforms(JsonValue data, int tileSize, int levelHeight){
         JsonValue objects = data.get("objects");
-        for (JsonValue obj : objects) {
-            readProperties(obj);
+        for (JsonValue objJV : objects) {
+            readProperties(objJV);
             Platform platform = new Platform(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
             loadTiledActivatable(platform);
         }
@@ -465,7 +467,27 @@ public class Level {
     }
 
     private void populateActivators(JsonValue data, int tileSize, int levelHeight) {
-
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV);
+            System.out.println(propertiesMap);
+            Activator activator;
+            switch ((String) propertiesMap.get("type")){
+                case "button":
+                    activator = new Button(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+                    break;
+                case "switch":
+                    activator = new Switch(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+                    break;
+                case "timed":
+                    activator = new TimedButton(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+                    break;
+                default:
+                    throw new RuntimeException("unrecognised activator type");
+            }
+            activators.add(activator);
+            addObject(activator);
+        }
     }
 
     private void populateSpikes(JsonValue data, int tileSize, int levelHeight) {
@@ -589,26 +611,26 @@ public class Level {
 //            }
 //        } catch (NullPointerException e) {}
 
-        try {
-            for (JsonValue activatorJV : levelJV.get("activators")){
-                Activator activator;
-                switch (activatorJV.getString("type")){
-                    case "button":
-                        activator = new Button(tMap.get("button_anim"), tMap.get("button"), scale, activatorJV);
-                        break;
-                    case "switch":
-                        activator = new Switch(tMap.get("button_anim"), tMap.get("button"),scale, activatorJV);
-                        break;
-                    case "timed":
-                        activator = new TimedButton(tMap.get("button_anim"), tMap.get("button"),scale, activatorJV);
-                        break;
-                    default:
-                        throw new RuntimeException("unrecognised activator type");
-                }
-                activators.add(activator);
-                addObject(activator);
-            }
-        } catch (NullPointerException e) {}
+//        try {
+//            for (JsonValue activatorJV : levelJV.get("activators")){
+//                Activator activator;
+//                switch (activatorJV.getString("type")){
+//                    case "button":
+//                        activator = new Button(tMap.get("button_anim"), tMap.get("button"), scale, activatorJV);
+//                        break;
+//                    case "switch":
+//                        activator = new Switch(tMap.get("button_anim"), tMap.get("button"),scale, activatorJV);
+//                        break;
+//                    case "timed":
+//                        activator = new TimedButton(tMap.get("button_anim"), tMap.get("button"),scale, activatorJV);
+//                        break;
+//                    default:
+//                        throw new RuntimeException("unrecognised activator type");
+//                }
+//                activators.add(activator);
+//                addObject(activator);
+//            }
+//        } catch (NullPointerException e) {}
 
         try {
             for (JsonValue spikeJV : levelJV.get("spikes")) {

@@ -43,7 +43,7 @@
 		{"pos": [19, 20], "pushable": false, "angle": 180}
 	],
 	"checkpoints" : [{"pos" : [9, 15], "angle": 0}],
-	"mobs" : [{"pos" : [28, 2], "facingRight":  true, "aggressive":  true}],
+	"mobs" : [{"pos" : [30, 2], "facingRight":  true, "aggressive":  true}],
 	"exits" : [{"type":  "goal", "height": 18, "pos": [32, 9]}],
 	"cat" : {
 		"pos": [1, 8],

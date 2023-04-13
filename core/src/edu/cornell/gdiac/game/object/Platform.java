@@ -73,7 +73,6 @@ public class Platform extends PolygonObstacle implements Activatable {
      */
     public void update(float dt){
         super.update(dt);
-        System.out.println(getPosition());
         if (moving == 0) { return; }
         if (moving == 1){
             target.set(disp.x + startPos.x, disp.y + startPos.y);
@@ -134,8 +133,8 @@ public class Platform extends PolygonObstacle implements Activatable {
         }
         if (!activated) {
             deactivated(world);
+            setPosition(startPos.x + disp.x, startPos.y + disp.y);
         }
-        setPosition(activated ? Vector2.Zero : disp);
         moving = 0;
         return true;
     }

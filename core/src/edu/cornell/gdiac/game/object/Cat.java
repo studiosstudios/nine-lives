@@ -23,6 +23,8 @@ import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Player avatar for the plaform game.
@@ -43,7 +45,15 @@ public class Cat extends CapsuleObstacle implements Movable {
     private final JsonValue data;
     private static JsonValue objectConstants;
 
-    private Queue<String> soundBuffer;
+    /**
+     * Buffer used to store sound strings to be played by the ActionController
+     *
+     * All strings entered into this buffer should be one present as a key in the soundMap
+     *
+     * We use a Set here to prevent duplicate sounds from entering, which cannot be reliably prevented
+     * if we used a Queue.
+     */
+    private Set<String> soundBuffer;
     //endregion
     /*/////*/
 
@@ -218,7 +228,7 @@ public class Cat extends CapsuleObstacle implements Movable {
         objectConstants = constants;
     }
 
-    public Queue<String> getSoundBuffer() {
+    public Set<String> getSoundBuffer() {
         return soundBuffer;
     }
     //endregion
@@ -308,15 +318,25 @@ public class Cat extends CapsuleObstacle implements Movable {
     public void setGrounded(boolean value) {
         // Cat has touched the ground. Reset relevant abilities.
         if (value && !isGrounded) {
-            canDash = true;
-            dashTimer = 0;
-            jump_animated = false;
-            jumpTime = 0;
-            meowTime = 0;
-            jumpMovement = jumpForce;
-            soundBuffer.addLast("metalLanding");
+            setVY(0); // TODO: Cat bounces. Cat should not bounce (duplicates sounds and stuff). Setting restitutions to 0 does not seem to help; this temporary fixes it.
+            onGroundedReset();
+            soundBuffer.add("metalLanding");
         }
         isGrounded = value;
+    }
+
+    /**
+     * Utility function that "resets" field relating to when the cat becomes grounded, such as
+     * regaining the ability to dash. This has been factored out to decouple the cases where we
+     * might want to reset some abilities even if the cat has not strictly become grounded.
+     */
+    public void onGroundedReset() {
+        canDash = true;
+        dashTimer = 0;
+        jump_animated = false;
+        jumpTime = 0;
+        meowTime = 0;
+        jumpMovement = jumpForce;
     }
 
     /**
@@ -383,7 +403,7 @@ public class Cat extends CapsuleObstacle implements Movable {
 
     public void setMeowing(boolean value) {
         if (value && !isMeowing) {
-            soundBuffer.addLast("meow");
+            soundBuffer.add("meow");
         }
         isMeowing = value;
     }
@@ -436,20 +456,20 @@ public class Cat extends CapsuleObstacle implements Movable {
         setDensity(objectConstants.getFloat("density", 0));
         setFriction(
                 objectConstants.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
+        setRestitution(objectConstants.getFloat("restitution", 0));
         setFixedRotation(true);
         maxSpeed = objectConstants.getFloat("maxSpeed", 0);
         horizontalDamping = objectConstants.getFloat("horizontalDamping", 0);
         force = objectConstants.getFloat("force", 0);
         jumpForce = objectConstants.getFloat("jumpForce", 0);
         dashForce = objectConstants.getFloat("dashForce", 0);
-        ;
         jumpDamping = objectConstants.getFloat("jumpDamping", 0);
         groundSensorName = "catGroundSensor";
         sideSensorName = "catSideSensor";
         sensorShapes = new Array<>();
         groundFixtures = new ObjectSet<>();
         spiritRegions = new ObjectSet<>();
-        soundBuffer = new Queue<>();
+        soundBuffer = new HashSet<>();
         this.data = data;
 
         jump_animated = false;
@@ -482,7 +502,8 @@ public class Cat extends CapsuleObstacle implements Movable {
         // Gameplay attributes
         state = State.MOVING;
         setGravityScale(2f);
-        isGrounded = false;
+        onGroundedReset();
+        isGrounded = true; // We set this to true in constructor to prevent the grounded sound from playing on spawn
         canDash = true;
         jumpPressed = false;
         isMeowing = false;
@@ -517,7 +538,7 @@ public class Cat extends CapsuleObstacle implements Movable {
         // collisions with the world but has no collision response.
         JsonValue groundSensorJV = objectConstants.get("ground_sensor");
         Fixture a = generateSensor(new Vector2(0, -getHeight() / 2),
-                groundSensorJV.getFloat("shrink", 0) * getWidth() / 2.0f,
+                groundSensorJV.getFloat("shrink", 0) * getWidth() / 1.3f,
                 groundSensorJV.getFloat("height", 0),
                 getGroundSensorName());
 
@@ -571,7 +592,7 @@ public class Cat extends CapsuleObstacle implements Movable {
                 // MOVING -> JUMPING
                 if (isGrounded && jumpPressed) {
                     state = State.JUMPING;
-                    soundBuffer.addLast("jump");
+                    soundBuffer.add("jump");
                     return;
                 }
                 // MOVING -> CLIMBING
@@ -585,7 +606,7 @@ public class Cat extends CapsuleObstacle implements Movable {
                     state = State.DASHING;
                     setGravityScale(0);
                     calculateDashVector();
-                    soundBuffer.addLast("dash");
+                    soundBuffer.add("dash");
                     return;
                 }
                 break;
@@ -606,7 +627,7 @@ public class Cat extends CapsuleObstacle implements Movable {
                     state = State.DASHING;
                     setGravityScale(0);
                     calculateDashVector();
-                    soundBuffer.addLast("dash");
+                    soundBuffer.add("dash");
                     return;
                 }
                 break;
@@ -624,7 +645,7 @@ public class Cat extends CapsuleObstacle implements Movable {
                 if (dashTimer >= 12) {
                     state = State.MOVING;
                     setVX(0);
-                    setVY(0);
+                    setVY(Math.signum(getVY()) * maxSpeed);
                     setGravityScale(2f);
                     return;
                 }
@@ -663,13 +684,16 @@ public class Cat extends CapsuleObstacle implements Movable {
     }
 
     private void calculateDashVector() {
-        float hMove = horizontalMovement / 2f;
-        float vMove = verticalMovement / 2f;
-        if (horizontalMovement != 0 && verticalMovement != 0) {
-            dashCache.set(hMove / (float) Math.sqrt(2), vMove / (float) Math.sqrt(2));
-        } else {
-            dashCache.set(hMove, vMove);
+        float horizontalForce = horizontalMovement / 2f;
+        float verticalForce = verticalMovement / 2f;
+        if (horizontalMovement == 0 && verticalMovement == 0) {
+            horizontalForce = (isFacingRight() ? 1 : -1) * getForce() / 2f;
+        } else if (horizontalMovement != 0 && verticalMovement != 0) {
+            horizontalForce = horizontalForce / (float)Math.sqrt(2);
+            verticalForce = verticalForce / (float)Math.sqrt(2);
         }
+
+        dashCache.set(horizontalForce, verticalForce);
     }
 
     /**

@@ -176,9 +176,10 @@ public class ActionController {
             cat.updateState();
             cat.applyForce();
 
-            while (cat.getSoundBuffer().size > 0) {
-                soundAssetMap.get(cat.getSoundBuffer().removeLast()).play();
+            for (String soundName : cat.getSoundBuffer()) {
+                soundAssetMap.get(soundName).play();
             }
+            cat.getSoundBuffer().clear();
         }
 
         //Prepare dead bodies for raycasting

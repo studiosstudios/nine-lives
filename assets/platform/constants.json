@@ -89,6 +89,7 @@
     "horizontalDamping": 30.0,
     "density": 1.0,
     "friction": 0,
+    "restitution": 0,
     "maxSpeed": 6.5,
     "jumpForce": 2.5,
     "jumpDamping": 0.8,

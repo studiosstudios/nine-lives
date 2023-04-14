@@ -375,7 +375,7 @@ public class Cat extends CapsuleObstacle implements Movable {
         spriteFrames5 = TextureRegion.split(tMap.get("idle_anim_stand").getTexture(),2048,2048);
 
         jump_animation = new Animation<>(0.025f, spriteFrames[0]);
-        meow_animation = new Animation<>(0.1f, spriteFrames2[0]);
+        meow_animation = new Animation<>(0.05f, spriteFrames2[0]);
         walk_animation = new Animation<>(0.15f, spriteFrames3[0]);
         idle_animation = new Animation<>(0.15f, spriteFrames4[0]);
         idle_stand_animation = new Animation<>(0.15f, spriteFrames5[0]);
@@ -663,37 +663,30 @@ public class Cat extends CapsuleObstacle implements Movable {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
-        float effect = faceRight ? 1.0f : -1.0f;
-        float x = getX() * drawScale.x - effect*25;
-        float y = getY()* drawScale.y-20;
+        float effect = faceRight ? -1.0f : 1.0f;
+        float x = getX() * drawScale.x;
+        float y = getY()* drawScale.y;
         //walking animation
         TextureRegion frame = sit_texture;
         float xOffset = 0;
         float yOffset = 0;
-        float flip = 1;
         if(!(state == State.JUMPING)&& horizontalMovement != 0){
-            walk_animation.setPlayMode(Animation.PlayMode.LOOP_REVERSED);
+            walk_animation.setPlayMode(Animation.PlayMode.LOOP);
             walkTime += Gdx.graphics.getDeltaTime();
-            yOffset = -10;
             frame = walk_animation.getKeyFrame(walkTime);
-
             nonMoveTime = 0;
         }
         //jump animation
-        else if(state == State.JUMPING && !jump_animated){
-            jump_animation.setPlayMode(Animation.PlayMode.REVERSED);
+        else if(state == State.JUMPING && !jump_animated && jumpTime < 0.025f*6){
+            jump_animation.setPlayMode(Animation.PlayMode.NORMAL);
             jumpTime += Gdx.graphics.getDeltaTime();
             frame = jump_animation.getKeyFrame(jumpTime);
-            yOffset = -15;
-
             nonMoveTime = 0;
         }
         //meow animation
         else if((isMeowing && !(state == State.JUMPING)) || meowTime != 0){
-            meow_animation.setPlayMode(Animation.PlayMode.LOOP);
+            meow_animation.setPlayMode(Animation.PlayMode.REVERSED);
             meowTime += Gdx.graphics.getDeltaTime();
-            xOffset = (11*-effect);
-            yOffset = -11;
             frame = meow_animation.getKeyFrame(meowTime);
             if (meowTime >= (0.6)){
                 meowTime = 0;
@@ -702,38 +695,32 @@ public class Cat extends CapsuleObstacle implements Movable {
         }
 
         //sit
-        else if(horizontalMovement == 0 && verticalMovement == 0){
-            yOffset = -11;
+        else if(horizontalMovement == 0 && verticalMovement == 0 && !(state == State.JUMPING)){
             if(nonMoveTime >= 10){
                 idle_animation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
                 idleTime += Gdx.graphics.getDeltaTime();
                 frame = idle_animation.getKeyFrame(idleTime);
-                flip = -1;
-                xOffset = (54*effect);
             }
             else if(nonMoveTime >= 5){
                 nonMoveTime += Gdx.graphics.getDeltaTime();
-                xOffset = (11*-effect);
             }
             else{
                 nonMoveTime += Gdx.graphics.getDeltaTime();
                 idle_stand_animation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
                 standTime += Gdx.graphics.getDeltaTime();
                 frame = idle_stand_animation.getKeyFrame(standTime);
-                flip = -1;
-                xOffset = (54*effect);
+                frame = idle_stand_animation.getKeyFrame(standTime);
             }
         }
         else {
             frame = jumping_texture;
             nonMoveTime = 0;
         }
-
-        canvas.draw(frame, Color.WHITE, origin.x, origin.y, x + xOffset, y + yOffset, getAngle(), effect * flip /tileSize, (float)1/tileSize);
+        canvas.draw(frame, Color.WHITE, origin.x, origin.y, x - effect*frame.getRegionWidth()/tileSize/2, y-frame.getRegionHeight()/tileSize/2, 0, effect/tileSize, (float)1/tileSize);
         if (failedTicks < FAIL_ANIM_TICKS){
             xOffset += ((float) (Math.sin(-failedTicks/2) * Math.exp(-failedTicks/30)))*drawScale.x/2;
             Color c = new Color(1, 0 , 0, 0.5f - Math.abs(failedTicks - FAIL_ANIM_TICKS/2)/FAIL_ANIM_TICKS);
-            canvas.draw(frame, c, origin.x, origin.y, x + xOffset, y + yOffset, getAngle(), effect * flip, 1.0f);
+            canvas.draw(frame, Color.WHITE, origin.x, origin.y, x - effect*frame.getRegionWidth()/tileSize/2, y-frame.getRegionHeight()/tileSize/2, 0, effect/tileSize, (float)1/tileSize);
         }
     }
 

@@ -47,7 +47,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
      * @param drawScale          Draw scale for drawing.
      * @param data               JSON data for loading.
      */
-    public Flamethrower(TextureRegion flamebaseTexture, Vector2 flameBaseScale, TextureRegion flameTexture, Vector2 flameScale, Vector2 drawScale, JsonValue data) {
+    public Flamethrower(TextureRegion flamebaseTexture, Vector2 flameBaseScale, TextureRegion flameTexture, Vector2 flameScale, Vector2 drawScale, JsonValue data, Vector2 textureScale) {
         super();
 
 
@@ -73,7 +73,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
                 objectConstants.get("flame_offset").getFloat(1)*(float)Math.sin(angle),
                 objectConstants.get("flame_offset").getFloat(1)*(float)Math.cos(angle)-
                 objectConstants.get("flame_offset").getFloat(0)*(float)Math.sin(angle));
-        flame = new Flame(flameTexture, drawScale, flameBase.getPosition(), flameBase.getAngle());
+        flame = new Flame(flameTexture, drawScale, flameBase.getPosition(), flameBase.getAngle(),textureScale);
         flame.setTextureScale(flameScale);
 
         if (pushable){
@@ -116,7 +116,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
                 objectConstants.get("flame_offset").getFloat(1)*(float)Math.sin(angle),
                 objectConstants.get("flame_offset").getFloat(1)*(float)Math.cos(angle)-
                         objectConstants.get("flame_offset").getFloat(0)*(float)Math.sin(angle));
-        flame = new Flame(flameTexture, drawScale, flameBase.getPosition(), flameBase.getAngle());
+        flame = new Flame(flameTexture, drawScale, flameBase.getPosition(), flameBase.getAngle(),textureScale);
 
         if (pushable){
             flame.setBodyType(BodyDef.BodyType.DynamicBody);
@@ -276,10 +276,10 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
          * @param pos     Position of flamethrower base.
          * @param angle   Angle of flame.
          */
-        public Flame(TextureRegion texture, Vector2 scale, Vector2 pos, float angle) {
-            super(42/scale.x, 74/scale.y);
-            int spriteWidth = 42;
-            int spriteHeight = 74;
+        public Flame(TextureRegion texture, Vector2 scale, Vector2 pos, float angle, Vector2 textureScale) {
+            super(texture.getRegionWidth()/scale.x*textureScale.x, texture.getRegionHeight()/scale.y*textureScale.y);
+            int spriteWidth = 2048;
+            int spriteHeight = 4096;
             spriteFrames = TextureRegion.split(texture.getTexture(), spriteWidth, spriteHeight);
             float frameDuration = 0.1f;
             animation = new Animation<>(frameDuration, spriteFrames[0]);
@@ -289,6 +289,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
             setMass(0);
             setName("flame");
             setDrawScale(scale);
+            setTextureScale(textureScale);
             setSensor(true);
             setX(pos.x + flameOffset.x);
             setY(pos.y + flameOffset.y);

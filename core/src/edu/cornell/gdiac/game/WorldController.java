@@ -227,7 +227,7 @@ public class WorldController implements Screen {
 				"background", "flame_anim", "roboMob",
 				"spirit_anim", "spirit_photon", "spirit_photon_cat", "spirit_region",
 				"meow_anim", "idle_anim", "idle_anim_stand",
-				"metal_tileset", "steel"};
+				"metal_tileset", "steel","burnCat"};
 
 		for (String n : names){
 			textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));

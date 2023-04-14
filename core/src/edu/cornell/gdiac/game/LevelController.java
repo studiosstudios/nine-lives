@@ -131,7 +131,6 @@ public class LevelController {
 //    }
 
     /**
-=======
     }
 
     /**
@@ -146,7 +145,6 @@ public class LevelController {
     }
 
     /**
->>>>>>> origin/alpha
      * Returns true if returning to prev level
      *
      * @return true if returning to previous level

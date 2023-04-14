@@ -57,6 +57,7 @@ public class Level {
     private int numLives;
     /** The max lives allowed */
     private final int maxLives;
+    private int tileSize;
 
     /** hashmap to represent activator-activatable relationships:
      *   keys are activator ids specified in JSON*/
@@ -345,7 +346,7 @@ public class Level {
         JsonValue layers = tiledMap.get("layers");
         JsonValue tileData = layers.get(0);
 
-        int tileSize = tiledMap.getInt("tilewidth");
+        tileSize = tiledMap.getInt("tilewidth");
         int levelWidth = tiledMap.getInt("width");
         int levelHeight = tiledMap.getInt("height");
 
@@ -1079,7 +1080,7 @@ public class Level {
      * Spawns a dead body at the location of the cat
      * */
     public void spawnDeadBody(){
-        DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat"),textureRegionAssetMap.get("burnCat"), scale, cat.getPosition());
+        DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat"),textureRegionAssetMap.get("burnCat"), scale, cat.getPosition(),tileSize);
         deadBody.setLinearVelocity(cat.getLinearVelocity());
         deadBody.setFacingRight(cat.isFacingRight());
         queueObject(deadBody);
@@ -1091,7 +1092,7 @@ public class Level {
      * @param state Map of arguments for the dead body, called from storeState() in {@link DeadBody}.
      */
     public void loadDeadBodyState(ObjectMap<String, Object> state){
-        DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat"), textureRegionAssetMap.get("burnCat"),scale, Vector2.Zero);
+        DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat"), textureRegionAssetMap.get("burnCat"),scale, Vector2.Zero, tileSize);
         deadBody.loadState(state);
         queueObject(deadBody);
         deadBodyArray.add(deadBody);

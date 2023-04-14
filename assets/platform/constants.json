@@ -84,7 +84,7 @@
     "restitution": 0
   },
   "cat": {
-    "shrink": [0.7, 0.95],
+    "shrink": [0.7, 0.85],
     "force": 30.0,
     "horizontalDamping": 30.0,
     "density": 1.0,

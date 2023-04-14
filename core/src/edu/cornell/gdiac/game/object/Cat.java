@@ -23,7 +23,10 @@ import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
+import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -213,6 +216,8 @@ public class Cat extends CapsuleObstacle implements Movable {
     private boolean jump_animated;
     private float failedTicks;
     private static final float FAIL_ANIM_TICKS = 30f;
+    private Queue<Map.Entry<Vector2, Integer>> dashShadowQueue = new Queue<>();
+    private boolean dashShadowFacingRight = true;
     //endregion
     /*/////*/
 
@@ -606,6 +611,7 @@ public class Cat extends CapsuleObstacle implements Movable {
                     state = State.DASHING;
                     setGravityScale(0);
                     calculateDashVector();
+                    dashShadowFacingRight = isFacingRight();
                     soundBuffer.add("dash");
                     return;
                 }
@@ -627,6 +633,7 @@ public class Cat extends CapsuleObstacle implements Movable {
                     state = State.DASHING;
                     setGravityScale(0);
                     calculateDashVector();
+                    dashShadowFacingRight = isFacingRight();
                     soundBuffer.add("dash");
                     return;
                 }
@@ -642,10 +649,12 @@ public class Cat extends CapsuleObstacle implements Movable {
             case DASHING:
                 // DASHING -> MOVING
                 dashTimer++;
-                if (dashTimer >= 12) {
+                if (dashTimer >= 7) {
                     state = State.MOVING;
-                    setVX(0);
-                    setVY(Math.signum(getVY()) * maxSpeed);
+//                    setVX(0);
+                    if (getRelativeVelocity().y > 0) {
+                        setVY(maxSpeed);
+                    }
                     setGravityScale(2f);
                     return;
                 }
@@ -671,9 +680,9 @@ public class Cat extends CapsuleObstacle implements Movable {
                 body.applyLinearImpulse(forceCache, getPosition(), true);
             case MOVING:
                 if (horizontalMovement == 0){
-                    setRelativeVX(getRelativeVelocity().x * 0.7f);
+                    setRelativeVX(getRelativeVelocity().x * 0.5f);
                 } else {
-                    setRelativeVX(0.8f * (getRelativeVelocity().x + horizontalMovement * 0.06f));
+                    setRelativeVX(0.84f * (getRelativeVelocity().x + horizontalMovement * 0.06f));
                 }
                 break;
             case CLIMBING:
@@ -683,13 +692,14 @@ public class Cat extends CapsuleObstacle implements Movable {
             case DASHING:
                 setRelativeVX(dashCache.x);
                 setRelativeVY(dashCache.y);
+                processDashShadowQueue();
                 break;
         }
     }
 
     private void calculateDashVector() {
-        float horizontalForce = horizontalMovement / 2f;
-        float verticalForce = verticalMovement / 2f;
+        float horizontalForce = horizontalMovement / 1.8f;
+        float verticalForce = verticalMovement / 1.8f;
         if (horizontalMovement == 0 && verticalMovement == 0) {
             horizontalForce = (isFacingRight() ? 1 : -1) * getForce() / 2f;
         } else if (horizontalMovement != 0 && verticalMovement != 0) {
@@ -699,6 +709,13 @@ public class Cat extends CapsuleObstacle implements Movable {
 
         dashCache.set(horizontalForce, verticalForce);
     }
+
+    private void processDashShadowQueue() {
+        if (dashTimer % 3 == 0) {
+            dashShadowQueue.addLast(new SimpleEntry<>(new Vector2(getX() * drawScale.x - (facingRight ? 1.0f : -1.0f) * 25, getY() * drawScale.y - 20), 10));
+        }
+    }
+
 
     /**
      * Updates the object's physics state (NOT GAME LOGIC).
@@ -724,7 +741,7 @@ public class Cat extends CapsuleObstacle implements Movable {
         TextureRegion frame = sit_texture;
         float xOffset = 0;
         float yOffset = 0;
-        float flip = 1;
+        float  flip = 1;
         if (state != State.JUMPING && horizontalMovement != 0) {
             walkAnimation.setPlayMode(Animation.PlayMode.LOOP_REVERSED);
             walkTime += Gdx.graphics.getDeltaTime();
@@ -781,8 +798,18 @@ public class Cat extends CapsuleObstacle implements Movable {
             nonMoveTime = 0;
         }
 
-        canvas.draw(frame, Color.WHITE, origin.x, origin.y, x + xOffset, y + yOffset, getAngle(),
-                effect * flip, 1.0f);
+        Color dashColor = (new Color(0.68f, 0.85f, 0.9f, 1f));
+        for (int i = 0; i < dashShadowQueue.size; i++) {
+            Map.Entry<Vector2, Integer> shadow = dashShadowQueue.removeFirst();
+            Vector2 coords = shadow.getKey();
+            dashColor.a = shadow.getValue() / 10f;
+            canvas.draw(frame, dashColor, origin.x, origin.y, coords.x + xOffset, coords.y + yOffset, getAngle(), (dashShadowFacingRight ? 1 : -1) * flip, 1.0f);
+            if (shadow.getValue() - 1 > 0) {
+                shadow.setValue(shadow.getValue() - 1);
+                dashShadowQueue.addLast(shadow);
+            }
+        }
+
         if (failedTicks < FAIL_ANIM_TICKS) {
             xOffset += ((float) (Math.sin(-failedTicks / 2) * Math.exp(-failedTicks / 30)))
                     * drawScale.x / 2;
@@ -791,6 +818,12 @@ public class Cat extends CapsuleObstacle implements Movable {
             canvas.draw(frame, c, origin.x, origin.y, x + xOffset, y + yOffset, getAngle(),
                     effect * flip, 1.0f);
         }
+
+        canvas.draw(frame, Color.WHITE, origin.x, origin.y, x + xOffset, y + yOffset, getAngle(),
+                effect * flip, 1.0f);
+
+//            canvas.draw(frame, c, origin.x, origin.y, x + xOffset, y + yOffset, getAngle());
+//            canvas.draw(frame, c, origin.x, origin.y, x + xOffset, y + yOffset, getAngle(), effect * flip, 1.0f);
     }
 
     /**

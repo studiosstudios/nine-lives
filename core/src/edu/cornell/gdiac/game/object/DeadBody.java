@@ -252,7 +252,9 @@ public class DeadBody extends BoxObstacle implements Movable {
             animation.setPlayMode(Animation.PlayMode.LOOP);
             time += Gdx.graphics.getDeltaTime();
             TextureRegion frame = animation.getKeyFrame(time);
-            canvas.draw(frame, color, origin.x, origin.y, getX() * drawScale.x + effect*frame.getRegionWidth()/tileSize/2, getY() * drawScale.y-frame.getRegionHeight()/tileSize/2+5, getAngle(), -effect/tileSize, 1.0f/tileSize);
+            float x = getX() * drawScale.x + effect*frame.getRegionWidth()/tileSize/2;
+            float y = getY() * drawScale.y-frame.getRegionHeight()/tileSize/2+5;
+            canvas.draw(frame, color, origin.x, origin.y,  x,y, getAngle(), -effect/tileSize, 1.0f/tileSize);
         }
         else{
             canvas.draw(texture, color, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), effect, 1.0f);

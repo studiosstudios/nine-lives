@@ -47,7 +47,6 @@ public class DeadBody extends BoxObstacle implements Movable {
     /** If dead body is currently being hit by a laser.
      * This is necessary because laser collisions are done with raycasting.*/
     private boolean touchingLaser;
-    private int tileSize;
     /** The set of spirit regions that this dead body is inside */
     private ObjectSet<SpiritRegion> spiritRegions;
     private TextureRegion[][] spriteFrames;
@@ -132,7 +131,7 @@ public class DeadBody extends BoxObstacle implements Movable {
      * @param scale        the draw scale
      * @param position     position
      */
-    public DeadBody(TextureRegion texture, TextureRegion burnTexture,Vector2 scale, Vector2 position, int tileSize) {
+    public DeadBody(TextureRegion texture, TextureRegion burnTexture,Vector2 scale, Vector2 position) {
         super(texture.getRegionWidth()/scale.x*objectConstants.get("shrink").getFloat(0),
                 texture.getRegionHeight()/scale.y*objectConstants.get("shrink").getFloat(1));
         spriteFrames = TextureRegion.split(burnTexture.getTexture(), 2048,2048);
@@ -144,7 +143,6 @@ public class DeadBody extends BoxObstacle implements Movable {
         setMass(objectConstants.getFloat("mass", 0));
         setFriction(objectConstants.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
         setFixedRotation(true);
-        this.tileSize = tileSize;
 
 //        setLinearDamping(objectConstants.getFloat("damping", 2f)); this messes with moving platforms
 
@@ -251,9 +249,9 @@ public class DeadBody extends BoxObstacle implements Movable {
             animation.setPlayMode(Animation.PlayMode.LOOP);
             time += Gdx.graphics.getDeltaTime();
             TextureRegion frame = animation.getKeyFrame(time);
-            float x = getX() * drawScale.x + effect*frame.getRegionWidth()/tileSize/2;
-            float y = getY() * drawScale.y-frame.getRegionHeight()/tileSize/2+5;
-            canvas.draw(frame, color, origin.x, origin.y,  x,y, getAngle(), -effect/tileSize, 1.0f/tileSize);
+            float x = getX() * drawScale.x + effect*frame.getRegionWidth()/drawScale.x/2;
+            float y = getY() * drawScale.y-frame.getRegionHeight()/drawScale.y/2+5;
+            canvas.draw(frame, color, origin.x, origin.y,  x,y, getAngle(), -effect/drawScale.x, 1.0f/drawScale.y);
         }
         else{
             canvas.draw(texture, color, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), effect, 1.0f);

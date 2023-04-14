@@ -1092,7 +1092,7 @@ public class Level {
      * Spawns a dead body at the location of the cat
      * */
     public void spawnDeadBody(){
-        DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat"),textureRegionAssetMap.get("burnCat"), scale, cat.getPosition(),tileSize);
+        DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat"),textureRegionAssetMap.get("burnCat"), scale, cat.getPosition());
         deadBody.setLinearVelocity(cat.getLinearVelocity());
         deadBody.setFacingRight(cat.isFacingRight());
         queueObject(deadBody);
@@ -1104,7 +1104,7 @@ public class Level {
      * @param state Map of arguments for the dead body, called from storeState() in {@link DeadBody}.
      */
     public void loadDeadBodyState(ObjectMap<String, Object> state){
-        DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat"), textureRegionAssetMap.get("burnCat"),scale, Vector2.Zero, tileSize);
+        DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat"), textureRegionAssetMap.get("burnCat"),scale, Vector2.Zero);
         deadBody.loadState(state);
         queueObject(deadBody);
         deadBodyArray.add(deadBody);

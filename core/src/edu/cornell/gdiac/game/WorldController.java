@@ -148,7 +148,7 @@ public class WorldController implements Screen {
 			currLevel.setRet(false);
 			currLevel.reset(resetSpawn ? null : currLevel.getLevel().getCat());
 			if (levelNum < numLevels) {
-				nextJSON = levelJSON(levelNum + 1);
+				nextJSON = tiledJSON(levelNum + 1);
 			}
 		}
 	}
@@ -171,13 +171,13 @@ public class WorldController implements Screen {
 			currLevel.setRet(!resetSpawn);
 			currLevel.reset(resetSpawn ? null : currLevel.getLevel().getCat());
 			if (levelNum > 1) {
-				prevJSON = levelJSON(levelNum - 1);
+				prevJSON = tiledJSON(levelNum - 1);
 			}
 		}
 	}
 	public void setCurrLevel(int level) {
 		if (level < numLevels) {
-			currLevel.setJSON(levelJSON(level+1));
+			currLevel.setJSON(tiledJSON(level+1));
 		}
 	}
 

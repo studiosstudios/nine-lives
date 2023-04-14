@@ -362,20 +362,32 @@ public class Level {
         }
 
         populateObstacles(obstacleData, tileSize, levelHeight);
-
         String biome = tiledMap.get("properties").get(0).getString("value");
 
         TextureRegion tileset = new TextureRegion();
 
+        int fID = 1;
         if (biome.equals("metal")) {
             tileset = textureRegionAssetMap.get("metal_tileset");
+            for (JsonValue tilesetData : tiledMap.get("tilesets")){
+                if (tilesetData.getString("source").equals("lab-walls.tsx")){
+                    fID = tilesetData.getInt("firstgid");
+                }
+            }
         }
         else if (biome.equals("forest")) {
             // TODO: change this in future
             tileset = textureRegionAssetMap.get("metal_tileset");
+            for (JsonValue tilesetData : tiledMap.get("tilesets")){
+                if (tilesetData.getString("source").equals("lab-walls.tsx")){
+                    fID = tilesetData.getInt("firstgid");
+                }
+            }
         }
 
-        tiles = new Tiles(tileData, tileSize, levelWidth, levelHeight, tileset, new Vector2(1/32f, 1/32f));
+
+
+        tiles = new Tiles(tileData, 1024, levelWidth, levelHeight, tileset, fID, new Vector2(1/32f, 1/32f));
 
         spiritMode = false;
         spiritLine = new SpiritLine(Color.WHITE, Color.CYAN, scale);
@@ -389,7 +401,7 @@ public class Level {
         for (JsonValue obstacleData : data) {
             String name = obstacleData.getString("name");
             // Walls
-            if (name.equals("wall-poly")) {
+            if (name.equals("wallsPoly")) {
                 populateWalls(obstacleData, tileSize, levelHeight);
             }
             // Platforms
@@ -493,7 +505,7 @@ public class Level {
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize);
             Activator activator;
-            switch ((String) propertiesMap.get("type")){
+            switch ((String) propertiesMap.get("type", "button")){
                 case "button":
                     activator = new Button(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
                     break;

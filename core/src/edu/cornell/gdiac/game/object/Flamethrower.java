@@ -277,7 +277,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
          * @param angle   Angle of flame.
          */
         public Flame(TextureRegion texture, Vector2 scale, Vector2 pos, float angle, Vector2 textureScale) {
-            super(texture.getRegionWidth()/scale.x*textureScale.x, texture.getRegionHeight()/scale.y*textureScale.y);
+            super(texture.getRegionWidth()/scale.x*textureScale.x/7, texture.getRegionHeight()/scale.y*textureScale.y);
             int spriteWidth = 2048;
             int spriteHeight = 4096;
             spriteFrames = TextureRegion.split(texture.getTexture(), spriteWidth, spriteHeight);

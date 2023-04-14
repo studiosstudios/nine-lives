@@ -115,7 +115,7 @@ public class Laser extends BoxObstacle implements Activatable{
                 break;
         }
         totalTime = 0;
-        color = Color.RED;
+        color = new Color(Color.RED);
         points = new Array<>();
         initTiledActivations(properties);
     }

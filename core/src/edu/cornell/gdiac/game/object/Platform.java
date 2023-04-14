@@ -54,9 +54,9 @@ public class Platform extends PolygonObstacle implements Activatable {
         setX((float) properties.get("x")/tileSize);
         setY(levelHeight - (float) properties.get("y")/tileSize - height);
         startPos = getPosition().cpy();
-        speed = (float) properties.get("speed", 5);
+        speed = (float) properties.get("speed", 5f);
         damping = (float) properties.get("damping", 0.1f);
-        disp = (Vector2) properties.get("disp");
+        disp = (Vector2) properties.get("disp", Vector2.Zero);
         isClimbable = (boolean) properties.get("climbable", false);
         target = new Vector2();
         initTiledActivations(properties);

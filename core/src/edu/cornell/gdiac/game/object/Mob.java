@@ -164,7 +164,7 @@ public class Mob extends CapsuleObstacle {
         setFixedRotation(true);
         setName("mob");
         setX((float) properties.get("x")/tileSize + objectConstants.get("offset").getFloat(0));
-        setY(levelHeight - (float) properties.get("y")/tileSize + objectConstants.get("offset").getFloat(1));
+        setY(levelHeight - (float) properties.get("y")/tileSize + objectConstants.get("offset").getFloat(1)-getDimension().y/2);
         setDrawScale(scale);
         setTextureScale(textureScale);
         setTexture(tMap.get("roboMob"));

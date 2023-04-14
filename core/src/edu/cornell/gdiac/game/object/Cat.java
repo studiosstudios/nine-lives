@@ -716,11 +716,11 @@ public class Cat extends CapsuleObstacle implements Movable {
             frame = jumping_texture;
             nonMoveTime = 0;
         }
-        canvas.draw(frame, Color.WHITE, origin.x, origin.y, x - effect*frame.getRegionWidth()/tileSize/2, y-frame.getRegionHeight()/tileSize/2, 0, effect/tileSize, (float)1/tileSize);
+        canvas.draw(frame, Color.WHITE, origin.x, origin.y, x - effect*frame.getRegionWidth()/drawScale.x/2, y-frame.getRegionHeight()/drawScale.y/2, 0, effect/drawScale.x, 1f/drawScale.y);
         if (failedTicks < FAIL_ANIM_TICKS){
             xOffset += ((float) (Math.sin(-failedTicks/2) * Math.exp(-failedTicks/30)))*drawScale.x/2;
             Color c = new Color(1, 0 , 0, 0.5f - Math.abs(failedTicks - FAIL_ANIM_TICKS/2)/FAIL_ANIM_TICKS);
-            canvas.draw(frame, Color.WHITE, origin.x, origin.y, x - effect*frame.getRegionWidth()/tileSize/2, y-frame.getRegionHeight()/tileSize/2, 0, effect/tileSize, (float)1/tileSize);
+            canvas.draw(frame, c, origin.x, origin.y, x - effect*frame.getRegionWidth()/drawScale.x/2 + xOffset, y-frame.getRegionHeight()/drawScale.y/2, 0, effect/drawScale.x, 1f/drawScale.y);
         }
     }
 

@@ -248,7 +248,6 @@ public class DeadBody extends BoxObstacle implements Movable {
         float effect = faceRight ? 1.0f : -1.0f;
         Color color = new Color(1, 1, 1, 1f - ((float)burnTicks)/((float)totalBurnTicks));
         if(burning){
-            setBurning(true);
             animation.setPlayMode(Animation.PlayMode.LOOP);
             time += Gdx.graphics.getDeltaTime();
             TextureRegion frame = animation.getKeyFrame(time);

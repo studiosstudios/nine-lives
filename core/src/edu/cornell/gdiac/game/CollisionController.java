@@ -123,7 +123,6 @@ public class CollisionController implements ContactListener, ContactFilter {
                         db.addHazard();
                     } else if (fd2 instanceof Flamethrower.Flame) {
                         db.setBurning(true);
-                        System.out.println("hi");
                         db.addHazard();
                     } else if (bd2 instanceof SpiritRegion){
                         db.getSpiritRegions().add((SpiritRegion) bd2);

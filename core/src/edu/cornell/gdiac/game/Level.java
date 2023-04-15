@@ -59,7 +59,7 @@ public class Level {
     private final int maxLives;
     private int tileSize;
     /** cache for setting texture scales */
-    private Vector2 textureScaleCache;
+    private Vector2 textureScaleCache = new Vector2();
 
     /** hashmap to represent activator-activatable relationships:
      *   keys are activator ids specified in JSON*/

@@ -23,6 +23,8 @@ public class Camera {
     private final float CAMERA_GLIDE_RATE = 0.075f;
     /** Gameplay zoom **/
     private float zoom;
+    /** Whether camera is moving **/
+    private boolean isGliding;
 
     /**
      * Wrapper for the OrthographicCamera class that takes into account dynamic level metadata.
@@ -39,6 +41,7 @@ public class Camera {
         this.viewportHeight = viewportHeight;
         x = camera.position.x;
         y = camera.position.y;
+        isGliding = false;
     }
 
     /**
@@ -73,6 +76,14 @@ public class Camera {
         else{
             x = xPos;
             y = yPos;
+        }
+        if(Math.abs((xPos - x) * CAMERA_GLIDE_RATE) < 0.1 && Math.abs((yPos - y) * CAMERA_GLIDE_RATE) < 0.1){
+            isGliding = false;
+            x = xPos;
+            y = yPos;
+        }
+        else{
+            isGliding = true;
         }
         camera.position.set(x, y, 0);
         camera.update();
@@ -119,5 +130,12 @@ public class Camera {
      */
     public float getY(){
         return y;
+    }
+
+    /**
+     * @return true if camera is moving
+     */
+    public boolean isGliding(){
+        return isGliding;
     }
 }

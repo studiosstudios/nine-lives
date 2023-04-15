@@ -232,5 +232,10 @@ public class Spikes extends BoxObstacle implements Activatable {
      * @param constants JSON storing the shared constants.
      */
     public static void setConstants(JsonValue constants) { objectConstants = constants; }
-
+    public float getXPos(){
+        return getX();
+    }
+    public float getYPos(){
+        return getY();
+    }
 }

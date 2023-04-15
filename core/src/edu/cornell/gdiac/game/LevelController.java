@@ -60,6 +60,11 @@ public class LevelController {
     private CollisionController collisionController;
     /** The Level model */
     private Level level;
+    /** Temporary list of activatables to pan to */
+    private Array<Activatable> panTarget = new Array<>();
+    private float panTime;
+    final float PAN_HOLD = 58f; //about 17ms per PAN_HOLD unit (holds 1 second)
+
     /**
      * PLAY: User has all controls and is in game
      * LEVEL_SWITCH: Camera transition to next level (all controls stripped from user)
@@ -110,6 +115,7 @@ public class LevelController {
         collisionController.setLevel(level);
 
         gameplayState = GameplayState.PLAY;
+        panTime = 0;
     }
 
     /**
@@ -307,7 +313,8 @@ public class LevelController {
         }
         else{
             canvas.getCamera().zoomOut(false);
-            gameplayState = GameplayState.PLAY;
+            if(gameplayState == GameplayState.PLAYER_PAN)
+                gameplayState = GameplayState.PLAY;
         }
         // Toggle debug
         if (input.didDebug()) {
@@ -343,7 +350,17 @@ public class LevelController {
         }
         actionController.update(dt);
         flashColor.a -= flashColor.a/10;
+        for (Activator a : level.getActivators()){
+            if (a.isPressed() && a.getPan()){
+                a.setPan(false);
+                if(level.getActivationRelations().containsKey(a.getID())){
+                    panTarget = level.getActivationRelations().get(a.getID());
+                }
+                gameplayState = GameplayState.PAN;
+            }
+        }
         if(gameplayState == GameplayState.PLAY){
+            panTime = 0;
             float x_pos = level.getCat().getPosition().x*scale.x;
             float y_pos = level.getCat().getPosition().y*scale.y;
             canvas.getCamera().updateCamera(x_pos, y_pos, true);
@@ -356,6 +373,15 @@ public class LevelController {
             float y_pos = level.getCat().getPosition().y*scale.y; //needs to be relative to cat's new position in larger world
             canvas.getCamera().updateCamera(x_pos, y_pos, true);
         }
+        else if(gameplayState == GameplayState.PAN){
+            canvas.getCamera().updateCamera(panTarget.get(0).getXPos()*scale.x,panTarget.get(0).getYPos()*scale.y, true);
+            if(!canvas.getCamera().isGliding()){
+                panTime += 1;
+                if(panTime == PAN_HOLD){
+                    gameplayState = GameplayState.PLAY;
+                }
+            }
+        }
     }
 
     /**
@@ -366,7 +392,7 @@ public class LevelController {
             this.gameplayState = GameplayState.PLAY;
         }
         else if(gameplayState.equals("SWITCH")){
-            this.gameplayState = GameplayState.LEVEL_SWITCH;
+            this.gameplayState = GameplayState.PLAY;
         }
     }
 

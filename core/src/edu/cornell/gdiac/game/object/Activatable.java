@@ -26,7 +26,6 @@ public interface Activatable {
     boolean getInitialActivation();
 
     void setInitialActivation(boolean initialActivation);
-    //endregion
 
     /**
      * Initializes the state of the activatable. Must be called in the constructor
@@ -68,4 +67,6 @@ public interface Activatable {
             deactivated(world);
         }
     }
+    float getXPos();
+    float getYPos();
 }

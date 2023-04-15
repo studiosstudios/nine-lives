@@ -34,6 +34,8 @@ public abstract class Activator extends PolygonObstacle {
     private PolygonShape sensorShape;
     /** The number of objects pressing on this activator */
     public int numPressing;
+    /** Whether the camera will pan on next activation */
+    private boolean pan;
 
     /**
      * @return true if the activator is currently activating
@@ -88,6 +90,7 @@ public abstract class Activator extends PolygonObstacle {
         setX(data.get("pos").getFloat(0)+objectConstants.get("offset").getFloat(0));
         setY(data.get("pos").getFloat(1)+objectConstants.get("offset").getFloat(1));
         active = false;
+        pan = true;
     }
 
     public Activator(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
@@ -110,6 +113,7 @@ public abstract class Activator extends PolygonObstacle {
         setX((float) properties.get("x")/tileSize+objectConstants.get("offset").getFloat(0));
         setY(levelHeight - (float) properties.get("y")/tileSize+objectConstants.get("offset").getFloat(1));
         active = false;
+        pan = true;
     }
 
     @Override
@@ -176,4 +180,11 @@ public abstract class Activator extends PolygonObstacle {
      * @param constants JSON storing the shared constants.
      */
     public static void setConstants(JsonValue constants) { objectConstants = constants; }
+
+    public boolean getPan(){
+        return pan;
+    }
+    public void setPan(boolean p){
+        pan = p;
+    }
 }

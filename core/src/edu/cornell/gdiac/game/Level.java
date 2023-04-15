@@ -492,15 +492,19 @@ public class Level {
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize);
             Activator activator;
+            //TODO: developers should be able to specify in json if they want first pan or not
             switch ((String) propertiesMap.get("type")){
                 case "button":
                     activator = new Button(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+                    activator.setPan(true);
                     break;
                 case "switch":
                     activator = new Switch(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+                    activator.setPan(true);
                     break;
                 case "timed":
                     activator = new TimedButton(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+                    activator.setPan(true);
                     break;
                 default:
                     throw new RuntimeException("unrecognised activator type");

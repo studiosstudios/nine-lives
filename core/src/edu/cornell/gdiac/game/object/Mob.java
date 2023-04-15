@@ -114,48 +114,15 @@ public class Mob extends CapsuleObstacle {
     public static JsonValue objectConstants;
 
     /**
-     * Creates a new mob  with the given physics data
+     * Creates a new Mob object.
      *
-     * The size is expressed in physics units NOT pixels.  In order for
-     * drawing to work properly, you MUST set the drawScale. The drawScale
-     * converts the physics units to pixels.
-     *
-     * @param texture the mob texture
-     * @param drawScale the draw scale for the mob
-     * @param  textureScale the texture scale for the mob
-     * @param data  The JSON data for this mob
-     *
+     * @param properties     String-Object map of properties for this object
+     * @param tMap           Texture map for loading textures
+     * @param scale          Draw scale for drawing
+     * @param tileSize       Tile size of the Tiled map for loading positions
+     * @param levelHeight    Height of level (in grid cell units) for loading y position
+     * @param textureScale   Texture scale for rescaling texture
      */
-    public Mob(TextureRegion texture, Vector2 drawScale, Vector2 textureScale, JsonValue data) {
-        super(texture.getRegionWidth()/drawScale.x*textureScale.x/2f,
-                texture.getRegionHeight()/drawScale.y*textureScale.y);
-
-        setFixedRotation(true);
-        setName("mob");
-        setX(data.get("pos").getFloat(0));
-        setY(data.get("pos").getFloat(1));
-        setDrawScale(drawScale);
-        setTextureScale(textureScale);
-        setTexture(texture);
-
-        setDensity(data.getFloat("density", 0));
-        setFriction(data.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
-        setFixedRotation(true);
-
-        maxspeed = data.getFloat("maxspeed", 0);
-        damping = data.getFloat("damping", 0);
-        sensorShapes = new Array<>();
-
-
-        // Gameplay attributes
-        isGrounded = false;
-        setFacingRight(!data.getBoolean("facingRight"));
-        isAggressive = data.getBoolean("aggressive");
-        // setName("mob");
-
-        detectorRay = new MobDetector(this);
-    }
-
     public Mob(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
         super(tMap.get("roboMob").getRegionWidth()/scale.x*textureScale.x/2f,
                 tMap.get("roboMob").getRegionHeight()/scale.y*textureScale.y);

@@ -37,51 +37,15 @@ public class Laser extends BoxObstacle implements Activatable{
 
     /**
      * Creates a new Laser object.
-     * @param texture   TextureRegion for drawing.
-     * @param scale     Draw scale for drawing.
-     * @param data      JSON data for loading.
+     *
+     * @param properties     String-Object map of properties for this object
+     * @param tMap           Texture map for loading textures
+     * @param scale          Draw scale for drawing
+     * @param tileSize       Tile size of the Tiled map for loading positions
+     * @param levelHeight    Height of level (in grid cell units) for loading y position
+     * @param textureScale   Texture scale for rescaling texture
      */
-    public Laser(TextureRegion texture, Vector2 scale, JsonValue data){
-        super(texture.getRegionWidth()/scale.x,
-                texture.getRegionHeight()/scale.y);
-
-        setBodyType(BodyDef.BodyType.StaticBody);
-        setName("laser");
-        setDrawScale(scale);
-        setTexture(texture);;
-
-        setRestitution(objectConstants.getFloat("restitution", 0));
-        setFriction(objectConstants.getFloat("friction", 0));
-        setDensity(objectConstants.getFloat("density", 0));
-        setMass(objectConstants.getFloat("mass", 0));
-        setX(data.get("pos").getFloat(0)+objectConstants.get("offset").getFloat(0));
-        setY(data.get("pos").getFloat(1)+objectConstants.get("offset").getFloat(1));
-        setAngle((float) (data.getInt("angle") * Math.PI/180));
-        setSensor(true);
-        setFixedRotation(true);
-
-        dir = Direction.angleToDir(data.getInt("angle"));
-        switch (dir){
-            case UP:
-                beamOffset = new Vector2(objectConstants.get("beamOffset").getFloat(0), objectConstants.get("beamOffset").getFloat(1));
-                break;
-            case DOWN:
-                beamOffset = new Vector2(objectConstants.get("beamOffset").getFloat(0), -objectConstants.get("beamOffset").getFloat(1));
-                break;
-            case LEFT:
-                beamOffset = new Vector2(-objectConstants.get("beamOffset").getFloat(1), objectConstants.get("beamOffset").getFloat(0));
-                break;
-            case RIGHT:
-                beamOffset = new Vector2(objectConstants.get("beamOffset").getFloat(1), -objectConstants.get("beamOffset").getFloat(0));
-                break;
-        }
-        totalTime = 0;
-        color = Color.RED;
-        points = new Array<>();
-        initActivations(data);
-    }
-
-    public Laser(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
+    public Laser(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
         super(tMap.get("laser").getRegionWidth()/scale.x,
                 tMap.get("laser").getRegionHeight()/scale.y);
 
@@ -89,6 +53,7 @@ public class Laser extends BoxObstacle implements Activatable{
         setName("laser");
         setDrawScale(scale);
         setTexture(tMap.get("laser"));
+        setTextureScale(textureScale);
 
         setRestitution(objectConstants.getFloat("restitution", 0));
         setFriction(objectConstants.getFloat("friction", 0));

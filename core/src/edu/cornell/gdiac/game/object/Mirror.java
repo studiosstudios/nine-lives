@@ -32,60 +32,22 @@ public class Mirror extends PolygonObstacle {
 
     /**
      * Creates a new Mirror object.
-     * @param texture  TextureRegion for drawing.
-     * @param scale    Draw scale for drawing.
-     * @param data     JSON data for loading.
+     *
+     * @param properties     String-Object map of properties for this object
+     * @param tMap           Texture map for loading textures
+     * @param scale          Draw scale for drawing
+     * @param tileSize       Tile size of the Tiled map for loading positions
+     * @param levelHeight    Height of level (in grid cell units) for loading y position
+     * @param textureScale   Texture scale for rescaling texture
      */
-    public Mirror(TextureRegion texture, Vector2 scale, JsonValue data){
-        super(objectConstants.get("shape").asFloatArray());
-
-        setBodyType(data.getBoolean("pushable", false) ? BodyDef.BodyType.DynamicBody : BodyDef.BodyType.StaticBody);
-        setFixedRotation(true);
-        setName("mirror");
-        setDrawScale(scale);
-        setTexture(texture);
-        setAngle((float) (data.getInt("angle") * Math.PI/180));
-        dir = Direction.angleToDir(data.getInt("angle"));
-
-        setRestitution(objectConstants.getFloat("restitution", 0));
-        setFriction(objectConstants.getFloat("friction", 0));
-        setDensity(objectConstants.getFloat("density", 0));
-        setMass(objectConstants.getFloat("mass", 0));
-
-        //this is ugly but it's easy
-        float xOffset, yOffset;
-        switch (dir) {
-            case UP:
-                xOffset = 0;
-                yOffset = 0;
-                break;
-            case LEFT:
-                xOffset = 1;
-                yOffset = 0;
-                break;
-            case DOWN:
-                xOffset = 1;
-                yOffset = 1;
-                break;
-            case RIGHT:
-                xOffset = 0;
-                yOffset = 1;
-                break;
-            default:
-                throw new IllegalArgumentException("undefined angle");
-        }
-        setX(data.get("pos").getFloat(0)+xOffset);
-        setY(data.get("pos").getFloat(1)+yOffset);
-    }
-
-
-    public Mirror(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
+    public Mirror(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
         super(objectConstants.get("shape").asFloatArray());
 
         setBodyType((boolean) properties.get("pushable", false) ? BodyDef.BodyType.DynamicBody : BodyDef.BodyType.StaticBody);
         setFixedRotation(true);
         setName("mirror");
         setDrawScale(scale);
+        setTextureScale(textureScale);
         setTexture(tMap.get("steel"));
         setAngle((float) ((float) properties.get("rotation") * Math.PI/180));
         dir = Direction.angleToDir((int) ((float) properties.get("rotation")));

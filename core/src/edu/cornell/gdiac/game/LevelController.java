@@ -241,18 +241,9 @@ public class LevelController {
         setRet(false);
         level.populateTiled(levelJV);
         actionController.setMobControllers(level);
-//        populateLevel(tempRet, prevCat);
         prevLivesState = new LevelState[9];
         canvas.getCamera().setLevelSize(level.bounds.width, level.bounds.height);
         canvas.getCamera().updateCamera(level.getCat().getPosition().x*scale.x, level.getCat().getPosition().y*scale.y, false);
-    }
-
-    /**
-     * Lays out the game geography.
-     */
-    public void populateLevel(boolean ret, Cat prevCat) {
-        level.populateLevel(textureRegionAssetMap, fontAssetMap, soundAssetMap, constantsJSON, levelJV, ret, prevCat);
-        actionController.setMobControllers(level);
     }
 
     /**

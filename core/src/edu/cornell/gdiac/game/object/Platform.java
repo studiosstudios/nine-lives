@@ -39,9 +39,18 @@ public class Platform extends PolygonObstacle implements Activatable {
     private Vector2 startPos;
 
     /**
-     * Creates a new platform object.
+     * Creates a new Door object.
+     *
+     * @param width          Width of the door
+     * @param height         Height of the door
+     * @param properties     String-Object map of properties for this object
+     * @param tMap           Texture map for loading textures
+     * @param scale          Draw scale for drawing
+     * @param tileSize       Tile size of the Tiled map for loading positions
+     * @param levelHeight    Height of level (in grid cell units) for loading y position
+     * @param textureScale   Texture scale for rescaling texture
      */
-    public Platform(float width, float height, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
+    public Platform(float width, float height, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
         super(new float[]{0, 0, width, 0, width, height, 0, height});
         setName("platform");
         setBodyType(BodyDef.BodyType.KinematicBody);
@@ -50,21 +59,32 @@ public class Platform extends PolygonObstacle implements Activatable {
         setRestitution(objectConstants.getFloat( "restitution", 0.0f ));
         setDrawScale(scale);
         setTexture(tMap.get("steel"));
+        setTextureScale(textureScale);
 
         setX((float) properties.get("x")/tileSize);
         setY(levelHeight - (float) properties.get("y")/tileSize - height);
         startPos = getPosition().cpy();
-        speed = (float) properties.get("speed", 5);
+        speed = (float) properties.get("speed", 5f);
         damping = (float) properties.get("damping", 0.1f);
-        disp = (Vector2) properties.get("disp");
+        disp = (Vector2) properties.get("disp", Vector2.Zero);
         isClimbable = (boolean) properties.get("climbable", false);
         target = new Vector2();
         initTiledActivations(properties);
     }
 
-    public Platform(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
+    /**
+     * Creates a new Platform object.
+     *
+     * @param properties     String-Object map of properties for this object
+     * @param tMap           Texture map for loading textures
+     * @param scale          Draw scale for drawing
+     * @param tileSize       Tile size of the Tiled map for loading positions
+     * @param levelHeight    Height of level (in grid cell units) for loading y position
+     * @param textureScale   Texture scale for rescaling texture
+     */
+    public Platform(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
         this((float) properties.get("width")/tileSize, (float) properties.get("height")/tileSize,
-                properties, tMap, scale, tileSize, levelHeight);
+                properties, tMap, scale, tileSize, levelHeight, textureScale);
     }
 
     /**

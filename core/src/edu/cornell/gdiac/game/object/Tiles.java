@@ -16,20 +16,22 @@ public class Tiles {
     private int levelHeight;
     private float tileSize;
     private Vector2 textureScale;
+    private int fid;
 
 
-    public Tiles(JsonValue data, int tileSize, int levelWidth, int levelHeight, TextureRegion tileset, Vector2 textureScale) {
+    public Tiles(JsonValue data, int tileSize, int levelWidth, int levelHeight, TextureRegion tileset, int fid, Vector2 textureScale) {
 
         levelTiles = data.get("data").asIntArray();
         this.levelWidth = levelWidth;
         this.levelHeight = levelHeight;
         this.tileSize = tileSize;
         this.textureScale = textureScale;
+        this.fid = fid;
 
         // turn tileset into 1D texture arr for easy indexing
         // numbers in data correspond to numbers in tileset + 1
 
-        TextureRegion[][] tiles = tileset.split(tileset.getTexture(), (int)(tileSize/textureScale.x), (int)(tileSize/textureScale.y));
+        TextureRegion[][] tiles = tileset.split(tileset.getTexture(), tileSize, tileSize);
 
         //flatten 2d array into 1d array
         int numTiles = 0;
@@ -50,8 +52,8 @@ public class Tiles {
         for (float y = levelHeight - 1; y >= 0; y--){
             for (float x = 0; x < levelWidth; x++){
                 if (levelTiles[i] > 0) {
-                    TextureRegion tileTexture = tileset[levelTiles[i] - 1];
-                    canvas.draw(tileTexture, Color.WHITE, 0, 0, x * tileSize, y * tileSize, 0, textureScale.x, textureScale.y);
+                    TextureRegion tileTexture = tileset[levelTiles[i] - fid];
+                    canvas.draw(tileTexture, Color.WHITE, 0, 0, x * tileSize * textureScale.x, y * tileSize * textureScale.y, 0, textureScale.x, textureScale.y);
                 }
                 i++;
             }

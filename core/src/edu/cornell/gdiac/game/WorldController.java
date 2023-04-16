@@ -148,7 +148,7 @@ public class WorldController implements Screen {
 			currLevel.setRet(false);
 			currLevel.reset(resetSpawn ? null : currLevel.getLevel().getCat());
 			if (levelNum < numLevels) {
-				nextJSON = levelJSON(levelNum + 1);
+				nextJSON = tiledJSON(levelNum + 1);
 			}
 		}
 	}
@@ -171,13 +171,13 @@ public class WorldController implements Screen {
 			currLevel.setRet(!resetSpawn);
 			currLevel.reset(resetSpawn ? null : currLevel.getLevel().getCat());
 			if (levelNum > 1) {
-				prevJSON = levelJSON(levelNum - 1);
+				prevJSON = tiledJSON(levelNum - 1);
 			}
 		}
 	}
 	public void setCurrLevel(int level) {
 		if (level < numLevels) {
-			currLevel.setJSON(levelJSON(level+1));
+			currLevel.setJSON(tiledJSON(level+1));
 		}
 	}
 
@@ -227,13 +227,13 @@ public class WorldController implements Screen {
 				"background", "flame_anim", "roboMob",
 				"spirit_anim", "spirit_photon", "spirit_photon_cat", "spirit_region",
 				"meow_anim", "idle_anim", "idle_anim_stand",
-				"metal_tileset", "steel"};
+				"metal_tileset", "steel","burnCat"};
 
 		for (String n : names){
 			textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
 		}
 
-		names = new String[]{"jump", "pew", "plop", "meow"};
+		names = new String[]{"jump", "dash", "metalLanding", "pew", "plop", "meow"};
 		for (String n : names){
 			soundAssetMap.put(n, directory.getEntry(n, Sound.class));
 		}
@@ -248,8 +248,8 @@ public class WorldController implements Screen {
 
 		// Giving assets to levelController
 		currLevel.setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants, levelJSON(1));
-		currLevel.setTiledJSON(tiledJSON(1));
-		nextJSON = levelJSON(2);
+		currLevel.setJSON(tiledJSON(1));
+		nextJSON = tiledJSON(2);
 
 		//Set controls
 		InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));

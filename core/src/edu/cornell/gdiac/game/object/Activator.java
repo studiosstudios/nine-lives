@@ -34,6 +34,8 @@ public abstract class Activator extends PolygonObstacle {
     private PolygonShape sensorShape;
     /** The number of objects pressing on this activator */
     public int numPressing;
+    /** If pressing this activator for the first time should pan the camera */
+    private boolean shouldPan;
 
     /**
      * @return true if the activator is currently activating
@@ -62,33 +64,7 @@ public abstract class Activator extends PolygonObstacle {
      */
     public abstract void updateActivated();
 
-    /**
-     * Creates a new Activator object.
-     * @param texture   Animation filmstrip.
-     * @param texture2  Static texture.
-     * @param scale     Draw scale for drawing.
-     * @param data      JSON for loading.
-     */
-    public Activator(TextureRegion texture, TextureRegion texture2, Vector2 scale, JsonValue data){
-        super(objectConstants.get("body_shape").asFloatArray());
-        int spriteWidth = 32;
-        int spriteHeight = 32;
-        spriteFrames = TextureRegion.split(texture.getTexture(), spriteWidth, spriteHeight);
-        float frameDuration = 0.2f;
-        animation = new Animation<>(frameDuration, spriteFrames[0]);
-        setBodyType(BodyDef.BodyType.StaticBody);
-        animation.setPlayMode(Animation.PlayMode.REVERSED);
-        animationTime = 0f;
-
-        setDrawScale(scale);
-        setTexture(texture2);
-        setFixedRotation(true);
-
-        id = data.getString("id");
-        setX(data.get("pos").getFloat(0)+objectConstants.get("offset").getFloat(0));
-        setY(data.get("pos").getFloat(1)+objectConstants.get("offset").getFloat(1));
-        active = false;
-    }
+    public boolean shouldPan() { return shouldPan; }
 
     /**
      * Creates a new Activator object.
@@ -120,6 +96,7 @@ public abstract class Activator extends PolygonObstacle {
         id = (String) properties.get("id");
         setX((float) properties.get("x")/tileSize+objectConstants.get("offset").getFloat(0));
         setY(levelHeight - (float) properties.get("y")/tileSize+objectConstants.get("offset").getFloat(1));
+        shouldPan = (boolean) properties.get("shouldPan", false);
         active = false;
     }
 

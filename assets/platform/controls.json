@@ -6,7 +6,7 @@
   "left": "LEFT",
   "right": "RIGHT",
   "jump": "C",
-  "dash": "C",
+  "dash": "X",
   "climb": "Z",
   "switch": "SHIFT_LEFT",
   "cancel": "CONTROL_LEFT",

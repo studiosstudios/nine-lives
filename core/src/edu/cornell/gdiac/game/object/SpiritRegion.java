@@ -104,6 +104,7 @@ public class SpiritRegion extends BoxObstacle {
         setPosition(pos);
 
 
+
 //         PHOTON PARTICLES
         random = new Random();
         particles = new ObjectSet<Particle>();
@@ -115,6 +116,13 @@ public class SpiritRegion extends BoxObstacle {
             float high = item.getTop() * drawScale.y - PARTICLE_SIZE;
             item.setY(random.nextFloat()*(high-low)+low);
         }
+
+//        Particle item = addParticle();
+//        float low = item.getBottom() * drawScale.y;
+//        float high = item.getTop() * drawScale.y - PARTICLE_SIZE;
+//        item.setY(random.nextFloat()*(high-low)+low);
+
+
     }
 
     private Particle addParticle(){

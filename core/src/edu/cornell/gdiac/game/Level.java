@@ -507,15 +507,12 @@ public class Level {
             switch ((String) propertiesMap.get("type", "button")){
                 case "button":
                     activator = new Button(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight, textureScaleCache);
-                    activator.setPan(true);
                     break;
                 case "switch":
                     activator = new Switch(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight, textureScaleCache);
-                    activator.setPan(true);
                     break;
                 case "timed":
                     activator = new TimedButton(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight, textureScaleCache);
-                    activator.setPan(true);
                     break;
                 default:
                     throw new RuntimeException("unrecognised activator type");

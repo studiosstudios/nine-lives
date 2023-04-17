@@ -66,8 +66,6 @@ public abstract class Activator extends PolygonObstacle {
      */
     public abstract void updateActivated();
 
-    public boolean shouldPan() { return shouldPan; }
-
     /**
      * Creates a new Activator object.
      *
@@ -99,9 +97,8 @@ public abstract class Activator extends PolygonObstacle {
         id = (String) properties.get("id");
         setX((float) properties.get("x")/tileSize+objectConstants.get("offset").getFloat(0));
         setY(levelHeight - (float) properties.get("y")/tileSize+objectConstants.get("offset").getFloat(1));
-        shouldPan = (boolean) properties.get("shouldPan", false);
+        pan = (boolean) properties.get("shouldPan", false);
         active = false;
-        pan = true;
     }
 
     @Override

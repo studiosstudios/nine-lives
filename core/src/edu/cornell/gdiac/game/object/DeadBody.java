@@ -7,6 +7,8 @@
  */
 package edu.cornell.gdiac.game.object;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
@@ -47,6 +49,10 @@ public class DeadBody extends BoxObstacle implements Movable {
     private boolean touchingLaser;
     /** The set of spirit regions that this dead body is inside */
     private ObjectSet<SpiritRegion> spiritRegions;
+    private TextureRegion[][] spriteFrames;
+    private Animation<TextureRegion> animation;
+    private float time;
+
 
     private ObjectSet<Fixture> groundFixtures = new ObjectSet<>();
     private PolygonShape groundSensorShape;
@@ -125,10 +131,12 @@ public class DeadBody extends BoxObstacle implements Movable {
      * @param scale        the draw scale
      * @param position     position
      */
-    public DeadBody(TextureRegion texture, Vector2 scale, Vector2 position) {
+    public DeadBody(TextureRegion texture, TextureRegion burnTexture,Vector2 scale, Vector2 position) {
         super(texture.getRegionWidth()/scale.x*objectConstants.get("shrink").getFloat(0),
                 texture.getRegionHeight()/scale.y*objectConstants.get("shrink").getFloat(1));
-
+        spriteFrames = TextureRegion.split(burnTexture.getTexture(), 2048,2048);
+        animation = new Animation<>(0.025f, spriteFrames[0]);
+        time = 0f;
         setTexture(texture);
         setDrawScale(scale);
         setDensity(objectConstants.getFloat("density", 0));
@@ -237,7 +245,17 @@ public class DeadBody extends BoxObstacle implements Movable {
     public void draw(GameCanvas canvas) {
         float effect = faceRight ? 1.0f : -1.0f;
         Color color = new Color(1, 1, 1, 1f - ((float)burnTicks)/((float)totalBurnTicks));
-        canvas.draw(texture, color, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), effect, 1.0f);
+        if(burning){
+            animation.setPlayMode(Animation.PlayMode.LOOP);
+            time += Gdx.graphics.getDeltaTime();
+            TextureRegion frame = animation.getKeyFrame(time);
+            float x = getX() * drawScale.x + effect*frame.getRegionWidth()/drawScale.x/2;
+            float y = getY() * drawScale.y-frame.getRegionHeight()/drawScale.y/2+5;
+            canvas.draw(frame, color, origin.x, origin.y,  x,y, getAngle(), -effect/drawScale.x, 1.0f/drawScale.y);
+        }
+        else{
+            canvas.draw(texture, color, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), effect, 1.0f);
+        }
     }
 
     /**

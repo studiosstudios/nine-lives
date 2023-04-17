@@ -148,27 +148,11 @@ public class LevelController {
      *
      * @return the canvas associated with this controller
      */
-//    public GameCanvas getCanvas() {
-//        return canvas;
-//    }
-
-    /**
-=======
-    }
-
-    /**
-     * Returns the canvas associated with this controller
-     * <br><br>
-     * The canvas is shared across all controllers
-     *
-     * @return the canvas associated with this controller
-     */
     public GameCanvas getCanvas() {
         return canvas;
     }
 
     /**
->>>>>>> origin/alpha
      * Returns true if returning to prev level
      *
      * @return true if returning to previous level
@@ -265,18 +249,9 @@ public class LevelController {
         setRet(false);
         level.populateTiled(levelJV);
         actionController.setMobControllers(level);
-//        populateLevel(tempRet, prevCat);
         prevLivesState = new LevelState[9];
         canvas.getCamera().setLevelBounds(level.bounds);
         canvas.getCamera().updateCamera(level.getCat().getPosition().x*scale.x, level.getCat().getPosition().y*scale.y, false);
-    }
-
-    /**
-     * Lays out the game geography.
-     */
-    public void populateLevel(boolean ret, Cat prevCat) {
-        level.populateLevel(textureRegionAssetMap, fontAssetMap, soundAssetMap, constantsJSON, levelJV, ret, prevCat);
-        actionController.setMobControllers(level);
     }
 
     /**

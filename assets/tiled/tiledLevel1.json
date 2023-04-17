@@ -31,7 +31,7 @@
         27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27],
       "height":26,
       "id":1,
-      "name":"Walls",
+      "name":"metalWalls",
       "opacity":1,
       "type":"tilelayer",
       "visible":true,
@@ -42,7 +42,7 @@
     {
       "draworder":"topdown",
       "id":2,
-      "name":"wall-poly",
+      "name":"wallsPoly",
       "objects":[
         {
           "height":0,

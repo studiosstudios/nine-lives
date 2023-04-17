@@ -36,6 +36,8 @@ public abstract class Activator extends PolygonObstacle {
     public int numPressing;
     /** Whether the camera will pan on next activation */
     private boolean pan;
+    /** If pressing this activator for the first time should pan the camera */
+    private boolean shouldPan;
 
     /**
      * @return true if the activator is currently activating
@@ -64,40 +66,25 @@ public abstract class Activator extends PolygonObstacle {
      */
     public abstract void updateActivated();
 
+    public boolean shouldPan() { return shouldPan; }
+
     /**
      * Creates a new Activator object.
-     * @param texture   Animation filmstrip.
-     * @param texture2  Static texture.
-     * @param scale     Draw scale for drawing.
-     * @param data      JSON for loading.
+     *
+     * @param properties     String-Object map of properties for this object
+     * @param tMap           Texture map for loading textures
+     * @param scale          Draw scale for drawing
+     * @param tileSize       Tile size of the Tiled map for loading positions
+     * @param levelHeight    Height of level (in grid cell units) for loading y position
+     * @param textureScale   Texture scale for rescaling texture
      */
-    public Activator(TextureRegion texture, TextureRegion texture2, Vector2 scale, JsonValue data){
-        super(objectConstants.get("body_shape").asFloatArray());
-        int spriteWidth = 32;
-        int spriteHeight = 32;
-        spriteFrames = TextureRegion.split(texture.getTexture(), spriteWidth, spriteHeight);
-        float frameDuration = 0.2f;
-        animation = new Animation<>(frameDuration, spriteFrames[0]);
-        setBodyType(BodyDef.BodyType.StaticBody);
-        animation.setPlayMode(Animation.PlayMode.REVERSED);
-        animationTime = 0f;
 
-        setDrawScale(scale);
-        setTexture(texture2);
-        setFixedRotation(true);
-
-        id = data.getString("id");
-        setX(data.get("pos").getFloat(0)+objectConstants.get("offset").getFloat(0));
-        setY(data.get("pos").getFloat(1)+objectConstants.get("offset").getFloat(1));
-        active = false;
-        pan = true;
-    }
-
-    public Activator(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
+    public Activator(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
         super(objectConstants.get("body_shape").asFloatArray());
         setDrawScale(scale);
         int spriteWidth = 32;
         int spriteHeight = 32;
+        setTextureScale(textureScale);
         spriteFrames = TextureRegion.split(tMap.get("button_anim").getTexture(), spriteWidth, spriteHeight);
         float frameDuration = 0.2f;
         animation = new Animation<>(frameDuration, spriteFrames[0]);
@@ -112,6 +99,7 @@ public abstract class Activator extends PolygonObstacle {
         id = (String) properties.get("id");
         setX((float) properties.get("x")/tileSize+objectConstants.get("offset").getFloat(0));
         setY(levelHeight - (float) properties.get("y")/tileSize+objectConstants.get("offset").getFloat(1));
+        shouldPan = (boolean) properties.get("shouldPan", false);
         active = false;
         pan = true;
     }

@@ -39,53 +39,25 @@ public class Door extends PolygonObstacle implements Activatable {
     private final float x;
     /** y position of the door when fully closed */
     private final float y;
-    /**
-     * Creates a new Door with specified width and height.
-     * @param texture   TextureRegion for drawing.
-     * @param scale     Draw scale for drawing.
-     * @param width     Width of the door.
-     * @param height    Height of the door.
-     * @param data      JSON data for loading.
-     */
-    public Door(TextureRegion texture, Vector2 scale, float width, float height, JsonValue data){
-        super(new float[]{0, 0, width, 0, width, height, 0, height});
-        this.width = width;
-        this.height = height;
-        setTexture(texture);
-        setDrawScale(scale);
-        setBodyType(BodyDef.BodyType.StaticBody);
-        setDensity(objectConstants.getFloat( "density", 0.0f ));
-        setFriction(objectConstants.getFloat( "friction", 0.0f ));
-        setRestitution(objectConstants.getFloat( "restitution", 0.0f ));
-
-        angle = Direction.angleToDir(data.getInt("angle"));
-        totalTicks = data.getFloat("totalTicks");
-        ticks = (int) totalTicks;
-        setX(data.get("pos").getFloat(0)+ objectConstants.get("offset").getFloat(0));
-        setY(data.get("pos").getFloat(1)+ objectConstants.get("offset").getFloat(1));
-        x = data.get("pos").getFloat(0)+ objectConstants.get("offset").getFloat(0);
-        y = data.get("pos").getFloat(1)+ objectConstants.get("offset").getFloat(1);
-        setX(x);
-        setY(y);
-        closing = 0;
-        initActivations(data);
-    }
 
     /**
-     * Creates a new Door, reading width and height from the JSON data.
-     * @param texture   TextureRegion for drawing.
-     * @param scale     Draw scale for drawing.
-     * @param data      JSON data for loading the door.
+     * Creates a new Door object.
+     *
+     * @param width          Width of the door
+     * @param height         Height of the door
+     * @param properties     String-Object map of properties for this object
+     * @param tMap           Texture map for loading textures
+     * @param scale          Draw scale for drawing
+     * @param tileSize       Tile size of the Tiled map for loading positions
+     * @param levelHeight    Height of level (in grid cell units) for loading y position
+     * @param textureScale   Texture scale for rescaling texture
      */
-    public Door(TextureRegion texture, Vector2 scale, JsonValue data){
-        this(texture, scale, data.getFloat("width"), data.getFloat("height"), data);
-    }
-
-    public Door(float width, float height, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
+    public Door(float width, float height, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
         super(new float[]{0, 0, width, 0, width, height, 0, height});
         this.width = width;
         this.height = height;
         setTexture(tMap.get("steel"));
+        setTextureScale(textureScale);
         setDrawScale(scale);
         setBodyType(BodyDef.BodyType.StaticBody);
         setDensity(objectConstants.getFloat( "density", 0.0f ));
@@ -103,9 +75,19 @@ public class Door extends PolygonObstacle implements Activatable {
         initTiledActivations(properties);
     }
 
-    public Door(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
+    /**
+     * Creates a new Door object.
+     *
+     * @param properties     String-Object map of properties for this object
+     * @param tMap           Texture map for loading textures
+     * @param scale      Draw scale for drawing
+     * @param tileSize       Tile size of the Tiled map for loading positions
+     * @param levelHeight    Height of level (in grid cell units) for loading y position
+     * @param textureScale   Texture scale for rescaling texture
+     */
+    public Door(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
         this((float) properties.get("width")/tileSize, (float) properties.get("height")/tileSize,
-                properties, tMap, scale, tileSize, levelHeight);
+                properties, tMap, scale, tileSize, levelHeight, textureScale);
     }
 
     /**

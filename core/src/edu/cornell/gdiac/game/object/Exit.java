@@ -24,36 +24,14 @@ public class Exit extends BoxObstacle {
     /** Constants that are shared between all instances of this class */
     private static JsonValue objectConstants;
 
-    /**
-     * Creates a new exit. Note that currently ALL exits have the same width and height, as that is read
-     * from the objectConstants JSON.
-     * @param scale The draw scale.
-     * @param data  JSON data for loading.
-     */
-    public Exit(Vector2 scale, JsonValue data){
-        super(objectConstants.getFloat("width"), data.getFloat("height"));
-        setBodyType(BodyDef.BodyType.StaticBody);
-        setDensity(0);
-        setFriction(0);
-        setRestitution(0);
-        setSensor(true);
-        setY(data.get("pos").getFloat(1));
-        setDrawScale(scale);
-        switch (data.getString("type")){
-            case "return":
-                exitType = ExitType.RETURN;
-                setX(data.get("pos").getFloat(0) - (1.5f * objectConstants.getFloat("width")));
-                break;
-            case "goal":
-                exitType = ExitType.GOAL;
-                setX(data.get("pos").getFloat(0) + (1.5f * objectConstants.getFloat("width")));
-                break;
-            default:
-                throw new RuntimeException("unrecognized exit type");
-        }
-        setName(data.getString("type"));
-    }
 
+    /**
+     * Creates a new Exit.
+     *
+     * @param properties     String-Object map of properties for this object
+     * @param tileSize       Tile size of the Tiled map for loading positions
+     * @param levelHeight    Height of level (in grid cell units) for loading y position
+     */
     public Exit(ObjectMap<String, Object> properties, Vector2 scale, int tileSize, int levelHeight){
         super((float) properties.get("width")/tileSize, (float) properties.get("height")/tileSize);
         setBodyType(BodyDef.BodyType.StaticBody);

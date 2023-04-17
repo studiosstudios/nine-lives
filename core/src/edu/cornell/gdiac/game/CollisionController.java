@@ -195,7 +195,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                 if (bd1 == cat) {
 
                     if (cat.getGroundSensorName().equals(fd1) && cat != bd2) {
-//                cat.getGroundFixtures().remove(fix2);
+                        cat.getGroundFixtures().remove(fix2);
                         if (cat.getGroundFixtures().size == 0) {
                             cat.setGrounded(false);
                         }

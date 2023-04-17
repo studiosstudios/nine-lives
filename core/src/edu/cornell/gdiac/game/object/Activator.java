@@ -94,7 +94,6 @@ public abstract class Activator extends PolygonObstacle {
         id = (String) properties.get("id");
         setX((float) properties.get("x")+objectConstants.get("offset").getFloat(0));
         setY((float) properties.get("y")+objectConstants.get("offset").getFloat(1));
-        System.out.println(getPosition());
         shouldPan = (boolean) properties.get("shouldPan", false);
         active = false;
     }

@@ -438,35 +438,13 @@ public class Level {
     }
 
     private void populateWalls(JsonValue data, int tileSize, int levelHeight) {
-
         JsonValue objects = data.get("objects");
-
-        for (JsonValue obj : objects) {
-            JsonValue points = obj.get("polygon");
-            float x = obj.getFloat("x");
-            float y = obj.getFloat("y");
-            float[] shape = new float[points.size*2];
-
-            int i = 0;
-            for (JsonValue point : points) {
-
-                shape[i] = (x + point.getFloat("x"))/tileSize;
-
-                shape[i+1] = levelHeight - (y + point.getFloat("y"))/tileSize;
-                i+=2;
-            }
-
-            // check climbable
-            boolean isClimbable = false;
-
-            if (obj.get("properties") != null) {
-                isClimbable = obj.get("properties").get(0).getBoolean("value");
-            }
-            Wall wall = new Wall(textureRegionAssetMap.get("steel"), scale, shape, isClimbable);
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize, levelHeight);
+            Wall wall = new Wall(propertiesMap, scale);
             addObject(wall);
         }
     }
-
 
     private void populatePlatforms(JsonValue data, int tileSize, int levelHeight){
         JsonValue objects = data.get("objects");
@@ -478,21 +456,12 @@ public class Level {
         }
     }
 
-
     private void populateCheckpoints(JsonValue data, int tileSize, int levelHeight) {
-
         JsonValue objects = data.get("objects");
-
-        for (JsonValue obj : objects) {
-            float x = obj.getFloat("x");
-            float y = obj.getFloat("y");
-
-            Vector2 pos = new Vector2(x/tileSize, levelHeight - y/tileSize);
-            float angle = (float) ((360-obj.getFloat("rotation")) * Math.PI/180);
-
-            Checkpoint checkpoint = new Checkpoint(pos, angle, scale, textureRegionAssetMap.get("checkpoint_anim"),
-                    textureRegionAssetMap.get("checkpoint_active_anim"), textureRegionAssetMap.get("checkpoint_base"),
-                    textureRegionAssetMap.get("checkpoint_base_active"));
+        textureScaleCache.set(1, 1);
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize, levelHeight);
+            Checkpoint checkpoint = new Checkpoint(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
             addObject(checkpoint);
         }
     }
@@ -663,8 +632,20 @@ public class Level {
         propertiesMap.put("x", x/tileSize);
         propertiesMap.put("y", levelHeight - y/tileSize);
 
+        //read polygon if there is one
+        JsonValue poly = objectJV.get("polygon");
+        if (poly != null) {
+            float[] shape = new float[poly.size * 2];
+            int i = 0;
+            for (JsonValue point : poly) {
+                shape[i] = (x + point.getFloat("x")) / tileSize;
+                shape[i + 1] = levelHeight - (y + point.getFloat("y")) / tileSize;
+                i += 2;
+            }
+            propertiesMap.put("polygon", shape);
+        }
 
-        //object specific properties (if there are any)
+        //object specific properties if there are any
         JsonValue properties = objectJV.get("properties");
         if (properties == null) { return; }
         for (JsonValue property : properties){

@@ -28,16 +28,14 @@ public class Wall extends PolygonObstacle  {
      * @param shape    Polygon shape.
      * @param isClimbable Whether wall is climbable or not.
      */
-    public Wall(TextureRegion texture, Vector2 scale, float[] shape, boolean isClimbable){
-        super(shape);
-
+    public Wall(ObjectMap<String, Object> properties, Vector2 scale){
+        super((float[]) properties.get("polygon"));
         setBodyType(BodyDef.BodyType.StaticBody);
         setDensity(objectConstants.getFloat( "density", 0.0f ));
         setFriction(objectConstants.getFloat( "friction", 0.0f ));
         setRestitution(objectConstants.getFloat( "restitution", 0.0f ));
-        this.isClimbable = isClimbable;
+        this.isClimbable = (boolean) properties.get("climbable", false);
         setDrawScale(scale);
-        setTexture(texture);
         setName("wall");
     }
 

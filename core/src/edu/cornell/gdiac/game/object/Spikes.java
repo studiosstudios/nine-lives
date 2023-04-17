@@ -38,12 +38,9 @@ public class Spikes extends BoxObstacle implements Activatable {
      * @param properties     String-Object map of properties for this object
      * @param tMap           Texture map for loading textures
      * @param scale          Draw scale for drawing
-     * @param tileSize       Tile size of the Tiled map for loading positions
-     * @param levelHeight    Height of level (in grid cell units) for loading y position
      * @param textureScale   Texture scale for rescaling texture
      */
-    public Spikes(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale,
-                  int tileSize, int levelHeight, Vector2 textureScale){
+    public Spikes(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
         super(tMap.get("spikes").getRegionWidth()/scale.x*textureScale.x,
                 tMap.get("spikes").getRegionHeight()/scale.y*textureScale.y);
 
@@ -69,8 +66,8 @@ public class Spikes extends BoxObstacle implements Activatable {
                 getHeight() / 2 * objectConstants.getFloat("solid_height_scale"),
                 solidCenter, 0.0f);
 
-        setX((float) properties.get("x")/tileSize+objectConstants.get("offset").getFloat(0));
-        setY(levelHeight - (float) properties.get("y")/tileSize+objectConstants.get("offset").getFloat(1));
+        setX((float) properties.get("x")+objectConstants.get("offset").getFloat(0));
+        setY((float) properties.get("y")+objectConstants.get("offset").getFloat(1));
         setAngle((float) ((float) properties.get("rotation") * Math.PI/180));
 //        System.out.println(getPosition());
         initTiledActivations(properties);

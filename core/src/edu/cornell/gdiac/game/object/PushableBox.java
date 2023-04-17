@@ -33,11 +33,9 @@ public class PushableBox extends BoxObstacle implements Movable {
      * @param properties     String-Object map of properties for this object
      * @param tMap           Texture map for loading textures
      * @param scale          Draw scale for drawing
-     * @param tileSize       Tile size of the Tiled map for loading positions
-     * @param levelHeight    Height of level (in grid cell units) for loading y position
      * @param textureScale   Texture scale for rescaling texture
      */
-    public PushableBox(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
+    public PushableBox(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
         super(tMap.get("steel").getRegionWidth()/scale.x,
                 tMap.get("steel").getRegionHeight()/scale.y);
 
@@ -52,8 +50,8 @@ public class PushableBox extends BoxObstacle implements Movable {
         setFriction(objectConstants.getFloat("friction", 0));
         setDensity(objectConstants.getFloat("density", 0));
         setMass(objectConstants.getFloat("mass", 0));
-        setX((float) properties.get("x")/tileSize+objectConstants.get("offset").getFloat(0));
-        setY(levelHeight - (float) properties.get("y")/tileSize+objectConstants.get("offset").getFloat(1));
+        setX((float) properties.get("x")+objectConstants.get("offset").getFloat(0));
+        setY((float) properties.get("y")+objectConstants.get("offset").getFloat(1));
 
         groundSensorName = "boxGroundSensor";
     }

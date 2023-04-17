@@ -50,7 +50,7 @@ public class Platform extends PolygonObstacle implements Activatable {
      * @param levelHeight    Height of level (in grid cell units) for loading y position
      * @param textureScale   Texture scale for rescaling texture
      */
-    public Platform(float width, float height, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
+    public Platform(float width, float height, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
         super(new float[]{0, 0, width, 0, width, height, 0, height});
         setName("platform");
         setBodyType(BodyDef.BodyType.KinematicBody);
@@ -61,8 +61,8 @@ public class Platform extends PolygonObstacle implements Activatable {
         setTexture(tMap.get("steel"));
         setTextureScale(textureScale);
 
-        setX((float) properties.get("x")/tileSize);
-        setY(levelHeight - (float) properties.get("y")/tileSize - height);
+        setX((float) properties.get("x"));
+        setY((float) properties.get("y") - height);
         startPos = getPosition().cpy();
         speed = (float) properties.get("speed", 5f);
         damping = (float) properties.get("damping", 0.1f);
@@ -78,13 +78,10 @@ public class Platform extends PolygonObstacle implements Activatable {
      * @param properties     String-Object map of properties for this object
      * @param tMap           Texture map for loading textures
      * @param scale          Draw scale for drawing
-     * @param tileSize       Tile size of the Tiled map for loading positions
-     * @param levelHeight    Height of level (in grid cell units) for loading y position
      * @param textureScale   Texture scale for rescaling texture
      */
-    public Platform(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
-        this((float) properties.get("width")/tileSize, (float) properties.get("height")/tileSize,
-                properties, tMap, scale, tileSize, levelHeight, textureScale);
+    public Platform(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
+        this((float) properties.get("width"), (float) properties.get("height"), properties, tMap, scale, textureScale);
     }
 
     /**

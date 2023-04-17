@@ -441,16 +441,14 @@ public class Cat extends CapsuleObstacle implements Movable {
      * The size is expressed in physics units NOT pixels.  In order for drawing to work properly,
      * you MUST set the drawScale. The drawScale converts the physics units to pixels.
      *
-<<<<<<< HEAD
      * The size is expressed in physics units NOT pixels.  In order for
      * drawing to work properly, you MUST set the drawScale. The drawScale
      * converts the physics units to pixels.
      *
      */
-
-    public Cat(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
-        super((float) properties.get("x")/tileSize + objectConstants.get("offset").getFloat(0),
-                levelHeight - (float) properties.get("y")/tileSize + objectConstants.get("offset").getFloat(1),
+    public Cat(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale){
+        super((float) properties.get("x") + objectConstants.get("offset").getFloat(0),
+                (float) properties.get("y") + objectConstants.get("offset").getFloat(1),
                 tMap.get("cat").getRegionWidth()/scale.x*objectConstants.get("shrink").getFloat( 0 ),
                 tMap.get("cat").getRegionHeight()/scale.y*objectConstants.get("shrink").getFloat( 1 ), Orientation.TOP);
         setDrawScale(scale);

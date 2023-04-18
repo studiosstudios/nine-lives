@@ -31,11 +31,6 @@ public class Wall extends PolygonObstacle  {
     public Wall(TextureRegion texture, Vector2 scale, float[] shape, boolean isClimbable){
         super(shape);
 
-        for (float f : shape){
-            System.out.print(f + ", ");
-        }
-        System.out.println();
-
         setBodyType(BodyDef.BodyType.StaticBody);
         setDensity(objectConstants.getFloat( "density", 0.0f ));
         setFriction(objectConstants.getFloat( "friction", 0.0f ));

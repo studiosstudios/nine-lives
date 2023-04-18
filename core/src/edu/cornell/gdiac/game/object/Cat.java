@@ -19,6 +19,7 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.game.*;
@@ -28,6 +29,8 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import java.util.HashMap;
 
 /**
  * Player avatar for the plaform game.
@@ -45,7 +48,6 @@ public class Cat extends CapsuleObstacle implements Movable {
     /**
      * The initializing data (to avoid magic numbers)
      */
-    private final JsonValue data;
     private static JsonValue objectConstants;
 
     /**
@@ -173,11 +175,6 @@ public class Cat extends CapsuleObstacle implements Movable {
     private boolean isGrounded;
 
     /**
-     * List of shapes corresponding to the sensors attached to this body
-     */
-    private Array<PolygonShape> sensorShapes;
-
-    /**
      * Cache for internal force calculations
      */
     private ObjectSet<Fixture> groundFixtures;
@@ -194,7 +191,7 @@ public class Cat extends CapsuleObstacle implements Movable {
      * Counter for failing to switch animation
      */
     private Animation<TextureRegion> jumpAnimation;
-    private Animation<TextureRegion> moveAnimation;
+    private Animation<TextureRegion> meowAnimation;
     private Animation<TextureRegion> walkAnimation;
     private Animation<TextureRegion> idleAnimation;
     private Animation<TextureRegion> idleStandAnimation;
@@ -214,6 +211,9 @@ public class Cat extends CapsuleObstacle implements Movable {
     private float standTime;
     private int time;
     private boolean jump_animated;
+
+    /** List of shapes corresponding to the sensors attached to this body */
+    private Array<PolygonShape> sensorShapes;
     private float failedTicks;
     private static final float FAIL_ANIM_TICKS = 30f;
     private Queue<Map.Entry<Vector2, Integer>> dashShadowQueue = new Queue<>();
@@ -446,18 +446,19 @@ public class Cat extends CapsuleObstacle implements Movable {
      * The size is expressed in physics units NOT pixels.  In order for drawing to work properly,
      * you MUST set the drawScale. The drawScale converts the physics units to pixels.
      *
-     * @param data   The physics constants for this cat
-     * @param width  The object width in physics units
-     * @param height The object width in physics units
+<<<<<<< HEAD
+     * The size is expressed in physics units NOT pixels.  In order for
+     * drawing to work properly, you MUST set the drawScale. The drawScale
+     * converts the physics units to pixels.
+     *
      */
-    public Cat(JsonValue data, float width, float height, boolean ret, Vector2 prev_pos,
-            Texture[] arr) {
-        // The shrink factors fit the image to a tigher hitbox
-        super(data.get(ret ? "ret_pos" : "pos").getFloat(0),
-                prev_pos == null ? data.get(ret ? "ret_pos" : "pos").getFloat(1) : prev_pos.y,
-                width * objectConstants.get("shrink").getFloat(0),
-                height * objectConstants.get("shrink").getFloat(1),
-                Orientation.TOP);
+
+    public Cat(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
+        super((float) properties.get("x")/tileSize + objectConstants.get("offset").getFloat(0),
+                levelHeight - (float) properties.get("y")/tileSize + objectConstants.get("offset").getFloat(1),
+                tMap.get("cat").getRegionWidth()/scale.x*objectConstants.get("shrink").getFloat( 0 ),
+                tMap.get("cat").getRegionHeight()/scale.y*objectConstants.get("shrink").getFloat( 1 ), Orientation.TOP);
+        setDrawScale(scale);
         setDensity(objectConstants.getFloat("density", 0));
         setFriction(
                 objectConstants.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
@@ -475,21 +476,20 @@ public class Cat extends CapsuleObstacle implements Movable {
         groundFixtures = new ObjectSet<>();
         spiritRegions = new ObjectSet<>();
         soundBuffer = new HashSet<>();
-        this.data = data;
 
         jump_animated = false;
-        normal_texture = new TextureRegion(arr[0]);
-        jumping_texture = new TextureRegion(arr[1]);
-        sit_texture = new TextureRegion(arr[4]);
+        normal_texture = tMap.get("cat");
+        jumping_texture = tMap.get("jumpingCat");
+        sit_texture = tMap.get("sit");
 
-        spriteFrames = TextureRegion.split(arr[2], 65, 65);
-        spriteFrames2 = TextureRegion.split(arr[3], 62, 42);
-        spriteFrames3 = TextureRegion.split(arr[5], 62, 62);
-        spriteFrames4 = TextureRegion.split(arr[6], 62, 62);
-        spriteFrames5 = TextureRegion.split(arr[7], 64, 64);
+        spriteFrames = TextureRegion.split(tMap.get("jump_anim").getTexture(), 2048,2048);
+        spriteFrames2 = TextureRegion.split(tMap.get("meow_anim").getTexture(), 2048, 2048);
+        spriteFrames3 = TextureRegion.split(tMap.get("walk").getTexture(), 2048, 2048);
+        spriteFrames4 = TextureRegion.split(tMap.get("idle_anim").getTexture(),2048,2048);
+        spriteFrames5 = TextureRegion.split(tMap.get("idle_anim_stand").getTexture(),2048,2048);
 
         jumpAnimation = new Animation<>(0.025f, spriteFrames[0]);
-        moveAnimation = new Animation<>(0.05f, spriteFrames2[0]);
+        meowAnimation = new Animation<>(0.05f, spriteFrames2[0]);
         walkAnimation = new Animation<>(0.15f, spriteFrames3[0]);
         idleAnimation = new Animation<>(0.15f, spriteFrames4[0]);
         idleStandAnimation = new Animation<>(0.15f, spriteFrames5[0]);
@@ -512,10 +512,7 @@ public class Cat extends CapsuleObstacle implements Movable {
         canDash = true;
         jumpPressed = false;
         isMeowing = false;
-        if (ret)
-            facingRight = false;
-        else
-            facingRight = true;
+        facingRight = true;
         setName("cat");
     }
 
@@ -734,64 +731,55 @@ public class Cat extends CapsuleObstacle implements Movable {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
-        float effect = facingRight ? 1.0f : -1.0f;
-        float x = getX() * drawScale.x - effect * 25;
-        float y = getY() * drawScale.y - 20;
+        float effect = facingRight ? -1.0f : 1.0f;
+        float x = getX() * drawScale.x;
+        float y = getY()* drawScale.y;
         //walking animation
         TextureRegion frame = sit_texture;
         float xOffset = 0;
         float yOffset = 0;
-        float  flip = 1;
+
         if (state != State.JUMPING && horizontalMovement != 0) {
-            walkAnimation.setPlayMode(Animation.PlayMode.LOOP_REVERSED);
+            walkAnimation.setPlayMode(Animation.PlayMode.LOOP);
             walkTime += Gdx.graphics.getDeltaTime();
-            yOffset = -10;
             frame = walkAnimation.getKeyFrame(walkTime);
 
             nonMoveTime = 0;
         }
         //jump animation
-        else if (state == State.JUMPING && !jump_animated) {
+        else if (state == State.JUMPING && !jump_animated && jumpTime < 0.025f*6) {
             jumpAnimation.setPlayMode(Animation.PlayMode.REVERSED);
             jumpTime += Gdx.graphics.getDeltaTime();
             frame = jumpAnimation.getKeyFrame(jumpTime);
-            yOffset = -15;
 
             nonMoveTime = 0;
         }
         //meow animation
         else if ((isMeowing && state != State.JUMPING) || meowTime != 0) {
-            moveAnimation.setPlayMode(Animation.PlayMode.REVERSED);
+            meowAnimation.setPlayMode(Animation.PlayMode.REVERSED);
             meowTime += Gdx.graphics.getDeltaTime();
-
-            xOffset = (14 * effect);
-            frame = moveAnimation.getKeyFrame(meowTime);
-            if (meowTime >= (0.05 * 5)) {
+            frame = meowAnimation.getKeyFrame(meowTime);
+            if (meowTime >= (0.6)){
                 meowTime = 0;
                 isMeowing = false;
             }
         }
 
         //sit
-        else if (horizontalMovement == 0 && verticalMovement == 0) {
-            if (nonMoveTime >= 10) {
+        else if(horizontalMovement == 0 && verticalMovement == 0 && !(state == State.JUMPING)){
+            if(nonMoveTime >= 10){
                 idleAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
                 idleTime += Gdx.graphics.getDeltaTime();
                 frame = idleAnimation.getKeyFrame(idleTime);
-                flip = -1;
-                xOffset = (54 * effect);
-                yOffset = -10;
-            } else if (nonMoveTime >= 5) {
+            }
+            else if(nonMoveTime >= 5){
                 nonMoveTime += Gdx.graphics.getDeltaTime();
-                yOffset = -5;
-            } else {
+            }
+            else{
                 nonMoveTime += Gdx.graphics.getDeltaTime();
                 idleStandAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
                 standTime += Gdx.graphics.getDeltaTime();
                 frame = idleStandAnimation.getKeyFrame(standTime);
-                flip = -1;
-                xOffset = (54 * effect);
-                yOffset = -10;
             }
         } else {
             frame = jumping_texture;
@@ -803,24 +791,21 @@ public class Cat extends CapsuleObstacle implements Movable {
             Map.Entry<Vector2, Integer> shadow = dashShadowQueue.removeFirst();
             Vector2 coords = shadow.getKey();
             dashColor.a = shadow.getValue() / 10f;
-            canvas.draw(frame, dashColor, origin.x, origin.y, coords.x + xOffset, coords.y + yOffset, getAngle(), (dashShadowFacingRight ? 1 : -1) * flip, 1.0f);
+            canvas.draw(frame, dashColor, origin.x, origin.y, coords.x + effect*frame.getRegionWidth()/drawScale.x/2, coords.y-frame.getRegionHeight()/drawScale.y/2, getAngle(), effect/drawScale.x, 1f/drawScale.y);
             if (shadow.getValue() - 1 > 0) {
                 shadow.setValue(shadow.getValue() - 1);
                 dashShadowQueue.addLast(shadow);
             }
         }
 
-        if (failedTicks < FAIL_ANIM_TICKS) {
-            xOffset += ((float) (Math.sin(-failedTicks / 2) * Math.exp(-failedTicks / 30)))
-                    * drawScale.x / 2;
-            Color c = new Color(1, 0, 0,
-                    0.5f - Math.abs(failedTicks - FAIL_ANIM_TICKS / 2) / FAIL_ANIM_TICKS);
-            canvas.draw(frame, c, origin.x, origin.y, x + xOffset, y + yOffset, getAngle(),
-                    effect * flip, 1.0f);
+        if (failedTicks < FAIL_ANIM_TICKS){
+            xOffset += ((float) (Math.sin(-failedTicks/2) * Math.exp(-failedTicks/30)))*drawScale.x/2;
+            Color c = new Color(1, 0 , 0, 0.5f - Math.abs(failedTicks - FAIL_ANIM_TICKS/2)/FAIL_ANIM_TICKS);
+            canvas.draw(frame, c, origin.x, origin.y, x - effect*frame.getRegionWidth()/drawScale.x/2 + xOffset, y-frame.getRegionHeight()/drawScale.y/2, 0, effect/drawScale.x, 1f/drawScale.y);
         }
 
-        canvas.draw(frame, Color.WHITE, origin.x, origin.y, x + xOffset, y + yOffset, getAngle(),
-                effect * flip, 1.0f);
+        canvas.draw(frame, Color.WHITE, origin.x, origin.y, x - effect*frame.getRegionWidth()/drawScale.x/2, y-frame.getRegionHeight()/drawScale.y/2, 0, effect/drawScale.x, 1f/drawScale.y);
+
 
 //            canvas.draw(frame, c, origin.x, origin.y, x + xOffset, y + yOffset, getAngle());
 //            canvas.draw(frame, c, origin.x, origin.y, x + xOffset, y + yOffset, getAngle(), effect * flip, 1.0f);

@@ -33,45 +33,15 @@ public class Spikes extends BoxObstacle implements Activatable {
     private boolean initialActivation;
 
     /**
-     * Creates a new spikes object.
-     * @param texture        TextureRegion for drawing.
-     * @param drawScale      Draw scale for drawing.
-     * @param textureScale   Texture scale to resize texture.
-     * @param data           JSON for loading.
+     * Creates a new Spikes object.
+     *
+     * @param properties     String-Object map of properties for this object
+     * @param tMap           Texture map for loading textures
+     * @param scale          Draw scale for drawing
+     * @param tileSize       Tile size of the Tiled map for loading positions
+     * @param levelHeight    Height of level (in grid cell units) for loading y position
+     * @param textureScale   Texture scale for rescaling texture
      */
-    public Spikes(TextureRegion texture, Vector2 drawScale, Vector2 textureScale, JsonValue data){
-        super(texture.getRegionWidth()/drawScale.x*textureScale.x,
-                texture.getRegionHeight()/drawScale.y*textureScale.y);
-
-        setBodyType(BodyDef.BodyType.StaticBody);
-        setSensor(true);
-        setFixedRotation(true);
-        setName("spikes");
-        setDrawScale(drawScale);
-        setTextureScale(textureScale);
-        setTexture(texture);
-
-        Vector2 sensorCenter = new Vector2(objectConstants.get("sensor_offset").getFloat(0),
-                objectConstants.get("sensor_offset").getFloat(1));
-        sensorShape = new PolygonShape();
-        sensorShape.setAsBox(getWidth() / 2 * objectConstants.getFloat("sensor_width_scale"),
-                getHeight() / 2 * objectConstants.getFloat("sensor_height_scale"),
-                sensorCenter, 0.0f);
-
-        Vector2 solidCenter = new Vector2(objectConstants.get("solid_offset").getFloat(0),
-                objectConstants.get("solid_offset").getFloat(1));
-        solidShape = new PolygonShape();
-        solidShape.setAsBox(getWidth() / 2 * objectConstants.getFloat("solid_width_scale"),
-                getHeight() / 2 * objectConstants.getFloat("solid_height_scale"),
-                solidCenter, 0.0f);
-
-        setX(data.get("pos").getFloat(0)+objectConstants.get("offset").getFloat(0));
-        setY(data.get("pos").getFloat(1)+objectConstants.get("offset").getFloat(1));
-        setAngle((float) (data.getFloat("angle") * Math.PI/180));
-
-        initActivations(data);
-    }
-
     public Spikes(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale,
                   int tileSize, int levelHeight, Vector2 textureScale){
         super(tMap.get("spikes").getRegionWidth()/scale.x*textureScale.x,

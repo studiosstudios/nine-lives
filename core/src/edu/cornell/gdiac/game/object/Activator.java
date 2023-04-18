@@ -81,7 +81,7 @@ public abstract class Activator extends PolygonObstacle {
         animationTime = 0f;
 
         setDrawScale(scale);
-//        setTexture(texture2);
+        setTexture(texture2);
         setFixedRotation(true);
 
         id = data.getString("id");
@@ -90,11 +90,22 @@ public abstract class Activator extends PolygonObstacle {
         active = false;
     }
 
-    public Activator(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight){
+    /**
+     * Creates a new Activator object.
+     *
+     * @param properties     String-Object map of properties for this object
+     * @param tMap           Texture map for loading textures
+     * @param scale          Draw scale for drawing
+     * @param tileSize       Tile size of the Tiled map for loading positions
+     * @param levelHeight    Height of level (in grid cell units) for loading y position
+     * @param textureScale   Texture scale for rescaling texture
+     */
+    public Activator(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
         super(objectConstants.get("body_shape").asFloatArray());
         setDrawScale(scale);
         int spriteWidth = 32;
         int spriteHeight = 32;
+        setTextureScale(textureScale);
         spriteFrames = TextureRegion.split(tMap.get("button_anim").getTexture(), spriteWidth, spriteHeight);
         float frameDuration = 0.2f;
         animation = new Animation<>(frameDuration, spriteFrames[0]);

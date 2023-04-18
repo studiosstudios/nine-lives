@@ -63,7 +63,7 @@ public class LevelController {
     /** Temporary list of activatables to pan to */
     private Array<Activatable> panTarget = new Array<>();
     private float panTime;
-    final float PAN_HOLD = 58f; //about 17ms per PAN_HOLD unit (holds 1 second)
+    final float PAN_HOLD = 50f; //about 17ms per PAN_HOLD unit (holds 0.85 second)
 
     /**
      * PLAY: User has all controls and is in game
@@ -130,6 +130,7 @@ public class LevelController {
         this.canvas = canvas;
         this.scale.x = 1024f/bounds.getWidth();
         this.scale.y = 576f/bounds.getHeight();
+        actionController.setCamera(canvas.getCamera());
     }
 
     /**
@@ -279,15 +280,13 @@ public class LevelController {
 
         InputController input = InputController.getInstance();
         input.readInput(bounds, scale);
+        Camera cam = canvas.getCamera();
         if(input.didPan()){
             gameplayState = GameplayState.PLAYER_PAN;
-            Camera cam = canvas.getCamera();
-            cam.zoomOut(true);
             //move camera
             cam.updateCamera(cam.getX()+input.getCamHorizontal(),cam.getY()+ input.getCamVertical(),false);
         }
         else{
-            canvas.getCamera().zoomOut(false);
             if(gameplayState == GameplayState.PLAYER_PAN)
                 gameplayState = GameplayState.PLAY;
         }
@@ -320,6 +319,8 @@ public class LevelController {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt) {
+        Camera cam = canvas.getCamera();
+        InputController input = InputController.getInstance();
         if (collisionController.getReturn()) {
             setRet(true);
         }
@@ -338,7 +339,11 @@ public class LevelController {
             panTime = 0;
             float x_pos = level.getCat().getPosition().x*scale.x;
             float y_pos = level.getCat().getPosition().y*scale.y;
-            canvas.getCamera().updateCamera(x_pos, y_pos, true);
+            //zoom normal when in play state and not panning and not switching bodies
+            if(!input.holdSwitch() && !input.didPan()){
+                cam.zoomOut(false);
+            }
+            cam.updateCamera(x_pos, y_pos, true);
         }
         else if(gameplayState == GameplayState.LEVEL_SWITCH){
             /**
@@ -346,16 +351,19 @@ public class LevelController {
              */
             float x_pos = level.getCat().getPosition().x*scale.x; //needs to be relative to cat's new position in larger world
             float y_pos = level.getCat().getPosition().y*scale.y; //needs to be relative to cat's new position in larger world
-            canvas.getCamera().updateCamera(x_pos, y_pos, true);
+            cam.updateCamera(x_pos, y_pos, true);
         }
         else if(gameplayState == GameplayState.PAN){
-            canvas.getCamera().updateCamera(panTarget.get(0).getXPos()*scale.x,panTarget.get(0).getYPos()*scale.y, true);
-            if(!canvas.getCamera().isGliding()){
+            cam.updateCamera(panTarget.get(0).getXPos()*scale.x,panTarget.get(0).getYPos()*scale.y, true);
+            if(!cam.isGliding()){
                 panTime += 1;
                 if(panTime == PAN_HOLD){
                     gameplayState = GameplayState.PLAY;
                 }
             }
+        }
+        else if(gameplayState == GameplayState.PLAYER_PAN){
+            cam.zoomOut(true);
         }
     }
 

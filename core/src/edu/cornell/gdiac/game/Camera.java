@@ -2,6 +2,7 @@ package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 
 /**
  * Different from abstract class Camera
@@ -54,7 +55,6 @@ public class Camera {
      * @param glide smoothed camera movement
      */
     public void updateCamera(float xPos, float yPos, boolean glide){
-//        System.out.println(levelHeight); //levelHeight smaller for some reason?
         float width_scaled = viewportWidth*camera.zoom; //width of viewport zoomed in
         if(xPos > levelBounds.width - width_scaled + width_scaled/2){
             xPos = levelBounds.width - width_scaled + width_scaled/2;
@@ -119,6 +119,36 @@ public class Camera {
     }
 
     /**
+     *
+     * @param deadX
+     * @param deadY
+     * @param catX
+     * @param catY
+     */
+    public void switchBodyZoom(float deadX, float deadY, float catX, float catY){
+        camera.zoom = Float.max(levelBounds.width/viewportWidth, levelBounds.height/viewportHeight);
+//        camera.zoom = 2;
+    }
+
+    /**
+     * Determines at how much at an offset to draw when level bounds smaller than viewport and entire level needs to be
+     * drawn at an offset
+     */
+    public Vector2 centerLevelTranslation(){
+        float levelHeight = levelBounds.height / camera.zoom;
+        float levelWidth = levelBounds.width / camera.zoom;
+        float xVal = 0;
+        float yVal = 0;
+        if(levelWidth < viewportWidth){
+            xVal = (viewportWidth - levelWidth)/1.4f;
+        }
+        if(levelHeight < viewportHeight){
+            yVal = (viewportHeight - levelHeight)/1.4f;
+        }
+        return new Vector2(xVal, yVal);
+    }
+
+    /**
      * @return x-coordinate of camera position
      */
     public float getX(){
@@ -137,5 +167,11 @@ public class Camera {
      */
     public boolean isGliding(){
         return isGliding;
+    }
+    public float getViewportWidth(){
+        return viewportWidth;
+    }
+    public float getViewportHeight(){
+        return viewportHeight;
     }
 }

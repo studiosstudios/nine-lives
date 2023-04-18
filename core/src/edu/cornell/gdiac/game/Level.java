@@ -873,7 +873,7 @@ public class Level {
             //scales background with level size
             float scaleX = bounds.width/background.getWidth();
             float scaleY = bounds.height/background.getHeight();
-            canvas.draw(background, Color.WHITE, 0, 0, background.getWidth()*Float.max(scaleX,scaleY), background.getHeight()*Float.max(scaleX,scaleY));
+            canvas.draw(background, Color.WHITE, 0, 0, Float.min(background.getWidth()*Float.max(scaleX,scaleY),bounds.width), Float.min(background.getHeight()*Float.max(scaleX,scaleY), bounds.height));
 //            canvas.draw(background, 0, 0);
         }
 
@@ -901,6 +901,10 @@ public class Level {
         if (currCheckpoint != null) {
             currCheckpoint.drawBase(canvas);
         }
+//        if(canvas.getCamera().centerLevelTranslation().x != 0){
+//            canvas.drawRectangle(bounds.x+canvas.getCamera().centerLevelTranslation().x, bounds.y+canvas.getCamera().centerLevelTranslation().y, bounds.width, bounds.height, Color.WHITE,1, 1);
+//            canvas.drawRectangle(canvas.getCamera().centerLevelTranslation().x,canvas.getCamera().centerLevelTranslation().y,canvas.getCamera().getViewportWidth(),canvas.getCamera().getViewportHeight(), Color.BLUE, 1,1);
+//        }
     }
 
     /**

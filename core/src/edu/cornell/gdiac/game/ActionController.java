@@ -54,6 +54,7 @@ public class ActionController {
     private float closestFraction;
     private Vector2 startPointCache = new Vector2();
     private Vector2 endPointCache = new Vector2();
+    private Camera camera;
     /**
      * Creates and initialize a new instance of a ActionController
      *
@@ -94,6 +95,9 @@ public class ActionController {
         }
     }
 
+    public void setCamera(Camera c){
+        camera = c;
+    }
     /**
      * Returns array of currently active MobControllers
      * @return Array of active MobControllers with the current level
@@ -237,6 +241,7 @@ public class ActionController {
                 spiritLine.setStart(cat.getPosition());
                 DeadBody nextDeadBody = level.getNextBody();
                 if (nextDeadBody != null) {
+                    camera.switchBodyZoom(nextDeadBody.getX()*scale.x, nextDeadBody.getY()*scale.y, cat.getX()*scale.x, cat.getY()*scale.y);
                     spiritLine.endTarget.set(nextDeadBody.getPosition());
                 } else {
                     spiritLine.endTarget.set(cat.getPosition());

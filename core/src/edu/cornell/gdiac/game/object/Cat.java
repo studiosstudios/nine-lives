@@ -749,17 +749,14 @@ public class Cat extends CapsuleObstacle implements Movable {
 
         //sit
         else if(horizontalMovement == 0 && verticalMovement == 0 && !(state == State.JUMPING)){
-            if(nonMoveTime >= 10){
+            if(nonMoveTime >= 5){
                 idleAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
                 idleTime += Gdx.graphics.getDeltaTime();
                 frame = idleAnimation.getKeyFrame(idleTime);
             }
-            else if(nonMoveTime >= 5){
-                nonMoveTime += Gdx.graphics.getDeltaTime();
-            }
             else{
                 nonMoveTime += Gdx.graphics.getDeltaTime();
-                idleStandAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+                idleStandAnimation.setPlayMode(Animation.PlayMode.LOOP);
                 standTime += Gdx.graphics.getDeltaTime();
                 frame = idleStandAnimation.getKeyFrame(standTime);
             }

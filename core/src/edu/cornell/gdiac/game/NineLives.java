@@ -41,7 +41,7 @@ public class NineLives extends Game implements ScreenListener {
 		canvas  = new GameCanvas();
 		menu = new StageController("assets.json", canvas, 1);
 
-		controller = new WorldController(2);
+		controller = new WorldController(4);
 		menu.setScreenListener(this);
 		setScreen(menu);
 	}

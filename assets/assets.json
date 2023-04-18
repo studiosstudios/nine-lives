@@ -57,7 +57,8 @@
         "level5": "platform/level_testplayground.json",
         "tiledLevel1": "tiled/tiledLevel1.json",
       "tiledLevel2": "tiled/tiledLevel2.json",
-      "tiledLevel3": "tiled/tiledLevel3.json"
+      "tiledLevel3": "tiled/tiledLevel3.json",
+      "tiledLevel4": "tiled/level-template.json"
     },
     "sounds" : {
         "jump" : "platform/jumpCELESTE.wav",

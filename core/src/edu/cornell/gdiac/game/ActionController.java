@@ -61,8 +61,7 @@ public class ActionController {
      * @param scale	    The game scale Vector2
      * @param volume    The volume of the game
      */
-    public ActionController(Rectangle bounds, Vector2 scale, float volume) {
-        this.bounds = bounds;
+    public ActionController(Vector2 scale, float volume) {
         this.scale = scale;
         this.volume = volume;
         mobControllers = new Array<>();
@@ -80,6 +79,7 @@ public class ActionController {
      */
     public void setLevel(Level level){
         this.level = level;
+        this.bounds = level.bounds;
     }
 
     /**

@@ -284,15 +284,8 @@ public class InputController {
 
 	/**
 	 * Reads the input for the player and converts the result into game logic.
-	 *
-	 * The method provides both the input bounds and the drawing scale.  It needs
-	 * the drawing scale to convert screen coordinates to world coordinates.  The
-	 * bounds are for the crosshair.  They cannot go outside of this zone.
-	 *
-	 * @param bounds The input bound/s for the crosshair.
-	 * @param scale  The drawing scale
 	 */
-	public void readInput(Rectangle bounds, Vector2 scale) {
+	public void readInput() {
 		// Copy state from last animation frame
 		// Helps us ignore buttons that are held down
 		for (String control : controlNames){
@@ -300,7 +293,7 @@ public class InputController {
 		}
 
 		if (readFile == null || !readFromFile()) {
-			readKeyboard(bounds, scale);
+			readKeyboard();
 		}
 
 		horizontal = 0.0f;
@@ -366,26 +359,9 @@ public class InputController {
 	 * gives priority to the X-Box controller.
 	 *
 	 */
-	private void readKeyboard(Rectangle bounds, Vector2 scale) {
+	private void readKeyboard() {
 		for (String control : controlNames){
 			pressedMap.put(control, Gdx.input.isKeyPressed(controls.get(control)));
 		}
-
-		// Mouse results
-		crosshair.set(Gdx.input.getX(), Gdx.input.getY());
-		crosshair.scl(1/scale.x,-1/scale.y);
-		crosshair.y += bounds.height;
-		clampPosition(bounds);
-	}
-	
-	/**
-	 * Clamp the cursor position so that it does not go outside the window
-	 *
-	 * While this is not usually a problem with mouse control, this is critical 
-	 * for the gamepad controls.
-	 */
-	private void clampPosition(Rectangle bounds) {
-		crosshair.x = Math.max(bounds.x, Math.min(bounds.x+bounds.width, crosshair.x));
-		crosshair.y = Math.max(bounds.y, Math.min(bounds.y+bounds.height, crosshair.y));
 	}
 }

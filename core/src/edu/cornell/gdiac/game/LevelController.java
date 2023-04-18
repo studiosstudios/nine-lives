@@ -20,8 +20,6 @@ import java.util.HashMap;
 public class LevelController {
     /** The Box2D world */
     protected World world;
-    /** The boundary of the world */
-    protected Rectangle bounds;
     /** The world scale */
     protected Vector2 scale;
     /** The amount of time for a physics engine step. */
@@ -69,8 +67,6 @@ public class LevelController {
     private Color flashColor = new Color(1, 1, 1, 0);
 
 
-    private JsonValue tiledLevelJV;
-
     /**
      * Creates and initialize a new instance of a LevelController
      * <br><br>
@@ -78,19 +74,16 @@ public class LevelController {
      * with the Box2D coordinates.  The bounds are in terms of the Box2D
      * world, not the screen.
      *
-     * @param bounds	The game bounds in Box2D coordinates
-     * @param gravity	The gravitational force on this Box2D world
      */
-    public LevelController(Rectangle bounds, Vector2 gravity) {
-        world = new World(gravity, false);
-        this.bounds = new Rectangle(bounds);
-        scale = new Vector2(1,1);
+    public LevelController(Vector2 scale, World world) {
+        this.scale = scale.cpy();
         debug = false;
         setRet(false);
         sensorFixtures = new ObjectSet<>();
 
-        level = new Level(world, bounds, scale, MAX_NUM_LIVES);
-        actionController = new ActionController(bounds, scale, volume);
+        this.world = world;
+        level = new Level(world, scale, MAX_NUM_LIVES);
+        actionController = new ActionController(scale, volume);
         actionController.setLevel(level);
         collisionController = new CollisionController(actionController);
         collisionController.setLevel(level);
@@ -106,8 +99,6 @@ public class LevelController {
      */
     public void setCanvas(GameCanvas canvas) {
         this.canvas = canvas;
-        this.scale.x = 1024f/bounds.getWidth();
-        this.scale.y = 576f/bounds.getHeight();
     }
 
     /**
@@ -158,10 +149,6 @@ public class LevelController {
      */
     public void setJSON(JsonValue level) { levelJV = level; }
 
-    /**
-     * blah
-     */
-    public void setTiledJSON(JsonValue levelJV) { tiledLevelJV = levelJV; }
 
     /**
      * Sets the hashmaps for Texture Regions, Sounds, Fonts, and sets JSON value constants
@@ -172,21 +159,36 @@ public class LevelController {
      * @param constants the JSON value for constants
      */
     public void setAssets(HashMap<String, TextureRegion> tMap, HashMap<String, BitmapFont> fMap,
-                          HashMap<String, Sound> sMap, JsonValue constants, JsonValue levelJV){
+                          HashMap<String, Sound> sMap, JsonValue constants){
         //for now levelcontroller will have access to these assets, but in the future we may see that it is unnecessary
         textureRegionAssetMap = tMap;
         fontAssetMap = fMap;
         soundAssetMap = sMap;
         constantsJSON = constants;
-        Level.setConstants(constants);
-        this.levelJV = levelJV;
+        setConstants(constants);
         displayFont = fMap.get("retro");
 
         //send the relevant assets to classes that need them
         actionController.setVolume(constantsJSON.get("defaults").getFloat("volume"));
         actionController.setAssets(sMap);
         level.setAssets(tMap);
-//        level.levelEditor();
+    }
+
+    private static void setConstants(JsonValue constants){
+        DeadBody.setConstants(constants.get("deadBody"));
+        Flamethrower.setConstants(constants.get("flamethrowers"));
+        PushableBox.setConstants(constants.get("boxes"));
+        Spikes.setConstants(constants.get("spikes"));
+        Activator.setConstants(constants.get("activators"));
+        Laser.setConstants(constants.get("lasers"));
+        Checkpoint.setConstants(constants.get("checkpoint"));
+        Mirror.setConstants(constants.get("mirrors"));
+        Wall.setConstants(constants.get("walls"));
+        Platform.setConstants(constants.get("platforms"));
+        Cat.setConstants(constants.get("cat"));
+        Exit.setConstants(constants.get("exits"));
+        Door.setConstants(constants.get("doors"));
+        Mob.setConstants(constants.get("mobs"));
     }
 
     /**
@@ -210,25 +212,24 @@ public class LevelController {
      * Note that this method simply repopulates the existing level. Care needs to be taken to
      * properly dispose the level so that the level reset is clean.
      */
-    public void reset(Cat prevCat) {
+    protected void reset(World world) {
 
-        Vector2 gravity = new Vector2( world.getGravity() );
         justRespawned = true;
         level.dispose();
-        world = new World(gravity,false);
         level.setWorld(world);
         world.setContactListener(collisionController);
         world.setContactFilter(collisionController);
+        this.world = world;
 
         collisionController.setReturn(false);
-        actionController.setMobControllers(level);
 
         boolean tempRet = isRet();
         setRet(false);
         level.populateTiled(levelJV);
+
         actionController.setMobControllers(level);
         prevLivesState = new LevelState[9];
-        canvas.getCamera().setLevelSize(level.bounds.width, level.bounds.height);
+        canvas.getCamera().setLevelSize(level.bounds.width*scale.x, level.bounds.height*scale.y);
         canvas.getCamera().updateCamera(level.getCat().getPosition().x*scale.x, level.getCat().getPosition().y*scale.y, false);
     }
 
@@ -237,7 +238,6 @@ public class LevelController {
      */
     public void dispose() {
         level.dispose();
-        bounds = null;
         scale  = null;
         canvas = null;
     }
@@ -256,18 +256,12 @@ public class LevelController {
     public boolean preUpdate(float dt) {
 
         InputController input = InputController.getInstance();
-        input.readInput(bounds, scale);
+        input.readInput();
 
         // Toggle debug
         if (input.didDebug()) {
             debug = !debug;
 //            canvas.getCamera().debugCamera(debug);
-        }
-
-        // Handle resets
-        if (input.didReset()) {
-//            flashColor.set(0, 0, 0, 1);
-            reset(null);
         }
 
         if (!level.isFailure() && level.getDied()) {
@@ -323,12 +317,6 @@ public class LevelController {
         //which may be a pain. Also it does seem like saving state after stepping the world has better results - will need
         //testing.
 
-//        if (InputController.getInstance().didUndo()) {
-//            if (level.getNumLives() < 9) {
-//                loadLevelState(prevLivesState[8 - level.getNumLives()]);
-//                flashColor.set(1, 1, 1, 1);
-//            }
-//        }
         if (justRespawned) {
             prevLivesState[9 - level.getNumLives()] = new LevelState(level);
             justRespawned = false;
@@ -369,7 +357,7 @@ public class LevelController {
         canvas.begin();
         canvas.applyViewport();
         level.draw(canvas);
-        canvas.drawRectangle(0, 0, bounds.width,bounds.height, flashColor, scale.x, scale.y);
+        canvas.drawRectangle(0, 0, level.bounds.width,level.bounds.height, flashColor, scale.x, scale.y);
         canvas.end();
 
         if (debug) {

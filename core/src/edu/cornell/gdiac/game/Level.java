@@ -26,7 +26,7 @@ public class Level {
 
     /** The Box2D world */
     protected World world;
-    /** The boundary of the world */
+    /** The boundary of the level */
     protected Rectangle bounds;
     /** The world scale */
     protected Vector2 scale;
@@ -34,10 +34,10 @@ public class Level {
     // Physics objects for the game
     /** Reference to the character cat */
     private Cat cat;
-    /** Reference to the goalDoor (for collision detection) */
-    private BoxObstacle goalDoor;
-    /**Reference to the returnDoor (for collision detection) */
-    private BoxObstacle retDoor;
+    /** Reference to the goal exit */
+    private Exit goalExit;
+    /**Reference to the return exit */
+    private Exit returnExit;
 
     /** Tiles of level */
     protected Tiles tiles;
@@ -271,6 +271,10 @@ public class Level {
      */
     public void setAssets(HashMap<String, TextureRegion> tMap){ textureRegionAssetMap = tMap; }
 
+    public Exit getGoalExit() {return goalExit;}
+
+    public Exit getReturnExit() {return returnExit;}
+
     /**
      * Creates a new LevelModel
      * <br><br>
@@ -278,13 +282,12 @@ public class Level {
      * the JSON file to initialize the level
      *
      * @param world Box2D world containing all game simulations
-     * @param bounds World boundary
      * @param scale Drawing scale
      * @param numLives Number of lives
      */
-    public Level(World world, Rectangle bounds, Vector2 scale, int numLives) {
+    public Level(World world, Vector2 scale, int numLives) {
         this.world  = world;
-        this.bounds = bounds;
+        this.bounds = new Rectangle();
         this.scale = scale;
         this.numLives = numLives;
         maxLives = numLives;
@@ -352,8 +355,8 @@ public class Level {
         int levelWidth = tiledMap.getInt("width");
         int levelHeight = tiledMap.getInt("height");
 
-        bounds.width = levelWidth*scale.x;
-        bounds.height = levelHeight*scale.y;
+        bounds.width = levelWidth;
+        bounds.height = levelHeight;
 
         Array<JsonValue> obstacleData = new Array<>();
 
@@ -372,7 +375,7 @@ public class Level {
         if (biome.equals("metal")) {
             tileset = textureRegionAssetMap.get("metal_tileset");
             for (JsonValue tilesetData : tiledMap.get("tilesets")){
-                if (tilesetData.getString("source").equals("lab-walls.tsx")){
+                if (tilesetData.getString("source").equals("metal-walls.tsx")){
                     fID = tilesetData.getInt("firstgid");
                 }
             }
@@ -381,14 +384,11 @@ public class Level {
             // TODO: change this in future
             tileset = textureRegionAssetMap.get("metal_tileset");
             for (JsonValue tilesetData : tiledMap.get("tilesets")){
-                if (tilesetData.getString("source").equals("lab-walls.tsx")){
+                if (tilesetData.getString("source").equals("metal-walls.tsx")){
                     fID = tilesetData.getInt("firstgid");
                 }
             }
         }
-
-
-
         tiles = new Tiles(tileData, 1024, levelWidth, levelHeight, tileset, fID, new Vector2(1/32f, 1/32f));
 
         spiritMode = false;
@@ -580,6 +580,11 @@ public class Level {
             readProperties(objJV, tileSize, levelHeight);
             Exit exit = new Exit(propertiesMap, scale);
             addObject(exit);
+            if (exit.exitType() == Exit.ExitType.GOAL){
+                goalExit = exit;
+            } else {
+                returnExit = exit;
+            }
         }
     }
 
@@ -681,27 +686,6 @@ public class Level {
                     throw new IllegalArgumentException("unexpected property type: " + property.getString("type"));
             }
         }
-    }
-
-     /**
-     * TODO: MOVE TO LEVELCONTROLLER
-     * @param constants
-     */
-    public static void setConstants(JsonValue constants){
-        DeadBody.setConstants(constants.get("deadBody"));
-        Flamethrower.setConstants(constants.get("flamethrowers"));
-        PushableBox.setConstants(constants.get("boxes"));
-        Spikes.setConstants(constants.get("spikes"));
-        Activator.setConstants(constants.get("activators"));
-        Laser.setConstants(constants.get("lasers"));
-        Checkpoint.setConstants(constants.get("checkpoint"));
-        Mirror.setConstants(constants.get("mirrors"));
-        Wall.setConstants(constants.get("walls"));
-        Platform.setConstants(constants.get("platforms"));
-        Cat.setConstants(constants.get("cat"));
-        Exit.setConstants(constants.get("exits"));
-        Door.setConstants(constants.get("doors"));
-        Mob.setConstants(constants.get("mobs"));
     }
 
     /**
@@ -831,8 +815,8 @@ public class Level {
     public void draw(GameCanvas canvas) {
         if (background != null) {
             //scales background with level size
-            float scaleX = bounds.width/background.getWidth();
-            float scaleY = bounds.height/background.getHeight();
+            float scaleX = bounds.width/background.getWidth() * scale.x;
+            float scaleY = bounds.height/background.getHeight() * scale.y;
             canvas.draw(background, Color.WHITE, 0, 0, background.getWidth()*Float.max(scaleX,scaleY), background.getHeight()*Float.max(scaleX,scaleY));
 //            canvas.draw(background, 0, 0);
         }
@@ -929,7 +913,7 @@ public class Level {
         float minDist = Float.MAX_VALUE;
         DeadBody nextdb = null;
         for (DeadBody db : deadBodyArray){
-            if (sharesSpriritRegion(db.getSpiritRegions(), cat.getSpiritRegions())){
+            if (sharesSpiritRegion(db.getSpiritRegions(), cat.getSpiritRegions())){
                 float dist = cat.getPosition().dst(db.getPosition());
                 if (dist < minDist){
                     minDist = dist;
@@ -940,7 +924,7 @@ public class Level {
         return nextdb;
     }
 
-    private boolean sharesSpriritRegion(ObjectSet<SpiritRegion> s1, ObjectSet<SpiritRegion> s2){
+    private boolean sharesSpiritRegion(ObjectSet<SpiritRegion> s1, ObjectSet<SpiritRegion> s2){
         if (s1.isEmpty() && s2.isEmpty()) return true;
         for (SpiritRegion r : s1){
             if (s2.contains(r)) return true;

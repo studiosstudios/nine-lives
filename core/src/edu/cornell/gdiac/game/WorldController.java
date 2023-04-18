@@ -1,7 +1,6 @@
 package edu.cornell.gdiac.game;
 
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.audio.*;
@@ -9,6 +8,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.*;
@@ -30,12 +30,12 @@ import edu.cornell.gdiac.util.*;
  */
 public class WorldController implements Screen {
 
+	/** The Box2D world */
+	protected World world;
 	/** Exit code for quitting the game */
 	public static final int EXIT_QUIT = 0;
-	/** Width of the game world in Box2D units */
-	protected static final float DEFAULT_WIDTH  = 32.0f;
-	/** Height of the game world in Box2D units */
-	protected static final float DEFAULT_HEIGHT = 18.0f;
+	/** Default drawscale */
+	protected static final float DEFAULT_SCALE = 32;
 	/** The default value of gravity (going down) */
 	protected static final float DEFAULT_GRAVITY = -4.9f;
 
@@ -58,13 +58,13 @@ public class WorldController implements Screen {
 	/** JSON for the previous level */
 	private JsonValue prevJSON;
 	/** LevelController for the current level */
-	private LevelController currLevel;
+	private LevelController levelController;
 	/** JSON for the next level */
 	private JsonValue nextJSON;
 	/** The AssetDirectory */
 	private AssetDirectory directory;
-	/** TiledMap */
-	private TiledMap tiledMap;
+	private Level nextLevel;
+	private Level prevLevel;
 
 	/**
 	 * Returns the canvas associated with the current LevelController
@@ -74,7 +74,7 @@ public class WorldController implements Screen {
 	 * @return the canvas associated with this controller
 	 */
 	public GameCanvas getCanvas() {
-		return currLevel.getCanvas();
+		return levelController.getCanvas();
 	}
 
 	/**
@@ -86,7 +86,7 @@ public class WorldController implements Screen {
 	 * @param canvas the canvas associated with this controller
 	 */
 	public void setCanvas(GameCanvas canvas) {
-		currLevel.setCanvas(canvas);
+		levelController.setCanvas(canvas);
 	}
 
 	/**
@@ -106,18 +106,17 @@ public class WorldController implements Screen {
 	 * world, not the screen.
 	 */
 	protected WorldController(int numLevels) {
-		this(new Rectangle(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT),
-			 new Vector2(0,DEFAULT_GRAVITY), numLevels);
+		this(new Vector2(0,DEFAULT_GRAVITY), numLevels);
 	}
 
 	/**
 	 * Creates a new controller for the game world
 	 *
-	 * @param bounds	The game bounds in Box2D coordinates
 	 * @param gravity	The gravitational force on this Box2D world
 	 */
-	protected WorldController(Rectangle bounds, Vector2 gravity, int numLevels) {
-		currLevel = new LevelController(bounds, gravity);
+	protected WorldController(Vector2 gravity, int numLevels) {
+		world = new World(gravity, false);
+		levelController = new LevelController(new Vector2(DEFAULT_SCALE, DEFAULT_SCALE), world);
 		this.numLevels = numLevels;
 		levelNum = 1;
 	}
@@ -127,7 +126,7 @@ public class WorldController implements Screen {
 	 *
 	 * @return The current LevelController for the current level
 	 */
-	public LevelController getCurrLevel() { return currLevel; }
+	public LevelController getLevelController() { return levelController; }
 
 	/**
 	 * Steps the level
@@ -143,10 +142,10 @@ public class WorldController implements Screen {
 		if (levelNum < numLevels) {
 			levelNum++;
 
-			prevJSON = currLevel.getJSON();
-			currLevel.setJSON(nextJSON);
-			currLevel.setRet(false);
-			currLevel.reset(resetSpawn ? null : currLevel.getLevel().getCat());
+			prevJSON = levelController.getJSON();
+			levelController.setJSON(nextJSON);
+			levelController.setRet(false);
+			reset();
 			if (levelNum < numLevels) {
 				nextJSON = tiledJSON(levelNum + 1);
 			}
@@ -166,28 +165,21 @@ public class WorldController implements Screen {
 	public void prevLevel(boolean resetSpawn){
 		if (levelNum > 1) {
 			levelNum--;
-			nextJSON = currLevel.getJSON();
-			currLevel.setJSON(prevJSON);
-			currLevel.setRet(!resetSpawn);
-			currLevel.reset(resetSpawn ? null : currLevel.getLevel().getCat());
+			nextJSON = levelController.getJSON();
+			levelController.setJSON(prevJSON);
+			levelController.setRet(!resetSpawn);
+			reset();
 			if (levelNum > 1) {
 				prevJSON = tiledJSON(levelNum - 1);
 			}
 		}
 	}
-	public void setCurrLevel(int level) {
+	public void setLevelController(int level) {
 		if (level < numLevels) {
-			currLevel.setJSON(tiledJSON(level+1));
+			levelController.setJSON(tiledJSON(level+1));
 		}
 	}
 
-	/**
-	 * Loads in the JSON of a level
-	 *
-	 * @param levelNum the number associated with the level to be loaded in
-	 * @return JSON of the level
-	 */
-	private JsonValue levelJSON(int levelNum){ return directory.getEntry("level" + levelNum, JsonValue.class); }
 
 	/**
 	 * Loads in the JSON of a level
@@ -198,12 +190,11 @@ public class WorldController implements Screen {
 	private JsonValue tiledJSON(int levelNum){ return directory.getEntry("tiledLevel" + levelNum, JsonValue.class); }
 
 
-
 	/**
 	 * Dispose of all (non-static) resources allocated to this mode.
 	 */
 	public void dispose() {
-		currLevel.dispose();
+		levelController.dispose();
 	}
 
 	/**
@@ -247,8 +238,8 @@ public class WorldController implements Screen {
 		this.directory = directory;
 
 		// Giving assets to levelController
-		currLevel.setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants, levelJSON(1));
-		currLevel.setJSON(tiledJSON(1));
+		levelController.setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants);
+		levelController.setJSON(tiledJSON(1));
 		nextJSON = tiledJSON(2);
 
 		//Set controls
@@ -275,23 +266,33 @@ public class WorldController implements Screen {
 		}
 
 		// Now it is time to maybe switch screens.
-		if (currLevel.preUpdate(dt)) {
+		if (levelController.preUpdate(dt)) {
 			pause();
 			listener.exitScreen(this, EXIT_QUIT);
 			return false;
 		}
-		if (currLevel.getLevel().isFailure()) {
-			currLevel.reset(null);
-		} else if (currLevel.getLevel().isComplete() || InputController.getInstance().didNext()) {
+
+		InputController input = InputController.getInstance();
+
+		if (levelController.getLevel().isFailure() || input.didReset()) {
+			reset();
+		} else if (levelController.getLevel().isComplete() || input.didNext()) {
 			pause();
-			nextLevel(InputController.getInstance().didNext());
+			nextLevel(input.didNext());
 			return false;
-		} else if (currLevel.isRet() || InputController.getInstance().didPrev()) {
+		} else if (levelController.isRet() || input.didPrev()) {
 			pause();
-			prevLevel(InputController.getInstance().didPrev());
+			prevLevel(input.didPrev());
 			return false;
 		}
 		return true;
+	}
+
+	public void reset(){
+		Vector2 gravity = new Vector2( world.getGravity() );
+		world = new World(gravity, false);
+
+		levelController.reset(world);
 	}
 
 	/**
@@ -327,10 +328,10 @@ public class WorldController implements Screen {
 //		}
 
 		if (preUpdate(delta)) {
-			currLevel.update(delta); // This is the one that must be defined.
-			currLevel.postUpdate(delta);
+			levelController.update(delta); // This is the one that must be defined.
+			levelController.postUpdate(delta);
 		}
-		currLevel.draw(delta);
+		levelController.draw(delta);
 	}
 
 	/**

@@ -58,7 +58,6 @@
         "tiledLevel1": "tiled/tiledLevel1.json",
       "tiledLevel2": "tiled/tiledLevel2.json",
       "tiledLevel3": "tiled/tiledLevel3.json",
-      "tiledLevel4": "tiled/level-template.json"
     },
     "sounds" : {
         "jump" : "platform/jumpCELESTE.wav",
@@ -66,7 +65,7 @@
         "metalLanding" : "platform/metalLandingCELESTE.wav",
         "pew"  : "platform/pew.mp3",
         "plop" : "platform/plop.mp3",
-        "meow" : "platform/meow.mp3",
+        "meow" : "platform/meow.mp3"
 
     },
     "fonts": {

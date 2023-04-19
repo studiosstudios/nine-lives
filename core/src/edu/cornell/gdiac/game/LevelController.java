@@ -76,6 +76,7 @@ public class LevelController {
      * LEVEL_SWITCH: Camera transition to next level (all controls stripped from user)
      * PLAYER_PAN: Camera zooms out and player is free to pan around the level (all other gameplay controls stripped from user)
      * PAN: Camera movement not controlled by player (e.g. when activator is pressed or at beginning of level)
+     * RESPAWN: Camera focuses on dead body for half of RESPAWN_DELAY and focuses on newly respawned cat for half of RESPAWN_DELAY
      */
     enum GameplayState{
         PLAY,
@@ -369,9 +370,7 @@ public class LevelController {
             /**
              * TODO: Seamless Level Switching
              */
-            float x_pos = level.getCat().getPosition().x*scale.x; //needs to be relative to cat's new position in larger world
-            float y_pos = level.getCat().getPosition().y*scale.y; //needs to be relative to cat's new position in larger world
-            cam.updateCamera(x_pos, y_pos, true);
+            gameplayState = GameplayState.PLAY;
         }
         else if(gameplayState == GameplayState.PAN){
             cam.updateCamera(panTarget.get(0).getXPos()*scale.x,panTarget.get(0).getYPos()*scale.y, true);
@@ -412,7 +411,7 @@ public class LevelController {
             this.gameplayState = GameplayState.PLAY;
         }
         else if(gameplayState.equals("SWITCH")){
-            this.gameplayState = GameplayState.PLAY;
+            this.gameplayState = GameplayState.LEVEL_SWITCH;
         }
     }
 

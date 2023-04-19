@@ -119,19 +119,17 @@ public class Mob extends CapsuleObstacle {
      * @param properties     String-Object map of properties for this object
      * @param tMap           Texture map for loading textures
      * @param scale          Draw scale for drawing
-     * @param tileSize       Tile size of the Tiled map for loading positions
-     * @param levelHeight    Height of level (in grid cell units) for loading y position
      * @param textureScale   Texture scale for rescaling texture
      */
-    public Mob(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
+    public Mob(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
         super(tMap.get("roboMob").getRegionWidth()/scale.x*textureScale.x/2f,
                 tMap.get("roboMob").getRegionHeight()/scale.y*textureScale.y);
 
 
         setFixedRotation(true);
         setName("mob");
-        setX((float) properties.get("x")/tileSize + objectConstants.get("offset").getFloat(0));
-        setY(levelHeight - (float) properties.get("y")/tileSize + objectConstants.get("offset").getFloat(1)-getDimension().y/2);
+        setX((float) properties.get("x") + objectConstants.get("offset").getFloat(0));
+        setY((float) properties.get("y") + objectConstants.get("offset").getFloat(1)-getDimension().y/2);
         setDrawScale(scale);
         setTextureScale(textureScale);
         setTexture(tMap.get("roboMob"));

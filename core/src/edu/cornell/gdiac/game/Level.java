@@ -438,61 +438,30 @@ public class Level {
     }
 
     private void populateWalls(JsonValue data, int tileSize, int levelHeight) {
-
         JsonValue objects = data.get("objects");
-
-        for (JsonValue obj : objects) {
-            JsonValue points = obj.get("polygon");
-            float x = obj.getFloat("x");
-            float y = obj.getFloat("y");
-            float[] shape = new float[points.size*2];
-
-            int i = 0;
-            for (JsonValue point : points) {
-
-                shape[i] = (x + point.getFloat("x"))/tileSize;
-
-                shape[i+1] = levelHeight - (y + point.getFloat("y"))/tileSize;
-                i+=2;
-            }
-
-            // check climbable
-            boolean isClimbable = false;
-
-            if (obj.get("properties") != null) {
-                isClimbable = obj.get("properties").get(0).getBoolean("value");
-            }
-            Wall wall = new Wall(textureRegionAssetMap.get("steel"), scale, shape, isClimbable);
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize, levelHeight);
+            Wall wall = new Wall(propertiesMap, scale);
             addObject(wall);
         }
     }
-
 
     private void populatePlatforms(JsonValue data, int tileSize, int levelHeight){
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1, 1);
         for (JsonValue objJV : objects) {
-            readProperties(objJV, tileSize);
-            Platform platform = new Platform(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight, textureScaleCache);
+            readProperties(objJV, tileSize, levelHeight);
+            Platform platform = new Platform(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
             loadTiledActivatable(platform);
         }
     }
 
-
     private void populateCheckpoints(JsonValue data, int tileSize, int levelHeight) {
-
         JsonValue objects = data.get("objects");
-
-        for (JsonValue obj : objects) {
-            float x = obj.getFloat("x");
-            float y = obj.getFloat("y");
-
-            Vector2 pos = new Vector2(x/tileSize, levelHeight - y/tileSize);
-            float angle = (float) ((360-obj.getFloat("rotation")) * Math.PI/180);
-
-            Checkpoint checkpoint = new Checkpoint(pos, angle, scale, textureRegionAssetMap.get("checkpoint_anim"),
-                    textureRegionAssetMap.get("checkpoint_active_anim"), textureRegionAssetMap.get("checkpoint_base"),
-                    textureRegionAssetMap.get("checkpoint_base_active"));
+        textureScaleCache.set(1/32f, 1/32f);
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize, levelHeight);
+            Checkpoint checkpoint = new Checkpoint(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
             addObject(checkpoint);
         }
     }
@@ -501,18 +470,18 @@ public class Level {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1, 1);
         for (JsonValue objJV : objects) {
-            readProperties(objJV, tileSize);
+            readProperties(objJV, tileSize, levelHeight);
             Activator activator;
             //TODO: developers should be able to specify in json if they want first pan or not
             switch ((String) propertiesMap.get("type", "button")){
                 case "button":
-                    activator = new Button(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight, textureScaleCache);
+                    activator = new Button(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
                     break;
                 case "switch":
-                    activator = new Switch(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight, textureScaleCache);
+                    activator = new Switch(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
                     break;
                 case "timed":
-                    activator = new TimedButton(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight, textureScaleCache);
+                    activator = new TimedButton(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
                     break;
                 default:
                     throw new RuntimeException("unrecognised activator type");
@@ -526,8 +495,8 @@ public class Level {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1/64f, 1/64f);
         for (JsonValue objJV : objects) {
-            readProperties(objJV, tileSize);
-            Spikes spikes = new Spikes(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight, textureScaleCache);
+            readProperties(objJV, tileSize, levelHeight);
+            Spikes spikes = new Spikes(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
             loadTiledActivatable(spikes);
         }
     }
@@ -536,8 +505,8 @@ public class Level {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1/64f, 1/64f);
         for (JsonValue objJV : objects) {
-            readProperties(objJV, tileSize);
-            Flamethrower flamethrower = new Flamethrower(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight, textureScaleCache);
+            readProperties(objJV, tileSize, levelHeight);
+            Flamethrower flamethrower = new Flamethrower(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
             loadTiledActivatable(flamethrower);
         }
     }
@@ -547,8 +516,8 @@ public class Level {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1, 1);
         for (JsonValue objJV : objects) {
-            readProperties(objJV, tileSize);
-            Laser laser = new Laser(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight, textureScaleCache);
+            readProperties(objJV, tileSize, levelHeight);
+            Laser laser = new Laser(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
             loadTiledActivatable(laser);
             lasers.add(laser);
         }
@@ -558,8 +527,8 @@ public class Level {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1, 1);
         for (JsonValue objJV : objects) {
-            readProperties(objJV, tileSize);
-            Door door = new Door(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight, textureScaleCache);
+            readProperties(objJV, tileSize, levelHeight);
+            Door door = new Door(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
             loadTiledActivatable(door);
         }
     }
@@ -568,8 +537,8 @@ public class Level {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1, 1);
         for (JsonValue objJV : objects) {
-            readProperties(objJV, tileSize);
-            SpiritRegion spiritRegion = new SpiritRegion(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight, textureScaleCache);
+            readProperties(objJV, tileSize, levelHeight);
+            SpiritRegion spiritRegion = new SpiritRegion(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
             spiritRegionArray.add(spiritRegion);
             addObject(spiritRegion);
         }
@@ -579,8 +548,8 @@ public class Level {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1/32f, 1/32f);
         for (JsonValue objJV : objects) {
-            readProperties(objJV, tileSize);
-            Mob mob = new Mob(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight, textureScaleCache);
+            readProperties(objJV, tileSize, levelHeight);
+            Mob mob = new Mob(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
             mobArray.add(mob);
             addObject(mob);
         }
@@ -590,8 +559,8 @@ public class Level {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1, 1);
         for (JsonValue objJV : objects) {
-            readProperties(objJV, tileSize);
-            PushableBox box = new PushableBox(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight, textureScaleCache);
+            readProperties(objJV, tileSize, levelHeight);
+            PushableBox box = new PushableBox(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
             addObject(box);
         }
     }
@@ -600,8 +569,8 @@ public class Level {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1, 1);
         for (JsonValue objJV : objects) {
-            readProperties(objJV, tileSize);
-            Mirror mirror = new Mirror(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight, textureScaleCache);
+            readProperties(objJV, tileSize, levelHeight);
+            Mirror mirror = new Mirror(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
             addObject(mirror);
         }
     }
@@ -609,8 +578,8 @@ public class Level {
     private void populateExits(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         for (JsonValue objJV : objects) {
-            readProperties(objJV, tileSize);
-            Exit exit = new Exit(propertiesMap, scale, tileSize, levelHeight);
+            readProperties(objJV, tileSize, levelHeight);
+            Exit exit = new Exit(propertiesMap, scale);
             addObject(exit);
         }
     }
@@ -618,8 +587,8 @@ public class Level {
     private void populateCat(JsonValue data, int tileSize, int levelHeight){
         JsonValue objects = data.get("objects");
         JsonValue catJV = objects.get(0);
-        readProperties(catJV, tileSize);
-        cat = new Cat(propertiesMap, textureRegionAssetMap, scale, tileSize, levelHeight);
+        readProperties(catJV, tileSize, levelHeight);
+        cat = new Cat(propertiesMap, textureRegionAssetMap, scale);
         respawnPos = cat.getPosition();
         startRespawnPos = respawnPos;
         addObject(cat);
@@ -632,35 +601,52 @@ public class Level {
      * @param objectJV   JSON of the object
      * @param tileSize   Size of the tiles in the JSON
      */
-    private void readProperties(JsonValue objectJV, int tileSize){
+    private void readProperties(JsonValue objectJV, int tileSize, int levelHeight){
         propertiesMap.clear();
 
-        propertiesMap.put("width", objectJV.getFloat("width"));
-        propertiesMap.put("height", objectJV.getFloat("height"));
+        propertiesMap.put("width", objectJV.getFloat("width")/tileSize);
+        propertiesMap.put("height", objectJV.getFloat("height")/tileSize);
         float angle = (360 - objectJV.getFloat("rotation")) % 360;
         propertiesMap.put("rotation", angle);
 
+        //this is because tiled rotates about the top left corner
+        float x, y;
         switch ((int) angle) {
             default:
             case 0:
-                propertiesMap.put("x", objectJV.getFloat("x"));
-                propertiesMap.put("y", objectJV.getFloat("y"));
+                x = objectJV.getFloat("x");
+                y = objectJV.getFloat("y");
                 break;
             case 90:
-                propertiesMap.put("x", objectJV.getFloat("x"));
-                propertiesMap.put("y", objectJV.getFloat("y") - tileSize);
+                x = objectJV.getFloat("x");
+                y = objectJV.getFloat("y") - tileSize;
                 break;
             case 180:
-                propertiesMap.put("x", objectJV.getFloat("x") - tileSize);
-                propertiesMap.put("y", objectJV.getFloat("y") - tileSize);
+                x = objectJV.getFloat("x") - tileSize;
+                y = objectJV.getFloat("y") - tileSize;
                 break;
             case 270:
-                propertiesMap.put("x", objectJV.getFloat("x") - tileSize);
-                propertiesMap.put("y", objectJV.getFloat("y"));
+                x = objectJV.getFloat("x") - tileSize;
+                y = objectJV.getFloat("y");
                 break;
         }
+        propertiesMap.put("x", x/tileSize);
+        propertiesMap.put("y", levelHeight - y/tileSize);
 
-        //object specific properties (if there are any)
+        //read polygon if there is one
+        JsonValue poly = objectJV.get("polygon");
+        if (poly != null) {
+            float[] shape = new float[poly.size * 2];
+            int i = 0;
+            for (JsonValue point : poly) {
+                shape[i] = (x + point.getFloat("x")) / tileSize;
+                shape[i + 1] = levelHeight - (y + point.getFloat("y")) / tileSize;
+                i += 2;
+            }
+            propertiesMap.put("polygon", shape);
+        }
+
+        //object specific properties if there are any
         JsonValue properties = objectJV.get("properties");
         if (properties == null) { return; }
         for (JsonValue property : properties){
@@ -820,31 +806,6 @@ public class Level {
                 ((Spikes) jdef.bodyB.getUserData()).addJoint(joint);
             }
         }
-    }
-
-    /**
-     * Loads an activatable object from a JSON
-     * <br><br>
-     * Adds the object to the list of objects
-     * Adds the object to the list of activatables
-     *
-     * @param object the Activatable to add
-     * @param objectJV the JsonValue containing the activatable data
-     */
-    private void loadActivatable(Activatable object, JsonValue objectJV){
-
-        addObject((Obstacle) object);
-
-        String activatorID = objectJV.getString("activatorID", "");
-        if (!activatorID.equals("")) {
-            if (activationRelations.containsKey(activatorID)) {
-                activationRelations.get(activatorID).add(object);
-            } else {
-                activationRelations.put(activatorID, new Array<>(new Activatable[]{object}));
-            }
-        }
-
-        activatables.add(object);
     }
 
     private void loadTiledActivatable(Activatable object){

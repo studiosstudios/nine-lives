@@ -458,7 +458,7 @@ public class Level {
 
     private void populateCheckpoints(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
-        textureScaleCache.set(1, 1);
+        textureScaleCache.set(1/32f, 1/32f);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
             Checkpoint checkpoint = new Checkpoint(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);

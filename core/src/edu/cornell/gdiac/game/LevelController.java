@@ -62,8 +62,12 @@ public class LevelController {
     private Level level;
     /** Temporary list of activatables to pan to */
     private Array<Activatable> panTarget = new Array<>();
+    /** Keeps track of time held at activatable upon pan **/
     private float panTime;
+    /** Time held at activatable upon pan**/
     final float PAN_HOLD = 50f; //about 17ms per PAN_HOLD unit (holds 0.85 second)
+    private float respawnDelay;
+    final float RESPAWN_DELAY = 40f; //about 17ms per RESPAWN_DELAY unit (holds 0.68 second)
 
     /**
      * PLAY: User has all controls and is in game
@@ -75,7 +79,8 @@ public class LevelController {
         PLAY,
         LEVEL_SWITCH,
         PLAYER_PAN,
-        PAN
+        PAN,
+        RESPAWN
     }
     /** State of gameplay */
     private GameplayState gameplayState;
@@ -116,6 +121,7 @@ public class LevelController {
 
         gameplayState = GameplayState.PLAY;
         panTime = 0;
+        respawnDelay = 0;
     }
 
     /**
@@ -351,6 +357,15 @@ public class LevelController {
                 cam.setGlideMode("NORMAL");
                 cam.updateCamera(x_pos, y_pos, true);
             }
+            if(justRespawned){
+                input.setDisableAll(true);
+                respawnDelay += 1;
+                if(respawnDelay == RESPAWN_DELAY){
+                    respawnDelay = 0;
+                    justRespawned = false;
+                    input.setDisableAll(false);
+                }
+            }
         }
         else if(gameplayState == GameplayState.LEVEL_SWITCH){
             /**
@@ -419,7 +434,6 @@ public class LevelController {
 //        }
         if (justRespawned) {
             prevLivesState[9 - level.getNumLives()] = new LevelState(level);
-            justRespawned = false;
         }
 
 

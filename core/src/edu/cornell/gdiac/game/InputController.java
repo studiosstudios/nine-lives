@@ -59,6 +59,8 @@ public class InputController {
 	private BufferedWriter writeFile;
 	/** Json specifying controls */
 	private JsonValue controlsJSON;
+	/** Disables all controls **/
+	private boolean disableAll;
 
 	/**
 	 * Sets the keybindings from a JSON. The JSON must be a single object consisting only of string-string pairs, where
@@ -405,6 +407,14 @@ public class InputController {
 	}
 
 	/**
+	 * Whether all user inputs should be ignored.
+	 * @param b true if all inputs should be ignored
+	 */
+	public void setDisableAll(boolean b){
+		disableAll = b;
+	}
+
+	/**
 	 * Reads input from the keyboard.
 	 *
 	 * This controller reads from the keyboard regardless of whether or not an X-Box
@@ -415,7 +425,10 @@ public class InputController {
 	private void readKeyboard(Rectangle bounds, Vector2 scale) {
 		pressedMap.put("pan", Gdx.input.isKeyPressed(controls.get("pan")));
 		for (String control : controlNames){
-			if(pressedMap.get("pan")) {
+			if(disableAll){
+				pressedMap.put(control, false);
+			}
+			else if(pressedMap.get("pan")) {
 				pressedMap.put(control, !controlsJSON.get(control).get("disableWhenPan").asBoolean() && Gdx.input.isKeyPressed(controls.get(control)));
 			}
 			else {

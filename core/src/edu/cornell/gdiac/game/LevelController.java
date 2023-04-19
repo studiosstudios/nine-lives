@@ -66,8 +66,10 @@ public class LevelController {
     private float panTime;
     /** Time held at activatable upon pan**/
     final float PAN_HOLD = 50f; //about 17ms per PAN_HOLD unit (holds 0.85 second)
+    /** Keeps track of amount of time delayed after respawn **/
     private float respawnDelay;
-    final float RESPAWN_DELAY = 40f; //about 17ms per RESPAWN_DELAY unit (holds 0.68 second)
+    /** Amount of time to be delayed after respawn **/
+    final float RESPAWN_DELAY = 60f; //about 17ms per RESPAWN_DELAY unit (holds 1 second-0.5s on dead body, 0.5s on respawned cat)
 
     /**
      * PLAY: User has all controls and is in game
@@ -342,8 +344,13 @@ public class LevelController {
         }
         if(gameplayState == GameplayState.PLAY){
             panTime = 0;
+            respawnDelay = 0;
+            input.setDisableAll(false);
             float x_pos = level.getCat().getPosition().x*scale.x;
             float y_pos = level.getCat().getPosition().y*scale.y;
+            if(justRespawned) {
+                gameplayState = GameplayState.RESPAWN;
+            }
             //zoom normal when in play state and not panning and not switching bodies
             if(!input.holdSwitch() && !input.didPan()){
                 cam.zoomOut(false);
@@ -356,15 +363,6 @@ public class LevelController {
             else{
                 cam.setGlideMode("NORMAL");
                 cam.updateCamera(x_pos, y_pos, true);
-            }
-            if(justRespawned){
-                input.setDisableAll(true);
-                respawnDelay += 1;
-                if(respawnDelay == RESPAWN_DELAY){
-                    respawnDelay = 0;
-                    justRespawned = false;
-                    input.setDisableAll(false);
-                }
             }
         }
         else if(gameplayState == GameplayState.LEVEL_SWITCH){
@@ -386,6 +384,23 @@ public class LevelController {
         }
         else if(gameplayState == GameplayState.PLAYER_PAN){
             cam.zoomOut(true);
+        }
+        else if(gameplayState == GameplayState.RESPAWN){
+            justRespawned = false;
+            float x_pos = level.getCat().getPosition().x*scale.x;
+            float y_pos = level.getCat().getPosition().y*scale.y;
+            input.setDisableAll(true);
+            respawnDelay += 1;
+            if(level.getdeadBodyArray().size > 0 && respawnDelay < RESPAWN_DELAY/2){
+                x_pos = level.getdeadBodyArray().get(level.getdeadBodyArray().size-1).getX()*scale.x;
+                y_pos = level.getdeadBodyArray().get(level.getdeadBodyArray().size-1).getY()*scale.y;
+            }
+            cam.updateCamera(x_pos, y_pos, true);
+            if(respawnDelay == RESPAWN_DELAY){
+                respawnDelay = 0;
+                input.setDisableAll(false);
+                gameplayState = GameplayState.PLAY;
+            }
         }
     }
 

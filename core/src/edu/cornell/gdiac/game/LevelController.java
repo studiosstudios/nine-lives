@@ -60,6 +60,33 @@ public class LevelController {
     private CollisionController collisionController;
     /** The Level model */
     private Level level;
+    /** Temporary list of activatables to pan to */
+    private Array<Activatable> panTarget = new Array<>();
+    /** Keeps track of time held at activatable upon pan **/
+    private float panTime;
+    /** Time held at activatable upon pan**/
+    final float PAN_HOLD = 50f; //about 17ms per PAN_HOLD unit (holds 0.85 second)
+    /** Keeps track of amount of time delayed after respawn **/
+    private float respawnDelay;
+    /** Amount of time to be delayed after respawn **/
+    final float RESPAWN_DELAY = 60f; //about 17ms per RESPAWN_DELAY unit (holds 1 second-0.5s on dead body, 0.5s on respawned cat)
+
+    /**
+     * PLAY: User has all controls and is in game
+     * LEVEL_SWITCH: Camera transition to next level (all controls stripped from user)
+     * PLAYER_PAN: Camera zooms out and player is free to pan around the level (all other gameplay controls stripped from user)
+     * PAN: Camera movement not controlled by player (e.g. when activator is pressed or at beginning of level)
+     * RESPAWN: Camera focuses on dead body for half of RESPAWN_DELAY and focuses on newly respawned cat for half of RESPAWN_DELAY
+     */
+    enum GameplayState{
+        PLAY,
+        LEVEL_SWITCH,
+        PLAYER_PAN,
+        PAN,
+        RESPAWN
+    }
+    /** State of gameplay */
+    private GameplayState gameplayState;
     /** Array storing level states of past lives. The ith element of this array is the state
      * of the level at the instant the player had died i times. */
     private LevelState[] prevLivesState = new LevelState[9];
@@ -94,6 +121,10 @@ public class LevelController {
         actionController.setLevel(level);
         collisionController = new CollisionController(actionController);
         collisionController.setLevel(level);
+
+        gameplayState = GameplayState.PLAY;
+        panTime = 0;
+        respawnDelay = 0;
     }
 
     /**
@@ -228,7 +259,7 @@ public class LevelController {
         level.populateTiled(levelJV);
         actionController.setMobControllers(level);
         prevLivesState = new LevelState[9];
-        canvas.getCamera().setLevelSize(level.bounds.width, level.bounds.height);
+        canvas.getCamera().setLevelBounds(level.bounds);
         canvas.getCamera().updateCamera(level.getCat().getPosition().x*scale.x, level.getCat().getPosition().y*scale.y, false);
     }
 
@@ -257,13 +288,21 @@ public class LevelController {
 
         InputController input = InputController.getInstance();
         input.readInput(bounds, scale);
-
+        Camera cam = canvas.getCamera();
+        if(input.didPan()){
+            gameplayState = GameplayState.PLAYER_PAN;
+            //move camera
+            cam.updateCamera(cam.getX()+input.getCamHorizontal(),cam.getY()+ input.getCamVertical(),false);
+        }
+        else{
+            if(gameplayState == GameplayState.PLAYER_PAN)
+                gameplayState = GameplayState.PLAY;
+        }
         // Toggle debug
         if (input.didDebug()) {
             debug = !debug;
 //            canvas.getCamera().debugCamera(debug);
         }
-
         // Handle resets
         if (input.didReset()) {
 //            flashColor.set(0, 0, 0, 1);
@@ -288,14 +327,92 @@ public class LevelController {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt) {
+        Camera cam = canvas.getCamera();
+        InputController input = InputController.getInstance();
         if (collisionController.getReturn()) {
             setRet(true);
         }
         actionController.update(dt);
         flashColor.a -= flashColor.a/10;
-        float x_pos = level.getCat().getPosition().x*scale.x;
-        float y_pos = level.getCat().getPosition().y*scale.y;
-        canvas.getCamera().updateCamera(x_pos, y_pos, true);
+        for (Activator a : level.getActivators()){
+            if (a.isPressed() && a.getPan()){
+                a.setPan(false);
+                if(level.getActivationRelations().containsKey(a.getID())){
+                    panTarget = level.getActivationRelations().get(a.getID());
+                }
+                gameplayState = GameplayState.PAN;
+            }
+        }
+        if(gameplayState == GameplayState.PLAY){
+            panTime = 0;
+            respawnDelay = 0;
+            input.setDisableAll(false);
+            float x_pos = level.getCat().getPosition().x*scale.x;
+            float y_pos = level.getCat().getPosition().y*scale.y;
+            if(justRespawned) {
+                gameplayState = GameplayState.RESPAWN;
+            }
+            //zoom normal when in play state and not panning and not switching bodies
+            if(!input.holdSwitch() && !input.didPan()){
+                cam.zoomOut(false);
+            }
+            DeadBody nextDeadBody = level.getNextBody();
+            if(input.holdSwitch()&&nextDeadBody != null){
+                cam.setGlideMode("SWITCH_BODY");
+                cam.switchBodyCam(nextDeadBody.getX()*scale.x, nextDeadBody.getY()*scale.y);
+            }
+            else{
+                cam.setGlideMode("NORMAL");
+                cam.updateCamera(x_pos, y_pos, true);
+            }
+        }
+        else if(gameplayState == GameplayState.LEVEL_SWITCH){
+            /**
+             * TODO: Seamless Level Switching
+             */
+            gameplayState = GameplayState.PLAY;
+        }
+        else if(gameplayState == GameplayState.PAN){
+            cam.updateCamera(panTarget.get(0).getXPos()*scale.x,panTarget.get(0).getYPos()*scale.y, true);
+            if(!cam.isGliding()){
+                panTime += 1;
+                if(panTime == PAN_HOLD){
+                    gameplayState = GameplayState.PLAY;
+                }
+            }
+        }
+        else if(gameplayState == GameplayState.PLAYER_PAN){
+            cam.zoomOut(true);
+        }
+        else if(gameplayState == GameplayState.RESPAWN){
+            justRespawned = false;
+            float x_pos = level.getCat().getPosition().x*scale.x;
+            float y_pos = level.getCat().getPosition().y*scale.y;
+            input.setDisableAll(true);
+            respawnDelay += 1;
+            if(level.getdeadBodyArray().size > 0 && respawnDelay < RESPAWN_DELAY/2){
+                x_pos = level.getdeadBodyArray().get(level.getdeadBodyArray().size-1).getX()*scale.x;
+                y_pos = level.getdeadBodyArray().get(level.getdeadBodyArray().size-1).getY()*scale.y;
+            }
+            cam.updateCamera(x_pos, y_pos, true);
+            if(respawnDelay == RESPAWN_DELAY){
+                respawnDelay = 0;
+                input.setDisableAll(false);
+                gameplayState = GameplayState.PLAY;
+            }
+        }
+    }
+
+    /**
+     * @param gameplayState "PLAY" or "SWITCH"
+     */
+    public void setGameplayState(String gameplayState){
+        if(gameplayState.equals("PLAY")){
+            this.gameplayState = GameplayState.PLAY;
+        }
+        else if(gameplayState.equals("SWITCH")){
+            this.gameplayState = GameplayState.LEVEL_SWITCH;
+        }
     }
 
     /**
@@ -331,7 +448,6 @@ public class LevelController {
 //        }
         if (justRespawned) {
             prevLivesState[9 - level.getNumLives()] = new LevelState(level);
-            justRespawned = false;
         }
 
 

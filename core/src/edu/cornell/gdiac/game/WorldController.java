@@ -1,7 +1,6 @@
 package edu.cornell.gdiac.game;
 
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.audio.*;
@@ -147,6 +146,7 @@ public class WorldController implements Screen {
 			currLevel.setJSON(nextJSON);
 			currLevel.setRet(false);
 			currLevel.reset(resetSpawn ? null : currLevel.getLevel().getCat());
+			currLevel.setGameplayState("SWITCH");
 			if (levelNum < numLevels) {
 				nextJSON = tiledJSON(levelNum + 1);
 			}

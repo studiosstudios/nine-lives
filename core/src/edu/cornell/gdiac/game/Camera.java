@@ -1,6 +1,8 @@
 package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 
 /**
  * Different from abstract class Camera
@@ -12,16 +14,20 @@ public class Camera {
     private float viewportWidth;
     /** Height of visible window **/
     private float viewportHeight;
-    /** Width of current level **/
-    private float levelWidth;
-    /** Height of current level **/
-    private float levelHeight;
-    /** Camera x-coordinate **/
+    /** Bounds of current level **/
+    private Rectangle levelBounds;
+    /** Camera center x-coordinate **/
     private float x;
-    /** Camera y-coordinate **/
+    /** Camera center y-coordinate **/
     private float y;
     /** Rate at which camera glides towards destination coordinates**/
-    private final float CAMERA_GLIDE_RATE = 0.075f;
+    private final float CAMERA_GLIDE_NORMAL = 0.075f;
+    private final float CAMERA_GLIDE_SWITCH_BODY = 0.025f;
+    private float cameraGlideRate;
+    /** Gameplay zoom **/
+    private float zoom;
+    /** Whether camera is moving **/
+    private boolean isGliding;
 
     /**
      * Wrapper for the OrthographicCamera class that takes into account dynamic level metadata.
@@ -33,12 +39,13 @@ public class Camera {
         camera = new OrthographicCamera(viewportWidth, viewportHeight);
         camera.setToOrtho(false, viewportWidth, viewportHeight);
         camera.zoom = zoom;
+        this.zoom = zoom;
         this.viewportWidth = viewportWidth;
         this.viewportHeight = viewportHeight;
-        this.levelWidth = viewportWidth;
-        this.levelHeight = viewportHeight;
         x = camera.position.x;
         y = camera.position.y;
+        isGliding = false;
+        cameraGlideRate = CAMERA_GLIDE_NORMAL;
     }
 
     /**
@@ -51,28 +58,35 @@ public class Camera {
      * @param glide smoothed camera movement
      */
     public void updateCamera(float xPos, float yPos, boolean glide){
-//        System.out.println(levelHeight); //levelHeight smaller for some reason?
         float width_scaled = viewportWidth*camera.zoom; //width of viewport zoomed in
-        if(xPos > levelWidth - width_scaled + width_scaled/2){
-            xPos = levelWidth - width_scaled + width_scaled/2;
+        if(xPos > levelBounds.width - width_scaled + width_scaled/2){
+            xPos = levelBounds.width - width_scaled + width_scaled/2;
         }
         if(xPos < width_scaled/2){
             xPos = width_scaled/2;
         }
         float height_scaled = viewportHeight*camera.zoom; //height of viewport zoomed in
-        if(yPos > levelHeight - height_scaled + height_scaled/2){
-            yPos = levelHeight - height_scaled + height_scaled/2;
+        if(yPos > levelBounds.height - height_scaled + height_scaled/2){
+            yPos = levelBounds.height - height_scaled + height_scaled/2;
         }
         if(yPos < height_scaled/2){
             yPos = height_scaled/2;
         }
         if(glide) {
-            x += (xPos - x) * CAMERA_GLIDE_RATE;
-            y += (yPos - y) * CAMERA_GLIDE_RATE;
+            x += (xPos - x) * cameraGlideRate;
+            y += (yPos - y) * cameraGlideRate;
         }
         else{
             x = xPos;
             y = yPos;
+        }
+        if(Math.abs((xPos - x) * cameraGlideRate) < 0.1 && Math.abs((yPos - y) * cameraGlideRate) < 0.1){
+            isGliding = false;
+            x = xPos;
+            y = yPos;
+        }
+        else{
+            isGliding = true;
         }
         camera.position.set(x, y, 0);
         camera.update();
@@ -87,27 +101,58 @@ public class Camera {
 
     /**
      * Adjusting level size used for camera positioning calculations
-     * @param width width of current level
-     * @param height height of current level
+     * @param bounds bounds of current level
      */
-    public void setLevelSize(float width, float height){
+    public void setLevelBounds(Rectangle bounds){
 //        System.out.println("setting level size:" + height);
-        levelWidth = width;
-        levelHeight = height;
+        levelBounds = bounds;
     }
 
-//
-//    /**
-//     * For internal uses
-//     * Camera either zooms out for debugging or returns to original zoom for gameplay
-//     * @param debug Whether debug mode is active
-//     */
-//    public void debugCamera(boolean debug){
-//        if (debug)
-//            camera.zoom = 1;
-//        else
-//            camera.zoom = zoom;
-//    }
+    /**
+     * Zooms camera out to x1
+     * @param z true if we want to zoom out
+     */
+    public void zoomOut(boolean z){
+        if(z){
+            camera.zoom = 1;
+        }
+        else{
+            camera.zoom = zoom;
+        }
+    }
+
+    /**
+     * Camera movement when switching bodies
+     * @param deadX x-coordinate of dead cat
+     * @param deadY y-coordinate of dead cat
+     */
+    public void switchBodyCam(float deadX, float deadY){
+//        float xDiff = Math.abs(deadX-catX)+50; //50 is leeway constant
+//        float yDiff = Math.abs(deadY-catY)+50; //50 is leeway constant
+//        float centerX = (deadX+catX)/2;
+//        float centerY = (deadY+catY)/2;
+        updateCamera(deadX,deadY,true);
+//        updateCamera(centerX,centerY,true);
+//        camera.zoom = Float.max(camera.zoom, Float.max(xDiff/viewportWidth, yDiff/viewportHeight));
+    }
+
+    /**
+     * Determines at how much at an offset to draw when level bounds smaller than viewport and entire level needs to be
+     * drawn at an offset
+     */
+    public Vector2 centerLevelTranslation(){
+        float levelHeight = levelBounds.height / camera.zoom;
+        float levelWidth = levelBounds.width / camera.zoom;
+        float xVal = 0;
+        float yVal = 0;
+        if(levelWidth < viewportWidth){
+            xVal = (viewportWidth - levelWidth)/1.4f;
+        }
+        if(levelHeight < viewportHeight){
+            yVal = (viewportHeight - levelHeight)/1.4f;
+        }
+        return new Vector2(xVal, yVal);
+    }
 
     /**
      * @return x-coordinate of camera position
@@ -121,5 +166,28 @@ public class Camera {
      */
     public float getY(){
         return y;
+    }
+
+    /**
+     * @return true if camera is moving
+     */
+    public boolean isGliding(){
+        return isGliding;
+    }
+
+    /**
+     * Sets camera glide rate based on different game mode/functionalities
+     * @param mode Either "SWITCH_BODY" or "NORMAL"
+     */
+    public void setGlideMode(String mode){
+        if(mode.equals("SWITCH_BODY")){
+            cameraGlideRate = CAMERA_GLIDE_SWITCH_BODY;
+        }
+        else if(mode.equals("NORMAL")){
+            cameraGlideRate = CAMERA_GLIDE_NORMAL;
+        }
+        else{
+            System.out.println("rip setGlideMode lmao");
+        }
     }
 }

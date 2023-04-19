@@ -472,6 +472,7 @@ public class Level {
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
             Activator activator;
+            //TODO: developers should be able to specify in json if they want first pan or not
             switch ((String) propertiesMap.get("type", "button")){
                 case "button":
                     activator = new Button(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
@@ -833,7 +834,7 @@ public class Level {
             //scales background with level size
             float scaleX = bounds.width/background.getWidth();
             float scaleY = bounds.height/background.getHeight();
-            canvas.draw(background, Color.WHITE, 0, 0, background.getWidth()*Float.max(scaleX,scaleY), background.getHeight()*Float.max(scaleX,scaleY));
+            canvas.draw(background, Color.WHITE, 0, 0, background.getWidth()*Float.max(scaleX,scaleY),background.getHeight()*Float.max(scaleX,scaleY));
 //            canvas.draw(background, 0, 0);
         }
 

@@ -34,6 +34,8 @@ public abstract class Activator extends PolygonObstacle {
     private PolygonShape sensorShape;
     /** The number of objects pressing on this activator */
     public int numPressing;
+    /** Whether the camera will pan on next activation */
+    private boolean pan;
     /** If pressing this activator for the first time should pan the camera */
     private boolean shouldPan;
 
@@ -64,8 +66,6 @@ public abstract class Activator extends PolygonObstacle {
      */
     public abstract void updateActivated();
 
-    public boolean shouldPan() { return shouldPan; }
-
     /**
      * Creates a new Activator object.
      *
@@ -94,7 +94,7 @@ public abstract class Activator extends PolygonObstacle {
         id = (String) properties.get("id");
         setX((float) properties.get("x")+objectConstants.get("offset").getFloat(0));
         setY((float) properties.get("y")+objectConstants.get("offset").getFloat(1));
-        shouldPan = (boolean) properties.get("shouldPan", false);
+        pan = (boolean) properties.get("shouldPan", false);
         active = false;
     }
 
@@ -162,4 +162,11 @@ public abstract class Activator extends PolygonObstacle {
      * @param constants JSON storing the shared constants.
      */
     public static void setConstants(JsonValue constants) { objectConstants = constants; }
+
+    public boolean getPan(){
+        return pan;
+    }
+    public void setPan(boolean p){
+        pan = p;
+    }
 }

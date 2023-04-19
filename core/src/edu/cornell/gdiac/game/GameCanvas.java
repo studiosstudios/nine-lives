@@ -104,7 +104,7 @@ public class GameCanvas {
 	private Vector2 vertex;
 	/** Cache object to handle raw textures */
 	private TextureRegion holder;
-	private final float CAMERA_ZOOM = 1f;
+	private final float CAMERA_ZOOM = 0.6f;
 
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
@@ -462,7 +462,7 @@ public class GameCanvas {
 		
 		// Unlike Lab 1, we can shortcut without a master drawing method
     		spriteBatch.setColor(tint);
-		spriteBatch.draw(image, x,  y, width, height);
+		spriteBatch.draw(image, x + camera.centerLevelTranslation().x,  y + camera.centerLevelTranslation().y, width, height);
 	}
 	
 	/**
@@ -580,7 +580,8 @@ public class GameCanvas {
 			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
 			return;
 		}
-		
+		x = x + camera.centerLevelTranslation().x;
+		y = y + camera.centerLevelTranslation().y;
 		// Unlike Lab 1, we can shortcut without a master drawing method
     		spriteBatch.setColor(Color.WHITE);
 		spriteBatch.draw(region, x,  y);
@@ -676,6 +677,8 @@ public class GameCanvas {
 			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
 			return;
 		}
+		x = x + camera.centerLevelTranslation().x;
+		y = y + camera.centerLevelTranslation().y;
 
 		// BUG: The draw command for texture regions does not work properly.
 		// There is a workaround, but it will break if the bug is fixed.
@@ -846,7 +849,8 @@ public class GameCanvas {
 			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
 			return;
 		}
-		
+		x = x + camera.centerLevelTranslation().x;
+		y = y + camera.centerLevelTranslation().y;
 		TextureRegion bounds = region.getRegion();
 		spriteBatch.setColor(tint);
 		spriteBatch.draw(region, x, y, ox, oy, 
@@ -1190,7 +1194,9 @@ public class GameCanvas {
 			Gdx.app.error("GameCanvas", "Cannot draw without active begin", new IllegalStateException());
 			return;
 		}
-		Path2 path = pathFactory.makeLine(0, 0, (p2.x-p1.x)*sx, (p2.y-p1.y)*sy);
+		float xTranslate = camera.centerLevelTranslation().x;
+		float yTranslate = camera.centerLevelTranslation().y;
+		Path2 path = pathFactory.makeLine(xTranslate, yTranslate, (p2.x-p1.x)*sx+xTranslate, (p2.y-p1.y)*sy+yTranslate);
 		extruder.set(path);
 		extruder.calculate(thickness);
 		spriteBatch.setColor(color);
@@ -1248,7 +1254,7 @@ public class GameCanvas {
 		extruder.set(splinePath);
 		extruder.calculate(thickness);
 		spriteBatch.setColor(color);
-		spriteBatch.draw(extruder.getPolygon().makePolyRegion(region), 0, 0);
+		spriteBatch.draw(extruder.getPolygon().makePolyRegion(region), camera.centerLevelTranslation().x, camera.centerLevelTranslation().y);
 	}
 
 	private float[] getPoints(Array<Vector2> points, float sx, float sy){

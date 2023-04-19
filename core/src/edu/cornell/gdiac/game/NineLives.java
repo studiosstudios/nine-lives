@@ -98,7 +98,7 @@ public class NineLives extends Game implements ScreenListener {
 	public void exitScreen(Screen screen, int exitCode) {
 		if (screen == menu && exitCode == 0) {
 			directory = menu.getAssets();
-			controller = new GameController(5);
+			controller = new GameController(2);
 			controller.gatherAssets(directory);
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
@@ -109,7 +109,7 @@ public class NineLives extends Game implements ScreenListener {
 		} else if (screen == menu && exitCode == 69) {
 			directory = menu.getAssets();
 			controller.gatherAssets(directory);
-			controller = new GameController(3);
+			controller = new GameController(2);
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
 			controller.setCurrLevel(menu.getSelectedLevel());

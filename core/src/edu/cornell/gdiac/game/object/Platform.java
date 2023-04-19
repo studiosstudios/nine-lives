@@ -179,6 +179,16 @@ public class Platform extends PolygonObstacle implements Activatable {
     public void setInitialActivation(boolean initialActivation){ this.initialActivation = initialActivation; }
 
     @Override
+    public float getXPos() {
+        return getX();
+    }
+
+    @Override
+    public float getYPos() {
+        return getY();
+    }
+
+    @Override
     public boolean getInitialActivation() { return initialActivation; }
     //endregion
 

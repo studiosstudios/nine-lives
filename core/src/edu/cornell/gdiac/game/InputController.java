@@ -57,6 +57,10 @@ public class InputController {
 	private BufferedReader readFile;
 	/** For writing input to a text file */
 	private BufferedWriter writeFile;
+	/** Json specifying controls */
+	private JsonValue controlsJSON;
+	/** Disables all controls **/
+	private boolean disableAll;
 
 	/**
 	 * Sets the keybindings from a JSON. The JSON must be a single object consisting only of string-string pairs, where
@@ -64,9 +68,10 @@ public class InputController {
 	 * @param controlsJSON keybindings JSON
 	 */
 	public void setControls(JsonValue controlsJSON){
+		this.controlsJSON = controlsJSON;
 		for (JsonValue entry : controlsJSON){
 			try {
-				String keyName = entry.asString();
+				String keyName = entry.get("key").asString();
 				controls.put(entry.name, Input.Keys.class.getField(keyName).getInt(Input.Keys.class.getField(keyName)));
 			} catch (Exception e){
 				controls.put(entry.name, Keys.UNKNOWN);
@@ -109,6 +114,10 @@ public class InputController {
 	// Fields to manage buttons
 	/** if the switch has been cancelled */
 	private boolean cancelled;
+	/** How much did camera move horizontally? **/
+	private float camHorizontal;
+	/** How much did camera move vertically? **/
+	private float camVertical;
 	/** How much did we move horizontally? */
 	private float horizontal;
 	/** How much did we move vertically? */
@@ -139,6 +148,24 @@ public class InputController {
 	 */
 	public float getVertical() {
 		return vertical;
+	}
+
+	/**
+	 * Returns the amount of camera sideways movement.
+	 *
+	 * @return the amount of camera sideways movement.
+	 */
+	public float getCamHorizontal() {
+		return camHorizontal;
+	}
+
+	/**
+	 * Returns the amount of camera vertical movement.
+	 *
+	 * @return the amount of camera vertical movement.
+	 */
+	public float getCamVertical() {
+		return camVertical;
 	}
 
 	/**
@@ -215,6 +242,10 @@ public class InputController {
 	 */
 	public boolean didDebug() {
 		return isClicked("debug");
+	}
+
+	public boolean didPan() {
+		return pressedMap.get("pan");
 	}
 
 	/**
@@ -298,19 +329,36 @@ public class InputController {
 
 		horizontal = 0.0f;
 		vertical = 0.0f;
-		if (pressedMap.get("right")) {
-			horizontal += 1.0f;
+		camHorizontal = 0.0f;
+		camVertical = 0.0f;
+		if(!pressedMap.get("pan")){
+			if (pressedMap.get("right")) {
+				horizontal += 1.0f;
+			}
+			if (pressedMap.get("left")) {
+				horizontal -= 1.0f;
+			}
+			if (pressedMap.get("up")) {
+				vertical += 1.0f;
+			}
+			if (pressedMap.get("down")) {
+				vertical -= 1.0f;
+			}
 		}
-		if (pressedMap.get("left")) {
-			horizontal -= 1.0f;
+		else {
+			if (pressedMap.get("right")) {
+				camHorizontal += 4.0f;
+			}
+			if (pressedMap.get("left")) {
+				camHorizontal -= 4.0f;
+			}
+			if (pressedMap.get("up")) {
+				camVertical += 4.0f;
+			}
+			if (pressedMap.get("down")) {
+				camVertical -= 4.0f;
+			}
 		}
-		if (pressedMap.get("up")) {
-			vertical += 1.0f;
-		}
-		if (pressedMap.get("down")) {
-			vertical -= 1.0f;
-		}
-
 		if (writeFile != null){
 			try {
 				String toString = pressedMap.toString();
@@ -352,6 +400,14 @@ public class InputController {
 	}
 
 	/**
+	 * Whether all user inputs should be ignored.
+	 * @param b true if all inputs should be ignored
+	 */
+	public void setDisableAll(boolean b){
+		disableAll = b;
+	}
+
+	/**
 	 * Reads input from the keyboard.
 	 *
 	 * This controller reads from the keyboard regardless of whether or not an X-Box
@@ -360,8 +416,17 @@ public class InputController {
 	 *
 	 */
 	private void readKeyboard() {
+		pressedMap.put("pan", Gdx.input.isKeyPressed(controls.get("pan")));
 		for (String control : controlNames){
-			pressedMap.put(control, Gdx.input.isKeyPressed(controls.get(control)));
+			if(disableAll){
+				pressedMap.put(control, false);
+			}
+			else if(pressedMap.get("pan")) {
+				pressedMap.put(control, !controlsJSON.get(control).get("disableWhenPan").asBoolean() && Gdx.input.isKeyPressed(controls.get(control)));
+			}
+			else {
+				pressedMap.put(control, Gdx.input.isKeyPressed(controls.get(control)));
+			}
 		}
 	}
 }

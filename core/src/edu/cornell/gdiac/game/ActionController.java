@@ -54,6 +54,7 @@ public class ActionController {
     private float closestFraction;
     private Vector2 startPointCache = new Vector2();
     private Vector2 endPointCache = new Vector2();
+
     /**
      * Creates and initialize a new instance of a ActionController
      *

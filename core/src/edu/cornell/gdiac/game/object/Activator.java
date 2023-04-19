@@ -6,9 +6,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.*;
 import com.badlogic.gdx.Gdx;
+
+import java.util.HashMap;
 
 /**
  * An abstract class that represents objects that can be pressed and activate other objects. The exact behaviour of
@@ -87,6 +90,39 @@ public abstract class Activator extends PolygonObstacle {
         active = false;
     }
 
+    /**
+     * Creates a new Activator object.
+     *
+     * @param properties     String-Object map of properties for this object
+     * @param tMap           Texture map for loading textures
+     * @param scale          Draw scale for drawing
+     * @param tileSize       Tile size of the Tiled map for loading positions
+     * @param levelHeight    Height of level (in grid cell units) for loading y position
+     * @param textureScale   Texture scale for rescaling texture
+     */
+    public Activator(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
+        super(objectConstants.get("body_shape").asFloatArray());
+        setDrawScale(scale);
+        int spriteWidth = 32;
+        int spriteHeight = 32;
+        setTextureScale(textureScale);
+        spriteFrames = TextureRegion.split(tMap.get("button_anim").getTexture(), spriteWidth, spriteHeight);
+        float frameDuration = 0.2f;
+        animation = new Animation<>(frameDuration, spriteFrames[0]);
+        setBodyType(BodyDef.BodyType.StaticBody);
+        animation.setPlayMode(Animation.PlayMode.REVERSED);
+        animationTime = 0f;
+
+        setDrawScale(scale);
+        setTexture(tMap.get("button"));
+        setFixedRotation(true);
+
+        id = (String) properties.get("id");
+        setX((float) properties.get("x")/tileSize+objectConstants.get("offset").getFloat(0));
+        setY(levelHeight - (float) properties.get("y")/tileSize+objectConstants.get("offset").getFloat(1));
+        active = false;
+    }
+
     @Override
     public void draw(GameCanvas canvas){
         if(isPressed()){
@@ -141,7 +177,9 @@ public abstract class Activator extends PolygonObstacle {
      */
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
-        canvas.drawPhysics(sensorShape,Color.RED,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
+        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+        canvas.drawPhysics(sensorShape,Color.RED,getX()-xTranslate,getY()-yTranslate,getAngle(),drawScale.x,drawScale.y);
     }
 
     /**

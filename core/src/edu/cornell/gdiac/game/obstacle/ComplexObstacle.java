@@ -226,7 +226,7 @@ public abstract class ComplexObstacle extends Obstacle {
 			super.setAngle(value);
 		}
 	}
-	
+
 	/**
 	 * Returns the linear velocity for this physics body
 	 *
@@ -234,91 +234,170 @@ public abstract class ComplexObstacle extends Obstacle {
 	 * vector will not affect the body.  However, it returns the same vector each time
 	 * its is called, and so cannot be used as an allocator.
 	 *
-	 * This method affects the root body of this composite structure only.  If you want
-	 * to set the value for any of the child obstacles, iterate over the children.
-	 *
 	 * @return the linear velocity for this physics body
 	 */
 	public Vector2 getLinearVelocity() {
 		return (body != null ? body.getLinearVelocity() : super.getLinearVelocity());
 	}
-	
+
 	/**
 	 * Sets the linear velocity for this physics body
 	 *
 	 * This method does not keep a reference to the parameter.
-	 *
-	 * This method affects the root body of this composite structure only.  If you want
-	 * to set the value for any of the child obstacles, iterate over the children.
 	 *
 	 * @param value  the linear velocity for this physics body
 	 */
 	public void setLinearVelocity(Vector2 value) {
 		if (body != null) {
 			body.setLinearVelocity(value);
+			relativeVelocity.set(value.sub(baseVelocity));
 		} else {
 			super.setLinearVelocity(value);
 		}
 	}
-	
+
+	/**
+	 * Sets the base velocity for this physics body, and changes the linear velocity accordingly.
+	 *
+	 * @param value  the base velocity for this physics body
+	 */
+	public void setBaseVelocity(Vector2 value){
+		if (body != null) {
+			setVX(value.x - baseVelocity.x + getLinearVelocity().x);
+			setVY(value.y - baseVelocity.y + getLinearVelocity().y);
+			baseVelocity.set(value);
+		} else {
+			super.setBaseVelocity(value);
+		}
+	}
+
+	/**
+	 * Resets the base velocity of this physics body to zero without changing total linear velocity.
+	 */
+	public void resetBaseVelocity(){
+		if (body != null) {
+			baseVelocity.set(Vector2.Zero);
+		} else {
+			super.resetBaseVelocity();
+		}
+	}
+
+	/**
+	 * Updates linear velocity according to new relative velocity and current base velocity of this physics body.
+	 *
+	 * @param value  the relative velocity for this physics body
+	 */
+	public void setRelativeVelocity(Vector2 value){
+		if (body != null) {
+			setLinearVelocity(value.add(baseVelocity));
+		} else {
+			super.setRelativeVelocity(value);
+		}
+	}
+
+	/**
+	 * Sets the base x velocity for this physics body, and changes the linear velocity accordingly.
+	 *
+	 * @param value  the base x velocity for this physics body
+	 */
+	public void setBaseVX(float value){
+		if (body != null) {
+			setVX(value - baseVelocity.x + getLinearVelocity().x);
+			baseVelocity.x = value;
+		} else {
+			super.setBaseVX(value);
+		}
+	}
+
+	/**
+	 * Sets the base y velocity for this physics body, and changes the linear velocity accordingly.
+	 *
+	 * @param value  the base y velocity for this physics body
+	 */
+	public void setBaseVY(float value){
+		if (body != null) {
+			setVY(value - baseVelocity.y + getLinearVelocity().y);
+			baseVelocity.y = value;
+		} else {
+			super.setBaseVY(value);
+		}
+	}
+
+	/**
+	 * Updates linear velocity according to new relative x velocity and current base velocity of this physics body.
+	 *
+	 * @param value  the relative x velocity for this physics body
+	 */
+	public void setRelativeVX(float value){
+		if (body != null) {
+			setVX(value + baseVelocity.x);
+		} else {
+			super.setRelativeVX(value);
+		}
+	}
+
+	/**
+	 * Updates linear y velocity according to new relative velocity and current base velocity of this physics body.
+	 *
+	 * @param value  the relative x velocity for this physics body
+	 */
+	public void setRelativeVY(float value){
+		if (body != null) {
+			setVY(value + baseVelocity.y);
+		} else {
+			super.setRelativeVY(value);
+		}
+	}
+
+
 	/**
 	 * Returns the x-velocity for this physics body
-	 *
-	 * This method affects the root body of this composite structure only.  If you want
-	 * to set the value for any of the child obstacles, iterate over the children.
 	 *
 	 * @return the x-velocity for this physics body
 	 */
 	public float getVX() {
 		return (body != null ? body.getLinearVelocity().x : super.getVX());
 	}
-	
+
 	/**
 	 * Sets the x-velocity for this physics body
-	 *
-	 * This method affects the root body of this composite structure only.  If you want
-	 * to set the value for any of the child obstacles, iterate over the children.
 	 *
 	 * @param value  the x-velocity for this physics body
 	 */
 	public void setVX(float value) {
 		if (body != null) {
 			velocityCache.set(value,body.getLinearVelocity().y);
+			relativeVelocity.x = value - baseVelocity.x;
 			body.setLinearVelocity(velocityCache);
 		} else {
 			super.setVX(value);
 		}
 	}
-	
+
 	/**
 	 * Returns the y-velocity for this physics body
-	 *
-	 * This method affects the root body of this composite structure only.  If you want
-	 * to set the value for any of the child obstacles, iterate over the children.
 	 *
 	 * @return the y-velocity for this physics body
 	 */
 	public float getVY() {
 		return (body != null ? body.getLinearVelocity().y : super.getVY());
 	}
-	
+
 	/**
 	 * Sets the y-velocity for this physics body
-	 *
-	 * This method affects the root body of this composite structure only.  If you want
-	 * to set the value for any of the child obstacles, iterate over the children.
 	 *
 	 * @param value  the y-velocity for this physics body
 	 */
 	public void setVY(float value) {
 		if (body != null) {
 			velocityCache.set(body.getLinearVelocity().x,value);
+			relativeVelocity.y = value - baseVelocity.y;
 			body.setLinearVelocity(velocityCache);
 		} else {
 			super.setVY(value);
 		}
 	}
-	
+
 	/**
 	 * Returns the angular velocity for this physics body
 	 *
@@ -1073,6 +1152,31 @@ public abstract class ComplexObstacle extends Obstacle {
 		for(Obstacle obj : bodies) {
 			obj.drawDebug(canvas);
 		}
+	}
+
+	public ObjectMap<String, Object> storeState(){
+		if (body != null){
+			ObjectMap<String, Object> stateMap = new ObjectMap<>();
+			stateMap.put("position", getPosition().cpy());
+			stateMap.put("relativeVelocity", relativeVelocity.cpy());
+			stateMap.put("baseVelocity", baseVelocity.cpy());
+			stateMap.put("linearVelocity", getLinearVelocity().cpy());
+			return stateMap;
+		} else {
+			return super.storeState();
+		}
+	}
+
+	public void loadState(ObjectMap<String, Object> stateMap){
+		if (body != null) {
+			setPosition((Vector2) stateMap.get("position"));
+			setLinearVelocity((Vector2) stateMap.get("linearVelocity"));
+			relativeVelocity.set((Vector2) stateMap.get("relativeVelocity"));
+			baseVelocity.set((Vector2) stateMap.get("baseVelocity"));
+		} else {
+			super.loadState(stateMap);
+		}
+		markDirty(true);
 	}
 
 }

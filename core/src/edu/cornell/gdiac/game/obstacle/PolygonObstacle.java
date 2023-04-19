@@ -206,7 +206,7 @@ public class PolygonObstacle extends SimpleObstacle {
 			}
 			if (vertices[ii+1] < miny) {
 				miny = vertices[ii+1];
-			} else if (vertices[ii] > maxy) {
+			} else if (vertices[ii+1] > maxy) {
 				maxy = vertices[ii+1];
 			}
 		}
@@ -327,6 +327,7 @@ public class PolygonObstacle extends SimpleObstacle {
 	 * @param height The new height
 	 */
 	private void resize(float width, float height, boolean clip) {
+		System.out.println("polygon load");
 		float scalex = width/dimension.x;
 		float scaley = height/dimension.y;
 
@@ -444,8 +445,25 @@ public class PolygonObstacle extends SimpleObstacle {
 	 */
 	public void drawDebug(GameCanvas canvas) {
 		for(PolygonShape tri : shapes) {
-			canvas.drawPhysics(tri,Color.YELLOW,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
+			float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+			float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+			canvas.drawPhysics(tri,Color.YELLOW,getX()-xTranslate,getY()-yTranslate,getAngle(),drawScale.x,drawScale.y);
 		}
+	}
+
+	public ObjectMap<String, Object> storeState(){
+		ObjectMap<String, Object> stateMap = super.storeState();
+		stateMap.put("dimension", dimension);
+		stateMap.put("shapes", shapes);
+		stateMap.put("scaled", scaled);
+		return stateMap;
+	}
+
+	public void loadState(ObjectMap<String, Object> stateMap){
+		super.loadState(stateMap);
+		dimension.set((Vector2) stateMap.get("dimension"));
+		shapes = (PolygonShape[]) stateMap.get("shapes");
+		scaled = (float[]) stateMap.get("scaled");
 	}
 	
 }

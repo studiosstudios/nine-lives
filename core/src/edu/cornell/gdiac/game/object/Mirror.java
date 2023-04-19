@@ -5,9 +5,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.util.Direction;
+
+import java.util.HashMap;
 
 public class Mirror extends PolygonObstacle {
     /** Constants that are shared between all instances of this class*/
@@ -29,20 +32,25 @@ public class Mirror extends PolygonObstacle {
 
     /**
      * Creates a new Mirror object.
-     * @param texture  TextureRegion for drawing.
-     * @param scale    Draw scale for drawing.
-     * @param data     JSON data for loading.
+     *
+     * @param properties     String-Object map of properties for this object
+     * @param tMap           Texture map for loading textures
+     * @param scale          Draw scale for drawing
+     * @param tileSize       Tile size of the Tiled map for loading positions
+     * @param levelHeight    Height of level (in grid cell units) for loading y position
+     * @param textureScale   Texture scale for rescaling texture
      */
-    public Mirror(TextureRegion texture, Vector2 scale, JsonValue data){
+    public Mirror(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
         super(objectConstants.get("shape").asFloatArray());
 
-        setBodyType(data.getBoolean("pushable", false) ? BodyDef.BodyType.DynamicBody : BodyDef.BodyType.StaticBody);
+        setBodyType((boolean) properties.get("pushable", false) ? BodyDef.BodyType.DynamicBody : BodyDef.BodyType.StaticBody);
         setFixedRotation(true);
         setName("mirror");
         setDrawScale(scale);
-        setTexture(texture);
-        setAngle((float) (data.getInt("angle") * Math.PI/180));
-        dir = Direction.angleToDir(data.getInt("angle"));
+        setTextureScale(textureScale);
+        setTexture(tMap.get("steel"));
+        setAngle((float) ((float) properties.get("rotation") * Math.PI/180));
+        dir = Direction.angleToDir((int) ((float) properties.get("rotation")));
 
         setRestitution(objectConstants.getFloat("restitution", 0));
         setFriction(objectConstants.getFloat("friction", 0));
@@ -57,24 +65,23 @@ public class Mirror extends PolygonObstacle {
                 yOffset = 0;
                 break;
             case LEFT:
-                xOffset = 1;
-                yOffset = 0;
+                xOffset = 0;
+                yOffset = -1;
                 break;
             case DOWN:
                 xOffset = 1;
-                yOffset = 1;
+                yOffset = -1;
                 break;
             case RIGHT:
-                xOffset = 0;
-                yOffset = 1;
+                xOffset = 1;
+                yOffset = 0;
                 break;
             default:
                 throw new IllegalArgumentException("undefined angle");
         }
-        setX(data.get("pos").getFloat(0)+xOffset);
-        setY(data.get("pos").getFloat(1)+yOffset);
+        setX((float) properties.get("x")/tileSize+objectConstants.get("offset").getFloat(0) + xOffset);
+        setY(levelHeight - (float) properties.get("y")/tileSize+objectConstants.get("offset").getFloat(1) + yOffset);
     }
-
 
     /**
      * Returns the direction a laser beam should reflect if it hits this mirror.

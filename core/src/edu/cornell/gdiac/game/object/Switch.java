@@ -7,8 +7,11 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
+
+import java.util.HashMap;
 
 /**
  * An activator that toggles activation on press.
@@ -19,13 +22,16 @@ public class Switch extends Activator {
 
     /**
      * Creates a new switch object.
-     * @param texture   Animation filmstrip.
-     * @param texture2  Static texture.
-     * @param scale     Draw scale for drawing.
-     * @param data      JSON for loading.
+     *
+     * @param properties     String-Object map of properties for this object
+     * @param tMap           Texture map for loading textures
+     * @param scale          Draw scale for drawing
+     * @param tileSize       Tile size of the Tiled map for loading positions
+     * @param levelHeight    Height of level (in grid cell units) for loading y position
+     * @param textureScale   Texture scale for rescaling texture
      */
-    public Switch(TextureRegion texture, TextureRegion texture2, Vector2 scale, JsonValue data){
-        super(texture, texture2, scale, data);
+    public Switch(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
+        super(properties, tMap, scale, tileSize, levelHeight, textureScale);
         prevPressed = false;
         setName("switch");
     }
@@ -36,6 +42,17 @@ public class Switch extends Activator {
             active = !active;
         }
         prevPressed = isPressed();
+    }
+
+    public ObjectMap<String, Object> storeState(){
+        ObjectMap<String, Object> stateMap = super.storeState();
+        stateMap.put("prevPressed", prevPressed);
+        return stateMap;
+    }
+
+    public void loadState(ObjectMap<String, Object> stateMap){
+        super.loadState(stateMap);
+        prevPressed = (boolean) stateMap.get("prevPressed");
     }
 
 }

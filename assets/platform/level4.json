@@ -1,13 +1,14 @@
 {
+	"size": [32, 18], //[width, height]
 	"cat" : {
 		"pos": [0.5, 13],
 		"ret_pos": [31.5,13], //temp impossible
 	},
 	"mobs" : [{"pos" : [28, 14], "facingRight":  false, "aggressive":  true}],
-	"exits" : [{"type":  "return", "height": 18, "pos": [0, 9]}],
-	"walls": 		[
-		{"shape":[32.0, 13.0, 33.0, 13.0, 33.0, 17.0, 32.0, 17.0]} //invisible exit wall (don't want to loop this time around)
-			 		],
+	"spiritRegions" : [{"pos": [16, 13], "width": 6, "height": 4, "color": [1,0,0]},
+					   {"pos": [22, 13], "width": 6, "height": 4, "color": [0,1,0]}],
+	"exits" : [{"type":  "return", "height": 18, "pos": [0, 9]},
+		{"type":  "goal", "height": 18, "pos": [32, 9]}],
 	"platforms":	[
 		{"shape":[-2.5, 13, 32, 13, 32, 10, -2.5, 10]},
 		{"shape":[15, 13, 16, 13, 16, 15, 15, 15]}]

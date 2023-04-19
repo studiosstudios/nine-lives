@@ -17,8 +17,12 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
+
+import java.util.HashMap;
 
 /**
  * Player avatar for the plaform game.
@@ -27,41 +31,27 @@ import edu.cornell.gdiac.game.obstacle.*;
  * no other subclasses that we might loop through.
  */
 public class Mob extends CapsuleObstacle {
-    /** The initializing data (to avoid magic numbers) */
-    private final JsonValue data;
-    /** The factor to multiply by the input */
-    private final float force;
     /** The amount to slow the character down */
     private final float damping;
     /** The maximum character speed */
     private final float maxspeed;
     /** The current horizontal movement of the character */
     private float   movement;
-    /** The current vertical movement of the character */
-    private float   verticalMovement;
-    /** Current jump movement of the character */
-    private float horizontalMovement;
     /** Which direction is the character facing */
     private boolean faceRight;
-
     /** Whether our feet are on the ground */
     private boolean isGrounded;
-
     /** Whether we are in contact with a wall */
     private int wallCount;
-
     /** List of shapes corresponding to the sensors attached to this body */
     private Array<PolygonShape> sensorShapes;
     private PolygonShape sensorShape;
-
     /** Cache for internal force calculations */
     private final Vector2 forceCache = new Vector2();
-
     /** Whether the mob is an aggressive AI */
     private Boolean isAggressive;
-
     private static final String sensorName = "mobsensor";
-
+    /** The detector ray attached to this mob */
     public MobDetector detectorRay;
 
 
@@ -76,69 +66,6 @@ public class Mob extends CapsuleObstacle {
         return movement;
     }
 
-    /**
-     * Sets left/right movement of this character.
-     *
-     * This is the result of input times cat force.
-     *
-     * @param value left/right movement of this character.
-     */
-    public void setMovement(float value) {
-        movement = value;
-        // Change facing if appropriate
-        if (movement < 0) {
-            faceRight = false;
-        } else if (movement > 0) {
-            faceRight = true;
-        }
-    }
-
-    /**
-     * Returns up/down movement of this character.
-     *
-     * This is the result of input times cat force.
-     *
-     * @return up/down movement of this character.
-     */
-    public float getVerticalMovement() {
-        return verticalMovement;
-    }
-    public float getHorizontalMovement() {
-        return horizontalMovement;
-    }
-    /**
-     * Sets up/down movement of this character.
-     *
-     * This is the result of input times cat force.
-     *
-     * @param value up/down movement of this character.
-     */
-    public void setVerticalMovement(float value) {
-        verticalMovement = value;
-    }
-    public void setHorizontalMovement(float value) {
-        horizontalMovement = value;
-    }
-
-    /**
-     * Returns true if the cat is on the ground.
-     *
-     * @return true if the cat is on the ground.
-     */
-    public boolean isGrounded() {
-        return isGrounded;
-    }
-
-    /**
-     * Returns how much force to apply to get the cat moving
-     *
-     * Multiply this by the input to get the movement value.
-     *
-     * @return how much force to apply to get the cat moving
-     */
-    public float getForce() {
-        return force;
-    }
 
     /**
      * Returns ow hard the brakes are applied to get a cat to stop moving
@@ -184,52 +111,63 @@ public class Mob extends CapsuleObstacle {
         return isAggressive;
     }
 
-    /**
-     * Creates a new cat avatar with the given physics data
-     *
-     * The size is expressed in physics units NOT pixels.  In order for
-     * drawing to work properly, you MUST set the drawScale. The drawScale
-     * converts the physics units to pixels.
-     *
-     * @param data  	The physics constants for this cat
-     */
-    public Mob(TextureRegion texture, Vector2 drawScale, Vector2 textureScale, JsonValue data) {
-        super(texture.getRegionWidth()/drawScale.x*textureScale.x/2f,
-                texture.getRegionHeight()/drawScale.y*textureScale.y);
+    public static JsonValue objectConstants;
 
-//        setBodyType(BodyDef.BodyType.DynamicBody);
+    /**
+     * Creates a new Mob object.
+     *
+     * @param properties     String-Object map of properties for this object
+     * @param tMap           Texture map for loading textures
+     * @param scale          Draw scale for drawing
+     * @param tileSize       Tile size of the Tiled map for loading positions
+     * @param levelHeight    Height of level (in grid cell units) for loading y position
+     * @param textureScale   Texture scale for rescaling texture
+     */
+    public Mob(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
+        super(tMap.get("roboMob").getRegionWidth()/scale.x*textureScale.x/2f,
+                tMap.get("roboMob").getRegionHeight()/scale.y*textureScale.y);
+
+
         setFixedRotation(true);
         setName("mob");
-        setX(data.get("pos").getFloat(0));
-        setY(data.get("pos").getFloat(1));
-        setDrawScale(drawScale);
+        setX((float) properties.get("x")/tileSize + objectConstants.get("offset").getFloat(0));
+        setY(levelHeight - (float) properties.get("y")/tileSize + objectConstants.get("offset").getFloat(1)-getDimension().y/2);
+        setDrawScale(scale);
         setTextureScale(textureScale);
-        setTexture(texture);
+        setTexture(tMap.get("roboMob"));
 
-        setDensity(data.getFloat("density", 0));
-        setFriction(data.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
+        setDensity(objectConstants.getFloat("density", 0));
+        setFriction(objectConstants.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
         setFixedRotation(true);
 
-        maxspeed = data.getFloat("maxspeed", 0);
-        damping = data.getFloat("damping", 0);
-        force = data.getFloat("force", 0);
         sensorShapes = new Array<>();
-
-        this.data = data;
 
         // Gameplay attributes
         isGrounded = false;
-        setFacingRight(!data.getBoolean("facingRight"));
-        isAggressive = data.getBoolean("aggressive");
+        setFacingRight((boolean) properties.get("facingRight", true));
+        isAggressive = (boolean) properties.get("aggressive", false);
+        maxspeed = (float) properties.get("maxspeed", 0f);
+        damping = (float) properties.get("damping", 0f);
         // setName("mob");
 
         detectorRay = new MobDetector(this);
     }
 
+
+        /**
+         * Returns the sensor name of the mob
+         *
+         * @return sensorName
+         */
     public static String getSensorName() {
         return sensorName;
     }
 
+    /**
+     * Returns the detector ray of the mob
+     *
+     * @return detectorRay
+     */
     public MobDetector getDetectorRay() { return detectorRay; }
 
 
@@ -305,13 +243,33 @@ public class Mob extends CapsuleObstacle {
      */
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
+        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
         // Draw detectorRay
         if (detectorRay.getPoints().size > 1) {
-            canvas.drawLineDebug(detectorRay.getPoints().get(0), detectorRay.getPoints().get(detectorRay.getPoints().size-1), Color.BLUE, getDrawScale().x, getDrawScale().y);
+            canvas.drawLineDebug(detectorRay.getPoints().get(0).sub(xTranslate,yTranslate), detectorRay.getPoints().get(detectorRay.getPoints().size-1).sub(xTranslate,yTranslate), Color.BLUE, getDrawScale().x, getDrawScale().y);
         }
 
         for (PolygonShape shape : sensorShapes) {
-            canvas.drawPhysics(shape,Color.RED,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
+            canvas.drawPhysics(shape,Color.RED,getX()-xTranslate,getY()-yTranslate,getAngle(),drawScale.x,drawScale.y);
         }
     }
+
+    public ObjectMap<String, Object> storeState(){
+        ObjectMap<String, Object> stateMap = super.storeState();
+        stateMap.put("faceRight", faceRight);
+        return stateMap;
+    }
+
+    public void loadState(ObjectMap<String, Object> stateMap){
+        super.loadState(stateMap);
+        faceRight = (boolean) stateMap.get("faceRight");
+    }
+
+
+    /**
+     * Sets the shared constants for all instances of this class.
+     * @param constants JSON storing the shared constants.
+     */
+    public static void setConstants(JsonValue constants) {objectConstants = constants;}
 }

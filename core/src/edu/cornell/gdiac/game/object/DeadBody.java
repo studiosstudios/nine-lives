@@ -7,14 +7,19 @@
  */
 package edu.cornell.gdiac.game.object;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
+import sun.security.provider.ConfigFile;
 
 /**
  * Player avatar for the plaform game.
@@ -22,7 +27,7 @@ import edu.cornell.gdiac.game.obstacle.*;
  * Note that this class returns to static loading.  That is because there are
  * no other subclasses that we might loop through.
  */
-public class DeadBody extends BoxObstacle {
+public class DeadBody extends BoxObstacle implements Movable {
     /** Constants that are shared between all instances of this class */
     private static JsonValue objectConstants;
     /** How long the body has been burning */
@@ -31,28 +36,27 @@ public class DeadBody extends BoxObstacle {
     private boolean burning;
     /** The total number ticks a body burns for */
     private static int totalBurnTicks;
-
-    /**
-     * The amount to slow the model down
-     */
+    /** The amount to slow the model down */
     private final float damping;
-    /**
-     * Identifier to allow us to track the sensor in ContactListener
-     */
-    private final String sensorName;
-    /**
-     * Which direction is the model facing
-     */
+    /** Which direction is the model facing */
     private boolean faceRight;
-    /**
-     * The physics shape of this object
-     */
+    /** The physics shape of this object */
     private CircleShape sensorShape;
     /** The number of hazards that the body is touching */
     private int hazardsTouching;
     /** If dead body is currently being hit by a laser.
      * This is necessary because laser collisions are done with raycasting.*/
     private boolean touchingLaser;
+    /** The set of spirit regions that this dead body is inside */
+    private ObjectSet<SpiritRegion> spiritRegions;
+    private TextureRegion[][] spriteFrames;
+    private Animation<TextureRegion> animation;
+    private float time;
+
+
+    private ObjectSet<Fixture> groundFixtures = new ObjectSet<>();
+    private PolygonShape groundSensorShape;
+    private final String groundSensorName;
 
     /**
      * Returns ow hard the brakes are applied to get a dead body to stop moving
@@ -61,17 +65,6 @@ public class DeadBody extends BoxObstacle {
      */
     public float getDamping() {
         return damping;
-    }
-
-    /**
-     * Returns the name of the ground sensor
-     * <p>
-     * This is used by ContactListener
-     *
-     * @return the name of the ground sensor
-     */
-    public String getSensorName() {
-        return sensorName;
     }
 
     /**
@@ -99,6 +92,20 @@ public class DeadBody extends BoxObstacle {
     }
 
     /**
+     * If the dead body is in the same spirit region.
+     * @return true if the dead body is in the same spirit region
+     */
+    public boolean inSameSpiritRegion(ObjectSet<SpiritRegion> otherRegions){
+        for (SpiritRegion region : otherRegions) {
+            if (spiritRegions.contains(region)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    /**
      * Sets if the dead body is being hit by a laser.
      */
     public void setTouchingLaser(boolean touching){ touchingLaser = touching; }
@@ -124,19 +131,22 @@ public class DeadBody extends BoxObstacle {
      * @param scale        the draw scale
      * @param position     position
      */
-    public DeadBody(TextureRegion texture, Vector2 scale, Vector2 position) {
+    public DeadBody(TextureRegion texture, TextureRegion burnTexture,Vector2 scale, Vector2 position) {
         super(texture.getRegionWidth()/scale.x*objectConstants.get("shrink").getFloat(0),
                 texture.getRegionHeight()/scale.y*objectConstants.get("shrink").getFloat(1));
-
+        spriteFrames = TextureRegion.split(burnTexture.getTexture(), 2048,2048);
+        animation = new Animation<>(0.025f, spriteFrames[0]);
+        time = 0f;
         setTexture(texture);
         setDrawScale(scale);
         setDensity(objectConstants.getFloat("density", 0));
+        setMass(objectConstants.getFloat("mass", 0));
         setFriction(objectConstants.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
         setFixedRotation(true);
-        setLinearDamping(objectConstants.getFloat("damping", 2f));
+
+//        setLinearDamping(objectConstants.getFloat("damping", 2f)); this messes with moving platforms
 
         damping = objectConstants.getFloat("damping", 0);
-        sensorName = "deadBodyGroundSensor";
 
         // Gameplay attributes
         setX(position.x+objectConstants.get("offset").getFloat(0));
@@ -144,8 +154,10 @@ public class DeadBody extends BoxObstacle {
         burnTicks = 0;
         burning = false;
         faceRight = true;
+        spiritRegions = new ObjectSet<>();
         //create centre sensor (for fixing to spikes)
 
+        groundSensorName = "deadBodyGroundSensor";
         setName("deadBody");
     }
 
@@ -163,6 +175,7 @@ public class DeadBody extends BoxObstacle {
             return false;
         }
 
+        //center sensor
         Vector2 sensorCenter = new Vector2();
         FixtureDef sensorDef = new FixtureDef();
         sensorDef.density = 0;
@@ -172,10 +185,20 @@ public class DeadBody extends BoxObstacle {
         sensorShape.setPosition(sensorCenter);
         sensorDef.shape = sensorShape;
 
-        // Ground sensor to represent our feet
         Fixture sensorFixture = body.createFixture(sensorDef);
         sensorFixture.setUserData(this);
-        body.setUserData(this);
+
+        //ground sensor
+        sensorDef = new FixtureDef();
+        sensorDef.friction = 0;
+        sensorDef.isSensor = true;
+        Vector2 location = new Vector2(0, -getDimension().y/2f);
+        groundSensorShape = new PolygonShape();
+        groundSensorShape.setAsBox(getDimension().x/2.5f, 0.1f, location, 0.0f);
+        sensorDef.shape = groundSensorShape;
+
+        Fixture groundSensorFixture = body.createFixture( sensorDef );
+        groundSensorFixture.setUserData(groundSensorName);
         return true;
     }
 
@@ -197,6 +220,9 @@ public class DeadBody extends BoxObstacle {
                 markRemoved(true);
             }
         }
+        if (groundFixtures.size == 0){
+            setVX(getVX()/damping);
+        }
     }
 
     /**
@@ -207,6 +233,11 @@ public class DeadBody extends BoxObstacle {
     }
 
     /**
+     * @return The set of spirit regions that this dead body is inside
+     */
+    public ObjectSet<SpiritRegion> getSpiritRegions() { return spiritRegions; }
+
+    /**
      * Draws the physics object.
      *
      * @param canvas Drawing context
@@ -214,7 +245,17 @@ public class DeadBody extends BoxObstacle {
     public void draw(GameCanvas canvas) {
         float effect = faceRight ? 1.0f : -1.0f;
         Color color = new Color(1, 1, 1, 1f - ((float)burnTicks)/((float)totalBurnTicks));
-        canvas.draw(texture, color, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), effect, 1.0f);
+        if(burning){
+            animation.setPlayMode(Animation.PlayMode.LOOP);
+            time += Gdx.graphics.getDeltaTime();
+            TextureRegion frame = animation.getKeyFrame(time);
+            float x = getX() * drawScale.x + effect*frame.getRegionWidth()/drawScale.x/2;
+            float y = getY() * drawScale.y-frame.getRegionHeight()/drawScale.y/2+5;
+            canvas.draw(frame, color, origin.x, origin.y,  x,y, getAngle(), -effect/drawScale.x, 1.0f/drawScale.y);
+        }
+        else{
+            canvas.draw(texture, color, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), effect, 1.0f);
+        }
     }
 
     /**
@@ -226,7 +267,10 @@ public class DeadBody extends BoxObstacle {
      */
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
-        canvas.drawPhysics(sensorShape, Color.RED, getX(), getY(), drawScale.x, drawScale.y);
+        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+        canvas.drawPhysics(sensorShape, Color.RED, getX()-xTranslate, getY()-yTranslate, drawScale.x, drawScale.y);
+        canvas.drawPhysics(groundSensorShape, Color.RED, getX()-xTranslate, getY()-yTranslate, getAngle(), drawScale.x, drawScale.y);
     }
 
     /**
@@ -236,5 +280,22 @@ public class DeadBody extends BoxObstacle {
     public static void setConstants(JsonValue constants) {
         objectConstants = constants;
         totalBurnTicks = constants.getInt("burnTicks");
+    }
+
+    public boolean isMovable() {return true;}
+
+    public ObjectSet<Fixture> getGroundFixtures() { return groundFixtures; }
+
+    public String getGroundSensorName(){ return groundSensorName; }
+
+    public ObjectMap<String, Object> storeState(){
+        ObjectMap<String, Object> stateMap = super.storeState();
+        stateMap.put("burnTicks", burnTicks);
+        return stateMap;
+    }
+
+    public void loadState(ObjectMap<String, Object> stateMap){
+        super.loadState(stateMap);
+        burnTicks = (int) stateMap.get("burnTicks");
     }
 }

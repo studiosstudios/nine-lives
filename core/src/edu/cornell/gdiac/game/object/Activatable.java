@@ -2,6 +2,7 @@ package edu.cornell.gdiac.game.object;
 
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 
 
 /** Interface implemented by all game objects that can be activated by buttons,
@@ -37,6 +38,15 @@ public interface Activatable {
             setActivated(false);
         } else {
             setActivated(data.getBoolean("active", true));
+        }
+        setInitialActivation(isActivated());
+    }
+
+    default void initTiledActivations(ObjectMap<String, Object> properties){
+        if (properties == null) {
+            setActivated(false);
+        } else {
+            setActivated((boolean) properties.get("active", true));
         }
         setInitialActivation(isActivated());
     }

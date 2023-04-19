@@ -24,7 +24,10 @@ import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
+import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import java.util.HashMap;
@@ -213,6 +216,8 @@ public class Cat extends CapsuleObstacle implements Movable {
     private Array<PolygonShape> sensorShapes;
     private float failedTicks;
     private static final float FAIL_ANIM_TICKS = 30f;
+    private Queue<Map.Entry<Vector3, Integer>> dashShadowQueue = new Queue<>();
+    private boolean dashShadowFacingRight = true;
     //endregion
     /*/////*/
 
@@ -603,6 +608,7 @@ public class Cat extends CapsuleObstacle implements Movable {
                     state = State.DASHING;
                     setGravityScale(0);
                     calculateDashVector();
+                    dashShadowFacingRight = isFacingRight();
                     soundBuffer.add("dash");
                     return;
                 }
@@ -624,6 +630,7 @@ public class Cat extends CapsuleObstacle implements Movable {
                     state = State.DASHING;
                     setGravityScale(0);
                     calculateDashVector();
+                    dashShadowFacingRight = isFacingRight();
                     soundBuffer.add("dash");
                     return;
                 }
@@ -639,10 +646,12 @@ public class Cat extends CapsuleObstacle implements Movable {
             case DASHING:
                 // DASHING -> MOVING
                 dashTimer++;
-                if (dashTimer >= 12) {
+                if (dashTimer >= 7) {
                     state = State.MOVING;
-                    setVX(0);
-                    setVY(Math.signum(getVY()) * maxSpeed);
+//                    setVX(0);
+                    if (getRelativeVelocity().y > 0) {
+                        setVY(maxSpeed);
+                    }
                     setGravityScale(2f);
                     return;
                 }
@@ -668,9 +677,9 @@ public class Cat extends CapsuleObstacle implements Movable {
                 body.applyLinearImpulse(forceCache, getPosition(), true);
             case MOVING:
                 if (horizontalMovement == 0){
-                    setRelativeVX(getRelativeVelocity().x * 0.7f);
+                    setRelativeVX(getRelativeVelocity().x * 0.5f);
                 } else {
-                    setRelativeVX(0.8f * (getRelativeVelocity().x + horizontalMovement * 0.06f));
+                    setRelativeVX(0.84f * (getRelativeVelocity().x + horizontalMovement * 0.06f));
                 }
                 break;
             case CLIMBING:
@@ -680,13 +689,14 @@ public class Cat extends CapsuleObstacle implements Movable {
             case DASHING:
                 setRelativeVX(dashCache.x);
                 setRelativeVY(dashCache.y);
+                processDashShadowQueue();
                 break;
         }
     }
 
     private void calculateDashVector() {
-        float horizontalForce = horizontalMovement / 2f;
-        float verticalForce = verticalMovement / 2f;
+        float horizontalForce = horizontalMovement / 1.8f;
+        float verticalForce = verticalMovement / 1.8f;
         if (horizontalMovement == 0 && verticalMovement == 0) {
             horizontalForce = (isFacingRight() ? 1 : -1) * getForce() / 2f;
         } else if (horizontalMovement != 0 && verticalMovement != 0) {
@@ -696,6 +706,16 @@ public class Cat extends CapsuleObstacle implements Movable {
 
         dashCache.set(horizontalForce, verticalForce);
     }
+
+    private void processDashShadowQueue() {
+        if (dashTimer % 3 == 0) {
+            // We're basically using 4-tuples here with a hideous SimpleEntry<Vector3<>, Integer> set-up
+            // The dash currently uses the cat's current frame, but it'd be better if we had a way to save the cat's drawing frame whenever a new shadow is added
+            // That will best be done by modularizing the drawing code more + making DashShadow a static inner class to store the 5-tuple
+            dashShadowQueue.addLast(new SimpleEntry<>(new Vector3(getX() * drawScale.x, getY() * drawScale.y, isFacingRight() ? -1 : 1), 10));
+        }
+    }
+
 
     /**
      * Updates the object's physics state (NOT GAME LOGIC).
@@ -721,6 +741,7 @@ public class Cat extends CapsuleObstacle implements Movable {
         TextureRegion frame = sit_texture;
         float xOffset = 0;
         float yOffset = 0;
+
         if (state != State.JUMPING && horizontalMovement != 0) {
             walkAnimation.setPlayMode(Animation.PlayMode.LOOP);
             walkTime += Gdx.graphics.getDeltaTime();
@@ -767,12 +788,31 @@ public class Cat extends CapsuleObstacle implements Movable {
             frame = jumping_texture;
             nonMoveTime = 0;
         }
-        canvas.draw(frame, Color.WHITE, origin.x, origin.y, x - effect*frame.getRegionWidth()/drawScale.x/2, y-frame.getRegionHeight()/drawScale.y/2, 0, effect/drawScale.x, 1f/drawScale.y);
+
+        Color dashColor = (new Color(0.68f, 0.85f, 0.9f, 1f));
+        for (int i = 0; i < dashShadowQueue.size; i++) {
+            Map.Entry<Vector3, Integer> shadow = dashShadowQueue.removeFirst();
+            Vector3 drawData = shadow.getKey();
+            float directionFactor = drawData.z;
+            dashColor.a = shadow.getValue() / 10f;
+            canvas.draw(frame, dashColor, origin.x, origin.y, drawData.x-directionFactor*frame.getRegionWidth()/drawScale.x/2, drawData.y-frame.getRegionHeight()/drawScale.y/2, 0, directionFactor/drawScale.x, 1f/drawScale.y);
+            if (shadow.getValue() - 1 > 0) {
+                shadow.setValue(shadow.getValue() - 1);
+                dashShadowQueue.addLast(shadow);
+            }
+        }
+
         if (failedTicks < FAIL_ANIM_TICKS){
             xOffset += ((float) (Math.sin(-failedTicks/2) * Math.exp(-failedTicks/30)))*drawScale.x/2;
             Color c = new Color(1, 0 , 0, 0.5f - Math.abs(failedTicks - FAIL_ANIM_TICKS/2)/FAIL_ANIM_TICKS);
             canvas.draw(frame, c, origin.x, origin.y, x - effect*frame.getRegionWidth()/drawScale.x/2 + xOffset, y-frame.getRegionHeight()/drawScale.y/2, 0, effect/drawScale.x, 1f/drawScale.y);
         }
+
+        canvas.draw(frame, Color.WHITE, origin.x, origin.y, x - effect*frame.getRegionWidth()/drawScale.x/2, y-frame.getRegionHeight()/drawScale.y/2, 0, effect/drawScale.x, 1f/drawScale.y);
+
+
+//            canvas.draw(frame, c, origin.x, origin.y, x + xOffset, y + yOffset, getAngle());
+//            canvas.draw(frame, c, origin.x, origin.y, x + xOffset, y + yOffset, getAngle(), effect * flip, 1.0f);
     }
 
     /**
@@ -807,4 +847,5 @@ public class Cat extends CapsuleObstacle implements Movable {
     public void failedSwitch() {
         failedTicks = 0f;
     }
+
 }

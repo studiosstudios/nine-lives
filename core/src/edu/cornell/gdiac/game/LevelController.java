@@ -130,7 +130,6 @@ public class LevelController {
         this.canvas = canvas;
         this.scale.x = 1024f/bounds.getWidth();
         this.scale.y = 576f/bounds.getHeight();
-        actionController.setCamera(canvas.getCamera());
     }
 
     /**
@@ -343,7 +342,15 @@ public class LevelController {
             if(!input.holdSwitch() && !input.didPan()){
                 cam.zoomOut(false);
             }
-            cam.updateCamera(x_pos, y_pos, true);
+            DeadBody nextDeadBody = level.getNextBody();
+            if(input.holdSwitch()&&nextDeadBody != null){
+                cam.setGlideMode("SWITCH_BODY");
+                cam.switchBodyCam(nextDeadBody.getX()*scale.x, nextDeadBody.getY()*scale.y);
+            }
+            else{
+                cam.setGlideMode("NORMAL");
+                cam.updateCamera(x_pos, y_pos, true);
+            }
         }
         else if(gameplayState == GameplayState.LEVEL_SWITCH){
             /**

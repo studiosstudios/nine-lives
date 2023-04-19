@@ -21,7 +21,9 @@ public class Camera {
     /** Camera center y-coordinate **/
     private float y;
     /** Rate at which camera glides towards destination coordinates**/
-    private final float CAMERA_GLIDE_RATE = 0.075f;
+    private final float CAMERA_GLIDE_NORMAL = 0.075f;
+    private final float CAMERA_GLIDE_SWITCH_BODY = 0.025f;
+    private float cameraGlideRate;
     /** Gameplay zoom **/
     private float zoom;
     /** Whether camera is moving **/
@@ -43,6 +45,7 @@ public class Camera {
         x = camera.position.x;
         y = camera.position.y;
         isGliding = false;
+        cameraGlideRate = CAMERA_GLIDE_NORMAL;
     }
 
     /**
@@ -70,14 +73,14 @@ public class Camera {
             yPos = height_scaled/2;
         }
         if(glide) {
-            x += (xPos - x) * CAMERA_GLIDE_RATE;
-            y += (yPos - y) * CAMERA_GLIDE_RATE;
+            x += (xPos - x) * cameraGlideRate;
+            y += (yPos - y) * cameraGlideRate;
         }
         else{
             x = xPos;
             y = yPos;
         }
-        if(Math.abs((xPos - x) * CAMERA_GLIDE_RATE) < 0.1 && Math.abs((yPos - y) * CAMERA_GLIDE_RATE) < 0.1){
+        if(Math.abs((xPos - x) * cameraGlideRate) < 0.1 && Math.abs((yPos - y) * cameraGlideRate) < 0.1){
             isGliding = false;
             x = xPos;
             y = yPos;
@@ -119,15 +122,18 @@ public class Camera {
     }
 
     /**
-     *
-     * @param deadX
-     * @param deadY
-     * @param catX
-     * @param catY
+     * Camera movement when switching bodies
+     * @param deadX x-coordinate of dead cat
+     * @param deadY y-coordinate of dead cat
      */
-    public void switchBodyZoom(float deadX, float deadY, float catX, float catY){
-        camera.zoom = Float.max(levelBounds.width/viewportWidth, levelBounds.height/viewportHeight);
-//        camera.zoom = 2;
+    public void switchBodyCam(float deadX, float deadY){
+//        float xDiff = Math.abs(deadX-catX)+50; //50 is leeway constant
+//        float yDiff = Math.abs(deadY-catY)+50; //50 is leeway constant
+//        float centerX = (deadX+catX)/2;
+//        float centerY = (deadY+catY)/2;
+        updateCamera(deadX,deadY,true);
+//        updateCamera(centerX,centerY,true);
+//        camera.zoom = Float.max(camera.zoom, Float.max(xDiff/viewportWidth, yDiff/viewportHeight));
     }
 
     /**
@@ -168,10 +174,20 @@ public class Camera {
     public boolean isGliding(){
         return isGliding;
     }
-    public float getViewportWidth(){
-        return viewportWidth;
-    }
-    public float getViewportHeight(){
-        return viewportHeight;
+
+    /**
+     * Sets camera glide rate based on different game mode/functionalities
+     * @param mode Either "SWITCH_BODY" or "NORMAL"
+     */
+    public void setGlideMode(String mode){
+        if(mode.equals("SWITCH_BODY")){
+            cameraGlideRate = CAMERA_GLIDE_SWITCH_BODY;
+        }
+        else if(mode.equals("NORMAL")){
+            cameraGlideRate = CAMERA_GLIDE_NORMAL;
+        }
+        else{
+            System.out.println("rip setGlideMode lmao");
+        }
     }
 }

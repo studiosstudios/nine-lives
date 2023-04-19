@@ -216,7 +216,7 @@ public class Cat extends CapsuleObstacle implements Movable {
     private Array<PolygonShape> sensorShapes;
     private float failedTicks;
     private static final float FAIL_ANIM_TICKS = 30f;
-    private Queue<Map.Entry<Vector2, Integer>> dashShadowQueue = new Queue<>();
+    private Queue<Map.Entry<Vector3, Integer>> dashShadowQueue = new Queue<>();
     private boolean dashShadowFacingRight = true;
     //endregion
     /*/////*/
@@ -709,7 +709,10 @@ public class Cat extends CapsuleObstacle implements Movable {
 
     private void processDashShadowQueue() {
         if (dashTimer % 3 == 0) {
-            dashShadowQueue.addLast(new SimpleEntry<>(new Vector2(getX() * drawScale.x - (facingRight ? 1.0f : -1.0f) * 25, getY() * drawScale.y - 20), 10));
+            // We're basically using 4-tuples here with a hideous SimpleEntry<Vector3<>, Integer> set-up
+            // The dash currently uses the cat's current frame, but it'd be better if we had a way to save the cat's drawing frame whenever a new shadow is added
+            // That will best be done by modularizing the drawing code more + making DashShadow a static inner class to store the 5-tuple
+            dashShadowQueue.addLast(new SimpleEntry<>(new Vector3(getX() * drawScale.x, getY() * drawScale.y, isFacingRight() ? -1 : 1), 10));
         }
     }
 
@@ -788,10 +791,11 @@ public class Cat extends CapsuleObstacle implements Movable {
 
         Color dashColor = (new Color(0.68f, 0.85f, 0.9f, 1f));
         for (int i = 0; i < dashShadowQueue.size; i++) {
-            Map.Entry<Vector2, Integer> shadow = dashShadowQueue.removeFirst();
-            Vector2 coords = shadow.getKey();
+            Map.Entry<Vector3, Integer> shadow = dashShadowQueue.removeFirst();
+            Vector3 drawData = shadow.getKey();
+            float directionFactor = drawData.z;
             dashColor.a = shadow.getValue() / 10f;
-            canvas.draw(frame, dashColor, origin.x, origin.y, coords.x + effect*frame.getRegionWidth()/drawScale.x/2, coords.y-frame.getRegionHeight()/drawScale.y/2, getAngle(), effect/drawScale.x, 1f/drawScale.y);
+            canvas.draw(frame, dashColor, origin.x, origin.y, drawData.x-directionFactor*frame.getRegionWidth()/drawScale.x/2, drawData.y-frame.getRegionHeight()/drawScale.y/2, 0, directionFactor/drawScale.x, 1f/drawScale.y);
             if (shadow.getValue() - 1 > 0) {
                 shadow.setValue(shadow.getValue() - 1);
                 dashShadowQueue.addLast(shadow);
@@ -843,4 +847,5 @@ public class Cat extends CapsuleObstacle implements Movable {
     public void failedSwitch() {
         failedTicks = 0f;
     }
+
 }

@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.game.LevelController;
+import edu.cornell.gdiac.game.GameController;
 
 public class PauseStage extends StageWrapper {
     private Actor resumeButtonActor;
@@ -22,7 +22,7 @@ public class PauseStage extends StageWrapper {
     public int getMainMenuState() { return mainMenuState; }
     public void setMainMenuState(int state) { mainMenuState = state; }
 
-    public LevelController currLevel;
+    public GameController currLevel;
     public PauseStage(AssetDirectory internal, boolean createActors) {
         super(internal, createActors);
     }

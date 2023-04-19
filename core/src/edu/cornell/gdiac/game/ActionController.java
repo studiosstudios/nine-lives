@@ -114,12 +114,12 @@ public class ActionController {
      * <br><br>
      * We need this method to stop all sounds when we pause.
      * Pausing happens when we switch game modes.
+     * //TODO: pause sounds
      */
     public void pause() {
-        soundAssetMap.get("jump").stop(jumpId);
-        soundAssetMap.get("plop").stop(plopId);
-        soundAssetMap.get("fire").stop(fireId);
-        soundAssetMap.get("meow").stop(meowId);
+//        soundAssetMap.get("jump").stop(jumpId);
+//        soundAssetMap.get("plop").stop(plopId);
+//        soundAssetMap.get("meow").stop(meowId);
     }
 
     /**

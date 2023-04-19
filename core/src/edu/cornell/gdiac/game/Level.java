@@ -30,6 +30,7 @@ public class Level {
     protected Rectangle bounds;
     /** The world scale */
     protected Vector2 scale;
+    protected Vector2 offset;
 
     // Physics objects for the game
     /** Reference to the character cat */
@@ -290,6 +291,7 @@ public class Level {
         this.bounds = new Rectangle();
         this.scale = scale;
         this.numLives = numLives;
+        offset = new Vector2();
         maxLives = numLives;
         complete = false;
         failed = false;
@@ -341,9 +343,8 @@ public class Level {
      * Parses Tiled file
      *
      */
-    public void populateTiled(JsonValue tiledMap){
-
-
+    public void populateTiled(JsonValue tiledMap, Vector2 offset){
+        this.offset.set(offset);
         world.setGravity( new Vector2(0,tiledMap.getFloat("gravity",-14.7f)) );
         activationRelations = new HashMap<>();
         background = textureRegionAssetMap.get("background").getTexture();
@@ -634,8 +635,10 @@ public class Level {
                 y = objectJV.getFloat("y");
                 break;
         }
-        propertiesMap.put("x", x/tileSize);
-        propertiesMap.put("y", levelHeight - y/tileSize);
+        x = x/tileSize + offset.x;
+        y = levelHeight - y/tileSize + offset.y;
+        propertiesMap.put("x", x);
+        propertiesMap.put("y", y);
 
         //read polygon if there is one
         JsonValue poly = objectJV.get("polygon");
@@ -643,8 +646,8 @@ public class Level {
             float[] shape = new float[poly.size * 2];
             int i = 0;
             for (JsonValue point : poly) {
-                shape[i] = (x + point.getFloat("x")) / tileSize;
-                shape[i + 1] = levelHeight - (y + point.getFloat("y")) / tileSize;
+                shape[i] = x + point.getFloat("x") / tileSize;
+                shape[i + 1] = y - (point.getFloat("y")) / tileSize;
                 i += 2;
             }
             propertiesMap.put("polygon", shape);
@@ -707,11 +710,6 @@ public class Level {
         mobArray.clear();
         spiritRegionArray.clear();
         numLives = maxLives;
-        currCheckpoint = null;
-        if (world != null) {
-            world.dispose();
-            world = null;
-        }
         currCheckpoint = null;
         setComplete(false);
         setFailure(false);

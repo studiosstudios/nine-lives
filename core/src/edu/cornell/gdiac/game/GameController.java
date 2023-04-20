@@ -92,6 +92,7 @@ public class GameController implements Screen {
     private float respawnDelay;
     /** Amount of time to be delayed after respawn **/
     final float RESPAWN_DELAY = 40f; //about 17ms per RESPAWN_DELAY unit (holds 1 second-0.5s on dead body, 0.5s on respawned cat)
+    /** Whether level was just reset (matters for respawn behavior) **/
     private boolean justReset;
     /**
      * PLAY: User has all controls and is in game
@@ -576,18 +577,6 @@ public class GameController implements Screen {
                 input.setDisableAll(false);
                 gameplayState = GameplayState.PLAY;
             }
-        }
-    }
-
-    /**
-     * @param gameplayState "PLAY" or "SWITCH"
-     */
-    public void setGameplayState(String gameplayState){
-        if(gameplayState.equals("PLAY")){
-            this.gameplayState = GameplayState.PLAY;
-        }
-        else if(gameplayState.equals("SWITCH")){
-            this.gameplayState = GameplayState.LEVEL_SWITCH;
         }
     }
 

@@ -89,15 +89,16 @@ public class NineLives extends Game implements ScreenListener {
 
 	/**
 	 * Load the assets for the game, create the GameController, and start the game.
-	 * @param numLevels total number levels
+	 * @param numLevels   total number levels
+	 * @param startLevel  starting level number
 	 */
-	private void startGame(int numLevels){
+	private void startGame(int numLevels, int startLevel){
 		directory = menu.getAssets();
 		controller = new GameController(numLevels);
 		controller.gatherAssets(directory);
 		controller.setScreenListener(this);
 		controller.setCanvas(canvas);
-		controller.reset();
+		controller.init(startLevel);
 		setScreen(controller);
 		menu.dispose();
 		menu = null;
@@ -113,10 +114,9 @@ public class NineLives extends Game implements ScreenListener {
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
 		if (screen == menu && exitCode == 0) {
-			startGame(5);
+			startGame(5, 1);
 		} else if (screen == menu && exitCode == 69) {
-			startGame(5);
-			controller.setCurrLevel(menu.getSelectedLevel());
+			startGame(5, menu.getSelectedLevel());
 		} else if (screen == menu && exitCode == 25) {
 			controller.resume();
 			setScreen(controller);

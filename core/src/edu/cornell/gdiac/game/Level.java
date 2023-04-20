@@ -352,7 +352,7 @@ public class Level {
      * @param tiledMap Tiled Json
      */
      public void populateTiled(JsonValue tiledMap){
-        populateTiled(tiledMap, 0, 0, returnY, false);
+        populateTiled(tiledMap, 0, 0, returnY, null);
     }
 
     /**
@@ -363,9 +363,10 @@ public class Level {
      * @param xOffset     The x offset in Box2D coordinates to place this world at
      * @param yOffset     The y offset in Box2D coordinates to place this world at
      * @param prevExitY   The y position of the bottom left edge of the adjacent level's exit
-     * @param next        True if we are progressing from the previous level (i.e to the right)
+     * @param next        True if we are progressing from the previous level (i.e to the right),
+     *                    null if we should ignore offsets
      */
-    public void populateTiled(JsonValue tiledMap, float xOffset, float yOffset, float prevExitY, boolean next){
+    public void populateTiled(JsonValue tiledMap, float xOffset, float yOffset, float prevExitY, Boolean next){
         world.setGravity( new Vector2(0,tiledMap.getFloat("gravity",-14.7f)) );
         activationRelations = new HashMap<>();
         background = textureRegionAssetMap.get("background").getTexture();
@@ -387,12 +388,13 @@ public class Level {
                 }
             }
         }
-
-        if (next) {
-            bounds.y += prevExitY - returnY;
-        } else {
-            bounds.y += prevExitY - goalY;
-            bounds.x -= bounds.width;
+        if (next != null) {
+            if (next) {
+                bounds.y += prevExitY - returnY;
+            } else {
+                bounds.y += prevExitY - goalY;
+                bounds.x -= bounds.width;
+            }
         }
 
         populateObstacles(obstacleData, tileSize, levelHeight);

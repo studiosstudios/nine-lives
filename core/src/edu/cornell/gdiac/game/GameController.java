@@ -321,6 +321,9 @@ public class GameController implements Screen {
             nextJV = tiledJSON(levelNum + 1);
             nextLevel.populateTiled(nextJV, currLevel.bounds.x + currLevel.bounds.width, currLevel.bounds.y, currLevel.goalY, true);
         }
+
+        canvas.getCamera().setLevelBounds(currLevel.bounds, scale);
+        canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, false);
     }
 
     /**
@@ -355,11 +358,8 @@ public class GameController implements Screen {
             prevLevel.populateTiled(prevJV, currLevel.bounds.x, currLevel.bounds.y, currLevel.returnY, false);
         }
 
-    }
-    public void setCurrLevel(int level) {
-        if (level < numLevels) {
-            setJSON(tiledJSON(level+1));
-        }
+        canvas.getCamera().setLevelBounds(currLevel.bounds, scale);
+        canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, false);
     }
 
     /**
@@ -440,11 +440,16 @@ public class GameController implements Screen {
 
     /**
      * Resets the status of the game so that we can play again.
+     */
+    protected void reset(){ init(levelNum); }
+
+    /**
+     * Initializes the game from a given level number.
      *
-     * Note that this method simply repopulates the existing level. Care needs to be taken to
+     * Note that this method simply repopulates the existing levels. Care needs to be taken to
      * properly dispose the level so that the level reset is clean.
      */
-    protected void reset() {
+    protected void init(int levelNum) {
 
         prevLevel.dispose();
         currLevel.dispose();
@@ -454,19 +459,30 @@ public class GameController implements Screen {
         world = new World(gravity, false);
 
         justRespawned = true;
+        currLevelIndex = 1;
+        setLevels();
+        collisionController.setLevel(currLevel);
+        actionController.setLevel(currLevel);
+        actionController.setMobControllers(currLevel);
         prevLevel.setWorld(world);
         currLevel.setWorld(world);
         nextLevel.setWorld(world);
         world.setContactListener(collisionController);
         world.setContactFilter(collisionController);
-
         collisionController.setReturn(false);
-
-        boolean tempRet = isRet();
         setRet(false);
+
+        levelJV = tiledJSON(levelNum);
         currLevel.populateTiled(levelJV);
-        nextLevel.populateTiled(nextJV, currLevel.bounds.x + currLevel.bounds.width, currLevel.bounds.y, currLevel.goalY, true);
-        actionController.setMobControllers(currLevel);
+        if (levelNum < numLevels) {
+            nextJV = tiledJSON(levelNum + 1);
+            nextLevel.populateTiled(nextJV, currLevel.bounds.x + currLevel.bounds.width, currLevel.bounds.y, currLevel.goalY, true);
+        }
+        if (levelNum > 1) {
+            nextJV = tiledJSON(levelNum - 1);
+            prevLevel.populateTiled(prevJV, currLevel.bounds.x, currLevel.bounds.y, currLevel.returnY, false);
+        }
+
         prevLivesState = new LevelState[9];
         canvas.getCamera().setLevelBounds(currLevel.bounds, scale);
         canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, false);

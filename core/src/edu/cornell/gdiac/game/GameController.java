@@ -104,6 +104,8 @@ public class GameController implements Screen {
     private float respawnDelay;
     /** Amount of time to be delayed after respawn **/
     final float RESPAWN_DELAY = 60f; //about 17ms per RESPAWN_DELAY unit (holds 1 second-0.5s on dead body, 0.5s on respawned cat)
+    /** The background texture */
+    private Texture background;
 
     /**
      * PLAY: User has all controls and is in game
@@ -319,6 +321,7 @@ public class GameController implements Screen {
 
         actionController.setLevel(currLevel);
         collisionController.setLevel(currLevel);
+        actionController.setMobControllers(currLevel);
         collisionController.setDidChange(true);
 
         nextLevel.dispose();
@@ -354,6 +357,7 @@ public class GameController implements Screen {
 
         actionController.setLevel(currLevel);
         collisionController.setLevel(currLevel);
+        actionController.setMobControllers(currLevel);
         collisionController.setDidChange(true);
 
         prevLevel.dispose();
@@ -414,6 +418,8 @@ public class GameController implements Screen {
         constants = directory.getEntry("constants", JsonValue.class);
         this.directory = directory;
 
+        background = textureRegionAssetMap.get("background").getTexture();
+
         // Giving assets to levelController
         setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants);
         setJSON(tiledJSON(1));
@@ -467,14 +473,14 @@ public class GameController implements Screen {
         justRespawned = true;
         currLevelIndex = 1;
         setLevels();
-        collisionController.setLevel(currLevel);
-        actionController.setLevel(currLevel);
-        actionController.setMobControllers(currLevel);
         prevLevel.setWorld(world);
         currLevel.setWorld(world);
         nextLevel.setWorld(world);
         world.setContactListener(collisionController);
         world.setContactFilter(collisionController);
+        collisionController.setLevel(currLevel);
+        actionController.setLevel(currLevel);
+        actionController.setMobControllers(currLevel);
         collisionController.setReturn(false);
         setRet(false);
 
@@ -788,12 +794,13 @@ public class GameController implements Screen {
 
         canvas.begin();
         canvas.applyViewport();
+        canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight());
         if (true) { //TODO: only draw when necessary
             prevLevel.draw(canvas);
             nextLevel.draw(canvas);
         }
         currLevel.draw(canvas);
-        canvas.drawRectangle(0, 0, currLevel.bounds.width, currLevel.bounds.height, flashColor, scale.x, scale.y);
+        canvas.drawRectangle(currLevel.bounds.x, currLevel.bounds.y, currLevel.bounds.width, currLevel.bounds.height, flashColor, scale.x, scale.y);
         canvas.end();
 
         if (debug) {

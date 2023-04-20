@@ -43,8 +43,10 @@ public class Exit extends BoxObstacle {
         setDrawScale(scale);
         if (((properties.get("type", "goal")).equals("goal"))){
             exitType = ExitType.GOAL;
+            setX(getX() + 1);
         } else {
             exitType = ExitType.RETURN;
+            setX(getX() - 1);
         }
         setName((String) properties.get("type"));
     }

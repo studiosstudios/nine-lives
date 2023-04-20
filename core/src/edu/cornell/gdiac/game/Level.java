@@ -72,8 +72,6 @@ public class Level {
     private final Array<SpiritRegion> spiritRegionArray;
     /** The respawn position of the player */
     private Vector2 respawnPos;
-    /** The background texture */
-    private Texture background;
 
     /** texture assets */
     private HashMap<String, TextureRegion> textureRegionAssetMap;
@@ -386,7 +384,6 @@ public class Level {
     public void populateTiled(JsonValue tiledMap, float xOffset, float yOffset, float prevExitY, Boolean next){
         world.setGravity( new Vector2(0,tiledMap.getFloat("gravity",-14.7f)) );
         activationRelations = new HashMap<>();
-        background = textureRegionAssetMap.get("background").getTexture();
 
         JsonValue layers = tiledMap.get("layers");
         JsonValue tileData = layers.get(0);
@@ -856,13 +853,13 @@ public class Level {
      * @param canvas	the drawing context
      */
     public void draw(GameCanvas canvas) {
-        if (background != null) {
-            //scales background with level size
-            float scaleX = bounds.width/background.getWidth() * scale.x;
-            float scaleY = bounds.height/background.getHeight() * scale.y;
-            canvas.draw(background, Color.WHITE, bounds.x * scale.x, bounds.y * scale.y, background.getWidth()*Float.max(scaleX,scaleY), background.getHeight()*Float.max(scaleX,scaleY));
-//            canvas.draw(background, 0, 0);
-        }
+//        if (background != null) {
+//            //scales background with level size
+//            float scaleX = bounds.width/background.getWidth() * scale.x;
+//            float scaleY = bounds.height/background.getHeight() * scale.y;
+//            canvas.draw(background, Color.WHITE, bounds.x * scale.x, bounds.y * scale.y, background.getWidth()*Float.max(scaleX,scaleY), background.getHeight()*Float.max(scaleX,scaleY));
+////            canvas.draw(background, 0, 0);
+//        }
 
         if (tiles != null) tiles.draw(canvas);
 
@@ -886,7 +883,6 @@ public class Level {
         }
 
         if (currCheckpoint != null) {
-            currCheckpoint.drawBase(canvas);
             currCheckpoint.drawBase(canvas);
         }
     }
@@ -925,6 +921,7 @@ public class Level {
         DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat"),textureRegionAssetMap.get("burnCat"), scale, cat.getPosition());
         deadBody.setLinearVelocity(cat.getLinearVelocity());
         deadBody.setFacingRight(cat.isFacingRight());
+        deadBody.setLevel(this);
         queueObject(deadBody);
         deadBodyArray.add(deadBody);
     }

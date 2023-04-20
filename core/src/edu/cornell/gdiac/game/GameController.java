@@ -526,27 +526,28 @@ public class GameController implements Screen {
             if(justRespawned) {
                 gameplayState = GameplayState.RESPAWN;
             }
-            //zoom normal when in play state and not panning and not switching bodies
-            if(!input.holdSwitch() && !input.didPan()){
-                cam.zoomOut(false);
-            }
-            DeadBody nextDeadBody = level.getNextBody();
-            if(input.holdSwitch()&&nextDeadBody != null){
-                cam.setGlideMode("SWITCH_BODY");
-                cam.switchBodyCam(nextDeadBody.getX()*scale.x, nextDeadBody.getY()*scale.y);
-            }
-            else{
-                cam.setGlideMode("NORMAL");
-                cam.updateCamera(x_pos, y_pos, true);
+            else {
+                //zoom normal when in play state and not panning and not switching bodies
+                if (!input.holdSwitch() && !input.didPan()) {
+                    cam.zoomOut(false);
+                }
+                DeadBody nextDeadBody = level.getNextBody();
+                if (input.holdSwitch() && nextDeadBody != null) {
+                    cam.setGlideMode("SWITCH_BODY");
+                    cam.switchBodyCam(nextDeadBody.getX() * scale.x, nextDeadBody.getY() * scale.y);
+                } else {
+                    cam.setGlideMode("NORMAL");
+                    cam.updateCamera(x_pos, y_pos, true);
+                }
             }
         }
-        else if(gameplayState == GameplayState.LEVEL_SWITCH){
+        if(gameplayState == GameplayState.LEVEL_SWITCH){
             /**
              * TODO: Seamless Level Switching
              */
             gameplayState = GameplayState.PLAY;
         }
-        else if(gameplayState == GameplayState.PAN){
+        if(gameplayState == GameplayState.PAN){
             cam.updateCamera(panTarget.get(0).getXPos()*scale.x,panTarget.get(0).getYPos()*scale.y, true);
             if(!cam.isGliding()){
                 panTime += 1;
@@ -555,10 +556,10 @@ public class GameController implements Screen {
                 }
             }
         }
-        else if(gameplayState == GameplayState.PLAYER_PAN){
+        if(gameplayState == GameplayState.PLAYER_PAN){
             cam.zoomOut(true);
         }
-        else if(gameplayState == GameplayState.RESPAWN){
+        if(gameplayState == GameplayState.RESPAWN){
             justRespawned = false;
             float x_pos = level.getCat().getPosition().x*scale.x;
             float y_pos = level.getCat().getPosition().y*scale.y;

@@ -56,7 +56,7 @@
   },
   "deadBody": {
     "friction": 1,
-    "density" : 1,
+    "density" : 7,
     "mass" : 1,
     "damping" : 2,
     "offset": [0, 0],

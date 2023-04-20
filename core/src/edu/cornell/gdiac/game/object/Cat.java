@@ -206,7 +206,8 @@ public class Cat extends CapsuleObstacle implements Movable {
     private Array<PolygonShape> sensorShapes;
     private float failedSwitchTicks;
     private static final float FAILED_SWITCH_TICKS = 30f;
-    private Queue<Map.Entry<Vector3, Integer>> dashShadowQueue = new Queue<>();
+//    private Queue<Map.Entry<Vector3, Integer>> dashShadowQueue = new Queue<>();
+    private Queue<DashShadow> dashShadowQueue = new Queue<>();
     private Color dashColor = new Color(0.68f, 0.85f, 0.9f, 1f);
     private TextureRegion currentFrame;
     //endregion
@@ -724,7 +725,8 @@ public class Cat extends CapsuleObstacle implements Movable {
             // We're basically using 4-tuples here with a hideous SimpleEntry<Vector3<>, Integer> set-up
             // The dash currently uses the cat's current frame, but it'd be better if we had a way to save the cat's drawing frame whenever a new shadow is added
             // That will best be done by modularizing the drawing code more + making DashShadow a static inner class to store the 5-tuple
-            dashShadowQueue.addLast(new SimpleEntry<>(new Vector3(getTextureCenterX(), getTextureCenterY(), isFacingRight() ? -1 : 1), 10));
+//            dashShadowQueue.addLast(new SimpleEntry<>(new Vector3(getTextureCenterX(), getTextureCenterY(), isFacingRight() ? -1 : 1), 10));
+            dashShadowQueue.addLast(new DashShadow(getTextureCenterX(), getTextureCenterY(), getDirectionFactor(), currentFrame));
         }
     }
 
@@ -749,13 +751,11 @@ public class Cat extends CapsuleObstacle implements Movable {
         updateAnimation();
 
         for (int i = 0; i < dashShadowQueue.size; i++) {
-            Map.Entry<Vector3, Integer> shadow = dashShadowQueue.removeFirst();
-            Vector3 drawData = shadow.getKey();
-            float directionFactor = drawData.z;
-            dashColor.a = shadow.getValue() / 10f;
-            canvas.draw(currentFrame, dashColor, origin.x, origin.y, drawData.x, drawData.y, 0, directionFactor/drawScale.x, 1f/drawScale.y);
-            if (shadow.getValue() - 1 > 0) {
-                shadow.setValue(shadow.getValue() - 1);
+            DashShadow shadow = dashShadowQueue.removeFirst();
+            dashColor.a = shadow.timer / 10f;
+            canvas.draw(currentFrame, dashColor, origin.x, origin.y, shadow.x, shadow.y, 0, shadow.directionFactor/drawScale.x, 1f/drawScale.y);
+            if (shadow.timer - 1 > 0) {
+                shadow.timer--;
                 dashShadowQueue.addLast(shadow);
             }
         }
@@ -858,6 +858,32 @@ public class Cat extends CapsuleObstacle implements Movable {
 
     public void failedSwitch() {
         failedSwitchTicks = 0f;
+    }
+
+    /**
+     * Inner data class to hold relevant information for dash shadows
+     */
+    private class DashShadow {
+        public float x;
+        public float y;
+        public float directionFactor;
+        public TextureRegion shadowTexture;
+        public int timer = 10;
+
+        /**
+         * Creates a new DashShadow object. We use the cat's current state to populate the shadow data,
+         * namely the cat's current position, heading, and texture.
+         * @param x Current drawing x position of the cat
+         * @param y Current drawing y position of the cat
+         * @param dir Current directionFactor of the cat (isFacingRight() ? -1 : 1)
+         * @param shadowTexture Current texture of the cat
+         */
+        public DashShadow(float x, float y, float dir, TextureRegion shadowTexture) {
+            this.x = x;
+            this.y = y;
+            this.directionFactor = dir;
+            this.shadowTexture = shadowTexture;
+        }
     }
 
 }

@@ -315,7 +315,7 @@ public class GameController implements Screen {
         System.out.println("next:" + levelNum);
 //        respawn();
         currLevel.setCat(prevLevel.getCat());
-        prevLevel.objects.remove(prevLevel.getCat());
+        prevLevel.removeCat();
 
         actionController.setLevel(currLevel);
         collisionController.setLevel(currLevel);
@@ -350,7 +350,7 @@ public class GameController implements Screen {
         currLevelIndex = Math.floorMod(currLevelIndex - 1,  3);
         setLevels();
         currLevel.setCat(nextLevel.getCat());
-        nextLevel.objects.remove(nextLevel.getCat());
+        nextLevel.removeCat();
 
         actionController.setLevel(currLevel);
         collisionController.setLevel(currLevel);
@@ -788,10 +788,11 @@ public class GameController implements Screen {
 
         canvas.begin();
         canvas.applyViewport();
-        if (levelNum > 1) prevLevel.draw(canvas);
+        if (true) { //TODO: only draw when necessary
+            prevLevel.draw(canvas);
+            nextLevel.draw(canvas);
+        }
         currLevel.draw(canvas);
-        //TODO: remove
-        if (levelNum < numLevels) nextLevel.draw(canvas);
         canvas.drawRectangle(0, 0, currLevel.bounds.width, currLevel.bounds.height, flashColor, scale.x, scale.y);
         canvas.end();
 

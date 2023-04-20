@@ -223,7 +223,6 @@ public class CollisionController implements ContactListener, ContactFilter {
                     }
 
                     if (bd2 instanceof Exit) {
-                        System.out.println("done changing");
                         didChange = false;
                     }
                 }

@@ -139,6 +139,11 @@ public class Level {
         this.cat = cat;
     }
 
+    /**
+     * Removes the cat from this level. This is used for level switching.
+     */
+    public void removeCat() { objects.remove(cat); cat = null; }
+
     public Checkpoint getCheckpoint() {return currCheckpoint;}
 
     /**
@@ -881,6 +886,7 @@ public class Level {
         }
 
         if (currCheckpoint != null) {
+            currCheckpoint.drawBase(canvas);
             currCheckpoint.drawBase(canvas);
         }
     }

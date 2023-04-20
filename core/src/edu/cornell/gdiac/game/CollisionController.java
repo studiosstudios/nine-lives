@@ -291,8 +291,6 @@ public class CollisionController implements ContactListener, ContactFilter {
             Obstacle bd2 = (Obstacle) body2.getUserData();
 
             for (int i = 0; i < 2; i++) {
-                //only do collision if in same level
-                if (bd1.getLevel() != bd2.getLevel()) return false;
 
                 //flame does not turn on activators
                 if (fd1 instanceof Activator && bd2 instanceof Flamethrower.Flame) {

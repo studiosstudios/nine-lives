@@ -134,7 +134,6 @@ public class Level {
      */
     public void setCat(Cat cat) {
         objects.remove(this.cat);
-        cat.setLevel(this);
         objects.add(cat);
         this.cat = cat;
     }
@@ -441,10 +440,6 @@ public class Level {
             }
         }
         tiles = new Tiles(tileData, 1024, levelWidth, levelHeight, tileset, bounds, fID, new Vector2(1/32f, 1/32f));
-
-        for (Obstacle obj : objects){
-            obj.setLevel(this);
-        }
     }
 
     /**
@@ -929,7 +924,6 @@ public class Level {
         DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat"),textureRegionAssetMap.get("burnCat"), scale, cat.getPosition());
         deadBody.setLinearVelocity(cat.getLinearVelocity());
         deadBody.setFacingRight(cat.isFacingRight());
-        deadBody.setLevel(this);
         queueObject(deadBody);
         deadBodyArray.add(deadBody);
     }

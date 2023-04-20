@@ -91,8 +91,8 @@ public class GameController implements Screen {
     /** Keeps track of amount of time delayed after respawn **/
     private float respawnDelay;
     /** Amount of time to be delayed after respawn **/
-    final float RESPAWN_DELAY = 60f; //about 17ms per RESPAWN_DELAY unit (holds 1 second-0.5s on dead body, 0.5s on respawned cat)
-
+    final float RESPAWN_DELAY = 40f; //about 17ms per RESPAWN_DELAY unit (holds 1 second-0.5s on dead body, 0.5s on respawned cat)
+    private boolean justReset;
     /**
      * PLAY: User has all controls and is in game
      * LEVEL_SWITCH: Camera transition to next level (all controls stripped from user)
@@ -108,7 +108,7 @@ public class GameController implements Screen {
         RESPAWN
     }
     /** State of gameplay */
-    private GameplayState gameplayState;
+    public static GameplayState gameplayState;
     /** Array storing level states of past lives. The ith element of this array is the state
      * of the level at the instant the player had died i times. */
     private LevelState[] prevLivesState = new LevelState[9];
@@ -401,6 +401,7 @@ public class GameController implements Screen {
         world = new World(gravity, false);
 
         justRespawned = true;
+        justReset = true;
         level.setWorld(world);
         world.setContactListener(collisionController);
         world.setContactFilter(collisionController);
@@ -523,7 +524,7 @@ public class GameController implements Screen {
             input.setDisableAll(false);
             float x_pos = level.getCat().getPosition().x*scale.x;
             float y_pos = level.getCat().getPosition().y*scale.y;
-            if(justRespawned) {
+            if(justRespawned && !justReset) {
                 gameplayState = GameplayState.RESPAWN;
             }
             else {
@@ -540,6 +541,7 @@ public class GameController implements Screen {
                     cam.updateCamera(x_pos, y_pos, true);
                 }
             }
+            justReset = false;
         }
         if(gameplayState == GameplayState.LEVEL_SWITCH){
             /**
@@ -560,16 +562,15 @@ public class GameController implements Screen {
             cam.zoomOut(true);
         }
         if(gameplayState == GameplayState.RESPAWN){
-            justRespawned = false;
-            float x_pos = level.getCat().getPosition().x*scale.x;
-            float y_pos = level.getCat().getPosition().y*scale.y;
+            float xPos = level.getCat().getPosition().x*scale.x;
+            float yPos = level.getCat().getPosition().y*scale.y;
             input.setDisableAll(true);
             respawnDelay += 1;
-            if(level.getdeadBodyArray().size > 0 && respawnDelay < RESPAWN_DELAY/2){
-                x_pos = level.getdeadBodyArray().get(level.getdeadBodyArray().size-1).getX()*scale.x;
-                y_pos = level.getdeadBodyArray().get(level.getdeadBodyArray().size-1).getY()*scale.y;
+            if(level.getdeadBodyArray().size > 0){
+                xPos = level.getdeadBodyArray().get(level.getdeadBodyArray().size-1).getX()*scale.x;
+                yPos = level.getdeadBodyArray().get(level.getdeadBodyArray().size-1).getY()*scale.y;
             }
-            cam.updateCamera(x_pos, y_pos, true);
+            cam.updateCamera(xPos, yPos, true);
             if(respawnDelay == RESPAWN_DELAY){
                 respawnDelay = 0;
                 input.setDisableAll(false);
@@ -617,6 +618,7 @@ public class GameController implements Screen {
 
         if (justRespawned) {
             prevLivesState[9 - level.getNumLives()] = new LevelState(level);
+            justRespawned = false;
         }
 
 

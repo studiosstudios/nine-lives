@@ -99,16 +99,9 @@ public class CollisionController implements ContactListener, ContactFilter {
                     }
 
                     // Check for win condition
-                    if (bd2 instanceof Exit && !didChange) {
-                        switch (((Exit) bd2).exitType()) {
-                            case GOAL:
-                                level.setComplete(true);
-                                break;
-                            case RETURN:
-                                setReturn(true);
-                                break;
-                        }
-                    }
+                    if (bd2 == level.getGoalExit() && !didChange) level.setComplete(true);
+                    if (bd2 == level.getReturnExit() && !didChange) setReturn(true);
+
                     if (fd2 instanceof Spikes) {
                         actionController.die();
                     }
@@ -305,6 +298,23 @@ public class CollisionController implements ContactListener, ContactFilter {
                 if (fd1 instanceof Activator && bd2 instanceof Flamethrower.Flame) {
                     return false;
                 }
+
+                //swap everything
+                Body bodyTemp = body1;
+                body1 = body2;
+                body2 = bodyTemp;
+
+                Obstacle bdTemp = bd1;
+                bd1 = bd2;
+                bd2 = bdTemp;
+
+                Object fdTemp = fd1;
+                fd1 = fd2;
+                fd2 = fdTemp;
+
+                Fixture fixTemp = fix1;
+                fix1 = fix2;
+                fix2 = fixTemp;
             }
         } catch (Exception e) {
             e.printStackTrace();

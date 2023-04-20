@@ -32,8 +32,10 @@ public class Level {
     /** Reference to the character cat */
     private Cat cat;
     /** Reference to the goal exit */
+    private Exit goalExit;
     protected float goalY;
     /**Reference to the return exit */
+    private Exit returnExit;
     protected float returnY;
 
     /** Tiles of level */
@@ -262,6 +264,10 @@ public class Level {
      * @return a reference to number of lives
      */
     public int getNumLives() { return numLives; }
+
+    public Exit getGoalExit() { return goalExit; }
+
+    public Exit getReturnExit() { return returnExit; }
 
     /**
      * Sets the number of lives in this level
@@ -628,6 +634,8 @@ public class Level {
             readProperties(objJV, tileSize, levelHeight);
             Exit exit = new Exit(propertiesMap, scale);
             addObject(exit);
+            if (exit.exitType() == Exit.ExitType.GOAL) goalExit = exit;
+            if (exit.exitType() == Exit.ExitType.RETURN) returnExit = exit;
         }
     }
 

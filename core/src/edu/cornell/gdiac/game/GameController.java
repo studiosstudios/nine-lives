@@ -428,8 +428,8 @@ public class GameController implements Screen {
         //Set controls
         InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
 
-//		InputController.getInstance().writeTo("inputLogs/recent.txt");
-//		InputController.getInstance().readFrom("inputLogs/recent.txt");
+//		InputController.getInstance().writeTo("inputLogs/levelSwitchBug1.txt");
+		InputController.getInstance().readFrom("inputLogs/levelSwitchBug1.txt");
     }
 
     /**
@@ -717,14 +717,14 @@ public class GameController implements Screen {
     @Override
     public void render(float delta) {
         //FOR DEBUGGING
-//		delta = 1/60f;
-//		if (Gdx.input.isKeyPressed(Input.Keys.F)){
-//			try {
-//				Thread.sleep(1000);
-//			} catch (InterruptedException e) {
-//				Thread.currentThread().interrupt();
-//			}
-//		}
+		delta = 1/60f;
+		if (Gdx.input.isKeyPressed(Input.Keys.F)){
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		}
         if (preUpdate(delta)) {
             update(delta); // This is the one that must be defined.
             postUpdate(delta);

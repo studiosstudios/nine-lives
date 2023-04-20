@@ -1,5 +1,7 @@
 package edu.cornell.gdiac.game;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
@@ -13,6 +15,7 @@ import edu.cornell.gdiac.game.object.*;
 import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.util.ScreenListener;
 
+import java.io.OutputStream;
 import java.util.HashMap;
 
 /**
@@ -149,7 +152,7 @@ public class GameController implements Screen {
         this.scale = scale;
         debug = false;
         setRet(false);
-        world = new World(gravity, false);
+        world = new World(gravity, true);
 
         this.numLevels = numLevels;
         levelNum = 1;
@@ -298,11 +301,8 @@ public class GameController implements Screen {
      * The previous level is set to the current level<br>
      * The current level is set to the next level<br>
      * The next level is loaded in<br>
-     *
-     * @param resetSpawn whether the player spawns at the respawn point of the level or at the edge
-     *                    (from previous level)
      */
-    public void nextLevel(boolean resetSpawn){
+    public void nextLevel(){
         levelNum++;
         prevJV = getJSON();
         setJSON(nextJV);
@@ -312,9 +312,14 @@ public class GameController implements Screen {
         currLevelIndex = (currLevelIndex + 1) % 3;
         currLevel.setComplete(false);
         setLevels();
-        respawn();
+        System.out.println("next:" + levelNum);
+//        respawn();
+        currLevel.setCat(prevLevel.getCat());
+        prevLevel.objects.remove(prevLevel.getCat());
+
         actionController.setLevel(currLevel);
         collisionController.setLevel(currLevel);
+        collisionController.setDidChange(true);
 
         nextLevel.dispose();
         if (levelNum < numLevels) {
@@ -332,11 +337,8 @@ public class GameController implements Screen {
      * The next level is set to the current level<br>
      * The current level is set to the previous level<br>
      * The previous level is loaded in<br>
-     *
-     * @param resetSpawn whether the player spawns at the respawn point of the level or at the edge
-     *                    (from previous level)
      */
-    public void prevLevel(boolean resetSpawn){
+    public void prevLevel(){
         levelNum--;
         nextJV = getJSON();
         setJSON(prevJV);
@@ -344,13 +346,15 @@ public class GameController implements Screen {
         if (levelNum > 1) {
             prevJV = tiledJSON(levelNum - 1);
         }
-
+        System.out.println("prev:" + levelNum);
         currLevelIndex = Math.floorMod(currLevelIndex - 1,  3);
         setLevels();
+        currLevel.setCat(nextLevel.getCat());
+        nextLevel.objects.remove(nextLevel.getCat());
 
         actionController.setLevel(currLevel);
         collisionController.setLevel(currLevel);
-        respawn();
+        collisionController.setDidChange(true);
 
         prevLevel.dispose();
         if (levelNum > 1) {
@@ -418,8 +422,8 @@ public class GameController implements Screen {
         //Set controls
         InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
 
-//		InputController.getInstance().writeTo("inputLogs/alphademo.txt");
-//		InputController.getInstance().readFrom("inputLogs/alphademo.txt");
+//		InputController.getInstance().writeTo("inputLogs/recent.txt");
+//		InputController.getInstance().readFrom("inputLogs/recent.txt");
     }
 
     /**
@@ -451,12 +455,14 @@ public class GameController implements Screen {
      */
     protected void init(int levelNum) {
 
+        this.levelNum = levelNum;
+
         prevLevel.dispose();
         currLevel.dispose();
         nextLevel.dispose();
         Vector2 gravity = new Vector2( world.getGravity() );
         world.dispose();
-        world = new World(gravity, false);
+        world = new World(gravity, true);
 
         justRespawned = true;
         currLevelIndex = 1;
@@ -479,7 +485,7 @@ public class GameController implements Screen {
             nextLevel.populateTiled(nextJV, currLevel.bounds.x + currLevel.bounds.width, currLevel.bounds.y, currLevel.goalY, true);
         }
         if (levelNum > 1) {
-            nextJV = tiledJSON(levelNum - 1);
+            prevJV = tiledJSON(levelNum - 1);
             prevLevel.populateTiled(prevJV, currLevel.bounds.x, currLevel.bounds.y, currLevel.returnY, false);
         }
 
@@ -545,20 +551,22 @@ public class GameController implements Screen {
 
         if (currLevel.isFailure() || input.didReset()) {
             reset();
-        } else if (currLevel.isComplete() || input.didNext()) {
-            if (levelNum < numLevels) {
-                pause();
-                System.out.println("next: "+ currLevel);
-                nextLevel(input.didNext());
-                return false;
-            }
-        } else if (isRet() || input.didPrev()) {
-            if (levelNum > 1) {
-                pause();
-                System.out.println("return: "+ currLevel);
-                prevLevel(input.didPrev());
-                return false;
-            }
+        } else if (currLevel.isComplete() && levelNum < numLevels) {
+            pause();
+            nextLevel();
+            return false;
+        } else if (isRet() && levelNum > 1) {
+            pause();
+            prevLevel();
+            return false;
+        }  else if (input.didNext() && levelNum < numLevels) {
+            pause();
+            init(levelNum + 1);
+            return false;
+        }  else if (input.didPrev() && levelNum > 1) {
+            pause();
+            init(levelNum - 1);
+            return false;
         }
         return true;
     }
@@ -702,6 +710,15 @@ public class GameController implements Screen {
 
     @Override
     public void render(float delta) {
+        //FOR DEBUGGING
+//		delta = 1/60f;
+//		if (Gdx.input.isKeyPressed(Input.Keys.F)){
+//			try {
+//				Thread.sleep(1000);
+//			} catch (InterruptedException e) {
+//				Thread.currentThread().interrupt();
+//			}
+//		}
         if (preUpdate(delta)) {
             update(delta); // This is the one that must be defined.
             postUpdate(delta);
@@ -771,7 +788,7 @@ public class GameController implements Screen {
 
         canvas.begin();
         canvas.applyViewport();
-        if (levelNum > 0) prevLevel.draw(canvas);
+        if (levelNum > 1) prevLevel.draw(canvas);
         currLevel.draw(canvas);
         //TODO: remove
         if (levelNum < numLevels) nextLevel.draw(canvas);
@@ -780,11 +797,21 @@ public class GameController implements Screen {
 
         if (debug) {
             canvas.beginDebug();
-            if (levelNum > 0) prevLevel.drawDebug(canvas);
+            if (levelNum > 1) prevLevel.drawDebug(canvas);
             currLevel.drawDebug(canvas);
             if (levelNum < numLevels) nextLevel.drawDebug(canvas);
             canvas.endDebug();
         }
+
+        //box2d debug check
+//        Array<Body> bodies = new Array<>();
+//        world.getBodies(bodies);
+//        System.out.println(bodies.size);
+//        int numBodies = 0;
+//        for (Level l : levels){
+//            numBodies += l.objects.size();
+//        }
+//        System.out.println(numBodies);
 
     }
 

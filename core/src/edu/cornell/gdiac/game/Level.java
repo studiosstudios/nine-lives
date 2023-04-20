@@ -127,6 +127,18 @@ public class Level {
         return cat;
     }
 
+    /**
+     * Sets the cat for this level. This is used for level switching.
+     *
+     * @param cat New cat
+     */
+    public void setCat(Cat cat) {
+        objects.remove(this.cat);
+        cat.setLevel(this);
+        objects.add(cat);
+        this.cat = cat;
+    }
+
     public Checkpoint getCheckpoint() {return currCheckpoint;}
 
     /**
@@ -397,7 +409,7 @@ public class Level {
             }
         }
 
-        populateObstacles(obstacleData, tileSize, levelHeight);
+        populateObstacles(obstacleData, tileSize, levelHeight, next == null);
         String biome = tiledMap.get("properties").get(0).getString("value");
 
         TextureRegion tileset = new TextureRegion();
@@ -433,8 +445,9 @@ public class Level {
      * @param data           Array of Tiled JSON layers
      * @param levelHeight    Height of the level (in grid cell units)
      * @param tileSize       Size of each tile in the Tiled JSON
+     * @param populateCat    True if we want to populate the cat
      */
-    public void populateObstacles(Array<JsonValue> data, int tileSize, int levelHeight) {
+    public void populateObstacles(Array<JsonValue> data, int tileSize, int levelHeight, boolean populateCat) {
         for (JsonValue obstacleData : data) {
             String name = obstacleData.getString("name");
             if (name.equals("wallsPoly")) {
@@ -462,7 +475,7 @@ public class Level {
             } else if (name.equals("mirrors")) {
                 populateMirrors(obstacleData, tileSize, levelHeight);
             } else if (name.equals("cat")) {
-                populateCat(obstacleData, tileSize, levelHeight);
+                if (populateCat) populateCat(obstacleData, tileSize, levelHeight);
             } else if (name.equals("exits")) {
                 populateExits(obstacleData, tileSize, levelHeight);
             }

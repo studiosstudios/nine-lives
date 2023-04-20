@@ -12,7 +12,9 @@ public class CollisionController implements ContactListener, ContactFilter {
     /** The ActionController */
     private ActionController actionController;
     /** Whether should return to previous level */
-    boolean shouldReturn;
+    private boolean shouldReturn;
+    /** Whether the player just progressed to a new level */
+    private boolean didChange;
 
     /**
      * Creates and initialize a new instance of a CollisionController
@@ -22,6 +24,7 @@ public class CollisionController implements ContactListener, ContactFilter {
     public CollisionController(ActionController actionController){
         this.actionController = actionController;
         shouldReturn = false;
+        didChange = false;
     }
 
     /**
@@ -47,6 +50,14 @@ public class CollisionController implements ContactListener, ContactFilter {
      * @param value given to shouldReturn
      */
     public void setReturn(boolean value) { shouldReturn = value; }
+
+    /**
+     * Sets if the player just progressed to the next level. This makes this controller ignore the first collision of a
+     * cat and a return exit.
+     *
+     * @param value given to didNext
+     */
+    public void setDidChange(boolean value) { didChange = value; }
 
     /**
      * Callback method for the start of a collision
@@ -88,7 +99,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                     }
 
                     // Check for win condition
-                    if (bd2 instanceof Exit) {
+                    if (bd2 instanceof Exit && !didChange) {
                         switch (((Exit) bd2).exitType()) {
                             case GOAL:
                                 level.setComplete(true);
@@ -210,6 +221,11 @@ public class CollisionController implements ContactListener, ContactFilter {
                     if (bd2 instanceof SpiritRegion){
                         cat.getSpiritRegions().remove((SpiritRegion) bd2);
                     }
+
+                    if (bd2 instanceof Exit) {
+                        System.out.println("done changing");
+                        didChange = false;
+                    }
                 }
 
                 //dead body collisions
@@ -282,15 +298,15 @@ public class CollisionController implements ContactListener, ContactFilter {
             Obstacle bd1 = (Obstacle) body1.getUserData();
             Obstacle bd2 = (Obstacle) body2.getUserData();
 
-            //only do collision if in same level
-            if (bd1.getLevel() != bd2.getLevel()) return false;
+            for (int i = 0; i < 2; i++) {
+                //only do collision if in same level
+                if (bd1.getLevel() != bd2.getLevel()) return false;
 
-            //flame does not turn on activators
-            if (fd1 instanceof Activator && bd2 instanceof Flamethrower.Flame ||
-                    fd2 instanceof Activator && bd1 instanceof Flamethrower.Flame) {
-                return false;
+                //flame does not turn on activators
+                if (fd1 instanceof Activator && bd2 instanceof Flamethrower.Flame) {
+                    return false;
+                }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }

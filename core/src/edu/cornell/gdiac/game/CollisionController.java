@@ -31,6 +31,7 @@ public class CollisionController implements ContactListener, ContactFilter {
      */
     public void setLevel(Level level){
         this.level = level;
+        shouldReturn = false;
     }
 
     /**
@@ -277,13 +278,21 @@ public class CollisionController implements ContactListener, ContactFilter {
         Object fd1 = fix1.getUserData();
         Object fd2 = fix2.getUserData();
 
-        Object bd1 = body1.getUserData();
-        Object bd2 = body2.getUserData();
+        try {
+            Obstacle bd1 = (Obstacle) body1.getUserData();
+            Obstacle bd2 = (Obstacle) body2.getUserData();
 
-        //flame does not turn on activators
-        if (fd1 instanceof Activator && bd2 instanceof Flamethrower.Flame ||
-                fd2 instanceof Activator && bd1 instanceof Flamethrower.Flame){
-            return false;
+            //only do collision if in same level
+            if (bd1.getLevel() != bd2.getLevel()) return false;
+
+            //flame does not turn on activators
+            if (fd1 instanceof Activator && bd2 instanceof Flamethrower.Flame ||
+                    fd2 instanceof Activator && bd1 instanceof Flamethrower.Flame) {
+                return false;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return true;
     }

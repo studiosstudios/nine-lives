@@ -58,20 +58,20 @@ public class Camera {
      * @param glide smoothed camera movement
      */
     public void updateCamera(float xPos, float yPos, boolean glide){
-        float width_scaled = viewportWidth*camera.zoom; //width of viewport zoomed in
-        if(xPos > levelBounds.width - width_scaled + width_scaled/2){
-            xPos = levelBounds.width - width_scaled + width_scaled/2;
-        }
-        if(xPos < width_scaled/2){
-            xPos = width_scaled/2;
-        }
-        float height_scaled = viewportHeight*camera.zoom; //height of viewport zoomed in
-        if(yPos > levelBounds.height - height_scaled + height_scaled/2){
-            yPos = levelBounds.height - height_scaled + height_scaled/2;
-        }
-        if(yPos < height_scaled/2){
-            yPos = height_scaled/2;
-        }
+//        float width_scaled = viewportWidth*camera.zoom; //width of viewport zoomed in
+//        if(xPos > levelBounds.width - width_scaled + width_scaled/2 + levelBounds.x){
+//            xPos = levelBounds.width - width_scaled + width_scaled/2 + levelBounds.x;
+//        }
+//        if(xPos < width_scaled/2){
+//            xPos = width_scaled/2 + levelBounds.x;
+//        }
+//        float height_scaled = viewportHeight*camera.zoom; //height of viewport zoomed in
+//        if(yPos > levelBounds.height - height_scaled + height_scaled/2 + levelBounds.y){
+//            yPos = levelBounds.height - height_scaled + height_scaled/2 + levelBounds.y;
+//        }
+//        if(yPos < height_scaled/2){
+//            yPos = height_scaled/2 + levelBounds.y;
+//        }
         if(glide) {
             x += (xPos - x) * cameraGlideRate;
             y += (yPos - y) * cameraGlideRate;

@@ -1,9 +1,7 @@
 package edu.cornell.gdiac.game;
 
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
@@ -30,15 +28,13 @@ public class Level {
     protected Rectangle bounds;
     /** The world scale */
     protected Vector2 scale;
-    protected Vector2 offset;
-
     // Physics objects for the game
     /** Reference to the character cat */
     private Cat cat;
     /** Reference to the goal exit */
-    private Exit goalExit;
+    protected float goalY;
     /**Reference to the return exit */
-    private Exit returnExit;
+    protected float returnY;
 
     /** Tiles of level */
     protected Tiles tiles;
@@ -272,10 +268,6 @@ public class Level {
      */
     public void setAssets(HashMap<String, TextureRegion> tMap){ textureRegionAssetMap = tMap; }
 
-    public Exit getGoalExit() {return goalExit;}
-
-    public Exit getReturnExit() {return returnExit;}
-
     /**
      * Creates a new LevelModel
      * <br><br>
@@ -291,7 +283,6 @@ public class Level {
         this.bounds = new Rectangle();
         this.scale = scale;
         this.numLives = numLives;
-        offset = new Vector2();
         maxLives = numLives;
         complete = false;
         failed = false;
@@ -304,6 +295,8 @@ public class Level {
         mobArray = new Array<>();
         spiritRegionArray = new Array<>();
         activationRelations = new HashMap<>();
+        spiritMode = false;
+        spiritLine = new SpiritLine(Color.WHITE, Color.CYAN, scale);
     }
 
     /**
@@ -339,12 +332,40 @@ public class Level {
         respawnPos = startRespawnPos;
     }
 
+    private void loadExitPositions(JsonValue data, int tileSize, int levelHeight){
+        goalY = 0;
+        returnY = 0;
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize, levelHeight);
+            if (propertiesMap.get("type", "goal").equals("goal")){
+                goalY = (float)propertiesMap.get("y") - (float)propertiesMap.get("height") - bounds.y;
+            } else {
+                returnY = (float)propertiesMap.get("y") - (float)propertiesMap.get("height") - bounds.y;
+            }
+        }
+    }
+
     /**
-     * Parses Tiled file
+     * Populates this level from data from a Tiled file.
      *
+     * @param tiledMap Tiled Json
      */
-    public void populateTiled(JsonValue tiledMap, Vector2 offset){
-        this.offset.set(offset);
+     public void populateTiled(JsonValue tiledMap){
+        populateTiled(tiledMap, 0, 0, returnY, false);
+    }
+
+    /**
+     * Populates this level from data from a Tiled file. Places the level into the world such that the exits between this
+     * level and an adjacent level are aligned.
+     *
+     * @param tiledMap    Tiled JSON
+     * @param xOffset     The x offset in Box2D coordinates to place this world at
+     * @param yOffset     The y offset in Box2D coordinates to place this world at
+     * @param prevExitY   The y position of the bottom left edge of the adjacent level's exit
+     * @param next        True if we are progressing from the previous level (i.e to the right)
+     */
+    public void populateTiled(JsonValue tiledMap, float xOffset, float yOffset, float prevExitY, boolean next){
         world.setGravity( new Vector2(0,tiledMap.getFloat("gravity",-14.7f)) );
         activationRelations = new HashMap<>();
         background = textureRegionAssetMap.get("background").getTexture();
@@ -355,16 +376,23 @@ public class Level {
         tileSize = tiledMap.getInt("tilewidth");
         int levelWidth = tiledMap.getInt("width");
         int levelHeight = tiledMap.getInt("height");
-
-        bounds.width = levelWidth;
-        bounds.height = levelHeight;
+        bounds.set(xOffset, yOffset, levelWidth, levelHeight);
 
         Array<JsonValue> obstacleData = new Array<>();
-
         for (JsonValue layer : layers) {
-            if (layer.getInt("id") != 1) {
+            if (!layer.getString("type").equals("tilelayer")) {
                 obstacleData.add(layer);
+                if (layer.getString("name").equals("exits")){
+                    loadExitPositions(layer, tileSize, levelHeight);
+                }
             }
+        }
+
+        if (next) {
+            bounds.y += prevExitY - returnY;
+        } else {
+            bounds.y += prevExitY - goalY;
+            bounds.x -= bounds.width;
         }
 
         populateObstacles(obstacleData, tileSize, levelHeight);
@@ -390,10 +418,11 @@ public class Level {
                 }
             }
         }
-        tiles = new Tiles(tileData, 1024, levelWidth, levelHeight, tileset, fID, new Vector2(1/32f, 1/32f));
+        tiles = new Tiles(tileData, 1024, levelWidth, levelHeight, tileset, bounds, fID, new Vector2(1/32f, 1/32f));
 
-        spiritMode = false;
-        spiritLine = new SpiritLine(Color.WHITE, Color.CYAN, scale);
+        for (Obstacle obj : objects){
+            obj.setLevel(this);
+        }
     }
 
     /**
@@ -582,11 +611,6 @@ public class Level {
             readProperties(objJV, tileSize, levelHeight);
             Exit exit = new Exit(propertiesMap, scale);
             addObject(exit);
-            if (exit.exitType() == Exit.ExitType.GOAL){
-                goalExit = exit;
-            } else {
-                returnExit = exit;
-            }
         }
     }
 
@@ -636,8 +660,8 @@ public class Level {
                 y = objectJV.getFloat("y");
                 break;
         }
-        x = x/tileSize + offset.x;
-        y = levelHeight - y/tileSize + offset.y;
+        x = x/tileSize + bounds.x;
+        y = levelHeight - y/tileSize + bounds.y;
         propertiesMap.put("x", x);
         propertiesMap.put("y", y);
 
@@ -816,11 +840,11 @@ public class Level {
             //scales background with level size
             float scaleX = bounds.width/background.getWidth() * scale.x;
             float scaleY = bounds.height/background.getHeight() * scale.y;
-            canvas.draw(background, Color.WHITE, 0, 0, background.getWidth()*Float.max(scaleX,scaleY), background.getHeight()*Float.max(scaleX,scaleY));
+            canvas.draw(background, Color.WHITE, bounds.x * scale.x, bounds.y * scale.y, background.getWidth()*Float.max(scaleX,scaleY), background.getHeight()*Float.max(scaleX,scaleY));
 //            canvas.draw(background, 0, 0);
         }
 
-        tiles.draw(canvas);
+        if (tiles != null) tiles.draw(canvas);
 
         //draw everything except cat, dead bodies and spirit region
         for(Obstacle obj : objects) {
@@ -835,7 +859,7 @@ public class Level {
         for (DeadBody db : deadBodyArray) {
             db.draw(canvas);
         }
-        cat.draw(canvas);
+        if (cat != null) cat.draw(canvas);
 
         for (SpiritRegion s : spiritRegionArray) {
             s.draw(canvas);

@@ -55,6 +55,8 @@ public abstract class Obstacle {
 	protected Vector2 drawScale;
 	/** Texture scale to scale the texture to the correct size */
 	protected Vector2 textureScale = new Vector2(1, 1);
+	/** The level that this obstacle belongs to */
+	private Level level;
 
 	/// Track garbage collection status
 	/** Whether the object should be removed from the world on next pass */
@@ -1055,6 +1057,10 @@ public abstract class Obstacle {
 	protected Obstacle() { 
 		this(0,0);
 	}
+
+	public void setLevel(Level level) { this.level = level; }
+
+	public Level getLevel() { return level; }
 
 	/**
 	 * Create a new physics object

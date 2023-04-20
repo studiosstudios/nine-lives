@@ -323,7 +323,7 @@ public class GameController implements Screen {
         }
 
         canvas.getCamera().setLevelBounds(currLevel.bounds, scale);
-        canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, false);
+        canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, true);
     }
 
     /**
@@ -359,7 +359,7 @@ public class GameController implements Screen {
         }
 
         canvas.getCamera().setLevelBounds(currLevel.bounds, scale);
-        canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, false);
+        canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, true);
     }
 
     /**

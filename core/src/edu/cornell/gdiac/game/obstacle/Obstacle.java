@@ -49,8 +49,8 @@ public abstract class Obstacle {
 	protected MassData massdata;
 	/** Whether or not to use the custom mass data */
 	protected boolean masseffect;
-    /** A tag for debugging purposes */
-    private String nametag;
+	/** A tag for debugging purposes */
+	private String nametag;
 	/** Drawing scale to convert physics units to pixels */
 	protected Vector2 drawScale;
 	/** Texture scale to scale the texture to the correct size */
@@ -931,26 +931,44 @@ public abstract class Obstacle {
 	}
 	
 	/// DRAWING METHODS
+
 	/**
-     * Returns the drawing scale for this physics object
-     *
-     * The drawing scale is the number of pixels to draw before Box2D unit. Because
-     * mass is a function of area in Box2D, we typically want the physics objects
-     * to be small.  So we decouple that scale from the physics object.  However,
-     * we must track the scale difference to communicate with the scene graph.
-     *
-	 * This method does NOT return a reference to the drawing scale. Changes to this 
+	 * Returns the x-coordinate of this object scaled by its draw scale.
+	 *
+	 * Useful for when you need the object's x position for drawing coordinates.
+	 *
+	 * @return float representing this body's x-coordinate * the drawScale's x coordinate
+	 */
+	public float getDrawX() { return getX() * drawScale.x; }
+	/**
+	 * Returns the y-coordinate of this object scaled by its draw scale.
+	 *
+	 * Useful for when you need the object's y position for drawing coordinates.
+	 *
+	 * @return float representing this body's y-coordinate * the drawScale's y coordinate
+	 */
+	public float getDrawY() { return getY() * drawScale.y; }
+
+	/**
+	* Returns the drawing scale for this physics object
+	*
+	* The drawing scale is the number of pixels to draw before Box2D unit. Because
+	* mass is a function of area in Box2D, we typically want the physics objects
+	* to be small.  So we decouple that scale from the physics object.  However,
+	* we must track the scale difference to communicate with the scene graph.
+	*
+	 * This method does NOT return a reference to the drawing scale. Changes to this
 	 * vector will not affect the body.  However, it returns the same vector each time
 	 * its is called, and so cannot be used as an allocator.
 
-     * We allow for the scaling factor to be non-uniform.
-     *
-     * @return the drawing scale for this physics object
-     */
-    public Vector2 getDrawScale() { 
-    	scaleCache.set(drawScale);
-    	return scaleCache; 
-    }
+	* We allow for the scaling factor to be non-uniform.
+	*
+	* @return the drawing scale for this physics object
+	*/
+	public Vector2 getDrawScale() {
+		scaleCache.set(drawScale);
+		return scaleCache;
+	}
 
 	/**
 	 * Returns the texture scale for this physics object
@@ -970,20 +988,20 @@ public abstract class Obstacle {
 		return scaleCache;
 	}
     
-    /**
-     * Sets the drawing scale for this physics object
-     *
-     * The drawing scale is the number of pixels to draw before Box2D unit. Because
-     * mass is a function of area in Box2D, we typically want the physics objects
-     * to be small.  So we decouple that scale from the physics object.  However,
-     * we must track the scale difference to communicate with the scene graph.
-     *
-     * We allow for the scaling factor to be non-uniform.
-     *
-     * @param value  the drawing scale for this physics object
-     */
-    public void setDrawScale(Vector2 value) { 
-    	setDrawScale(value.x,value.y); 
+	/**
+	* Sets the drawing scale for this physics object
+	*
+	* The drawing scale is the number of pixels to draw before Box2D unit. Because
+	* mass is a function of area in Box2D, we typically want the physics objects
+	* to be small.  So we decouple that scale from the physics object.  However,
+	* we must track the scale difference to communicate with the scene graph.
+	*
+	* We allow for the scaling factor to be non-uniform.
+	*
+	* @param value  the drawing scale for this physics object
+	*/
+	public void setDrawScale(Vector2 value) {
+		setDrawScale(value.x,value.y);
 	}
 
 	/**
@@ -997,22 +1015,22 @@ public abstract class Obstacle {
 	 */
 	public void setTextureScale(Vector2 value) {setTextureScale(value.x,value.y);}
     
-    /**
-     * Sets the drawing scale for this physics object
-     *
-     * The drawing scale is the number of pixels to draw before Box2D unit. Because
-     * mass is a function of area in Box2D, we typically want the physics objects
-     * to be small.  So we decouple that scale from the physics object.  However,
-     * we must track the scale difference to communicate with the scene graph.
-     *
-     * We allow for the scaling factor to be non-uniform.
-     *
-     * @param x  the x-axis scale for this physics object
-     * @param y  the y-axis scale for this physics object
-     */
-    public void setDrawScale(float x, float y) {
-    	drawScale.set(x,y);
-    }
+	/**
+	* Sets the drawing scale for this physics object
+	*
+	* The drawing scale is the number of pixels to draw before Box2D unit. Because
+	* mass is a function of area in Box2D, we typically want the physics objects
+	* to be small.  So we decouple that scale from the physics object.  However,
+	* we must track the scale difference to communicate with the scene graph.
+	*
+	* We allow for the scaling factor to be non-uniform.
+	*
+	* @param x  the x-axis scale for this physics object
+	* @param y  the y-axis scale for this physics object
+	*/
+	public void setDrawScale(float x, float y) {
+    		drawScale.set(x,y);
+    	}
 
 	/**
 	 * Sets the texture scale for this physics object
@@ -1028,24 +1046,24 @@ public abstract class Obstacle {
     	
 	/// DEBUG METHODS
 	/**
-     * Returns the physics object tag.
-     * 
-     * A tag is a string attached to an object, in order to identify it in debugging.
-     *
-     * @return the physics object tag.
-     */
-    public String getName() { 
-    	return nametag; 
-    }
-    
-    /**
-     * Sets the physics object tag.
-     *
-     * A tag is a string attached to an object, in order to identify it in debugging.
-     *
-     * @param  value    the physics object tag
-     */
-    public void setName(String value) {
+	* Returns the physics object tag.
+	*
+	* A tag is a string attached to an object, in order to identify it in debugging.
+	*
+	* @return the physics object tag.
+	*/
+	public String getName() {
+	return nametag;
+	}
+
+	/**
+	* Sets the physics object tag.
+	*
+	* A tag is a string attached to an object, in order to identify it in debugging.
+	*
+	* @param  value    the physics object tag
+	*/
+	public void setName(String value) {
      	nametag = value; 
 	}
 	

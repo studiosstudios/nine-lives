@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
@@ -341,7 +342,7 @@ public class GameController implements Screen {
                 "background", "flame_anim", "roboMob",
                 "spirit_anim", "spirit_photon", "spirit_photon_cat", "spirit_region",
                 "meow_anim", "idle_anim", "idle_anim_stand",
-                "metal_tileset", "steel","burnCat"};
+                "metal_tileset", "steel","burnCat","light"};
 
         for (String n : names){
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
@@ -700,6 +701,22 @@ public class GameController implements Screen {
         canvas.applyViewport();
         level.draw(canvas);
         canvas.drawRectangle(0, 0, level.bounds.width,level.bounds.height, flashColor, scale.x, scale.y);
+        canvas.end();
+
+        canvas.lightBuffer.begin();
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+
+        Gdx.gl.glClearColor(0, 0, 0, 0.8f);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        canvas.begin();
+        canvas.draw(textureRegionAssetMap.get("light").getTexture(), 0, 0);
+        canvas.end();
+        canvas.lightBuffer.end();
+        Gdx.gl.glBlendFunc(GL20.GL_DST_COLOR, GL20.GL_ZERO);
+        canvas.lightBufferRegion = new TextureRegion(canvas.lightBuffer.getColorBufferTexture(), 0, 0, canvas.getWidth(), canvas.getHeight());
+        canvas.begin();
+        canvas.draw(canvas.lightBufferRegion, 0, 0);
         canvas.end();
 
         if (debug) {

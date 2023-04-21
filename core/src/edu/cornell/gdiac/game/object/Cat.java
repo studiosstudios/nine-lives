@@ -208,6 +208,7 @@ public class Cat extends CapsuleObstacle implements Movable {
     private Queue<DashShadow> dashShadowQueue = new Queue<>();
     private Color dashColor = new Color(0.68f, 0.85f, 0.9f, 1f);
     private TextureRegion currentFrame;
+    private Texture light;
     //endregion
     /*/////*/
 
@@ -499,6 +500,7 @@ public class Cat extends CapsuleObstacle implements Movable {
         jumpTexture = tMap.get("jumpingCat");
         sitTexture = tMap.get("sit");
         currentFrame = sitTexture;
+        light = tMap.get("light").getTexture();
 
         walkAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("walk").getTexture(),2048,2048)[0]);
 
@@ -764,7 +766,9 @@ public class Cat extends CapsuleObstacle implements Movable {
             canvas.draw(currentFrame, failColor, origin.x, origin.y, x + xOffset, y, 0, directionFactor/drawScale.x, 1f/drawScale.y);
         }
 
+        // LIGHt new Color(0.992f, 0.992f, 0.588f, 1f)
         canvas.draw(currentFrame, Color.WHITE, origin.x, origin.y, x, y, 0, directionFactor/drawScale.x, 1f/drawScale.y);
+        canvas.draw(light, new Color(0.992f, 0.992f, 0.588f, 0.1f), light.getWidth()/2f, light.getHeight()/2f, getDrawX() - (directionFactor * 6), getDrawY()+14, 0, 3f*directionFactor/drawScale.x, 3f/drawScale.y);
     }
 
     /**

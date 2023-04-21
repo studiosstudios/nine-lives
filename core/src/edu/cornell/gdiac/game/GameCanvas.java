@@ -1,6 +1,8 @@
 package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -59,7 +61,7 @@ public class GameCanvas {
 	private final float STANDARD_HEIGHT = 576f;
 	
 	/** Drawing context to handle textures AND POLYGONS as sprites */
-	private PolygonSpriteBatch spriteBatch;
+	public PolygonSpriteBatch spriteBatch;
 
 	/** Path rendering */
 	private PathFactory pathFactory;
@@ -106,6 +108,9 @@ public class GameCanvas {
 	private TextureRegion holder;
 	private final float CAMERA_ZOOM = 0.6f;
 
+	public FrameBuffer lightBuffer;
+	public TextureRegion lightBufferRegion;
+
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
 	 * <br><br>
@@ -135,6 +140,11 @@ public class GameCanvas {
 		local  = new Affine2();
 		global = new Matrix4();
 		vertex = new Vector2();
+
+		// Light buffer
+		lightBuffer = new FrameBuffer(Format.RGBA8888, (int)STANDARD_WIDTH, (int)STANDARD_HEIGHT, false);
+		lightBuffer.getColorBufferTexture().setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		lightBufferRegion = new TextureRegion(lightBuffer.getColorBufferTexture(), 0, 0, STANDARD_WIDTH, STANDARD_HEIGHT);
 	}
 	/**
 	* Eliminate any resources that should be garbage collected manually.
@@ -274,7 +284,7 @@ public class GameCanvas {
 	 * This method raises an IllegalStateException if called while drawing is
 	 * active (e.g. in-between a begin-end pair).
 	 *
-	 * @param value Whether this canvas should change to fullscreen.
+	 * @param fullscreen Whether this canvas should change to fullscreen.
 	 * @param desktop 	 Whether to use the current desktop resolution
 	 */	 
 	public void setFullscreen(boolean fullscreen, boolean desktop) {
@@ -300,9 +310,12 @@ public class GameCanvas {
 	 * If you do not call this when the window is resized, you will get
 	 * weird scaling issues.
 	 */
-	 public void resize() {
+	public void resize() {
 		spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, getWidth(), getHeight());
-		 extendView.update(getWidth(), getHeight(), true);
+		extendView.update(getWidth(), getHeight(), true);
+		lightBuffer = new FrameBuffer(Format.RGBA8888, getWidth(), getHeight(), false);
+		lightBuffer.getColorBufferTexture().setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		lightBufferRegion = new TextureRegion(lightBuffer.getColorBufferTexture(), 0, 0, getWidth(), getHeight());
 	}
 	
 	/**

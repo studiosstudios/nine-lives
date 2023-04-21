@@ -45,7 +45,8 @@
         "idle_anim": "platform/idle.png",
         "idle_anim_stand": "platform/standing_idle.png",
         "metal_tileset": "tiled/metal_tileset.png",
-        "steel": "shared/steeltile.png"
+        "steel": "shared/steeltile.png",
+        "light" : "platform/novelight.png",
     },
     "jsons"  : {
         "constants": "platform/constants.json",

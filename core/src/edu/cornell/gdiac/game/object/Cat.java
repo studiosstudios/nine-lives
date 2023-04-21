@@ -475,7 +475,7 @@ public class Cat extends CapsuleObstacle implements Movable {
         super((float) properties.get("x") + objectConstants.get("offset").getFloat(0),
                 (float) properties.get("y") + objectConstants.get("offset").getFloat(1),
                 tMap.get("cat").getRegionWidth()/scale.x*objectConstants.get("shrink").getFloat( 0 ),
-                tMap.get("cat").getRegionHeight()/scale.y*objectConstants.get("shrink").getFloat( 1 ), Orientation.TOP);
+                tMap.get("cat").getRegionHeight()/scale.y*objectConstants.get("shrink").getFloat( 1 ));
         setDrawScale(scale);
         setDensity(objectConstants.getFloat("density", 0));
         setFriction(
@@ -618,6 +618,7 @@ public class Cat extends CapsuleObstacle implements Movable {
                 }
                 // MOVING -> DASHING
                 if (dashTimer == 0 && dashPressed) {
+                    System.out.println("DASHING" + Gdx.graphics.getDeltaTime());
                     state = State.DASHING;
                     setGravityScale(0);
                     calculateDashVector();
@@ -664,6 +665,7 @@ public class Cat extends CapsuleObstacle implements Movable {
                         setVY(maxSpeed);
                     }
                     setGravityScale(2f);
+                    if (isGrounded) onGroundedReset();
                     return;
                 }
                 break;
@@ -713,7 +715,9 @@ public class Cat extends CapsuleObstacle implements Movable {
         float horizontalForce = horizontalMovement / 1.8f;
         float verticalForce = verticalMovement / 1.8f;
         if (horizontalMovement == 0 && verticalMovement == 0) {
-            horizontalForce = (isFacingRight() ? 1 : -1) * getForce() / 2f;
+            // If the player dashes without holding any keys, we increase the force of the dash.
+            // Otherwise, the dash itself 'feels' too short.
+            horizontalForce = (isFacingRight() ? 1 : -1) * getForce() / 1.6f;
         } else if (horizontalMovement != 0 && verticalMovement != 0) {
             horizontalForce = horizontalForce / (float)Math.sqrt(2);
             verticalForce = verticalForce / (float)Math.sqrt(2);

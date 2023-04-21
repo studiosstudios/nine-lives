@@ -422,8 +422,8 @@ public class GameController implements Screen {
         //Set controls
         InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
 
-//		InputController.getInstance().writeTo("inputLogs/recent.txt");
-		InputController.getInstance().readFrom("inputLogs/recent.txt");
+		InputController.getInstance().writeTo("inputLogs/recent.txt");
+//		InputController.getInstance().readFrom("inputLogs/recent.txt");
     }
 
     /**

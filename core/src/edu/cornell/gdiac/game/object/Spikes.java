@@ -52,20 +52,6 @@ public class Spikes extends BoxObstacle implements Activatable {
         setTextureScale(textureScale);
         setTexture(tMap.get("spikes"));
 
-        Vector2 sensorCenter = new Vector2(objectConstants.get("sensor_offset").getFloat(0),
-                objectConstants.get("sensor_offset").getFloat(1));
-        sensorShape = new PolygonShape();
-        sensorShape.setAsBox(getWidth() / 2 * objectConstants.getFloat("sensor_width_scale"),
-                getHeight() / 2 * objectConstants.getFloat("sensor_height_scale"),
-                sensorCenter, 0.0f);
-
-        Vector2 solidCenter = new Vector2(objectConstants.get("solid_offset").getFloat(0),
-                objectConstants.get("solid_offset").getFloat(1));
-        solidShape = new PolygonShape();
-        solidShape.setAsBox(getWidth() / 2 * objectConstants.getFloat("solid_width_scale"),
-                getHeight() / 2 * objectConstants.getFloat("solid_height_scale"),
-                solidCenter, 0.0f);
-
         setX((float) properties.get("x")+objectConstants.get("offset").getFloat(0));
         setY((float) properties.get("y")+objectConstants.get("offset").getFloat(1));
         setAngle((float) ((float) properties.get("rotation") * Math.PI/180));
@@ -114,6 +100,20 @@ public class Spikes extends BoxObstacle implements Activatable {
      */
     protected void createFixtures(){
         super.createFixtures();
+
+        Vector2 sensorCenter = new Vector2(objectConstants.get("sensor_offset").getFloat(0),
+                objectConstants.get("sensor_offset").getFloat(1));
+        sensorShape = new PolygonShape();
+        sensorShape.setAsBox(getWidth() / 2 * objectConstants.getFloat("sensor_width_scale"),
+                getHeight() / 2 * objectConstants.getFloat("sensor_height_scale"),
+                sensorCenter, 0.0f);
+
+        Vector2 solidCenter = new Vector2(objectConstants.get("solid_offset").getFloat(0),
+                objectConstants.get("solid_offset").getFloat(1));
+        solidShape = new PolygonShape();
+        solidShape.setAsBox(getWidth() / 2 * objectConstants.getFloat("solid_width_scale"),
+                getHeight() / 2 * objectConstants.getFloat("solid_height_scale"),
+                solidCenter, 0.0f);
 
         FixtureDef solidDef = new FixtureDef();
         solidDef.density = 0;

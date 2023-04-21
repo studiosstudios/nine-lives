@@ -314,7 +314,6 @@ public class GameController implements Screen {
         currLevelIndex = (currLevelIndex + 1) % 3;
         currLevel.setComplete(false);
         setLevels();
-        System.out.println("next:" + levelNum);
 //        respawn();
         currLevel.setCat(prevLevel.getCat());
         prevLevel.removeCat();
@@ -330,6 +329,7 @@ public class GameController implements Screen {
             nextLevel.populateTiled(nextJV, currLevel.bounds.x + currLevel.bounds.width, currLevel.bounds.y, currLevel.goalY, true);
         }
 
+        prevLivesState = new LevelState[9];
         canvas.getCamera().setLevelBounds(currLevel.bounds, scale);
         canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, true);
     }
@@ -349,7 +349,6 @@ public class GameController implements Screen {
         if (levelNum > 1) {
             prevJV = tiledJSON(levelNum - 1);
         }
-        System.out.println("prev:" + levelNum);
         currLevelIndex = Math.floorMod(currLevelIndex - 1,  3);
         setLevels();
         currLevel.setCat(nextLevel.getCat());
@@ -366,6 +365,7 @@ public class GameController implements Screen {
             prevLevel.populateTiled(prevJV, currLevel.bounds.x, currLevel.bounds.y, currLevel.returnY, false);
         }
 
+        prevLivesState = new LevelState[9];
         canvas.getCamera().setLevelBounds(currLevel.bounds, scale);
         canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, true);
     }
@@ -479,7 +479,6 @@ public class GameController implements Screen {
         world.setContactListener(collisionController);
         world.setContactFilter(collisionController);
         collisionController.setLevel(currLevel);
-        System.out.println(currLevel.getMobArray());
         collisionController.setReturn(false);
         setRet(false);
 

@@ -455,7 +455,7 @@ public class Cat extends CapsuleObstacle implements Movable {
         super((float) properties.get("x") + objectConstants.get("offset").getFloat(0),
                 (float) properties.get("y") + objectConstants.get("offset").getFloat(1),
                 tMap.get("cat").getRegionWidth()/scale.x*objectConstants.get("shrink").getFloat( 0 ),
-                tMap.get("cat").getRegionHeight()/scale.y*objectConstants.get("shrink").getFloat( 1 ), Orientation.TOP);
+                tMap.get("cat").getRegionHeight()/scale.y*objectConstants.get("shrink").getFloat( 1 ), Orientation.VERTICAL);
         System.out.println(getDimension());
         setDrawScale(scale);
         setDensity(objectConstants.getFloat("density", 0));

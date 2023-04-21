@@ -109,7 +109,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
     public void removeHazard(){ hazardsTouching--; }
 
     public DeadBody(TextureRegion texture, TextureRegion burnTexture, Vector2 scale, Vector2 position) {
-        super(0, 0, objectConstants.getFloat("capsuleWidth"), objectConstants.getFloat("capsuleHeight"), Orientation.TOP);
+        super(0, 0, objectConstants.getFloat("capsuleWidth"), objectConstants.getFloat("capsuleHeight"), Orientation.VERTICAL);
 
         spriteFrames = TextureRegion.split(burnTexture.getTexture(), 2048,2048);
         animation = new Animation<>(0.025f, spriteFrames[0]);

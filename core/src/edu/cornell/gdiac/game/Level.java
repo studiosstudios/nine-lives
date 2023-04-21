@@ -478,7 +478,7 @@ public class Level {
             } else if (name.equals("mirrors")) {
                 populateMirrors(obstacleData, tileSize, levelHeight);
             } else if (name.equals("cat")) {
-                if (populateCat) populateCat(obstacleData, tileSize, levelHeight);
+                populateCat(obstacleData, tileSize, levelHeight, populateCat);
             } else if (name.equals("exits")) {
                 populateExits(obstacleData, tileSize, levelHeight);
             }
@@ -634,14 +634,18 @@ public class Level {
         }
     }
 
-    private void populateCat(JsonValue data, int tileSize, int levelHeight){
+    private void populateCat(JsonValue data, int tileSize, int levelHeight, boolean shouldPopulate){
         JsonValue objects = data.get("objects");
         JsonValue catJV = objects.get(0);
         readProperties(catJV, tileSize, levelHeight);
         cat = new Cat(propertiesMap, textureRegionAssetMap, scale);
         respawnPos = cat.getPosition();
         startRespawnPos = respawnPos;
-        addObject(cat);
+        if (shouldPopulate) {
+            addObject(cat);
+        } else {
+            cat = null;
+        }
     }
 
 

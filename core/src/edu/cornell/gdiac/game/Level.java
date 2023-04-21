@@ -485,6 +485,13 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the walls for this level.
+     *
+     * @param data          Tiled JSON data for all walls
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateWalls(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         for (JsonValue objJV : objects) {
@@ -494,6 +501,13 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the platforms for this level.
+     *
+     * @param data          Tiled JSON data for all platforms
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populatePlatforms(JsonValue data, int tileSize, int levelHeight){
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1, 1);
@@ -504,6 +518,13 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the checkpoints for this level.
+     *
+     * @param data          Tiled JSON data for all checkpoints
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateCheckpoints(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1/32f, 1/32f);
@@ -514,6 +535,13 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the activators for this level.
+     *
+     * @param data          Tiled JSON data for all activators
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateActivators(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1, 1);
@@ -539,6 +567,13 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the spikes for this level.
+     *
+     * @param data          Tiled JSON data for all spikes
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateSpikes(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1/64f, 1/64f);
@@ -549,6 +584,13 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the flamethrowers for this level.
+     *
+     * @param data          Tiled JSON data for all flamethrowers
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateFlamethrowers(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1/64f, 1/64f);
@@ -559,7 +601,13 @@ public class Level {
         }
     }
 
-
+    /**
+     * Populates the lasers for this level.
+     *
+     * @param data          Tiled JSON data for all lasers
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateLasers(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1, 1);
@@ -571,6 +619,13 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the doors for this level.
+     *
+     * @param data          Tiled JSON data for all doors
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateDoors(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1, 1);
@@ -581,6 +636,13 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the spirit regions for this level.
+     *
+     * @param data          Tiled JSON data for all spirit regions
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateSpiritRegions(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1, 1);
@@ -592,6 +654,13 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the mobs for this level.
+     *
+     * @param data          Tiled JSON data for all mobs
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateMobs(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1/32f, 1/32f);
@@ -603,6 +672,13 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the boxes for this level.
+     *
+     * @param data          Tiled JSON data for all boxes
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateBoxes(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1, 1);
@@ -613,6 +689,13 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the mirrors for this level.
+     *
+     * @param data          Tiled JSON data for all mirrors
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateMirrors(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1, 1);
@@ -623,6 +706,13 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the exits for this level.
+     *
+     * @param data          Tiled JSON data for all exits
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateExits(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         for (JsonValue objJV : objects) {
@@ -634,6 +724,13 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the cat for this level.
+     *
+     * @param data          Tiled JSON data for the cat
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateCat(JsonValue data, int tileSize, int levelHeight){
         JsonValue objects = data.get("objects");
         JsonValue catJV = objects.get(0);
@@ -643,7 +740,6 @@ public class Level {
         startRespawnPos = respawnPos;
         addObject(cat);
     }
-
 
     /**
      * Reads the properties array of an object in a Tiled JSON, and puts it into <code>propertiesMap</code>.
@@ -761,6 +857,24 @@ public class Level {
     }
 
     /**
+     * Pauses all objects in the level: stores state locally and sets velocity to 0.
+     */
+    public void pause(){
+        for (Obstacle obj : objects) {
+            obj.pause();
+        }
+    }
+
+    /**
+     * Unpauses objects in the level: loads locally stored state if there is one.
+     */
+    public void unpause(){
+        for (Obstacle obj : objects) {
+            obj.unpause();
+        }
+    }
+
+    /**
      * Immediately adds the object to the physics world
      *
      * @param obj The object to add
@@ -834,6 +948,12 @@ public class Level {
         }
     }
 
+    /**
+     * Loads an activatable into this world. Assumes that the properties for the object is currently stored in
+     * <code>propertiesMap</code> (see {@link Level#readProperties(JsonValue, int, int)}).
+     *
+     * @param object  Activatable to load.
+     */
     private void loadTiledActivatable(Activatable object){
 
         addObject((Obstacle) object);

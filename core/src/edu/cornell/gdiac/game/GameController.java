@@ -280,6 +280,11 @@ public class GameController implements Screen {
         }
     }
 
+    /**
+     * Sets the static constants for all objects.
+     *
+     * @param constants  Constants JSON
+     */
     private static void setConstants(JsonValue constants){
         DeadBody.setConstants(constants.get("deadBody"));
         Flamethrower.setConstants(constants.get("flamethrowers"));
@@ -318,20 +323,14 @@ public class GameController implements Screen {
         currLevel.setCat(prevLevel.getCat());
         prevLevel.removeCat();
 
-        actionController.setLevel(currLevel);
-        collisionController.setLevel(currLevel);
-        actionController.setMobControllers(currLevel);
-        collisionController.setDidChange(true);
-
         nextLevel.dispose();
         if (levelNum < numLevels) {
             nextJV = tiledJSON(levelNum + 1);
             nextLevel.populateTiled(nextJV, currLevel.bounds.x + currLevel.bounds.width, currLevel.bounds.y, currLevel.goalY, true);
         }
 
-        prevLivesState = new LevelState[9];
-        canvas.getCamera().setLevelBounds(currLevel.bounds, scale);
-        canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, true);
+        initCurrLevel();
+        collisionController.setDidChange(true);
     }
 
     /**
@@ -351,13 +350,9 @@ public class GameController implements Screen {
         }
         currLevelIndex = Math.floorMod(currLevelIndex - 1,  3);
         setLevels();
+
         currLevel.setCat(nextLevel.getCat());
         nextLevel.removeCat();
-
-        actionController.setLevel(currLevel);
-        collisionController.setLevel(currLevel);
-        actionController.setMobControllers(currLevel);
-        collisionController.setDidChange(true);
 
         prevLevel.dispose();
         if (levelNum > 1) {
@@ -365,9 +360,8 @@ public class GameController implements Screen {
             prevLevel.populateTiled(prevJV, currLevel.bounds.x, currLevel.bounds.y, currLevel.returnY, false);
         }
 
-        prevLivesState = new LevelState[9];
-        canvas.getCamera().setLevelBounds(currLevel.bounds, scale);
-        canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, true);
+        initCurrLevel();
+        collisionController.setDidChange(true);
     }
 
     /**
@@ -428,8 +422,8 @@ public class GameController implements Screen {
         //Set controls
         InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
 
-		InputController.getInstance().writeTo("inputLogs/recent.txt");
-//		InputController.getInstance().readFrom("inputLogs/levelSwitchBug1.txt");
+//		InputController.getInstance().writeTo("inputLogs/recent.txt");
+		InputController.getInstance().readFrom("inputLogs/recent.txt");
     }
 
     /**
@@ -478,7 +472,6 @@ public class GameController implements Screen {
         nextLevel.setWorld(world);
         world.setContactListener(collisionController);
         world.setContactFilter(collisionController);
-        collisionController.setLevel(currLevel);
         collisionController.setReturn(false);
         setRet(false);
 
@@ -493,12 +486,22 @@ public class GameController implements Screen {
             prevLevel.populateTiled(prevJV, currLevel.bounds.x, currLevel.bounds.y, currLevel.returnY, false);
         }
 
+        initCurrLevel();
+    }
+
+    /**
+     * Prepares the game for a new level: resets controllers, camera and stored states.
+     */
+    private void initCurrLevel(){
+        collisionController.setLevel(currLevel);
         actionController.setLevel(currLevel);
         actionController.setMobControllers(currLevel);
-
         prevLivesState = new LevelState[9];
         canvas.getCamera().setLevelBounds(currLevel.bounds, scale);
         canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, false);
+        currLevel.unpause();
+        nextLevel.pause();
+        prevLevel.pause();
     }
 
     /**

@@ -24,9 +24,7 @@ import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import java.util.HashMap;
@@ -206,7 +204,7 @@ public class Cat extends CapsuleObstacle implements Movable {
     private Array<PolygonShape> sensorShapes;
     private float failedSwitchTicks;
     private static final float FAILED_SWITCH_TICKS = 30f;
-//    private Queue<Map.Entry<Vector3, Integer>> dashShadowQueue = new Queue<>();
+    private Color failColor = new Color(1, 0, 0, 1);
     private Queue<DashShadow> dashShadowQueue = new Queue<>();
     private Color dashColor = new Color(0.68f, 0.85f, 0.9f, 1f);
     private TextureRegion currentFrame;
@@ -702,11 +700,15 @@ public class Cat extends CapsuleObstacle implements Movable {
             case DASHING:
                 setRelativeVX(dashCache.x);
                 setRelativeVY(dashCache.y);
-                processDashShadowQueue();
+                addDashShadow();
                 break;
         }
     }
 
+    /**
+     * Calculates the dash vector - the vector describing the dash force according to the current
+     * combination of keys held down - and stores it in <code>dashCache</code>.
+     */
     private void calculateDashVector() {
         float horizontalForce = horizontalMovement / 1.8f;
         float verticalForce = verticalMovement / 1.8f;
@@ -720,12 +722,12 @@ public class Cat extends CapsuleObstacle implements Movable {
         dashCache.set(horizontalForce, verticalForce);
     }
 
-    private void processDashShadowQueue() {
+    /**
+     * Creates a new Dash Shadow according to the cat's current state and adds it to <code>dashShadowQueue</code>
+     * to be drawn.
+     */
+    private void addDashShadow() {
         if (dashTimer % 3 == 0) {
-            // We're basically using 4-tuples here with a hideous SimpleEntry<Vector3<>, Integer> set-up
-            // The dash currently uses the cat's current frame, but it'd be better if we had a way to save the cat's drawing frame whenever a new shadow is added
-            // That will best be done by modularizing the drawing code more + making DashShadow a static inner class to store the 5-tuple
-//            dashShadowQueue.addLast(new SimpleEntry<>(new Vector3(getTextureCenterX(), getTextureCenterY(), isFacingRight() ? -1 : 1), 10));
             dashShadowQueue.addLast(new DashShadow(getTextureCenterX(), getTextureCenterY(), getDirectionFactor(), currentFrame));
         }
     }
@@ -749,16 +751,7 @@ public class Cat extends CapsuleObstacle implements Movable {
      */
     public void draw(GameCanvas canvas) {
         updateAnimation();
-
-        for (int i = 0; i < dashShadowQueue.size; i++) {
-            DashShadow shadow = dashShadowQueue.removeFirst();
-            dashColor.a = shadow.timer / 10f;
-            canvas.draw(currentFrame, dashColor, origin.x, origin.y, shadow.x, shadow.y, 0, shadow.directionFactor/drawScale.x, 1f/drawScale.y);
-            if (shadow.timer - 1 > 0) {
-                shadow.timer--;
-                dashShadowQueue.addLast(shadow);
-            }
-        }
+        drawDashShadows(canvas);
 
         float directionFactor = getDirectionFactor();
         float x = getTextureCenterX();
@@ -767,8 +760,8 @@ public class Cat extends CapsuleObstacle implements Movable {
         if (failedSwitchTicks < FAILED_SWITCH_TICKS){
             float xOffset = ((float) (Math.sin(-failedSwitchTicks /2) * Math.exp(-failedSwitchTicks
                     /30)))*drawScale.x/2;
-            Color c = new Color(1, 0 , 0, 0.5f - Math.abs(failedSwitchTicks - FAILED_SWITCH_TICKS /2)/ FAILED_SWITCH_TICKS);
-            canvas.draw(currentFrame, c, origin.x, origin.y, x + xOffset, y, 0, directionFactor/drawScale.x, 1f/drawScale.y);
+            failColor.a = 0.5f - Math.abs(failedSwitchTicks-FAILED_SWITCH_TICKS/2)/ FAILED_SWITCH_TICKS;
+            canvas.draw(currentFrame, failColor, origin.x, origin.y, x + xOffset, y, 0, directionFactor/drawScale.x, 1f/drawScale.y);
         }
 
         canvas.draw(currentFrame, Color.WHITE, origin.x, origin.y, x, y, 0, directionFactor/drawScale.x, 1f/drawScale.y);
@@ -823,6 +816,24 @@ public class Cat extends CapsuleObstacle implements Movable {
             }
             else {
                 currentFrame = idleAnimation.getKeyFrame(stationaryTime);
+            }
+        }
+    }
+
+    /**
+     * Loops through <code>dashShadowQueue</code> and draws the dash shadows. Discards any dash shadow
+     * whose timer has expired.
+     *
+     * @param canvas Drawing context
+     */
+    private void drawDashShadows(GameCanvas canvas) {
+        for (int i = 0; i < dashShadowQueue.size; i++) {
+            DashShadow shadow = dashShadowQueue.removeFirst();
+            dashColor.a = shadow.timer / 10f;
+            canvas.draw(currentFrame, dashColor, origin.x, origin.y, shadow.x, shadow.y, 0, shadow.directionFactor/drawScale.x, 1f/drawScale.y);
+            if (shadow.timer - 1 > 0) {
+                shadow.timer--;
+                dashShadowQueue.addLast(shadow);
             }
         }
     }

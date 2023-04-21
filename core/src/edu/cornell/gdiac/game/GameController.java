@@ -479,8 +479,7 @@ public class GameController implements Screen {
         world.setContactListener(collisionController);
         world.setContactFilter(collisionController);
         collisionController.setLevel(currLevel);
-        actionController.setLevel(currLevel);
-        actionController.setMobControllers(currLevel);
+        System.out.println(currLevel.getMobArray());
         collisionController.setReturn(false);
         setRet(false);
 
@@ -494,6 +493,9 @@ public class GameController implements Screen {
             prevJV = tiledJSON(levelNum - 1);
             prevLevel.populateTiled(prevJV, currLevel.bounds.x, currLevel.bounds.y, currLevel.returnY, false);
         }
+
+        actionController.setLevel(currLevel);
+        actionController.setMobControllers(currLevel);
 
         prevLivesState = new LevelState[9];
         canvas.getCamera().setLevelBounds(currLevel.bounds, scale);

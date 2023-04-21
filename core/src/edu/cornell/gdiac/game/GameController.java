@@ -329,7 +329,7 @@ public class GameController implements Screen {
             nextLevel.populateTiled(nextJV, currLevel.bounds.x + currLevel.bounds.width, currLevel.bounds.y, currLevel.goalY, true);
         }
 
-        initCurrLevel();
+        initCurrLevel(true);
         collisionController.setDidChange(true);
     }
 
@@ -360,7 +360,7 @@ public class GameController implements Screen {
             prevLevel.populateTiled(prevJV, currLevel.bounds.x, currLevel.bounds.y, currLevel.returnY, false);
         }
 
-        initCurrLevel();
+        initCurrLevel(true);
         collisionController.setDidChange(true);
     }
 
@@ -486,19 +486,21 @@ public class GameController implements Screen {
             prevLevel.populateTiled(prevJV, currLevel.bounds.x, currLevel.bounds.y, currLevel.returnY, false);
         }
 
-        initCurrLevel();
+        initCurrLevel(false);
     }
 
     /**
      * Prepares the game for a new level: resets controllers, camera and stored states.
+     *
+     * @param cameraGlide True if the camera should glide to its new location.
      */
-    private void initCurrLevel(){
+    private void initCurrLevel(boolean cameraGlide){
         collisionController.setLevel(currLevel);
         actionController.setLevel(currLevel);
         actionController.setMobControllers(currLevel);
         prevLivesState = new LevelState[9];
         canvas.getCamera().setLevelBounds(currLevel.bounds, scale);
-        canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, false);
+        canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, cameraGlide);
         currLevel.unpause();
         nextLevel.pause();
         prevLevel.pause();

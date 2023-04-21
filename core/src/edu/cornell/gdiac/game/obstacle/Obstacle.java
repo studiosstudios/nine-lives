@@ -1164,11 +1164,15 @@ public abstract class Obstacle {
 		setBaseVelocity(Vector2.Zero);
 		setRelativeVelocity(Vector2.Zero);
 		setLinearVelocity(Vector2.Zero);
+		setAwake(false);
 	}
 
 	/**
 	 * If this obstacle has been paused before, loads the state from the paused state, otherwise does nothing.
 	 */
-	public void unpause() { if (pausedState != null) loadState(pausedState); }
+	public void unpause() {
+		if (pausedState != null) loadState(pausedState);
+		setAwake(true);
+	}
 
 }

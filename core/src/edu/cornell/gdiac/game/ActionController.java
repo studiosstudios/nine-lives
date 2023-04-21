@@ -522,7 +522,9 @@ public class ActionController {
          */
         @Override
         public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-            if ( fraction < closestFraction ) {
+            if (fixture.getUserData() != null && fixture.getUserData().equals(DeadBody.catHitboxSensorName)) {
+                ((DeadBody) (fixture.getBody().getUserData())).setTouchingLaser(true);
+            } else if ( fraction < closestFraction && !fixture.isSensor()) {
                 closestFraction = fraction;
                 rayCastPoint.set(point);
                 rayCastFixture = fixture;

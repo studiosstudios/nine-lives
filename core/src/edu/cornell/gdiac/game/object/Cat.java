@@ -456,6 +456,7 @@ public class Cat extends CapsuleObstacle implements Movable {
                 (float) properties.get("y") + objectConstants.get("offset").getFloat(1),
                 tMap.get("cat").getRegionWidth()/scale.x*objectConstants.get("shrink").getFloat( 0 ),
                 tMap.get("cat").getRegionHeight()/scale.y*objectConstants.get("shrink").getFloat( 1 ), Orientation.TOP);
+        System.out.println(getDimension());
         setDrawScale(scale);
         setDensity(objectConstants.getFloat("density", 0));
         setFriction(
@@ -575,6 +576,7 @@ public class Cat extends CapsuleObstacle implements Movable {
         PolygonShape sensorShape = new PolygonShape();
         sensorShape.setAsBox(hx, hy, location, 0.0f);
         sensorDef.shape = sensorShape;
+        System.out.println(name + ": " + location+ "\twidth: " + hx + "\theight: " + hy) ;
 
         Fixture sensorFixture = body.createFixture(sensorDef);
         sensorFixture.setUserData(name);

@@ -156,6 +156,11 @@ public class Cat extends CapsuleObstacle implements Movable {
     private final String sideSensorName;
 
     /**
+     * User data of body fixtures for this cat. Used in Contact Listener
+     */
+    public static final String bodyName = "catBody";
+
+    /**
      * Whether we are in contact with a wall
      */
     private int wallCount;
@@ -455,8 +460,7 @@ public class Cat extends CapsuleObstacle implements Movable {
         super((float) properties.get("x") + objectConstants.get("offset").getFloat(0),
                 (float) properties.get("y") + objectConstants.get("offset").getFloat(1),
                 tMap.get("cat").getRegionWidth()/scale.x*objectConstants.get("shrink").getFloat( 0 ),
-                tMap.get("cat").getRegionHeight()/scale.y*objectConstants.get("shrink").getFloat( 1 ), Orientation.VERTICAL);
-        System.out.println(getDimension());
+                tMap.get("cat").getRegionHeight()/scale.y*objectConstants.get("shrink").getFloat( 1 ), Orientation.TOP);
         setDrawScale(scale);
         setDensity(objectConstants.getFloat("density", 0));
         setFriction(
@@ -529,6 +533,7 @@ public class Cat extends CapsuleObstacle implements Movable {
             return false;
         }
 
+        for (Fixture f : body.getFixtureList()) f.setUserData(bodyName);
         // Ground Sensor
         // -------------
         // We only allow the cat to jump when he's on the ground.
@@ -576,7 +581,6 @@ public class Cat extends CapsuleObstacle implements Movable {
         PolygonShape sensorShape = new PolygonShape();
         sensorShape.setAsBox(hx, hy, location, 0.0f);
         sensorDef.shape = sensorShape;
-        System.out.println(name + ": " + location+ "\twidth: " + hx + "\theight: " + hy) ;
 
         Fixture sensorFixture = body.createFixture(sensorDef);
         sensorFixture.setUserData(name);

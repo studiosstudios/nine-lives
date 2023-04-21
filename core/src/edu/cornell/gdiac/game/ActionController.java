@@ -427,6 +427,7 @@ public class ActionController {
      * @param points the points to fix to
      */
     public void fixBodyToSpikes(DeadBody deadBody, Spikes spikes, Vector2[] points) {
+        System.out.println("welded");
         switch ((int) (spikes.getAngle() * 180/Math.PI)) {
             case 0:
             case 90:

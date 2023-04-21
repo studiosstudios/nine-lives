@@ -102,7 +102,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                     if (bd2 == level.getGoalExit() && !didChange) level.setComplete(true);
                     if (bd2 == level.getReturnExit() && !didChange) setReturn(true);
 
-                    if (fd2 instanceof Spikes) {
+                    if (bd2 instanceof Spikes && fd2.equals(Spikes.pointyName)) {
                         actionController.die();
                     }
                     if (fd2 instanceof Flamethrower.Flame){
@@ -121,12 +121,12 @@ public class CollisionController implements ContactListener, ContactFilter {
                 }
 
                 //dead body collisions
-                if (fd1 instanceof DeadBody) {
-                    DeadBody db = (DeadBody) fd1;
-                    if (fd2 instanceof Spikes) {
-                        actionController.fixBodyToSpikes(db, (Spikes) fd2, contact.getWorldManifold().getPoints());
+                if (bd1 instanceof DeadBody) {
+                    DeadBody db = (DeadBody) bd1;
+                    if (bd2 instanceof Spikes) {
+                        actionController.fixBodyToSpikes(db, (Spikes) bd2, contact.getWorldManifold().getPoints());
                         db.addHazard();
-                    } else if (fd2 instanceof Flamethrower.Flame) {
+                    } else if (bd2 instanceof Flamethrower.Flame) {
                         db.setBurning(true);
                         db.addHazard();
                     } else if (bd2 instanceof SpiritRegion){
@@ -221,8 +221,8 @@ public class CollisionController implements ContactListener, ContactFilter {
                 }
 
                 //dead body collisions
-                if (fd1 instanceof DeadBody) {
-                    DeadBody db = (DeadBody) fd1;
+                if (bd1 instanceof DeadBody) {
+                    DeadBody db = (DeadBody) bd1;
                     if (fd2 instanceof Spikes) {
                         db.removeHazard();
                     } else if (fd2 instanceof Flamethrower.Flame) {
@@ -295,6 +295,16 @@ public class CollisionController implements ContactListener, ContactFilter {
                 //flame does not turn on activators
                 if (fd1 instanceof Activator && bd2 instanceof Flamethrower.Flame) {
                     return false;
+                }
+
+                //spikes and dead bodies
+                if (bd1 instanceof Spikes && bd2 instanceof DeadBody) {
+                    return fd2.equals(DeadBody.centerSensorName) && fd1.equals(Spikes.centerName);
+                }
+
+                //cat and spikes
+                if (bd1 instanceof Spikes && bd2 instanceof Cat) {
+                    return !fd1.equals(Spikes.solidName) && fd2.equals(Cat.bodyName);
                 }
 
                 //swap everything

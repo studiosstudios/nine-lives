@@ -42,6 +42,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
     public static final String groundSensorName = "deadBodyGround";
     public static final String centerSensorName = "deadBodyCenter";
     public static final String catHitboxSensorName = "catHitBox";
+    public static final String hitboxSensorName = "deadBodyHitBox";
     private PolygonShape hitboxShape;
 
     /** List of shapes corresponding to the sensors attached to this body */
@@ -108,8 +109,19 @@ public class DeadBody extends CapsuleObstacle implements Movable {
      */
     public void removeHazard(){ hazardsTouching--; }
 
+    /**
+     * Creates a new dead body. Note that the Box2D body created in this constructor is not the actual solid part of the
+     * dead body, it is a sensor body that is identical to the body of the Cat. This is so that we have a reference for
+     * how much space the Cat would take if swapped with this dead body. The actual solid fixture is created in
+     * <code>activatePhysics().</code>
+     *
+     * @param texture       Texture for regular dead body.
+     * @param burnTexture   Texture for burning dead body.
+     * @param scale         Draw scale.
+     * @param position      Position
+     */
     public DeadBody(TextureRegion texture, TextureRegion burnTexture, Vector2 scale, Vector2 position) {
-        super(0, 0, objectConstants.getFloat("capsuleWidth"), objectConstants.getFloat("capsuleHeight"), Orientation.VERTICAL);
+        super(0, 0, objectConstants.getFloat("capsuleWidth"), objectConstants.getFloat("capsuleHeight"), Orientation.TOP);
 
         spriteFrames = TextureRegion.split(burnTexture.getTexture(), 2048,2048);
         animation = new Animation<>(0.025f, spriteFrames[0]);
@@ -154,7 +166,6 @@ public class DeadBody extends CapsuleObstacle implements Movable {
             return false;
         }
         for (Fixture f : body.getFixtureList()) {
-            System.out.println(f);
             f.setUserData(catHitboxSensorName);
         }
 
@@ -166,21 +177,17 @@ public class DeadBody extends CapsuleObstacle implements Movable {
         hitboxShape = new PolygonShape();
         hitboxShape.setAsBox(hx, hy, solidOffset, 0);
         hitboxDef.shape = hitboxShape;
+        hitboxDef.density = 0;
         sensorShapes.add(hitboxShape);
-        body.createFixture(hitboxDef);
+        Fixture solidFixture = body.createFixture(hitboxDef);
+        solidFixture.setUserData(hitboxSensorName);
 
         //center sensor
-        Vector2 sensorCenter = new Vector2();
-        FixtureDef sensorDef = new FixtureDef();
-        sensorDef.density = 0;
-        sensorDef.isSensor = true;
-        CircleShape sensorShape = new CircleShape();
-        sensorShape.setRadius(objectConstants.getFloat("sensorRadius"));
-        sensorShape.setPosition(sensorCenter);
-        sensorDef.shape = sensorShape;
-        Fixture sensorFixture = body.createFixture(sensorDef);
-        sensorFixture.setUserData(centerSensorName);
-        sensorShapes.add(sensorShape);
+        JsonValue centerSensorJV = objectConstants.get("center_sensor");
+        Fixture fix = generateSensor(solidOffset,
+                centerSensorJV.getFloat("width", 0) * getWidth()/2, hy,
+                centerSensorName);
+        fix.setSensor(false);
 
         JsonValue groundSensorJV = objectConstants.get("ground_sensor");
         Fixture a = generateSensor(new Vector2(0, -getHeight() / 2),
@@ -217,6 +224,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
     private Fixture generateSensor(Vector2 location, float hx, float hy, String name) {
         FixtureDef sensorDef = new FixtureDef();
         sensorDef.friction = 0;
+        sensorDef.density = 0;
         sensorDef.isSensor = true;
         PolygonShape sensorShape = new PolygonShape();
         sensorShape.setAsBox(hx, hy, location, 0.0f);
@@ -246,7 +254,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
             }
         }
         if (groundFixtures.size == 0){
-            setVX(getVX()/damping);
+//            setVX(getVX()/damping);
         }
     }
 

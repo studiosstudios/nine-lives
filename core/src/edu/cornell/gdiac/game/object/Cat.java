@@ -245,10 +245,8 @@ public class Cat extends CapsuleObstacle implements Movable {
 
     public void setHorizontalMovement(float value) {
         horizontalMovement = value * getForce();
-        if (horizontalMovement < 0) {
-            facingRight = false;
-        } else if (horizontalMovement > 0) {
-            facingRight = true;
+        if (horizontalMovement != 0) {
+            setFacingRight(horizontalMovement > 0);
         }
     }
 
@@ -317,6 +315,9 @@ public class Cat extends CapsuleObstacle implements Movable {
             onGroundedReset();
             soundBuffer.add("metalLanding");
         }
+        else if (!value) {
+            setOrientation(Orientation.VERTICAL);
+        }
         isGrounded = value;
     }
 
@@ -331,6 +332,7 @@ public class Cat extends CapsuleObstacle implements Movable {
         jumpTime = 0;
         meowTime = 0;
         jumpMovement = jumpForce;
+        setOrientation(Orientation.TOP);
     }
 
     /**
@@ -475,7 +477,8 @@ public class Cat extends CapsuleObstacle implements Movable {
         super((float) properties.get("x") + objectConstants.get("offset").getFloat(0),
                 (float) properties.get("y") + objectConstants.get("offset").getFloat(1),
                 tMap.get("cat").getRegionWidth()/scale.x*objectConstants.get("shrink").getFloat( 0 ),
-                tMap.get("cat").getRegionHeight()/scale.y*objectConstants.get("shrink").getFloat( 1 ));
+                tMap.get("cat").getRegionHeight()/scale.y*objectConstants.get("shrink").getFloat( 1 ),
+                Orientation.TOP);
         setDrawScale(scale);
         setDensity(objectConstants.getFloat("density", 0));
         setFriction(
@@ -538,7 +541,7 @@ public class Cat extends CapsuleObstacle implements Movable {
      * @return true if object allocation succeeded
      */
     public boolean activatePhysics(World world) {
-        // create the box from our superclass
+        // create the box from our xsuperclass
         if (!super.activatePhysics(world)) {
             return false;
         }
@@ -618,7 +621,6 @@ public class Cat extends CapsuleObstacle implements Movable {
                 }
                 // MOVING -> DASHING
                 if (dashTimer == 0 && dashPressed) {
-                    System.out.println("DASHING" + Gdx.graphics.getDeltaTime());
                     state = State.DASHING;
                     setGravityScale(0);
                     calculateDashVector();
@@ -662,11 +664,14 @@ public class Cat extends CapsuleObstacle implements Movable {
                     state = State.MOVING;
 //                    setVX(0);
                     if (getRelativeVelocity().y > 0) {
-                        setVY(maxSpeed);
+                        setRelativeVY(maxSpeed);
                     }
                     setGravityScale(2f);
                     if (isGrounded) onGroundedReset();
                     return;
+                }
+                else if (getOrientation() != Orientation.VERTICAL) {
+                    setOrientation(Orientation.VERTICAL);
                 }
                 break;
         }

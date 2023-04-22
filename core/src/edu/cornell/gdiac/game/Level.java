@@ -992,14 +992,18 @@ public class Level {
             l.drawLaser(canvas);
         }
 
-        if (tiles != null) tiles.draw(canvas);
-
         //draw everything except cat, dead bodies and spirit region
         for(Obstacle obj : objects) {
             if (obj != cat && !(obj instanceof DeadBody) && !(obj instanceof SpiritRegion)
-                    && !(obj instanceof Wall && !(obj instanceof Platform)) ){
+                    && !(obj instanceof Wall && !(obj instanceof Platform)) && !(obj instanceof Activator) ){
                 obj.draw(canvas);
             }
+        }
+
+        if (tiles != null) tiles.draw(canvas);
+
+        for (Activator a : activators) {
+            a.draw(canvas);
         }
 
         spiritLine.draw(canvas);

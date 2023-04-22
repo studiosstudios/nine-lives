@@ -11,9 +11,13 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
+import edu.cornell.gdiac.util.Direction;
 
 import java.util.HashMap;
 
+/**
+ * Represents a spikes object. Note that their must be something behind the base of the spikes, due to how they close.
+ */
 public class Spikes extends BoxObstacle implements Activatable {
     /** Constants that are shared between all instances of this class */
     private static JsonValue objectConstants;
@@ -29,6 +33,18 @@ public class Spikes extends BoxObstacle implements Activatable {
     public static final String pointyName = "spikesPointy";
     public static final String centerName = "spikesCenter";
     public static final String textureShapeName = "spikesTexture";
+    /** The total number of ticks for the spikes to open/close */
+    private static final int totalTicks = 7;
+    /** ticks/totalTicks represents the fraction of the spikes showing */
+    private float ticks;
+    /** 1 if closing, -1 if opening, 0 if static */
+    private float closing;
+    private Direction angle;
+    /** initial x position */
+    private final float x;
+    /** initial y position */
+    private final float y;
+
 
     /**
      * Creates a new Spikes object.
@@ -54,9 +70,49 @@ public class Spikes extends BoxObstacle implements Activatable {
 
         setX((float) properties.get("x")+objectConstants.get("offset").getFloat(0));
         setY((float) properties.get("y")+objectConstants.get("offset").getFloat(1));
+        x = getX();
+        y = getY();
+        angle = Direction.angleToDir((int) ((float) properties.get("rotation", 0f)));
+        ticks = totalTicks;
+        closing = 0;
         setAngle((float) ((float) properties.get("rotation") * Math.PI/180));
 //        System.out.println(getPosition());
         initTiledActivations(properties);
+    }
+
+    /**
+     * Moves up/down if currently activating/deactivating.
+     *
+     * @param dt Timing values from parent loop
+     */
+    public void update(float dt){
+        super.update(dt);
+        ticks += closing;
+        if (ticks <= 0){
+            setActive(false);
+            closing = 0;
+            ticks = 0;
+            return;
+        }
+        if (ticks >= totalTicks){
+            ticks = totalTicks;
+            closing = 0;
+        }
+        switch (angle) {
+            case LEFT:
+                setX(x + (1-ticks / totalTicks));
+                break;
+            case UP:
+                setY(y - (1-ticks / totalTicks));
+                break;
+            case DOWN:
+                setY(y + (1-ticks / totalTicks));
+                break;
+            case RIGHT:
+                setX(x - (1-ticks / totalTicks));
+                break;
+        }
+
     }
 
     /**
@@ -66,6 +122,7 @@ public class Spikes extends BoxObstacle implements Activatable {
     @Override
     public void activated(World world){
         setActive(true);
+        closing = 1;
     }
 
     /**
@@ -75,7 +132,7 @@ public class Spikes extends BoxObstacle implements Activatable {
     @Override
     public void deactivated(World world){
         destroyJoints(world);
-        setActive(false);
+        closing = -1;
     }
 
     /**
@@ -91,6 +148,7 @@ public class Spikes extends BoxObstacle implements Activatable {
         }
         if (!activated) {
             deactivated(world);
+            setActive(false);
         }
         return true;
     }
@@ -120,9 +178,7 @@ public class Spikes extends BoxObstacle implements Activatable {
         generateFixture(new Vector2(0, hy - getHeight()/2f), hx, hy, centerName, false);
     }
 
-    /**
-     *
-     */
+
     private Fixture generateFixture(Vector2 location, float hx, float hy, String name, boolean sensor){
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.friction = 0;
@@ -171,7 +227,7 @@ public class Spikes extends BoxObstacle implements Activatable {
 
     @Override
     public void draw(GameCanvas canvas) {
-        if (activated) {
+        if (isActive()) {
             super.draw(canvas);
         }
     }

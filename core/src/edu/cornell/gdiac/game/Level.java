@@ -852,6 +852,7 @@ public class Level {
         for(Obstacle obj : objects) {
             obj.deactivatePhysics(world);
         }
+        cat = null;
         addQueue.clear();
         objects.clear();
         activators.clear();

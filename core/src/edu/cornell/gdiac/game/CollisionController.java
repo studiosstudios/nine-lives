@@ -124,8 +124,12 @@ public class CollisionController implements ContactListener, ContactFilter {
                 if (bd1 instanceof DeadBody) {
                     DeadBody db = (DeadBody) bd1;
                     if (bd2 instanceof Spikes) {
-                        actionController.fixBodyToSpikes(db, (Spikes) bd2, contact.getWorldManifold().getPoints());
-                        db.addHazard();
+                        if (fd1.equals(DeadBody.centerSensorName) && fd2.equals(Spikes.centerName)) {
+                            actionController.fixBodyToSpikes(db, (Spikes) bd2, contact.getWorldManifold().getPoints());
+                        }
+                        if (fd1.equals(DeadBody.catBodyName) && fd2.equals(Spikes.pointyName)){
+                            db.addHazard();
+                        }
                     } else if (bd2 instanceof Flamethrower.Flame) {
                         db.setBurning(true);
                         db.addHazard();
@@ -224,7 +228,9 @@ public class CollisionController implements ContactListener, ContactFilter {
                 if (bd1 instanceof DeadBody) {
                     DeadBody db = (DeadBody) bd1;
                     if (bd2 instanceof Spikes) {
-                        db.removeHazard();
+                        if (fd1.equals(DeadBody.catBodyName) && fd2.equals(Spikes.pointyName)){
+                            db.removeHazard();
+                        }
                     } else if (bd2 instanceof Flamethrower.Flame) {
                         db.setBurning(false);
                         db.removeHazard();
@@ -300,7 +306,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                 //spikes and dead bodies
                 if (bd1 instanceof Spikes && bd2 instanceof DeadBody) {
 //                    System.out.println(fd1 + " and " + fd2 + ": " + (fd2.equals(DeadBody.centerSensorName) && fd1.equals(Spikes.centerName)));
-                    return fd2.equals(DeadBody.centerSensorName) && fd1.equals(Spikes.centerName);
+                    return !fd1.equals(Spikes.solidName) && !fd2.equals(DeadBody.hitboxSensorName);
                 }
 
                 //cat and spikes

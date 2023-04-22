@@ -540,7 +540,7 @@ public class ActionController {
         @Override
         public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
             Obstacle obs = (Obstacle) fixture.getBody().getUserData();
-            if (fixture.getUserData() != null && fixture.getUserData().equals(DeadBody.catHitboxSensorName)) {
+            if (fixture.getUserData() != null && fixture.getUserData().equals(DeadBody.catBodyName)) {
                 ((DeadBody) (obs)).setTouchingLaser(true);
             } else if ( fraction < closestFraction && (!fixture.isSensor() || obs instanceof Cat)) {
                 closestFraction = fraction;

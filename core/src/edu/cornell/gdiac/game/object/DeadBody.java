@@ -43,7 +43,8 @@ public class DeadBody extends CapsuleObstacle implements Movable {
     private ObjectSet<Fixture> groundFixtures = new ObjectSet<>();
     public static final String groundSensorName = "deadBodyGround";
     public static final String centerSensorName = "deadBodyCenter";
-    public static final String catHitboxSensorName = "catHitBox";
+    public static final String catBodyName = "deadCatBody";
+    public static final String catSensorsName = "deadCatSensors";
     public static final String hitboxSensorName = "deadBodyHitBox";
     private PolygonShape hitboxShape;
     /** List of shapes corresponding to the sensors attached to this body */
@@ -169,7 +170,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
             return false;
         }
         for (Fixture f : body.getFixtureList()) {
-            f.setUserData(catHitboxSensorName);
+            f.setUserData(catBodyName);
         }
 
         //the actual physical hitbox
@@ -198,18 +199,19 @@ public class DeadBody extends CapsuleObstacle implements Movable {
                 groundSensorJV.getFloat("shrink", 0) * getWidth() / 1.3f,
                 groundSensorJV.getFloat("height", 0),
                 getGroundSensorName());
+        a.setFriction(objectConstants.getFloat("friction"));
 
         // Side sensors to help detect for wall climbing
         JsonValue sideSensorJV = objectConstants.get("side_sensor");
         Fixture b = generateSensor(new Vector2(-getWidth() / 2, 0),
                 sideSensorJV.getFloat("width", 0),
                 sideSensorJV.getFloat("shrink") * getHeight() / 2.0f,
-                catHitboxSensorName);
+                catSensorsName);
 
         generateSensor(new Vector2(getWidth() / 2, 0),
                 sideSensorJV.getFloat("width", 0),
                 sideSensorJV.getFloat("shrink") * getHeight() / 2.0f,
-                catHitboxSensorName);
+                catSensorsName);
 
         return true;
     }

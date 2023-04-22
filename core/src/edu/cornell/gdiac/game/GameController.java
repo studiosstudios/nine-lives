@@ -664,7 +664,6 @@ public class GameController implements Screen {
             cam.updateCamera(x_pos, y_pos, true);
             if(respawnDelay == RESPAWN_DELAY){
                 respawnDelay = 0;
-                undoTime = 0;
                 input.setDisableAll(false);
                 gameplayState = GameplayState.PLAY;
             }

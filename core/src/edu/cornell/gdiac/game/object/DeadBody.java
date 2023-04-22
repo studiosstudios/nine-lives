@@ -259,9 +259,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
                 markRemoved(true);
             }
         }
-        if (groundFixtures.size == 0){
-            setVX(getVX()/damping);
-        }
+        setRelativeVX(getRelativeVelocity().x/damping);
     }
 
     /**

@@ -829,7 +829,7 @@ public class Level {
                     switch (property.getString("propertytype")){
                         //currently only one class defined in our level editor, but this allows us to be flexible to add more
                         case "Vector2":
-                            Vector2 v = new Vector2(property.get("value").getFloat("x"), property.get("value").getFloat("y"));
+                            Vector2 v = new Vector2(property.get("value").getFloat("x", 0), property.get("value").getFloat("y", 0));
                             propertiesMap.put(name, v);
                             break;
                         default:

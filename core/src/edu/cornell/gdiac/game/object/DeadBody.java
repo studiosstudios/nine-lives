@@ -178,6 +178,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
         hitboxShape.setAsBox(hx, hy, solidOffset, 0);
         hitboxDef.shape = hitboxShape;
         hitboxDef.density = 0;
+        hitboxDef.friction = objectConstants.getFloat("friction");
         sensorShapes.add(hitboxShape);
         Fixture solidFixture = body.createFixture(hitboxDef);
         solidFixture.setUserData(hitboxSensorName);
@@ -254,7 +255,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
             }
         }
         if (groundFixtures.size == 0){
-//            setVX(getVX()/damping);
+            setVX(getVX()/damping);
         }
     }
 

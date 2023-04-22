@@ -102,10 +102,10 @@ public class CollisionController implements ContactListener, ContactFilter {
                     if (bd2 == level.getGoalExit() && !didChange) level.setComplete(true);
                     if (bd2 == level.getReturnExit() && !didChange) setReturn(true);
 
-                    if (bd2 instanceof Spikes && fd2.equals(Spikes.pointyName)) {
+                    if (bd2 instanceof Spikes && fd2.equals(Spikes.pointyName) && fd1.equals(Cat.bodyName)) {
                         actionController.die();
                     }
-                    if (fd2 instanceof Flamethrower.Flame){
+                    if (bd2 instanceof Flamethrower.Flame){
                         actionController.die();
                     }
                     if (bd2 instanceof Checkpoint && ((Checkpoint) bd2).getSensorName().equals(fd2)){
@@ -223,9 +223,9 @@ public class CollisionController implements ContactListener, ContactFilter {
                 //dead body collisions
                 if (bd1 instanceof DeadBody) {
                     DeadBody db = (DeadBody) bd1;
-                    if (fd2 instanceof Spikes) {
+                    if (bd2 instanceof Spikes) {
                         db.removeHazard();
-                    } else if (fd2 instanceof Flamethrower.Flame) {
+                    } else if (bd2 instanceof Flamethrower.Flame) {
                         db.setBurning(false);
                         db.removeHazard();
                     }
@@ -304,7 +304,7 @@ public class CollisionController implements ContactListener, ContactFilter {
 
                 //cat and spikes
                 if (bd1 instanceof Spikes && bd2 instanceof Cat) {
-                    return !fd1.equals(Spikes.solidName) && fd2.equals(Cat.bodyName);
+                    return !fd1.equals(Spikes.solidName);
                 }
 
                 //swap everything

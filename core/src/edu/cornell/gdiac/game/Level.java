@@ -988,6 +988,10 @@ public class Level {
 ////            canvas.draw(background, 0, 0);
 //        }
 
+        for (Laser l : lasers){
+            l.drawLaser(canvas);
+        }
+
         if (tiles != null) tiles.draw(canvas);
 
         //draw everything except cat, dead bodies and spirit region

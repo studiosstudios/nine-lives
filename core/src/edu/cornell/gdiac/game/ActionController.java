@@ -184,6 +184,11 @@ public class ActionController {
             cat.getSoundBuffer().clear();
         }
 
+        //Die if off-screen
+        if (level.bounds.y - cat.getY() > 10){
+            die();
+        }
+
         //Prepare dead bodies for raycasting
         for (DeadBody d: level.getdeadBodyArray()){
             d.setTouchingLaser(false);
@@ -427,7 +432,6 @@ public class ActionController {
      * @param points the points to fix to
      */
     public void fixBodyToSpikes(DeadBody deadBody, Spikes spikes, Vector2[] points) {
-        System.out.println("welded");
         switch ((int) (spikes.getAngle() * 180/Math.PI)) {
             case 0:
             case 90:
@@ -523,9 +527,10 @@ public class ActionController {
          */
         @Override
         public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
+            Obstacle obs = (Obstacle) fixture.getBody().getUserData();
             if (fixture.getUserData() != null && fixture.getUserData().equals(DeadBody.catHitboxSensorName)) {
-                ((DeadBody) (fixture.getBody().getUserData())).setTouchingLaser(true);
-            } else if ( fraction < closestFraction && !fixture.isSensor()) {
+                ((DeadBody) (obs)).setTouchingLaser(true);
+            } else if ( fraction < closestFraction && (!fixture.isSensor() || obs instanceof Cat)) {
                 closestFraction = fraction;
                 rayCastPoint.set(point);
                 rayCastFixture = fixture;

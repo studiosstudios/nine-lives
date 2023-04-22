@@ -1,7 +1,5 @@
 package edu.cornell.gdiac.game;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
@@ -15,7 +13,6 @@ import edu.cornell.gdiac.game.object.*;
 import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.util.ScreenListener;
 
-import java.io.OutputStream;
 import java.util.HashMap;
 
 /**
@@ -106,6 +103,10 @@ public class GameController implements Screen {
     final float RESPAWN_DELAY = 60f; //about 17ms per RESPAWN_DELAY unit (holds 1 second-0.5s on dead body, 0.5s on respawned cat)
     /** The background texture */
     private Texture background;
+    /** Ticks since the player has undone */
+    private float undoTime;
+    /** The max value of undoTime such that undoing will undo to the previous checkpoint and not the current checkpoint.*/
+    private static final float MAX_UNDO_TIME = 60f;
 
     /**
      * PLAY: User has all controls and is in game
@@ -123,9 +124,6 @@ public class GameController implements Screen {
     }
     /** State of gameplay */
     private GameplayState gameplayState;
-    /** Array storing level states of past lives. The ith element of this array is the state
-     * of the level at the instant the player had died i times. */
-    private LevelState[] prevLivesState = new LevelState[9];
     /** If we have respawned in preUpdate(). Needed in postUpdate() for saving level state. */
     private boolean justRespawned;
     /** The color of the flash animation after resetting/undoing */
@@ -422,8 +420,8 @@ public class GameController implements Screen {
         //Set controls
         InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
 
-//		InputController.getInstance().writeTo("inputLogs/recent.txt");
-		InputController.getInstance().readFrom("inputLogs/recent.txt");
+		InputController.getInstance().writeTo("inputLogs/recent.txt");
+//		InputController.getInstance().readFrom("inputLogs/recent.txt");
     }
 
     /**
@@ -498,12 +496,13 @@ public class GameController implements Screen {
         collisionController.setLevel(currLevel);
         actionController.setLevel(currLevel);
         actionController.setMobControllers(currLevel);
-        prevLivesState = new LevelState[9];
+//        prevLivesState = new LevelState[9];
         canvas.getCamera().setLevelBounds(currLevel.bounds, scale);
         canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, cameraGlide);
         currLevel.unpause();
         nextLevel.pause();
         prevLevel.pause();
+        undoTime = 0;
     }
 
     /**
@@ -613,6 +612,7 @@ public class GameController implements Screen {
         if(gameplayState == GameplayState.PLAY){
             panTime = 0;
             respawnDelay = 0;
+            undoTime += 1;
             input.setDisableAll(false);
             float x_pos = currLevel.getCat().getPosition().x*scale.x;
             float y_pos = currLevel.getCat().getPosition().y*scale.y;
@@ -664,6 +664,7 @@ public class GameController implements Screen {
             cam.updateCamera(x_pos, y_pos, true);
             if(respawnDelay == RESPAWN_DELAY){
                 respawnDelay = 0;
+                undoTime = 0;
                 input.setDisableAll(false);
                 gameplayState = GameplayState.PLAY;
             }
@@ -707,30 +708,34 @@ public class GameController implements Screen {
         //which may be a pain. Also it does seem like saving state after stepping the world has better results - will need
         //testing.
 
-        if (justRespawned) {
-            prevLivesState[9 - currLevel.getNumLives()] = new LevelState(currLevel);
-        }
+//        if (justRespawned) {
+//            currLevel.saveState();
+////            prevLivesState[9 - currLevel.getNumLives()] = new LevelState(currLevel);
+//        }
 
 
         if (InputController.getInstance().didUndo()) {
-            if (currLevel.getNumLives() < 9) {
-                loadLevelState(prevLivesState[8 - currLevel.getNumLives()]);
-                flashColor.set(1, 1, 1, 1);
+            Array<Level.LevelState> levelStates = currLevel.levelStates();
+            if (undoTime < MAX_UNDO_TIME && levelStates.size > 1) {
+                levelStates.pop();
             }
+            loadLevelState(levelStates.peek());
+            undoTime = 0;
+            flashColor.set(1, 1, 1, 1);
         }
     }
 
     @Override
     public void render(float delta) {
         //FOR DEBUGGING
-		delta = 1/60f;
-		if (Gdx.input.isKeyPressed(Input.Keys.F)){
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-			}
-		}
+//		delta = 1/60f;
+//		if (Gdx.input.isKeyPressed(Input.Keys.F)){
+//			try {
+//				Thread.sleep(500);
+//			} catch (InterruptedException e) {
+//				Thread.currentThread().interrupt();
+//			}
+//		}
         if (preUpdate(delta)) {
             update(delta); // This is the one that must be defined.
             postUpdate(delta);
@@ -806,7 +811,7 @@ public class GameController implements Screen {
             nextLevel.draw(canvas);
         }
         currLevel.draw(canvas);
-//        canvas.drawRectangle(currLevel.bounds.x, currLevel.bounds.y, currLevel.bounds.width, currLevel.bounds.height, flashColor, scale.x, scale.y);
+        canvas.drawRectangle(currLevel.bounds.x, currLevel.bounds.y, currLevel.bounds.width, currLevel.bounds.height, flashColor, scale.x, scale.y);
         canvas.end();
 
         if (debug) {
@@ -829,42 +834,14 @@ public class GameController implements Screen {
 
     }
 
-
-    /**
-     * Stores a snapshot of the state of a level.
-     */
-    private static class LevelState {
-        public ObjectMap<Obstacle, ObjectMap<String, Object>> obstacleData = new ObjectMap<>();
-        public int numLives;
-        public Checkpoint checkpoint;
-        public Array<ObjectMap<String, Object>> deadBodyData = new Array<>();
-
-        public LevelState(Level level){
-            this.numLives = level.getNumLives();
-            this.checkpoint = level.getCheckpoint();
-            for (Obstacle obs : level.getObjects()) {
-                if (obs instanceof DeadBody) {
-                    deadBodyData.add(obs.storeState());
-                } else {
-                    obstacleData.put(obs, obs.storeState());
-                }
-            }
-        }
-    }
-
     /**
      * Loads in a previously stored level state. The <code>LevelState</code> that is loaded in must
      * consist of references to the same objects as the current level, i.e. the saved level cannot
      * have been reset or disposed.
      * @param state LevelState to load in
      */
-    private void loadLevelState(LevelState state){
+    private void loadLevelState(Level.LevelState state){
         currLevel.setNumLives(state.numLives);
-        if (state.checkpoint != null) {
-            currLevel.updateCheckpoints(state.checkpoint);
-        } else {
-            currLevel.resetCheckpoints();
-        }
         for (Obstacle obs : currLevel.getObjects()){
 
             if (obs instanceof DeadBody){
@@ -889,5 +866,12 @@ public class GameController implements Screen {
                 actionController.fixBodyToSpikes(db, s, new Vector2[]{db.getBody().getWorldPoint(jointInfo.get(s))});
             }
         }
+
+        if (state.checkpoint != null) {
+            currLevel.updateCheckpoints(state.checkpoint);
+        } else {
+            currLevel.resetCheckpoints();
+        }
+        respawn();
     }
 }

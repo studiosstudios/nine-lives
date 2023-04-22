@@ -293,7 +293,6 @@ public class DeadBody extends CapsuleObstacle implements Movable {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
-        System.out.println(this + ": " + getLinearVelocity());
         float effect = faceRight ? 1.0f : -1.0f;
         Color color = new Color(1, 1, 1, 1f - ((float)burnTicks)/((float)totalBurnTicks));
         float textureX = getX() + drawOffset.x;
@@ -357,15 +356,11 @@ public class DeadBody extends CapsuleObstacle implements Movable {
             jointInfo.put((Spikes) j.getBodyB().getUserData(), j.getAnchorA());
         }
         stateMap.put("jointInfo", jointInfo);
-
-        System.out.println(stateMap);
         return stateMap;
     }
 
     public void loadState(ObjectMap<String, Object> stateMap){
         super.loadState(stateMap);
-        System.out.println(stateMap);
-        System.out.println(getLinearVelocity());
         burnTicks = (int) stateMap.get("burnTicks");
         faceRight = (boolean) stateMap.get("faceRight");
         joints.clear();

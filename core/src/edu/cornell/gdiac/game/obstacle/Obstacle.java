@@ -1146,6 +1146,7 @@ public abstract class Obstacle {
 		stateMap.put("relativeVelocity", relativeVelocity);
 		stateMap.put("baseVelocity", baseVelocity);
 		stateMap.put("linearVelocity", bodyinfo.linearVelocity);
+		stateMap.put("toRemove", toRemove);
 		return stateMap;
 	}
 
@@ -1154,6 +1155,8 @@ public abstract class Obstacle {
 		bodyinfo.linearVelocity.set((Vector2) stateMap.get("linearVelocity"));
 		relativeVelocity.set((Vector2) stateMap.get("relativeVelocity"));
 		baseVelocity.set((Vector2) stateMap.get("baseVelocity"));
+		markRemoved((boolean) stateMap.get("toRemove"));
+		setAwake(true);
 	}
 
 	/**

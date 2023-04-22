@@ -88,6 +88,8 @@ public class Level {
     /** properties map cache */
     private ObjectMap<String, Object> propertiesMap = new ObjectMap<>();
 
+    private Array<LevelState> levelStates;
+
     /**
      * Returns the bounding rectangle for the physics world
      * <br><br>
@@ -339,9 +341,11 @@ public class Level {
         if(currCheckpoint != null){
             currCheckpoint.setCurrent(false);
         }
+        boolean shouldSave = c != currCheckpoint;
         currCheckpoint = c;
         currCheckpoint.setCurrent(true);
         respawnPos = currCheckpoint.getPosition();
+        if (shouldSave) saveState();
     }
 
     public void resetCheckpoints(){
@@ -389,6 +393,7 @@ public class Level {
     public void populateTiled(JsonValue tiledMap, float xOffset, float yOffset, float prevExitY, Boolean next){
         world.setGravity( new Vector2(0,tiledMap.getFloat("gravity",-14.7f)) );
         activationRelations = new HashMap<>();
+        levelStates = new Array<>();
 
         JsonValue layers = tiledMap.get("layers");
         JsonValue tileData = layers.get(0);
@@ -440,6 +445,7 @@ public class Level {
             }
         }
         tiles = new Tiles(tileData, 1024, levelWidth, levelHeight, tileset, bounds, fID, new Vector2(1/32f, 1/32f));
+        saveState();
     }
 
     /**
@@ -1095,7 +1101,7 @@ public class Level {
         float minDist = Float.MAX_VALUE;
         DeadBody nextdb = null;
         for (DeadBody db : deadBodyArray){
-            if (sharesSpiritRegion(db.getSpiritRegions(), cat.getSpiritRegions())){
+            if (sharesElement(db.getSpiritRegions(), cat.getSpiritRegions())){
                 float dist = cat.getPosition().dst(db.getPosition());
                 if (dist < minDist){
                     minDist = dist;
@@ -1106,9 +1112,17 @@ public class Level {
         return nextdb;
     }
 
-    private boolean sharesSpiritRegion(ObjectSet<SpiritRegion> s1, ObjectSet<SpiritRegion> s2){
+    /**
+     * Checks if two sets share an element.
+     *
+     * @param s1  Set 1
+     * @param s2  Set 2
+     * @return    True if set 1 and set 2 share any element, or if both are empty.
+     * @param <T> The type of elements in s1 and s2
+     */
+    private <T> boolean sharesElement(ObjectSet<T> s1, ObjectSet<T> s2){
         if (s1.isEmpty() && s2.isEmpty()) return true;
-        for (SpiritRegion r : s1){
+        for (T r : s1){
             if (s2.contains(r)) return true;
         }
         return false;
@@ -1129,5 +1143,38 @@ public class Level {
      * @param spiritMode   Next spirit mode state
      */
     public void setSpiritMode(boolean spiritMode){ this.spiritMode = spiritMode; }
+
+    /**
+     * Stores a snapshot of the current level state into the level states array.
+     */
+    public void saveState() { levelStates.add(new LevelState(this)); }
+
+    /**
+     * @return  <code>LevelStates</code> array
+     */
+    public Array<LevelState> levelStates() { return levelStates; }
+
+    /**
+     * Stores a snapshot of the state of a level. A new <code>LevelState</code> instance is created
+     * at the beginning of the level, and everytime the player changes their checkpoint.
+     */
+    protected static class LevelState {
+        public ObjectMap<Obstacle, ObjectMap<String, Object>> obstacleData = new ObjectMap<>();
+        public int numLives;
+        public Checkpoint checkpoint;
+        public Array<ObjectMap<String, Object>> deadBodyData = new Array<>();
+
+        public LevelState(Level level){
+            this.numLives = level.getNumLives();
+            this.checkpoint = level.getCheckpoint();
+            for (Obstacle obs : level.getObjects()) {
+                if (obs instanceof DeadBody) {
+                    deadBodyData.add(obs.storeState());
+                } else {
+                    obstacleData.put(obs, obs.storeState());
+                }
+            }
+        }
+    }
 
 }

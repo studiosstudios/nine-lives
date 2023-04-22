@@ -337,14 +337,14 @@ public class Level {
      *
      * @param c The most recent checkpoint the cat has come in contact with
      */
-    public void updateCheckpoints(Checkpoint c){
+    public void updateCheckpoints(Checkpoint c, boolean shouldSave){
         if(currCheckpoint != null){
             currCheckpoint.setCurrent(false);
         }
-        boolean shouldSave = c != currCheckpoint;
+        shouldSave = shouldSave && c != currCheckpoint;
         currCheckpoint = c;
         currCheckpoint.setCurrent(true);
-        respawnPos = currCheckpoint.getPosition();
+        respawnPos = currCheckpoint.getRespawnPosition();
         if (shouldSave) saveState();
     }
 

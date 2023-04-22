@@ -1,5 +1,7 @@
 package edu.cornell.gdiac.game;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
@@ -106,7 +108,7 @@ public class GameController implements Screen {
     /** Ticks since the player has undone */
     private float undoTime;
     /** The max value of undoTime such that undoing will undo to the previous checkpoint and not the current checkpoint.*/
-    private static final float MAX_UNDO_TIME = 60f;
+    private static final float MAX_UNDO_TIME = 180f;
 
     /**
      * PLAY: User has all controls and is in game
@@ -420,7 +422,7 @@ public class GameController implements Screen {
         //Set controls
         InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
 
-		InputController.getInstance().writeTo("inputLogs/recent.txt");
+//		InputController.getInstance().writeTo("inputLogs/recent.txt");
 //		InputController.getInstance().readFrom("inputLogs/recent.txt");
     }
 
@@ -551,6 +553,7 @@ public class GameController implements Screen {
         }
 
         if (!currLevel.isFailure() && currLevel.getDied()) {
+            flashColor.set(0, 0, 0, 1);
             respawn();
         }
 
@@ -561,6 +564,7 @@ public class GameController implements Screen {
         }
 
         if (currLevel.isFailure() || input.didReset()) {
+            if (currLevel.isFailure()) flashColor.set(1, 0, 0, 1);
             reset();
         } else if (currLevel.isComplete() && levelNum < numLevels) {
             pause();
@@ -867,7 +871,7 @@ public class GameController implements Screen {
         }
 
         if (state.checkpoint != null) {
-            currLevel.updateCheckpoints(state.checkpoint);
+            currLevel.updateCheckpoints(state.checkpoint, false);
         } else {
             currLevel.resetCheckpoints();
         }

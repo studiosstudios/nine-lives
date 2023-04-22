@@ -299,6 +299,7 @@ public class CollisionController implements ContactListener, ContactFilter {
 
                 //spikes and dead bodies
                 if (bd1 instanceof Spikes && bd2 instanceof DeadBody) {
+//                    System.out.println(fd1 + " and " + fd2 + ": " + (fd2.equals(DeadBody.centerSensorName) && fd1.equals(Spikes.centerName)));
                     return fd2.equals(DeadBody.centerSensorName) && fd1.equals(Spikes.centerName);
                 }
 

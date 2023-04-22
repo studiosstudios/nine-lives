@@ -422,8 +422,8 @@ public class GameController implements Screen {
         //Set controls
         InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
 
-		InputController.getInstance().writeTo("inputLogs/recent.txt");
-//		InputController.getInstance().readFrom("inputLogs/recent.txt");
+//		InputController.getInstance().writeTo("inputLogs/recent.txt");
+		InputController.getInstance().readFrom("inputLogs/recent.txt");
     }
 
     /**
@@ -726,7 +726,7 @@ public class GameController implements Screen {
 		delta = 1/60f;
 		if (Gdx.input.isKeyPressed(Input.Keys.F)){
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(500);
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
@@ -806,7 +806,7 @@ public class GameController implements Screen {
             nextLevel.draw(canvas);
         }
         currLevel.draw(canvas);
-        canvas.drawRectangle(currLevel.bounds.x, currLevel.bounds.y, currLevel.bounds.width, currLevel.bounds.height, flashColor, scale.x, scale.y);
+//        canvas.drawRectangle(currLevel.bounds.x, currLevel.bounds.y, currLevel.bounds.width, currLevel.bounds.height, flashColor, scale.x, scale.y);
         canvas.end();
 
         if (debug) {
@@ -875,7 +875,6 @@ public class GameController implements Screen {
 
                 obs.loadState(state.obstacleData.get(obs));
 
-                //TODO: test if spike and dead body weld joints still work after loading
                 if (obs instanceof Spikes){
                     ((Spikes) obs).destroyJoints(world);
                 }
@@ -884,7 +883,11 @@ public class GameController implements Screen {
 
         // rebuild dead body array
         for (ObjectMap<String, Object> dbState : state.deadBodyData){
-            currLevel.loadDeadBodyState(dbState);
+            DeadBody db = currLevel.loadDeadBodyState(dbState);
+            HashMap<Spikes, Vector2> jointInfo = (HashMap<Spikes, Vector2>) dbState.get("jointInfo");
+            for (Spikes s : jointInfo.keySet()){
+                actionController.fixBodyToSpikes(db, s, new Vector2[]{db.getBody().getWorldPoint(jointInfo.get(s))});
+            }
         }
     }
 }

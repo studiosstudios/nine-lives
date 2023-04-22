@@ -130,10 +130,7 @@ public class Spikes extends BoxObstacle implements Activatable {
      * @param world the box2D world
      */
     @Override
-    public void deactivated(World world){
-        destroyJoints(world);
-        closing = -1;
-    }
+    public void deactivated(World world){ closing = -1; }
 
     /**
      * Creates the physics body for this object, adding them to the world. Immediately deactivates
@@ -202,9 +199,12 @@ public class Spikes extends BoxObstacle implements Activatable {
         joints.clear();
     }
 
+    /** Clears the joints array */
+    public void clearJoints(){ joints.clear(); }
+
     public void addJoint(Joint joint){ joints.add(joint); }
 
-
+    public ObjectSet<Joint> getJoints() {return joints;}
     /**
      * Draws the outline of the physics body.
      *
@@ -256,5 +256,20 @@ public class Spikes extends BoxObstacle implements Activatable {
     }
     public float getYPos(){
         return getY();
+    }
+
+    public ObjectMap<String, Object> storeState(){
+        ObjectMap<String, Object> stateMap = super.storeState();
+        stateMap.put("ticks", ticks);
+        stateMap.put("closing", closing);
+        stateMap.put("activated", activated);
+        return stateMap;
+    }
+
+    public void loadState(ObjectMap<String, Object> stateMap){
+        super.loadState(stateMap);
+        ticks = (float) stateMap.get("ticks");
+        closing = (float) stateMap.get("closing");
+        joints.clear();
     }
 }

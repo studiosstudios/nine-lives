@@ -4,6 +4,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Array;
@@ -209,7 +210,18 @@ public class ActionController {
             a.updateActivated();
             if (level.getActivationRelations().containsKey(a.getID())){
                 for (Activatable s : level.getActivationRelations().get(a.getID())){
-                    s.updateActivated(a.isActivating(), level.getWorld());
+                    int activated = s.updateActivated(a.isActivating(), level.getWorld());
+
+                    //destroy joints if spikes deactivated
+                    if (activated == -1 && s instanceof Spikes){
+                        Spikes spikes = (Spikes) s;
+
+                        for (Joint j : spikes.getJoints()){
+                            ((DeadBody) j.getBodyA().getUserData()).clearJoints();
+                        }
+
+                        spikes.destroyJoints(level.world);
+                    }
                 }
             }
         }

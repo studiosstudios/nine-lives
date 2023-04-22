@@ -13,6 +13,8 @@ import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.CapsuleObstacle;
 
+import java.util.HashMap;
+
 public class DeadBody extends CapsuleObstacle implements Movable {
     /** Constants that are shared between all instances of this class */
     private static JsonValue objectConstants;
@@ -44,9 +46,10 @@ public class DeadBody extends CapsuleObstacle implements Movable {
     public static final String catHitboxSensorName = "catHitBox";
     public static final String hitboxSensorName = "deadBodyHitBox";
     private PolygonShape hitboxShape;
-
     /** List of shapes corresponding to the sensors attached to this body */
     private Array<Shape> sensorShapes;
+    /** Set of joints that are attached to this object */
+    private ObjectSet<Joint> joints = new ObjectSet<>();
 
     /**
      * Returns ow hard the brakes are applied to get a dead body to stop moving
@@ -271,12 +274,26 @@ public class DeadBody extends CapsuleObstacle implements Movable {
      */
     public ObjectSet<SpiritRegion> getSpiritRegions() { return spiritRegions; }
 
+    /** Destroy all joints connected to this deadbody */
+    public void destroyJoints(World world){
+        for (Joint j : joints) {
+            world.destroyJoint(j);
+        }
+        joints.clear();
+    }
+
+    /** Clears the joints array */
+    public void clearJoints(){ joints.clear(); }
+
+    public void addJoint(Joint joint){ joints.add(joint); }
+
     /**
      * Draws the physics object.
      *
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
+        System.out.println(this + ": " + getLinearVelocity());
         float effect = faceRight ? 1.0f : -1.0f;
         Color color = new Color(1, 1, 1, 1f - ((float)burnTicks)/((float)totalBurnTicks));
         float textureX = getX() + drawOffset.x;
@@ -334,11 +351,23 @@ public class DeadBody extends CapsuleObstacle implements Movable {
     public ObjectMap<String, Object> storeState(){
         ObjectMap<String, Object> stateMap = super.storeState();
         stateMap.put("burnTicks", burnTicks);
+        HashMap<Spikes, Vector2> jointInfo = new HashMap<>();
+        stateMap.put("faceRight", faceRight);
+        for (Joint j : joints) {
+            jointInfo.put((Spikes) j.getBodyB().getUserData(), j.getAnchorA());
+        }
+        stateMap.put("jointInfo", jointInfo);
+
+        System.out.println(stateMap);
         return stateMap;
     }
 
     public void loadState(ObjectMap<String, Object> stateMap){
         super.loadState(stateMap);
+        System.out.println(stateMap);
+        System.out.println(getLinearVelocity());
         burnTicks = (int) stateMap.get("burnTicks");
+        faceRight = (boolean) stateMap.get("faceRight");
+        joints.clear();
     }
 }

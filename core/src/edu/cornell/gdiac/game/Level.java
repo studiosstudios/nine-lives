@@ -949,6 +949,12 @@ public class Level {
             } else if (jdef.bodyB.getUserData() instanceof Spikes) {
                 ((Spikes) jdef.bodyB.getUserData()).addJoint(joint);
             }
+
+            if (jdef.bodyA.getUserData() instanceof DeadBody){
+                ((DeadBody) jdef.bodyA.getUserData()).addJoint(joint);
+            } else if (jdef.bodyB.getUserData() instanceof DeadBody) {
+                ((DeadBody) jdef.bodyB.getUserData()).addJoint(joint);
+            }
         }
     }
 
@@ -1064,11 +1070,12 @@ public class Level {
      * Loads a dead body into this level from a saved state.
      * @param state Map of arguments for the dead body, called from storeState() in {@link DeadBody}.
      */
-    public void loadDeadBodyState(ObjectMap<String, Object> state){
+    public DeadBody loadDeadBodyState(ObjectMap<String, Object> state){
         DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat"), textureRegionAssetMap.get("burnCat"),scale, Vector2.Zero);
         deadBody.loadState(state);
-        queueObject(deadBody);
+        addObject(deadBody);
         deadBodyArray.add(deadBody);
+        return deadBody;
     }
 
     /**

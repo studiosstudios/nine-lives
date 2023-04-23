@@ -11,6 +11,8 @@ import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
 
+import java.util.HashMap;
+
 public class Checkpoint extends BoxObstacle
 {
     /** The origin position of the checkpoint */
@@ -38,30 +40,24 @@ public class Checkpoint extends BoxObstacle
     private Animation<TextureRegion> active_animation;
 
     /**
-     * Creates a new Checkpoint
+     * Creates a new Checkpoint object.
      *
-     * The size is expressed in physics units NOT pixels.  In order for
-     * drawing to work properly, you MUST set the drawScale. The drawScale
-     * converts the physics units to pixels.
-     *
-     * @param pos the position of the checkpoint
-     * @param angle the angle of the checkpoint
-     * @param scale the scale for drawing the texture
-     * @param checkpointTexture the texture for the non-active checkpoint
-     * @param activeCheckpointTexture the texture for the active checkpoint
-     *
+     * @param properties     String-Object map of properties for this object
+     * @param tMap           Texture map for loading textures
+     * @param scale          Draw scale for drawing
+     * @param textureScale   Texture scale for rescaling texture
      */
-    public Checkpoint(Vector2 pos, float angle, Vector2 scale, TextureRegion checkpointTexture, TextureRegion activeCheckpointTexture,
-                      TextureRegion baseTexture, TextureRegion activeBaseTexture) {
+    public Checkpoint(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
 
         super(32/scale.x, 64/scale.y);
         current = false;
-        int spriteWidth = 32;
-        int spriteHeight = 64;
-        this.baseTexture = baseTexture;
-        this.activeBaseTexture = activeBaseTexture;
-        spriteFrames = TextureRegion.split(checkpointTexture.getTexture(), spriteWidth, spriteHeight);
-        activeSpriteFrames = TextureRegion.split(activeCheckpointTexture.getTexture(), spriteWidth, spriteHeight);
+        setTextureScale(textureScale);
+        int spriteWidth = 1024;
+        int spriteHeight = 2048;
+        this.baseTexture = tMap.get("checkpoint_base");
+        this.activeBaseTexture = tMap.get("checkpoint_base_active");
+        spriteFrames = TextureRegion.split(tMap.get("checkpoint_anim").getTexture(), spriteWidth, spriteHeight);
+        activeSpriteFrames = TextureRegion.split(tMap.get("checkpoint_active_anim").getTexture(), spriteWidth, spriteHeight);
         float frameDuration = 0.1f;
 
         animation = new Animation<>(frameDuration, spriteFrames[0]);
@@ -69,13 +65,13 @@ public class Checkpoint extends BoxObstacle
 
         animation.setPlayMode(Animation.PlayMode.LOOP);
         animationTime = 0f;
-        setAngle(angle);
+        setAngle((float) properties.get("rotation"));
         setMass(0);
         setName("checkpoint");
         setDrawScale(scale);
         setSensor(true);
-        setX(pos.x + objectConstants.get("offset").getFloat(0));
-        setY(pos.y + objectConstants.get("offset").getFloat(1));
+        setX((float) properties.get("x") + objectConstants.get("offset").getFloat(0));
+        setY((float) properties.get("y") + objectConstants.get("offset").getFloat(1));
         setSensor(true);
         setBodyType(BodyDef.BodyType.StaticBody);
         Vector2 solidCenter = new Vector2(0,0);

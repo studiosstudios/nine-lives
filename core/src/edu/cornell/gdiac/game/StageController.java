@@ -62,7 +62,7 @@ public class StageController implements Screen {
 	private Animation<TextureRegion> animation;
 	private Texture jump_texture;
 
-	public LevelController currLevel;
+	public GameController currLevel;
 	private int selectedLevel;
 
 	public int getSelectedLevel() { return selectedLevel; }

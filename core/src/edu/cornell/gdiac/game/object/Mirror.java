@@ -36,11 +36,9 @@ public class Mirror extends PolygonObstacle {
      * @param properties     String-Object map of properties for this object
      * @param tMap           Texture map for loading textures
      * @param scale          Draw scale for drawing
-     * @param tileSize       Tile size of the Tiled map for loading positions
-     * @param levelHeight    Height of level (in grid cell units) for loading y position
      * @param textureScale   Texture scale for rescaling texture
      */
-    public Mirror(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
+    public Mirror(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
         super(objectConstants.get("shape").asFloatArray());
 
         setBodyType((boolean) properties.get("pushable", false) ? BodyDef.BodyType.DynamicBody : BodyDef.BodyType.StaticBody);
@@ -79,8 +77,8 @@ public class Mirror extends PolygonObstacle {
             default:
                 throw new IllegalArgumentException("undefined angle");
         }
-        setX((float) properties.get("x")/tileSize+objectConstants.get("offset").getFloat(0) + xOffset);
-        setY(levelHeight - (float) properties.get("y")/tileSize+objectConstants.get("offset").getFloat(1) + yOffset);
+        setX((float) properties.get("x")+objectConstants.get("offset").getFloat(0) + xOffset);
+        setY((float) properties.get("y")+objectConstants.get("offset").getFloat(1) + yOffset);
     }
 
     /**

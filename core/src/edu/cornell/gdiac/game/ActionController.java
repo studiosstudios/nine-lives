@@ -54,6 +54,7 @@ public class ActionController {
     private float closestFraction;
     private Vector2 startPointCache = new Vector2();
     private Vector2 endPointCache = new Vector2();
+
     /**
      * Creates and initialize a new instance of a ActionController
      *
@@ -61,8 +62,7 @@ public class ActionController {
      * @param scale	    The game scale Vector2
      * @param volume    The volume of the game
      */
-    public ActionController(Rectangle bounds, Vector2 scale, float volume) {
-        this.bounds = bounds;
+    public ActionController(Vector2 scale, float volume) {
         this.scale = scale;
         this.volume = volume;
         mobControllers = new Array<>();
@@ -80,6 +80,7 @@ public class ActionController {
      */
     public void setLevel(Level level){
         this.level = level;
+        this.bounds = level.bounds;
     }
 
     /**
@@ -114,12 +115,12 @@ public class ActionController {
      * <br><br>
      * We need this method to stop all sounds when we pause.
      * Pausing happens when we switch game modes.
+     * //TODO: pause sounds
      */
     public void pause() {
-        soundAssetMap.get("jump").stop(jumpId);
-        soundAssetMap.get("plop").stop(plopId);
-        soundAssetMap.get("fire").stop(fireId);
-        soundAssetMap.get("meow").stop(meowId);
+//        soundAssetMap.get("jump").stop(jumpId);
+//        soundAssetMap.get("plop").stop(plopId);
+//        soundAssetMap.get("meow").stop(meowId);
     }
 
     /**

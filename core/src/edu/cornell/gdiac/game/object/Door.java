@@ -52,7 +52,7 @@ public class Door extends PolygonObstacle implements Activatable {
      * @param levelHeight    Height of level (in grid cell units) for loading y position
      * @param textureScale   Texture scale for rescaling texture
      */
-    public Door(float width, float height, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
+    public Door(float width, float height, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
         super(new float[]{0, 0, width, 0, width, height, 0, height});
         this.width = width;
         this.height = height;
@@ -67,8 +67,8 @@ public class Door extends PolygonObstacle implements Activatable {
         angle = Direction.angleToDir((int) properties.get("closeAngle", 0));
         totalTicks = (int) properties.get("totalTicks", 60);
         ticks = (int) totalTicks;
-        x =(float) properties.get("x")/tileSize+ objectConstants.get("offset").getFloat(0);
-        y = levelHeight - (float) properties.get("y")/tileSize + objectConstants.get("offset").getFloat(1) - height;
+        x =(float) properties.get("x")+ objectConstants.get("offset").getFloat(0);
+        y = (float) properties.get("y") + objectConstants.get("offset").getFloat(1) - height;
         setX(x);
         setY(y);
         closing = 0;
@@ -81,13 +81,11 @@ public class Door extends PolygonObstacle implements Activatable {
      * @param properties     String-Object map of properties for this object
      * @param tMap           Texture map for loading textures
      * @param scale      Draw scale for drawing
-     * @param tileSize       Tile size of the Tiled map for loading positions
-     * @param levelHeight    Height of level (in grid cell units) for loading y position
      * @param textureScale   Texture scale for rescaling texture
      */
-    public Door(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
-        this((float) properties.get("width")/tileSize, (float) properties.get("height")/tileSize,
-                properties, tMap, scale, tileSize, levelHeight, textureScale);
+    public Door(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
+        this((float) properties.get("width"), (float) properties.get("height"),
+                properties, tMap, scale, textureScale);
     }
 
     /**
@@ -172,6 +170,16 @@ public class Door extends PolygonObstacle implements Activatable {
 
     @Override
     public void setInitialActivation(boolean initialActivation){ this.initialActivation = initialActivation; }
+
+    @Override
+    public float getXPos() {
+        return getX();
+    }
+
+    @Override
+    public float getYPos() {
+        return getY();
+    }
 
     @Override
     public boolean getInitialActivation() { return initialActivation; }

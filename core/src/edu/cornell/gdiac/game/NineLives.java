@@ -21,7 +21,7 @@ public class NineLives extends Game implements ScreenListener {
 	/** Player mode for the game menus (CONTROLLER CLASS) */
 	private StageController menu;
 	/** The WorldController that contains all LevelControllers*/
-	private WorldController controller;
+	private GameController controller;
 
 	/**
 	 * Creates a new game from the configuration settings.
@@ -41,7 +41,6 @@ public class NineLives extends Game implements ScreenListener {
 		canvas  = new GameCanvas();
 		menu = new StageController("assets.json", canvas, 1);
 
-		controller = new WorldController(3);
 		menu.setScreenListener(this);
 		setScreen(menu);
 	}
@@ -99,20 +98,22 @@ public class NineLives extends Game implements ScreenListener {
 	public void exitScreen(Screen screen, int exitCode) {
 		if (screen == menu && exitCode == 0) {
 			directory = menu.getAssets();
+			controller = new GameController(2);
 			controller.gatherAssets(directory);
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
-			controller.getCurrLevel().reset(null);
+			controller.reset();
 			setScreen(controller);
 			menu.dispose();
 			menu = null;
 		} else if (screen == menu && exitCode == 69) {
 			directory = menu.getAssets();
 			controller.gatherAssets(directory);
+			controller = new GameController(2);
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
 			controller.setCurrLevel(menu.getSelectedLevel());
-			controller.getCurrLevel().reset(null);
+			controller.reset();
 			setScreen(controller);
 			menu.dispose();
 			menu = null;
@@ -121,12 +122,12 @@ public class NineLives extends Game implements ScreenListener {
 			setScreen(controller);
 			menu.dispose();
 			menu = null;
-		} else if (exitCode == WorldController.EXIT_QUIT && screen == controller) {
+		} else if (exitCode == GameController.EXIT_QUIT && screen == controller) {
 			// pause stage
 			menu = new StageController("assets.json", canvas, 1);
 			menu.setScreenListener(this);
 			menu.pause = true;
-			menu.currLevel = controller.getCurrLevel();
+			menu.currLevel = controller;
 //			controller.pause();
 			setScreen(menu);
 //			controller.getCurrLevel().getLevel().draw(canvas,false);

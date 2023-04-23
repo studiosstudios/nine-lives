@@ -143,6 +143,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                 // Activator
                 if (fd1 instanceof Activator) {
                     ((Activator) fd1).addPress();
+
                 }
                 //swap everything
                 Body bodyTemp = body1;

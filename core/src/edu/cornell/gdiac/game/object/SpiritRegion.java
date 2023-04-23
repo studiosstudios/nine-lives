@@ -74,12 +74,10 @@ public class SpiritRegion extends BoxObstacle {
      * @param properties     String-Object map of properties for this object
      * @param tMap           Texture map for loading textures
      * @param scale          Draw scale for drawing
-     * @param tileSize       Tile size of the Tiled map for loading positions
-     * @param levelHeight    Height of level (in grid cell units) for loading y position
      * @param textureScale   Texture scale for rescaling texture
      */
-    public SpiritRegion(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
-        super((float) properties.get("width")/tileSize, (float) properties.get("height")/tileSize);
+    public SpiritRegion(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
+        super((float) properties.get("width"), (float) properties.get("height"));
         this.photonTexture = tMap.get("spirit_photon").getTexture();
         this.regionTexture = tMap.get("spirit_region").getTexture();
 
@@ -96,10 +94,10 @@ public class SpiritRegion extends BoxObstacle {
         setSensor(true);
         setBodyType(BodyDef.BodyType.StaticBody);
 
-        width = (float) properties.get("width")/tileSize;
-        height = (float) properties.get("height")/tileSize;
+        width = (float) properties.get("width");
+        height = (float) properties.get("height");
 
-        this.pos = new Vector2((float) properties.get("x")/tileSize + width/2, levelHeight - (float) properties.get("y")/tileSize - height/2);
+        this.pos = new Vector2((float) properties.get("x") + width/2, (float) properties.get("y") - height/2);
 
         setPosition(pos);
 

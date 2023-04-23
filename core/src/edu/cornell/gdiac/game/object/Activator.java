@@ -34,6 +34,10 @@ public abstract class Activator extends PolygonObstacle {
     private PolygonShape sensorShape;
     /** The number of objects pressing on this activator */
     public int numPressing;
+    /** Whether the camera will pan on next activation */
+    private boolean pan;
+    /** If pressing this activator for the first time should pan the camera */
+    private boolean shouldPan;
 
     /**
      * @return true if the activator is currently activating
@@ -64,43 +68,13 @@ public abstract class Activator extends PolygonObstacle {
 
     /**
      * Creates a new Activator object.
-     * @param texture   Animation filmstrip.
-     * @param texture2  Static texture.
-     * @param scale     Draw scale for drawing.
-     * @param data      JSON for loading.
-     */
-    public Activator(TextureRegion texture, TextureRegion texture2, Vector2 scale, JsonValue data){
-        super(objectConstants.get("body_shape").asFloatArray());
-        int spriteWidth = 32;
-        int spriteHeight = 32;
-        spriteFrames = TextureRegion.split(texture.getTexture(), spriteWidth, spriteHeight);
-        float frameDuration = 0.2f;
-        animation = new Animation<>(frameDuration, spriteFrames[0]);
-        setBodyType(BodyDef.BodyType.StaticBody);
-        animation.setPlayMode(Animation.PlayMode.REVERSED);
-        animationTime = 0f;
-
-        setDrawScale(scale);
-        setTexture(texture2);
-        setFixedRotation(true);
-
-        id = data.getString("id");
-        setX(data.get("pos").getFloat(0)+objectConstants.get("offset").getFloat(0));
-        setY(data.get("pos").getFloat(1)+objectConstants.get("offset").getFloat(1));
-        active = false;
-    }
-
-    /**
-     * Creates a new Activator object.
      *
      * @param properties     String-Object map of properties for this object
      * @param tMap           Texture map for loading textures
      * @param scale          Draw scale for drawing
-     * @param tileSize       Tile size of the Tiled map for loading positions
-     * @param levelHeight    Height of level (in grid cell units) for loading y position
      * @param textureScale   Texture scale for rescaling texture
      */
-    public Activator(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
+    public Activator(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
         super(objectConstants.get("body_shape").asFloatArray());
         setDrawScale(scale);
         int spriteWidth = 32;
@@ -118,8 +92,9 @@ public abstract class Activator extends PolygonObstacle {
         setFixedRotation(true);
 
         id = (String) properties.get("id");
-        setX((float) properties.get("x")/tileSize+objectConstants.get("offset").getFloat(0));
-        setY(levelHeight - (float) properties.get("y")/tileSize+objectConstants.get("offset").getFloat(1));
+        setX((float) properties.get("x")+objectConstants.get("offset").getFloat(0));
+        setY((float) properties.get("y")+objectConstants.get("offset").getFloat(1));
+        pan = (boolean) properties.get("shouldPan", false);
         active = false;
     }
 
@@ -187,4 +162,11 @@ public abstract class Activator extends PolygonObstacle {
      * @param constants JSON storing the shared constants.
      */
     public static void setConstants(JsonValue constants) { objectConstants = constants; }
+
+    public boolean getPan(){
+        return pan;
+    }
+    public void setPan(boolean p){
+        pan = p;
+    }
 }

@@ -44,11 +44,9 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
      * @param properties     String-Object map of properties for this object
      * @param tMap           Texture map for loading textures
      * @param drawScale      Draw scale for drawing
-     * @param tileSize       Tile size of the Tiled map for loading positions
-     * @param levelHeight    Height of level (in grid cell units) for loading y position
      * @param textureScale   Texture scale for rescaling texture
      */
-    public Flamethrower(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 drawScale, int tileSize, int levelHeight, Vector2 textureScale) {
+    public Flamethrower(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 drawScale, Vector2 textureScale) {
         super();
 
 
@@ -67,8 +65,8 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
         flameBase.setName("flamethrower");
         float angle = (float) ((float) properties.get("rotation") * Math.PI/180);
         flameBase.setAngle(angle);
-        flameBase.setX((float) properties.get("x")/tileSize+objectConstants.get("base_offset").getFloat(0));
-        flameBase.setY(levelHeight - (float) properties.get("y")/tileSize+objectConstants.get("base_offset").getFloat(1));
+        flameBase.setX((float) properties.get("x")+objectConstants.get("base_offset").getFloat(0));
+        flameBase.setY((float) properties.get("y")+objectConstants.get("base_offset").getFloat(1));
 
         flameOffset = new Vector2(objectConstants.get("flame_offset").getFloat(0)*(float)Math.cos(angle)-
                 objectConstants.get("flame_offset").getFloat(1)*(float)Math.sin(angle),
@@ -170,6 +168,16 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
 
     @Override
     public void setInitialActivation(boolean initialActivation){ this.initialActivation = initialActivation; }
+
+    @Override
+    public float getXPos() {
+        return getX();
+    }
+
+    @Override
+    public float getYPos() {
+        return getY();
+    }
 
     @Override
     public boolean getInitialActivation() { return initialActivation; }

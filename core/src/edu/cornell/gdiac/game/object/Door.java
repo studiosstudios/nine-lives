@@ -5,9 +5,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.util.Direction;
+
+import java.util.HashMap;
 
 /**
  * An activatable that changes dimension when activated.
@@ -38,59 +41,66 @@ public class Door extends PolygonObstacle implements Activatable {
     private final float y;
 
     /**
-     * Creates a new Door with specified width and height.
-     * @param texture   TextureRegion for drawing.
-     * @param scale     Draw scale for drawing.
-     * @param width     Width of the door.
-     * @param height    Height of the door.
-     * @param data      JSON data for loading.
+     * Creates a new Door object.
+     *
+     * @param width          Width of the door
+     * @param height         Height of the door
+     * @param properties     String-Object map of properties for this object
+     * @param tMap           Texture map for loading textures
+     * @param scale          Draw scale for drawing
+     * @param textureScale   Texture scale for rescaling texture
      */
-    public Door(TextureRegion texture, Vector2 scale, float width, float height, JsonValue data){
+    public Door(float width, float height, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
         super(new float[]{0, 0, width, 0, width, height, 0, height});
         this.width = width;
         this.height = height;
-        setTexture(texture);
+        setTexture(tMap.get("steel"));
+        setTextureScale(textureScale);
         setDrawScale(scale);
         setBodyType(BodyDef.BodyType.StaticBody);
         setDensity(objectConstants.getFloat( "density", 0.0f ));
         setFriction(objectConstants.getFloat( "friction", 0.0f ));
         setRestitution(objectConstants.getFloat( "restitution", 0.0f ));
 
-        angle = Direction.angleToDir(data.getInt("angle"));
-        totalTicks = data.getFloat("totalTicks");
+        angle = Direction.angleToDir((int) properties.get("closeAngle", 0));
+        totalTicks = (int) properties.get("totalTicks", 60);
         ticks = (int) totalTicks;
-        x = data.get("pos").getFloat(0)+ objectConstants.get("offset").getFloat(0);
-        y = data.get("pos").getFloat(1)+ objectConstants.get("offset").getFloat(1);
+        x =(float) properties.get("x")+ objectConstants.get("offset").getFloat(0);
+        y = (float) properties.get("y") + objectConstants.get("offset").getFloat(1) - height;
         setX(x);
         setY(y);
-        
         closing = 0;
-        initActivations(data);
+        initTiledActivations(properties);
     }
 
     /**
-     * Creates a new Door, reading width and height from the JSON data.
-     * @param texture   TextureRegion for drawing.
-     * @param scale     Draw scale for drawing..
-     * @param data      JSON data for loading the door.
+     * Creates a new Door object.
+     *
+     * @param properties     String-Object map of properties for this object
+     * @param tMap           Texture map for loading textures
+     * @param scale      Draw scale for drawing
+     * @param textureScale   Texture scale for rescaling texture
      */
-    public Door(TextureRegion texture, Vector2 scale, JsonValue data){
-        this(texture, scale, data.getFloat("width"), data.getFloat("height"), data);
+    public Door(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
+        this((float) properties.get("width"), (float) properties.get("height"),
+                properties, tMap, scale, textureScale);
     }
 
     /**
      * Update fixture and texture shape if currently closing/opening.
      * @param dt Timing values from parent loop
      */
-    public void update(float dt){
+    public void update(float dt) {
         super.update(dt);
         ticks += closing;
-        if (ticks == 0){
+        if (ticks <= 0){
             setActive(false);
             closing = 0;
+            ticks = 0;
             return;
         }
-        if (ticks == totalTicks){
+        if (ticks >= totalTicks){
+            ticks = (int) totalTicks;
             closing = 0;
         }
         switch (angle) {
@@ -112,6 +122,7 @@ public class Door extends PolygonObstacle implements Activatable {
                 break;
         }
     }
+
 
     /**
      * Creates the physics body for this object, adding them to the world. Immediately deactivates
@@ -146,7 +157,6 @@ public class Door extends PolygonObstacle implements Activatable {
     @Override
     public void deactivated(World world){
         closing = -1;
-        setActive(true);
     }
 
     //region ACTIVATABLE METHODS
@@ -158,6 +168,16 @@ public class Door extends PolygonObstacle implements Activatable {
 
     @Override
     public void setInitialActivation(boolean initialActivation){ this.initialActivation = initialActivation; }
+
+    @Override
+    public float getXPos() {
+        return getX();
+    }
+
+    @Override
+    public float getYPos() {
+        return getY();
+    }
 
     @Override
     public boolean getInitialActivation() { return initialActivation; }
@@ -175,4 +195,18 @@ public class Door extends PolygonObstacle implements Activatable {
      * @param constants JSON storing the shared constants.
      */
     public static void setConstants(JsonValue constants) {objectConstants = constants;}
+
+    public ObjectMap<String, Object> storeState(){
+        ObjectMap<String, Object> stateMap = super.storeState();
+        stateMap.put("ticks", ticks);
+        stateMap.put("closing", closing);
+        stateMap.put("activated", activated);
+        return stateMap;
+    }
+
+    public void loadState(ObjectMap<String, Object> stateMap){
+        super.loadState(stateMap);
+        ticks = (int) stateMap.get("ticks");
+        closing = (float) stateMap.get("closing");
+    }
 }

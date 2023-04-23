@@ -5,9 +5,15 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import edu.cornell.gdiac.game.GameCanvas;
+import edu.cornell.gdiac.game.obstacle.BoxObstacle;
 import edu.cornell.gdiac.game.obstacle.PolygonObstacle;
+
+import java.util.HashMap;
 
 public class Wall extends PolygonObstacle  {
     /** Constants that are shared between all instances of this class */
@@ -19,17 +25,17 @@ public class Wall extends PolygonObstacle  {
      * Creates a new wall object.
      * @param texture  TextureRegion for drawing.
      * @param scale    Draw scale for drawing.
-     * @param data     JSON for loading.
+     * @param shape    Polygon shape.
+     * @param isClimbable Whether wall is climbable or not.
      */
-    public Wall(TextureRegion texture, Vector2 scale, JsonValue data){
-        super(data.get("shape").asFloatArray());
+    public Wall(ObjectMap<String, Object> properties, Vector2 scale){
+        super((float[]) properties.get("polygon"));
         setBodyType(BodyDef.BodyType.StaticBody);
         setDensity(objectConstants.getFloat( "density", 0.0f ));
         setFriction(objectConstants.getFloat( "friction", 0.0f ));
         setRestitution(objectConstants.getFloat( "restitution", 0.0f ));
-        isClimbable = data.getBoolean("climbable", false);
+        this.isClimbable = (boolean) properties.get("climbable", false);
         setDrawScale(scale);
-        setTexture(texture);
         setName("wall");
     }
 

@@ -2,6 +2,7 @@ package edu.cornell.gdiac.game.object;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.game.GameCanvas;
 
 /**
@@ -13,6 +14,10 @@ public class SpiritLine {
     private Vector2 start = new Vector2();
     /** end point of the line */
     private Vector2 end = new Vector2();
+    /** middle points of the line */
+    private Vector2 middle1 = new Vector2();
+    private Vector2 middle2 = new Vector2();
+    private Array<Vector2> points = new Array<>();
     /** target for the start point */
     public Vector2 startTarget = new Vector2();
     /** target for the end point */
@@ -29,6 +34,8 @@ public class SpiritLine {
      * A <code>MOVE_SPEED</code> of 1 will instantaneously set positions to their
      * targets, and a <code>MOVE_SPEED</code> of 0 will never reach targets. */
     private static final float MOVE_SPEED = 0.2f;
+    /** How fast the middle point reaches its target */
+    private static final float MID_MOVE_SPEED = 0.075f;
     /** The alpha target value when in spirit mode */
     private static final float TARGET_ALPHA = 0.6f;
     /** How fast line fades in when exiting spirit mode */
@@ -36,7 +43,7 @@ public class SpiritLine {
     /** How fast line fades out when exiting spirit mode */
     private static final float FADE_OUT_SPEED = 0.2f;
     /** The thickness of the line */
-    private static final float THICKNESS = 4;
+    private static final float THICKNESS = 6;
 
     /**
      * Creates a new spirit line
@@ -45,6 +52,9 @@ public class SpiritLine {
      * @param scale  draw scale
      */
     public SpiritLine(Color ic, Color oc, Vector2 scale){
+        for (int i = 0; i < 4; i++){
+            points.add(Vector2.Zero);
+        }
         innerColor.set(ic);
         outerColor.set(oc);
         this.scale = scale;
@@ -64,6 +74,10 @@ public class SpiritLine {
         }
         start.add((startTarget.x-start.x)*MOVE_SPEED, (startTarget.y-start.y)*MOVE_SPEED);
         end.add((endTarget.x-end.x)*MOVE_SPEED, (endTarget.y-end.y)*MOVE_SPEED);
+        middle1.add(((start.x + (end.x - start.x)*1/3f) - middle1.x) * MID_MOVE_SPEED,
+                ((start.y + (end.y - start.y) * 1/3f) - middle1.y) * MID_MOVE_SPEED);
+        middle2.add(((start.x + (end.x - start.x)*2/3f) - middle2.x) * MID_MOVE_SPEED,
+                ((start.y + (end.y - start.y) * 2/3f) - middle2.y) * MID_MOVE_SPEED);
         outerColor.set(outerColor.r, outerColor.g, outerColor.b, alpha);
         innerColor.set(innerColor.r, innerColor.g, innerColor.b, alpha);
     }
@@ -83,12 +97,31 @@ public class SpiritLine {
     }
 
     /**
+     * Resets the middle points to be on the line.
+     */
+    public void resetMidpoints(){
+        middle1.set(start.x + (end.x - start.x)*1/3f, start.y + (end.y - start.y)*1/3f);
+        middle2.set(start.x + (end.x - start.x)*2/3f, start.y + (end.y - start.y)*2/3f);
+    }
+
+    /**
+     * @return true if start and end targets have been reached
+     */
+    public boolean reachedTargets(float epsilon){
+        return end.epsilonEquals(endTarget, epsilon) && startTarget.epsilonEquals(startTarget, epsilon);
+    }
+
+    /**
      * Draws the line to the canvas
      * @param canvas   Canvas to draw to
      */
     public void draw(GameCanvas canvas){
-        canvas.drawFactoryLine(start, end, THICKNESS/4, innerColor, scale.x, scale.y);
-        canvas.drawFactoryLine(start, end, THICKNESS, outerColor, scale.x, scale.y);
+        points.set(0, start);
+        points.set(1, middle1);
+        points.set(2, middle2);
+        points.set(3, end);
+        canvas.drawSpline(points, THICKNESS/4, innerColor, scale.x, scale.y);
+        canvas.drawSpline(points, THICKNESS, outerColor, scale.x, scale.y);
     }
 
 }

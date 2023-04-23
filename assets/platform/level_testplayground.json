@@ -1,4 +1,5 @@
 {
+  "size": [32, 18], //[width, height]
   "cat" : {
     "pos": [0.5, 13],
     "ret_pos": [31.5,13], //temp impossible
@@ -11,12 +12,17 @@
     {"shape":[8, 2, 8, 4, 9, 4, 9, 2]}
   ],
   "platforms": [
-    {"shape": [4, 8, 4, 9, 8, 9, 8, 8], "disp": [0, 6], "activatorID": "button1", "speed": 40, "damping": 0.1},
-    {"shape": [10, 8, 10, 9, 14, 9, 14, 8], "disp": [0, 6], "activatorID": "button1", "speed": 40, "damping": 0.2, "active":false},
-    {"shape": [16, 8, 16, 9, 20, 9, 20, 8], "disp": [6, 0], "activatorID": "button1", "speed": 30, "damping": 1},
-    {"shape": [10, 5, 10, 6, 14, 6, 14, 5], "disp": [4, 0], "activatorID": "button1", "speed": 10, "damping": 0.1},
-    {"shape": [22, 8, 22, 9, 26, 9, 26, 8], "disp": [4, -4], "activatorID": "button1", "speed": 5, "damping": 0.2}
+    {"shape": [10, 3, 10, 4, 16, 4, 16, 3], "disp": [3, 7], "activatorID": "button1", "speed": 20, "damping": 0.1}
   ],
   "activators": [{"pos": [5, 2], "type": "button", "id" : "button1"}],
+//  "lasers": [{"pos":  [2, 6], "angle":  270}],
+  "boxes" : [
+              {"pos":  [12, 11]},
+              {"pos":  [12.5, 12]},
+              {"pos":  [11.5, 12]},
+              {"pos":  [11, 13]},
+              {"pos":  [12, 13]},
+              {"pos":  [13, 13]}
+            ],
   "mobs" : [{"pos" : [3, 3], "facingRight":  false, "aggressive":  false}]
 }

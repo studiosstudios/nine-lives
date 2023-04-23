@@ -6,9 +6,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import edu.cornell.gdiac.assets.*;
-import edu.cornell.gdiac.game.stage.MainMenuStage;
-import edu.cornell.gdiac.game.stage.SettingsStage;
-import edu.cornell.gdiac.game.stage.StageWrapper;
+import edu.cornell.gdiac.game.stage.*;
 import edu.cornell.gdiac.util.*;
 
 /**
@@ -42,6 +40,7 @@ public class StageController implements Screen {
 	private ScreenListener listener;
 	/** Whether this player mode is still active */
 	private boolean active;
+	public boolean pause;
 
 	/** The current stage being rendered on the screen */
 	private StageWrapper stage;
@@ -51,6 +50,10 @@ public class StageController implements Screen {
 
 	/** The stage for the main menu */
 	private MainMenuStage mainMenuStage;
+	/** The stage for the pause menu */
+	private PauseStage pauseStage;
+	/** The stage for the level select menu */
+	private LevelSelectStage levelSelectStage;
 
 	private float animationTime;
 	/** Background texture for start-up */
@@ -58,6 +61,12 @@ public class StageController implements Screen {
 	private TextureRegion[][] spriteFrames;
 	private Animation<TextureRegion> animation;
 	private Texture jump_texture;
+
+	public GameController currLevel;
+	private int selectedLevel;
+
+	public int getSelectedLevel() { return selectedLevel; }
+	public void setSelectedLevel(int level) { selectedLevel = level; }
 
 	/**
 	 * Returns the budget for the asset loader.
@@ -95,6 +104,8 @@ public class StageController implements Screen {
 	public AssetDirectory getAssets() {
 		return assets;
 	}
+
+	public StageWrapper getStage() { return stage; }
 
 	/**
 	 * Creates a LoadingMode with the default budget, size and position.
@@ -139,6 +150,8 @@ public class StageController implements Screen {
 
 		mainMenuStage = new MainMenuStage(internal, false);
 		settingsStage = new SettingsStage(internal, true);
+		pauseStage = new PauseStage(internal, true);
+		levelSelectStage = new LevelSelectStage(internal, true);
 
 		stage = mainMenuStage;
 
@@ -210,6 +223,11 @@ public class StageController implements Screen {
 		if (active) {
 			update(delta);
 			draw();
+			if (pause) {
+				pause = false;
+				pauseStage.currLevel = this.currLevel;
+				changeStage(pauseStage);
+			}
 
 			// We are ready, notify our listener
 			if (mainMenuStage.isPlay() && listener != null) {
@@ -217,11 +235,27 @@ public class StageController implements Screen {
 			} else if (mainMenuStage.isSettings()) {
 				mainMenuStage.setSettingsState(0);
 				changeStage(settingsStage);
-			} else if (settingsStage.isBack()) {
+			} else if (mainMenuStage.isLevelSelect()) {
+				mainMenuStage.setLevelSelectState(0);
+				changeStage(levelSelectStage);
+			} else if (settingsStage.isBack() || levelSelectStage.isBack()) {
 				settingsStage.setBackButtonState(0);
+				levelSelectStage.setBackButtonState(0);
 				changeStage(mainMenuStage);
-			}
-			else if (mainMenuStage.isExit() && listener != null) {
+			} else if (levelSelectStage.isPlay() && listener != null) {
+				levelSelectStage.setPlayButtonState(0);
+				selectedLevel = levelSelectStage.getSelectedLevel();
+				listener.exitScreen(this, 69);
+			} else if (pauseStage.isResume() && listener != null) {
+				pauseStage.setResumeButtonState(0);
+				pauseStage.currLevel = null;
+				listener.exitScreen(this, 25);
+			} else if (pauseStage.isMainMenu() && listener != null) {
+				pauseStage.setMainMenuState(0);
+				pauseStage.currLevel = null;
+				mainMenuStage.createActors();
+				changeStage(mainMenuStage);
+			} else if (mainMenuStage.isExit() && listener != null) {
 				listener.exitScreen(this, 99);
 			}
 		}

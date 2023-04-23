@@ -66,7 +66,7 @@ public class Cat extends CapsuleObstacle implements Movable {
      * States used to handle the logic of the cat's movement
      */
     private enum State {
-        MOVING, JUMPING, CLIMBING, DASHING
+        MOVING, JUMPING, CLIMBING, DASHING, WALL_JUMPING
     }
 
     /**
@@ -140,6 +140,7 @@ public class Cat extends CapsuleObstacle implements Movable {
 
     private int dashTimer = 0;
     private final Vector2 dashCache = new Vector2();
+    private int wallJumpTimer = 0;
 
 
     /**
@@ -148,14 +149,27 @@ public class Cat extends CapsuleObstacle implements Movable {
     private final String groundSensorName;
 
     /**
-     * Identifier to allow us to track side sensor in ContactListener
+     * Identifier to allow us to track right side sensor in ContactListener
      */
-    private final String sideSensorName;
+    private final String rightSensorName;
 
     /**
-     * Whether we are in contact with a wall
+     * Identifier to allow us to track left side sensor in ContactListener
      */
-    private int wallCount;
+    private final String leftSensorName;
+
+    private Fixture rightFixture;
+    private Fixture leftFixture;
+
+    /**
+     * The number of walls in contact with the right side sensor
+     */
+    private int rightWallCount;
+
+    /**
+     * The number of walls in contact with the left side sensor
+     */
+    private int leftWallCount;
 
     /**
      * Which direction is the character facing
@@ -175,6 +189,7 @@ public class Cat extends CapsuleObstacle implements Movable {
      * Cache for internal force calculations
      */
     private ObjectSet<Fixture> groundFixtures;
+
     /**
      * The current spirit regions that the cat is inside
      */
@@ -364,28 +379,53 @@ public class Cat extends CapsuleObstacle implements Movable {
     }
 
     /**
-     * Returns the name of the side sensor
+     * Returns the name of the right side sensor
      * <p>
      * This is used by ContactListener
      *
-     * @return the name of the side sensor
+     * @return the name of the right side sensor
      */
-    public String getSideSensorName() {
-        return sideSensorName;
+    public String getRightSensorName() {
+        return rightSensorName;
     }
 
     /**
-     * Sets whether the cat is in contact with a wall
+     * Returns the name of the left side sensor
+     * <p>
+     * This is used by ContactListener
+     *
+     * @return the name of the right side sensor
      */
-    public void incrementWalled() {
-        wallCount++;
+    public String getLeftSensorName() {
+        return leftSensorName;
     }
 
     /**
-     * Sets whether the cat is in contact with a wall
+     * Increments when the right side sensor is in contact with a wall
      */
-    public void decrementWalled() {
-        wallCount--;
+    public void incrementRightWalled() {
+        rightWallCount++;
+    }
+
+    /**
+     * Decrements when the right side sensor lose contact with a wall
+     */
+    public void decrementRightWalled() {
+        rightWallCount--;
+    }
+
+    /**
+     * Increments when the right side sensor is in contact with a wall
+     */
+    public void incrementLeftWalled() {
+        leftWallCount++;
+    }
+
+    /**
+     * Decrements when the right side sensor lose contact with a wall
+     */
+    public void decrementLeftWalled() {
+        leftWallCount--;
     }
 
     /**
@@ -394,7 +434,7 @@ public class Cat extends CapsuleObstacle implements Movable {
      * @return whether the cat is in contact with a wall
      */
     public boolean isWalled() {
-        return wallCount > 0;
+        return (isFacingRight() ? rightWallCount : leftWallCount) > 0;
     }
 
     public void setMeowing(boolean value) {
@@ -419,7 +459,9 @@ public class Cat extends CapsuleObstacle implements Movable {
      * @param facingRight true if we want the cat to face right
      */
     public void setFacingRight(boolean facingRight) {
-        this.facingRight = facingRight;
+        if (state != State.CLIMBING) {
+            this.facingRight = facingRight;
+        }
     }
 
     public ObjectSet<SpiritRegion> getSpiritRegions() {
@@ -492,7 +534,8 @@ public class Cat extends CapsuleObstacle implements Movable {
         dashForce = objectConstants.getFloat("dashForce", 0);
         jumpDamping = objectConstants.getFloat("jumpDamping", 0);
         groundSensorName = "catGroundSensor";
-        sideSensorName = "catSideSensor";
+        rightSensorName = "catRightSensor";
+        leftSensorName = "catLeftSensor";
         sensorShapes = new Array<>();
         groundFixtures = new ObjectSet<>();
         spiritRegions = new ObjectSet<>();
@@ -562,15 +605,14 @@ public class Cat extends CapsuleObstacle implements Movable {
 
         // Side sensors to help detect for wall climbing
         JsonValue sideSensorJV = objectConstants.get("side_sensor");
-        Fixture b = generateSensor(new Vector2(-getWidth() / 2, 0),
+        rightFixture = generateSensor(new Vector2(getWidth() / 2, 0),
                 sideSensorJV.getFloat("width", 0),
                 sideSensorJV.getFloat("shrink") * getHeight() / 2.0f,
-                getSideSensorName());
-
-        generateSensor(new Vector2(getWidth() / 2, 0),
+                getRightSensorName());
+        leftFixture = generateSensor(new Vector2(-getWidth() / 2, 0),
                 sideSensorJV.getFloat("width", 0),
                 sideSensorJV.getFloat("shrink") * getHeight() / 2.0f,
-                getSideSensorName());
+                getLeftSensorName());
 
         return true;
     }
@@ -656,6 +698,18 @@ public class Cat extends CapsuleObstacle implements Movable {
                     setGravityScale(2f);
                     return;
                 }
+                else if (jumpPressed) {
+                    // Kicking off from wall
+                    if (Math.signum(horizontalMovement) == getDirectionFactor()) {
+                        forceCache.set(13 * Math.signum(horizontalMovement), 6);
+                    }
+                    // Kicking higher onto wall
+                    else {
+                        forceCache.set(8 * getDirectionFactor(), 10);
+                    }
+                    state = State.WALL_JUMPING;
+                    setGravityScale(2f);
+                }
                 break;
             case DASHING:
                 // DASHING -> MOVING
@@ -670,10 +724,17 @@ public class Cat extends CapsuleObstacle implements Movable {
                     if (isGrounded) onGroundedReset();
                     return;
                 }
-                else if (getOrientation() != Orientation.VERTICAL) {
+                if (getOrientation() != Orientation.VERTICAL) {
                     setOrientation(Orientation.VERTICAL);
                 }
                 break;
+            case WALL_JUMPING:
+                wallJumpTimer++;
+                if (wallJumpTimer > 5) {
+                    state = State.MOVING;
+                    wallJumpTimer = 0;
+                    return;
+                }
         }
     }
 
@@ -694,20 +755,26 @@ public class Cat extends CapsuleObstacle implements Movable {
                 forceCache.set(0, jumpMovement);
                 body.applyLinearImpulse(forceCache, getPosition(), true);
             case MOVING:
+                float speed;
                 if (horizontalMovement == 0){
-                    setRelativeVX(getRelativeVelocity().x * 0.5f);
+                    speed = getRelativeVelocity().x * 0.5f;
                 } else {
-                    setRelativeVX(0.84f * (getRelativeVelocity().x + horizontalMovement * 0.06f));
+                    speed = 0.84f * (getRelativeVelocity().x + horizontalMovement * 0.06f);
                 }
+                setRelativeVX(speed);
                 break;
             case CLIMBING:
                 setRelativeVX(0);
-                setRelativeVY(verticalMovement / 3f);
+                setRelativeVY(verticalMovement / 5f);
                 break;
             case DASHING:
                 setRelativeVX(dashCache.x);
                 setRelativeVY(dashCache.y);
                 addDashShadow();
+                break;
+            case WALL_JUMPING:
+                setRelativeVX(forceCache.x);
+                setRelativeVY(forceCache.y);
                 break;
         }
     }

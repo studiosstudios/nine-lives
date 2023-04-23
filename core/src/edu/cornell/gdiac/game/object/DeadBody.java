@@ -220,10 +220,10 @@ public class DeadBody extends BoxObstacle implements Movable {
                 markRemoved(true);
             }
         }
-        // TODO: From CJ to Jeff -- what's the point of this conditional? damping makes pushing dead bodies feel much better
-//        if (groundFixtures.size == 0){
+        // TODO: Changed this condition so that bodies on the ground have high damping, and bodies in air do not. Double check?
+        if (groundFixtures.size != 0 && getVX() != 0){
             setVX(getVX()/damping);
-//        }
+        }
     }
 
     /**

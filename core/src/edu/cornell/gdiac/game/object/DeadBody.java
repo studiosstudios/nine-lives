@@ -124,13 +124,14 @@ public class DeadBody extends CapsuleObstacle implements Movable {
      * @param scale         Draw scale.
      * @param position      Position
      */
-    public DeadBody(TextureRegion texture, TextureRegion burnTexture, Vector2 scale, Vector2 position) {
+    public DeadBody(TextureRegion texture, TextureRegion burnTexture, Vector2 scale, Vector2 position, Vector2 textureScale) {
         super(0, 0, objectConstants.getFloat("capsuleWidth"), objectConstants.getFloat("capsuleHeight"), Orientation.TOP);
 
         spriteFrames = TextureRegion.split(burnTexture.getTexture(), 2048,2048);
         animation = new Animation<>(0.025f, spriteFrames[0]);
         time = 0f;
         setTexture(texture);
+        setTextureScale(textureScale);
         setDrawScale(scale);
         drawOffset = new Vector2(objectConstants.get("draw_offset").getFloat(0), objectConstants.get("draw_offset").getFloat( 1));
         setDensity(objectConstants.getFloat("density", 0));
@@ -175,8 +176,10 @@ public class DeadBody extends CapsuleObstacle implements Movable {
 
         //the actual physical hitbox
         FixtureDef hitboxDef = new FixtureDef();
-        float hx = texture.getRegionWidth()/drawScale.x*objectConstants.get("shrink").getFloat(0)/2f;
-        float hy = texture.getRegionHeight()/drawScale.y*objectConstants.get("shrink").getFloat(1)/2f;
+        float hx = texture.getRegionWidth()*textureScale.x/drawScale.x*objectConstants.get("shrink").getFloat(0)/2f;
+        float hy = texture.getRegionHeight()*textureScale.y/drawScale.y*objectConstants.get("shrink").getFloat(1)/2f;
+        System.out.println(texture.getRegionWidth()*textureScale.x);
+        System.out.println(texture.getRegionHeight()*textureScale.y);
         Vector2 solidOffset = new Vector2(0, (hy - getHeight()/2f));
         hitboxShape = new PolygonShape();
         hitboxShape.setAsBox(hx, hy, solidOffset, 0);
@@ -306,7 +309,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
             canvas.draw(frame, color, origin.x, origin.y,  x,y, getAngle(), -effect/drawScale.x, 1.0f/drawScale.y);
         }
         else{
-            canvas.draw(texture, color, origin.x, origin.y, textureX * drawScale.x, textureY * drawScale.y, getAngle(), effect, 1.0f);
+            canvas.draw(texture, color, origin.x, origin.y, textureX * drawScale.x, textureY * drawScale.y, getAngle(), effect * textureScale.x, textureScale.y);
         }
     }
 

@@ -3,10 +3,10 @@
   "infinite":false,
   "layers":[
     {
-      "data":[17, 15, 15, 15, 15, 15, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        37, 0, 0, 0, 0, 0, 37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        37, 0, 0, 0, 0, 0, 37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        29, 15, 15, 15, 15, 15, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 15, 15, 16, 0, 0, 0,
@@ -124,19 +124,7 @@
       "draworder":"topdown",
       "id":7,
       "name":"mobs",
-      "objects":[
-        {
-          "gid":6,
-          "height":2048,
-          "id":64,
-          "name":"",
-          "rotation":0,
-          "type":"",
-          "visible":true,
-          "width":1024,
-          "x":4096,
-          "y":1024
-        }],
+      "objects":[],
       "opacity":1,
       "type":"objectgroup",
       "visible":true,
@@ -452,30 +440,6 @@
           "width":1024,
           "x":19456,
           "y":6144
-        },
-        {
-          "gid":1,
-          "height":1024,
-          "id":63,
-          "name":"",
-          "properties":[
-            {
-              "name":"id",
-              "type":"string",
-              "value":"platformSwitch"
-            },
-            {
-              "name":"type",
-              "propertytype":"activators",
-              "type":"string",
-              "value":"switch"
-            }],
-          "rotation":0,
-          "type":"",
-          "visible":true,
-          "width":1024,
-          "x":3072,
-          "y":2048
         }],
       "opacity":1,
       "type":"objectgroup",
@@ -509,34 +473,7 @@
       "draworder":"topdown",
       "id":10,
       "name":"platforms",
-      "objects":[
-        {
-          "height":1024,
-          "id":62,
-          "name":"",
-          "properties":[
-            {
-              "name":"activatorID",
-              "type":"string",
-              "value":"platformSwitch"
-            },
-            {
-              "name":"disp",
-              "propertytype":"Vector2",
-              "type":"class",
-              "value":
-              {
-                "x":4,
-                "y":0
-              }
-            }],
-          "rotation":0,
-          "type":"Platform",
-          "visible":true,
-          "width":3072,
-          "x":5120,
-          "y":9216
-        }],
+      "objects":[],
       "opacity":1,
       "type":"objectgroup",
       "visible":true,
@@ -635,78 +572,6 @@
           "width":0,
           "x":25600,
           "y":6144
-        },
-        {
-          "height":0,
-          "id":67,
-          "name":"",
-          "polygon":[
-            {
-              "x":0,
-              "y":0
-            },
-            {
-              "x":5120,
-              "y":0
-            },
-            {
-              "x":5120,
-              "y":2048
-            },
-            {
-              "x":0,
-              "y":2048
-            },
-            {
-              "x":-1024,
-              "y":3072
-            },
-            {
-              "x":6144,
-              "y":3072
-            },
-            {
-              "x":6144,
-              "y":-1024
-            },
-            {
-              "x":-1024,
-              "y":-1024
-            }],
-          "rotation":0,
-          "type":"",
-          "visible":true,
-          "width":0,
-          "x":1024,
-          "y":1024
-        },
-        {
-          "height":0,
-          "id":68,
-          "name":"",
-          "polygon":[
-            {
-              "x":0,
-              "y":0
-            },
-            {
-              "x":0,
-              "y":4096
-            },
-            {
-              "x":1024,
-              "y":3072
-            },
-            {
-              "x":1024,
-              "y":1024
-            }],
-          "rotation":0,
-          "type":"",
-          "visible":true,
-          "width":0,
-          "x":0,
-          "y":0
         }],
       "opacity":1,
       "type":"objectgroup",
@@ -729,19 +594,7 @@
       "draworder":"topdown",
       "id":14,
       "name":"boxes",
-      "objects":[
-        {
-          "gid":10,
-          "height":1024,
-          "id":58,
-          "name":"",
-          "rotation":0,
-          "type":"",
-          "visible":true,
-          "width":1024,
-          "x":4096,
-          "y":10240
-        }],
+      "objects":[],
       "opacity":1,
       "type":"objectgroup",
       "visible":true,
@@ -788,7 +641,7 @@
       "x":0,
       "y":0
     }],
-  "nextlayerid":18,
+  "nextlayerid":23,
   "nextobjectid":69,
   "orientation":"orthogonal",
   "properties":[

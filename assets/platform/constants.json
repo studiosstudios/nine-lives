@@ -62,7 +62,7 @@
     "burnTicks" : 300,
     "capsuleWidth": 0.875,
     "capsuleHeight": 0.90312505,
-    "shrink": [0.6, 0.5],
+    "shrink": [0.6, 0.234375],
     "draw_offset": [0, -0.15],
     "sensor": {
       "shrink": 0.9

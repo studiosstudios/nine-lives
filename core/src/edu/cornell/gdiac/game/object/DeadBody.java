@@ -178,8 +178,6 @@ public class DeadBody extends CapsuleObstacle implements Movable {
         FixtureDef hitboxDef = new FixtureDef();
         float hx = texture.getRegionWidth()*textureScale.x/drawScale.x*objectConstants.get("shrink").getFloat(0)/2f;
         float hy = texture.getRegionHeight()*textureScale.y/drawScale.y*objectConstants.get("shrink").getFloat(1)/2f;
-        System.out.println(texture.getRegionWidth()*textureScale.x);
-        System.out.println(texture.getRegionHeight()*textureScale.y);
         Vector2 solidOffset = new Vector2(0, (hy - getHeight()/2f));
         hitboxShape = new PolygonShape();
         hitboxShape.setAsBox(hx, hy, solidOffset, 0);
@@ -304,8 +302,8 @@ public class DeadBody extends CapsuleObstacle implements Movable {
             animation.setPlayMode(Animation.PlayMode.LOOP);
             time += Gdx.graphics.getDeltaTime();
             TextureRegion frame = animation.getKeyFrame(time);
-            float x = textureX * drawScale.x + effect*frame.getRegionWidth()/drawScale.x/2;
-            float y = textureY * drawScale.y-frame.getRegionHeight()/drawScale.y/2+5;
+            float x = textureX * drawScale.x;
+            float y = textureY * drawScale.y;
             canvas.draw(frame, color, origin.x, origin.y,  x,y, getAngle(), -effect/drawScale.x, 1.0f/drawScale.y);
         }
         else{
@@ -360,6 +358,10 @@ public class DeadBody extends CapsuleObstacle implements Movable {
         }
         stateMap.put("jointInfo", jointInfo);
         return stateMap;
+    }
+
+    public Vector2 getSwitchPosition() {
+        return getPosition().add(objectConstants.get("switch_offset").getFloat(0),objectConstants.get("switch_offset").getFloat(1));
     }
 
     public void loadState(ObjectMap<String, Object> stateMap){

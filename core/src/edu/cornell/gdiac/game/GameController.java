@@ -498,7 +498,7 @@ public class GameController implements Screen {
         collisionController.setLevel(currLevel);
         actionController.setLevel(currLevel);
         actionController.setMobControllers(currLevel);
-//        prevLivesState = new LevelState[9];
+        if (currLevel.levelStates().size == 0) currLevel.saveState();
         canvas.getCamera().setLevelBounds(currLevel.bounds, scale);
         canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, cameraGlide);
         currLevel.unpause();
@@ -706,17 +706,6 @@ public class GameController implements Screen {
         // Update objects
         actionController.postUpdate(dt);
 
-        //Save level state if necessary. This must be done here so that we can save dead bodies after they are added
-        //to the world. Ideally we could do this in respawn(), but that would involve rearranging the order of everything
-        //which may be a pain. Also it does seem like saving state after stepping the world has better results - will need
-        //testing.
-
-//        if (justRespawned) {
-//            currLevel.saveState();
-////            prevLivesState[9 - currLevel.getNumLives()] = new LevelState(currLevel);
-//        }
-
-
         if (InputController.getInstance().didUndo()) {
             Array<Level.LevelState> levelStates = currLevel.levelStates();
             if (undoTime < MAX_UNDO_TIME && levelStates.size > 1) {
@@ -814,7 +803,7 @@ public class GameController implements Screen {
             nextLevel.draw(canvas);
         }
         currLevel.draw(canvas);
-        canvas.drawRectangle(currLevel.bounds.x, currLevel.bounds.y, currLevel.bounds.width, currLevel.bounds.height, flashColor, scale.x, scale.y);
+        canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
         canvas.end();
 
         if (debug) {
@@ -875,6 +864,6 @@ public class GameController implements Screen {
         } else {
             currLevel.resetCheckpoints();
         }
-        respawn();
+        if (currLevel.getCheckpoint() != null) respawn();
     }
 }

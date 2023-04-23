@@ -161,7 +161,7 @@ public class ActionController {
             if (body != null && body.isSwitchable()){
 //                if (body != null && body.isSwitchable() && body.inSameSpiritRegion(cat.getSpiritRegions())){
                 level.spawnDeadBody();
-                cat.setPosition(body.getPosition());
+                cat.setPosition(body.getSwitchPosition());
                 cat.setLinearVelocity(body.getLinearVelocity());
                 cat.setFacingRight(body.isFacingRight());
                 level.removeDeadBody(body);

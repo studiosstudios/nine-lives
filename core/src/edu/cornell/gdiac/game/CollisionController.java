@@ -105,7 +105,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                     if (bd2 instanceof Spikes && fd2.equals(Spikes.pointyName) && fd1.equals(Cat.bodyName)) {
                         actionController.die();
                     }
-                    if (bd2 instanceof Flamethrower.Flame){
+                    if (bd2 instanceof Flamethrower.Flame && fd2.equals(Flamethrower.flameSensorName)){
                         actionController.die();
                     }
                     if (bd2 instanceof Checkpoint && ((Checkpoint) bd2).getSensorName().equals(fd2)){

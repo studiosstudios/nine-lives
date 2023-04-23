@@ -445,7 +445,7 @@ public class Level {
             }
         }
         tiles = new Tiles(tileData, 1024, levelWidth, levelHeight, tileset, bounds, fID, new Vector2(1/32f, 1/32f));
-        saveState();
+        if (cat != null) saveState();
     }
 
     /**

@@ -652,7 +652,6 @@ public class Cat extends CapsuleObstacle implements Movable {
     public void updateState() {
         failedSwitchTicks = Math.min(FAILED_SWITCH_TICKS, failedSwitchTicks + 1);
         if (coyoteTimer < 6) {
-            System.out.println(coyoteTimer);
             coyoteTimer--;
             if (coyoteTimer <= 0) coyoteTimer = 6;
         }
@@ -677,6 +676,10 @@ public class Cat extends CapsuleObstacle implements Movable {
                     calculateDashVector();
                     soundBuffer.add("dash");
                     return;
+                }
+                if (jumpPressed && !isGrounded && isWalled()) {
+                    forceCache.set(8 * getDirectionFactor(), 10);
+                    state = State.WALL_JUMPING;
                 }
                 break;
             case JUMPING:

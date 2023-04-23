@@ -430,7 +430,7 @@ public class Level {
         if (biome.equals("metal")) {
             tileset = textureRegionAssetMap.get("metal_tileset");
             for (JsonValue tilesetData : tiledMap.get("tilesets")){
-                if (tilesetData.getString("source").equals("metal-walls.tsx")){
+                if (tilesetData.getString("source").endsWith("metal-walls.tsx")){
                     fID = tilesetData.getInt("firstgid");
                 }
             }
@@ -439,7 +439,7 @@ public class Level {
             // TODO: change this in future
             tileset = textureRegionAssetMap.get("metal_tileset");
             for (JsonValue tilesetData : tiledMap.get("tilesets")){
-                if (tilesetData.getString("source").equals("metal-walls.tsx")){
+                if (tilesetData.getString("source").endsWith("metal-walls.tsx")){
                     fID = tilesetData.getInt("firstgid");
                 }
             }

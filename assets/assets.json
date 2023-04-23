@@ -45,7 +45,8 @@
         "idle_anim": "platform/idle.png",
         "idle_anim_stand": "platform/standing_idle.png",
         "metal_tileset": "tiled/metal_tileset.png",
-        "steel": "shared/steeltile.png"
+        "steel": "shared/steeltile.png",
+        "deadCat2" : "platform/deadCat2.png"
     },
     "jsons"  : {
         "constants": "platform/constants.json",
@@ -55,9 +56,9 @@
         "level3": "platform/level3.json",
         "level4": "platform/level4.json",
         "level5": "platform/level_testplayground.json",
-        "tiledLevel1": "tiled/tiledLevel1.json",
-      "tiledLevel2": "tiled/tiledLevel2.json",
-      "tiledLevel3": "tiled/level-switch2.json",
+        "tiledLevel1": "tiled/super-jump.json",
+      "tiledLevel2": "tiled/tiledlevel2.json",
+      "tiledLevel3": "tiled/spikes-testing.json",
       "tiledLevel4": "tiled/level-switch2.json",
       "tiledLevel5": "tiled/level-switch3.json"
     },

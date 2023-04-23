@@ -4,6 +4,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Array;
@@ -160,7 +161,7 @@ public class ActionController {
             if (body != null && body.isSwitchable()){
 //                if (body != null && body.isSwitchable() && body.inSameSpiritRegion(cat.getSpiritRegions())){
                 level.spawnDeadBody();
-                cat.setPosition(body.getPosition());
+                cat.setPosition(body.getSwitchPosition());
                 cat.setLinearVelocity(body.getLinearVelocity());
                 cat.setFacingRight(body.isFacingRight());
                 level.removeDeadBody(body);
@@ -184,6 +185,11 @@ public class ActionController {
             cat.getSoundBuffer().clear();
         }
 
+        //Die if off-screen
+        if (level.bounds.y - cat.getY() > 10){
+            die();
+        }
+
         //Prepare dead bodies for raycasting
         for (DeadBody d: level.getdeadBodyArray()){
             d.setTouchingLaser(false);
@@ -204,7 +210,18 @@ public class ActionController {
             a.updateActivated();
             if (level.getActivationRelations().containsKey(a.getID())){
                 for (Activatable s : level.getActivationRelations().get(a.getID())){
-                    s.updateActivated(a.isActivating(), level.getWorld());
+                    int activated = s.updateActivated(a.isActivating(), level.getWorld());
+
+                    //destroy joints if spikes deactivated
+                    if (activated == -1 && s instanceof Spikes){
+                        Spikes spikes = (Spikes) s;
+
+                        for (Joint j : spikes.getJoints()){
+                            ((DeadBody) j.getBodyA().getUserData()).clearJoints();
+                        }
+
+                        spikes.destroyJoints(level.world);
+                    }
                 }
             }
         }
@@ -522,7 +539,10 @@ public class ActionController {
          */
         @Override
         public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-            if ( fraction < closestFraction ) {
+            Obstacle obs = (Obstacle) fixture.getBody().getUserData();
+            if (fixture.getUserData() != null && fixture.getUserData().equals(DeadBody.catBodyName)) {
+                ((DeadBody) (obs)).setTouchingLaser(true);
+            } else if ( fraction < closestFraction && (!fixture.isSensor() || obs instanceof Cat)) {
                 closestFraction = fraction;
                 rayCastPoint.set(point);
                 rayCastFixture = fixture;

@@ -1164,6 +1164,7 @@ public abstract class Obstacle {
 		stateMap.put("relativeVelocity", relativeVelocity);
 		stateMap.put("baseVelocity", baseVelocity);
 		stateMap.put("linearVelocity", bodyinfo.linearVelocity);
+		stateMap.put("toRemove", toRemove);
 		return stateMap;
 	}
 
@@ -1172,6 +1173,8 @@ public abstract class Obstacle {
 		bodyinfo.linearVelocity.set((Vector2) stateMap.get("linearVelocity"));
 		relativeVelocity.set((Vector2) stateMap.get("relativeVelocity"));
 		baseVelocity.set((Vector2) stateMap.get("baseVelocity"));
+		markRemoved((boolean) stateMap.get("toRemove"));
+		setAwake(true);
 	}
 
 	/**
@@ -1182,11 +1185,15 @@ public abstract class Obstacle {
 		setBaseVelocity(Vector2.Zero);
 		setRelativeVelocity(Vector2.Zero);
 		setLinearVelocity(Vector2.Zero);
+		setAwake(false);
 	}
 
 	/**
 	 * If this obstacle has been paused before, loads the state from the paused state, otherwise does nothing.
 	 */
-	public void unpause() { if (pausedState != null) loadState(pausedState); }
+	public void unpause() {
+		if (pausedState != null) loadState(pausedState);
+		setAwake(true);
+	}
 
 }

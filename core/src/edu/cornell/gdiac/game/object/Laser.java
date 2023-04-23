@@ -109,15 +109,14 @@ public class Laser extends BoxObstacle implements Activatable{
         return getPosition().add(beamOffset);
     }
 
-    @Override
-    public void draw(GameCanvas canvas){
+
+    public void drawLaser(GameCanvas canvas){
         if (activated) {
             if (points.size > 1) {
                 canvas.drawFactoryPath(points, thickness, color, drawScale.x, drawScale.y);
                 canvas.drawFactoryPath(points, thickness*0.3f, Color.WHITE, drawScale.x, drawScale.y);
             }
         }
-        super.draw(canvas);
     }
 
     /**

@@ -155,6 +155,13 @@ public class Cat extends CapsuleObstacle implements Movable {
     private final String rightSensorName;
 
     /**
+     * User data of body fixtures for this cat. Used in Contact Listener
+     */
+    public static final String bodyName = "catBody";
+
+    /**
+     * Whether we are in contact with a wall
+     *
      * Identifier to allow us to track left side sensor in ContactListener
      */
     private final String leftSensorName;
@@ -593,6 +600,7 @@ public class Cat extends CapsuleObstacle implements Movable {
             return false;
         }
 
+        for (Fixture f : body.getFixtureList()) f.setUserData(bodyName);
         // Ground Sensor
         // -------------
         // We only allow the cat to jump when he's on the ground.

@@ -46,7 +46,10 @@
         "idle_anim_stand": "platform/standing_idle.png",
         "metal_tileset": "tiled/metal_tileset.png",
         "steel": "shared/steeltile.png",
-        "deadCat2" : "platform/deadCat2.png"
+        "deadCat2" : "platform/deadCat2.png",
+      "button_base": "platform/base.png",
+      "button_top": "platform/button_top.png",
+      "switch_top": "platform/switch_top.png"
     },
     "jsons"  : {
         "constants": "platform/constants.json",

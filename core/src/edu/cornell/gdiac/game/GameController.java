@@ -595,13 +595,13 @@ public class GameController implements Screen {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt) {
-        Camera cam = canvas.getCamera();
-        InputController input = InputController.getInstance();
         if (collisionController.getReturn()) {
             setRet(true);
         }
         actionController.update(dt);
         flashColor.a -= flashColor.a/10;
+        Camera cam = canvas.getCamera();
+        InputController input = InputController.getInstance();
         for (Activator a : currLevel.getActivators()){
             if (a.isPressed() && a.getPan()){
                 a.setPan(false);

@@ -92,7 +92,6 @@ public class Checkpoint extends BoxObstacle
     /**
      * Creates the physics Body(s) for this object, adding them to the world.
      * <p>
-     * This method overrides the base method to keep your ship from spinning.
      *
      * @param world Box2D world to store body
      * @return true if object allocation succeeded

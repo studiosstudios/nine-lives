@@ -431,15 +431,16 @@ public class GameController implements Screen {
      * <br><br>
      * The level model died is set to false<br>
      * The level model cat is set to its respawn position
+     * @param  cameraMovement true if we want respawn camera movement, false otherwise
      */
-    public void respawn() {
+    public void respawn(boolean cameraMovement) {
         currLevel.setDied(false);
         currLevel.getCat().setPosition(currLevel.getRespawnPos());
         currLevel.getCat().setFacingRight(true);
         currLevel.getCat().setJumpPressed(false);
         currLevel.getCat().setGrounded(true);
         currLevel.getCat().setLinearVelocity(Vector2.Zero);
-        justRespawned = true;
+        justRespawned = cameraMovement;
     }
 
     /**
@@ -554,7 +555,7 @@ public class GameController implements Screen {
 
         if (!currLevel.isFailure() && currLevel.getDied()) {
             flashColor.set(0, 0, 0, 1);
-            respawn();
+            respawn(true);
         }
 
         if (input.didExit()){
@@ -711,7 +712,7 @@ public class GameController implements Screen {
             if (undoTime < MAX_UNDO_TIME && levelStates.size > 1) {
                 levelStates.pop();
             }
-            loadLevelState(levelStates.peek());
+            loadLevelState(levelStates.peek(), false);
             undoTime = 0;
             flashColor.set(1, 1, 1, 1);
         }
@@ -831,8 +832,9 @@ public class GameController implements Screen {
      * consist of references to the same objects as the current level, i.e. the saved level cannot
      * have been reset or disposed.
      * @param state LevelState to load in
+     * @param cameraMovement true if we want camera movement upon respawn, false otherwise
      */
-    private void loadLevelState(Level.LevelState state){
+    private void loadLevelState(Level.LevelState state, boolean cameraMovement){
         currLevel.setNumLives(state.numLives);
         for (Obstacle obs : currLevel.getObjects()){
 
@@ -864,6 +866,6 @@ public class GameController implements Screen {
         } else {
             currLevel.resetCheckpoints();
         }
-        if (currLevel.getCheckpoint() != null) respawn();
+        if (currLevel.getCheckpoint() != null) respawn(cameraMovement);
     }
 }

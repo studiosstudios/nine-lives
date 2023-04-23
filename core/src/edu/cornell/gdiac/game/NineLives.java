@@ -88,6 +88,23 @@ public class NineLives extends Game implements ScreenListener {
 	}
 
 	/**
+	 * Load the assets for the game, create the GameController, and start the game.
+	 * @param numLevels   total number levels
+	 * @param startLevel  starting level number
+	 */
+	private void startGame(int numLevels, int startLevel){
+		directory = menu.getAssets();
+		controller = new GameController(numLevels);
+		controller.gatherAssets(directory);
+		controller.setScreenListener(this);
+		controller.setCanvas(canvas);
+		controller.init(startLevel);
+		setScreen(controller);
+		menu.dispose();
+		menu = null;
+	}
+
+	/**
 	 * The given screen has made a request to exit its player mode.
 	 *
 	 * The value exitCode can be used to implement menu options.
@@ -97,26 +114,9 @@ public class NineLives extends Game implements ScreenListener {
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
 		if (screen == menu && exitCode == 0) {
-			directory = menu.getAssets();
-			controller = new GameController(2);
-			controller.gatherAssets(directory);
-			controller.setScreenListener(this);
-			controller.setCanvas(canvas);
-			controller.reset();
-			setScreen(controller);
-			menu.dispose();
-			menu = null;
+			startGame(5, 1);
 		} else if (screen == menu && exitCode == 69) {
-			directory = menu.getAssets();
-			controller.gatherAssets(directory);
-			controller = new GameController(2);
-			controller.setScreenListener(this);
-			controller.setCanvas(canvas);
-			controller.setCurrLevel(menu.getSelectedLevel());
-			controller.reset();
-			setScreen(controller);
-			menu.dispose();
-			menu = null;
+			startGame(5, menu.getSelectedLevel());
 		} else if (screen == menu && exitCode == 25) {
 			controller.resume();
 			setScreen(controller);

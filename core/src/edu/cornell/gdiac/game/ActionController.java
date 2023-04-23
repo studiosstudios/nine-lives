@@ -89,6 +89,7 @@ public class ActionController {
      * @param level The target level to associate the AI controllers with
      */
     public void setMobControllers(Level level) {
+
         mobControllers.clear();
         for (Mob mob : level.getMobArray()) {
             mobControllers.add(new AIController(bounds, level, mob));

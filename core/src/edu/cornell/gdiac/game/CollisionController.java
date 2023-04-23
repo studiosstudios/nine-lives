@@ -12,7 +12,9 @@ public class CollisionController implements ContactListener, ContactFilter {
     /** The ActionController */
     private ActionController actionController;
     /** Whether should return to previous level */
-    boolean shouldReturn;
+    private boolean shouldReturn;
+    /** Whether the player just progressed to a new level */
+    private boolean didChange;
 
     /**
      * Creates and initialize a new instance of a CollisionController
@@ -22,6 +24,7 @@ public class CollisionController implements ContactListener, ContactFilter {
     public CollisionController(ActionController actionController){
         this.actionController = actionController;
         shouldReturn = false;
+        didChange = false;
     }
 
     /**
@@ -31,6 +34,7 @@ public class CollisionController implements ContactListener, ContactFilter {
      */
     public void setLevel(Level level){
         this.level = level;
+        shouldReturn = false;
     }
 
     /**
@@ -46,6 +50,14 @@ public class CollisionController implements ContactListener, ContactFilter {
      * @param value given to shouldReturn
      */
     public void setReturn(boolean value) { shouldReturn = value; }
+
+    /**
+     * Sets if the player just progressed to the next level. This makes this controller ignore the first collision of a
+     * cat and a return exit.
+     *
+     * @param value given to didNext
+     */
+    public void setDidChange(boolean value) { didChange = value; }
 
     /**
      * Callback method for the start of a collision
@@ -87,16 +99,9 @@ public class CollisionController implements ContactListener, ContactFilter {
                     }
 
                     // Check for win condition
-                    if (bd2 instanceof Exit) {
-                        switch (((Exit) bd2).exitType()) {
-                            case GOAL:
-                                level.setComplete(true);
-                                break;
-                            case RETURN:
-                                setReturn(true);
-                                break;
-                        }
-                    }
+                    if (bd2 == level.getGoalExit() && !didChange) level.setComplete(true);
+                    if (bd2 == level.getReturnExit() && !didChange) setReturn(true);
+
                     if (fd2 instanceof Spikes) {
                         actionController.die();
                     }
@@ -209,6 +214,10 @@ public class CollisionController implements ContactListener, ContactFilter {
                     if (bd2 instanceof SpiritRegion){
                         cat.getSpiritRegions().remove((SpiritRegion) bd2);
                     }
+
+                    if (bd2 instanceof Exit) {
+                        didChange = false;
+                    }
                 }
 
                 //dead body collisions
@@ -277,13 +286,36 @@ public class CollisionController implements ContactListener, ContactFilter {
         Object fd1 = fix1.getUserData();
         Object fd2 = fix2.getUserData();
 
-        Object bd1 = body1.getUserData();
-        Object bd2 = body2.getUserData();
+        try {
+            Obstacle bd1 = (Obstacle) body1.getUserData();
+            Obstacle bd2 = (Obstacle) body2.getUserData();
 
-        //flame does not turn on activators
-        if (fd1 instanceof Activator && bd2 instanceof Flamethrower.Flame ||
-                fd2 instanceof Activator && bd1 instanceof Flamethrower.Flame){
-            return false;
+            for (int i = 0; i < 2; i++) {
+
+                //flame does not turn on activators
+                if (fd1 instanceof Activator && bd2 instanceof Flamethrower.Flame) {
+                    return false;
+                }
+
+                //swap everything
+                Body bodyTemp = body1;
+                body1 = body2;
+                body2 = bodyTemp;
+
+                Obstacle bdTemp = bd1;
+                bd1 = bd2;
+                bd2 = bdTemp;
+
+                Object fdTemp = fd1;
+                fd1 = fd2;
+                fd2 = fdTemp;
+
+                Fixture fixTemp = fix1;
+                fix1 = fix2;
+                fix2 = fixTemp;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return true;
     }

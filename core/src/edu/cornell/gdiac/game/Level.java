@@ -12,6 +12,7 @@ import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.util.PooledList;
 
 import java.util.HashMap;
+import java.util.Random;
 /**
  * Represents a single level in our game
  * <br><br>
@@ -87,6 +88,8 @@ public class Level {
     private Vector2 startRespawnPos;
     /** properties map cache */
     private ObjectMap<String, Object> propertiesMap = new ObjectMap<>();
+
+    private Array<LevelState> levelStates;
 
     /**
      * Returns the bounding rectangle for the physics world
@@ -335,13 +338,15 @@ public class Level {
      *
      * @param c The most recent checkpoint the cat has come in contact with
      */
-    public void updateCheckpoints(Checkpoint c){
+    public void updateCheckpoints(Checkpoint c, boolean shouldSave){
         if(currCheckpoint != null){
             currCheckpoint.setCurrent(false);
         }
+        shouldSave = shouldSave && c != currCheckpoint;
         currCheckpoint = c;
         currCheckpoint.setCurrent(true);
-        respawnPos = currCheckpoint.getPosition();
+        respawnPos = currCheckpoint.getRespawnPosition();
+        if (shouldSave) saveState();
     }
 
     public void resetCheckpoints(){
@@ -389,6 +394,7 @@ public class Level {
     public void populateTiled(JsonValue tiledMap, float xOffset, float yOffset, float prevExitY, Boolean next){
         world.setGravity( new Vector2(0,tiledMap.getFloat("gravity",-14.7f)) );
         activationRelations = new HashMap<>();
+        levelStates = new Array<>();
 
         JsonValue layers = tiledMap.get("layers");
         JsonValue tileData = layers.get(0);
@@ -425,7 +431,7 @@ public class Level {
         if (biome.equals("metal")) {
             tileset = textureRegionAssetMap.get("metal_tileset");
             for (JsonValue tilesetData : tiledMap.get("tilesets")){
-                if (tilesetData.getString("source").equals("metal-walls.tsx")){
+                if (tilesetData.getString("source").endsWith("metal-walls.tsx")){
                     fID = tilesetData.getInt("firstgid");
                 }
             }
@@ -434,12 +440,13 @@ public class Level {
             // TODO: change this in future
             tileset = textureRegionAssetMap.get("metal_tileset");
             for (JsonValue tilesetData : tiledMap.get("tilesets")){
-                if (tilesetData.getString("source").equals("metal-walls.tsx")){
+                if (tilesetData.getString("source").endsWith("metal-walls.tsx")){
                     fID = tilesetData.getInt("firstgid");
                 }
             }
         }
         tiles = new Tiles(tileData, 1024, levelWidth, levelHeight, tileset, bounds, fID, new Vector2(1/32f, 1/32f));
+        if (cat != null) saveState();
     }
 
     /**
@@ -823,7 +830,7 @@ public class Level {
                     switch (property.getString("propertytype")){
                         //currently only one class defined in our level editor, but this allows us to be flexible to add more
                         case "Vector2":
-                            Vector2 v = new Vector2(property.get("value").getFloat("x"), property.get("value").getFloat("y"));
+                            Vector2 v = new Vector2(property.get("value").getFloat("x", 0), property.get("value").getFloat("y", 0));
                             propertiesMap.put(name, v);
                             break;
                         default:
@@ -846,6 +853,7 @@ public class Level {
         for(Obstacle obj : objects) {
             obj.deactivatePhysics(world);
         }
+        cat = null;
         addQueue.clear();
         objects.clear();
         activators.clear();
@@ -949,6 +957,12 @@ public class Level {
             } else if (jdef.bodyB.getUserData() instanceof Spikes) {
                 ((Spikes) jdef.bodyB.getUserData()).addJoint(joint);
             }
+
+            if (jdef.bodyA.getUserData() instanceof DeadBody){
+                ((DeadBody) jdef.bodyA.getUserData()).addJoint(joint);
+            } else if (jdef.bodyB.getUserData() instanceof DeadBody) {
+                ((DeadBody) jdef.bodyB.getUserData()).addJoint(joint);
+            }
         }
     }
 
@@ -988,14 +1002,22 @@ public class Level {
 ////            canvas.draw(background, 0, 0);
 //        }
 
-        if (tiles != null) tiles.draw(canvas);
+        for (Laser l : lasers){
+            l.drawLaser(canvas);
+        }
 
         //draw everything except cat, dead bodies and spirit region
         for(Obstacle obj : objects) {
             if (obj != cat && !(obj instanceof DeadBody) && !(obj instanceof SpiritRegion)
-                    && !(obj instanceof Wall && !(obj instanceof Platform)) ){
+                    && !(obj instanceof Wall && !(obj instanceof Platform)) && !(obj instanceof Activator) ){
                 obj.draw(canvas);
             }
+        }
+
+        if (tiles != null) tiles.draw(canvas);
+
+        for (Activator a : activators) {
+            a.draw(canvas);
         }
 
         spiritLine.draw(canvas);
@@ -1045,7 +1067,15 @@ public class Level {
      * Spawns a dead body at the location of the cat
      * */
     public void spawnDeadBody(){
-        DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat"),textureRegionAssetMap.get("burnCat"), scale, cat.getPosition());
+        textureScaleCache.set(1/34f, 1/34f);
+        double rand = Math.random();
+        DeadBody deadBody;
+        if(rand <0.5){
+            deadBody = new DeadBody(textureRegionAssetMap.get("deadCat2"),textureRegionAssetMap.get("burnCat"), scale, cat.getPosition(), textureScaleCache);
+        }
+        else{
+            deadBody = new DeadBody(textureRegionAssetMap.get("deadCat"),textureRegionAssetMap.get("burnCat"), scale, cat.getPosition(), textureScaleCache);
+        }
         deadBody.setLinearVelocity(cat.getLinearVelocity());
         deadBody.setFacingRight(cat.isFacingRight());
         queueObject(deadBody);
@@ -1056,11 +1086,13 @@ public class Level {
      * Loads a dead body into this level from a saved state.
      * @param state Map of arguments for the dead body, called from storeState() in {@link DeadBody}.
      */
-    public void loadDeadBodyState(ObjectMap<String, Object> state){
-        DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat"), textureRegionAssetMap.get("burnCat"),scale, Vector2.Zero);
+    public DeadBody loadDeadBodyState(ObjectMap<String, Object> state){
+        textureScaleCache.set(1/34f, 1/34f);
+        DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat2"), textureRegionAssetMap.get("burnCat"),scale, Vector2.Zero, textureScaleCache);
         deadBody.loadState(state);
-        queueObject(deadBody);
+        addObject(deadBody);
         deadBodyArray.add(deadBody);
+        return deadBody;
     }
 
     /**
@@ -1080,7 +1112,7 @@ public class Level {
         float minDist = Float.MAX_VALUE;
         DeadBody nextdb = null;
         for (DeadBody db : deadBodyArray){
-            if (sharesSpiritRegion(db.getSpiritRegions(), cat.getSpiritRegions())){
+            if (sharesElement(db.getSpiritRegions(), cat.getSpiritRegions())){
                 float dist = cat.getPosition().dst(db.getPosition());
                 if (dist < minDist){
                     minDist = dist;
@@ -1091,9 +1123,17 @@ public class Level {
         return nextdb;
     }
 
-    private boolean sharesSpiritRegion(ObjectSet<SpiritRegion> s1, ObjectSet<SpiritRegion> s2){
+    /**
+     * Checks if two sets share an element.
+     *
+     * @param s1  Set 1
+     * @param s2  Set 2
+     * @return    True if set 1 and set 2 share any element, or if both are empty.
+     * @param <T> The type of elements in s1 and s2
+     */
+    private <T> boolean sharesElement(ObjectSet<T> s1, ObjectSet<T> s2){
         if (s1.isEmpty() && s2.isEmpty()) return true;
-        for (SpiritRegion r : s1){
+        for (T r : s1){
             if (s2.contains(r)) return true;
         }
         return false;
@@ -1114,5 +1154,38 @@ public class Level {
      * @param spiritMode   Next spirit mode state
      */
     public void setSpiritMode(boolean spiritMode){ this.spiritMode = spiritMode; }
+
+    /**
+     * Stores a snapshot of the current level state into the level states array.
+     */
+    public void saveState() { levelStates.add(new LevelState(this)); }
+
+    /**
+     * @return  <code>LevelStates</code> array
+     */
+    public Array<LevelState> levelStates() { return levelStates; }
+
+    /**
+     * Stores a snapshot of the state of a level. A new <code>LevelState</code> instance is created
+     * at the beginning of the level, and everytime the player changes their checkpoint.
+     */
+    protected static class LevelState {
+        public ObjectMap<Obstacle, ObjectMap<String, Object>> obstacleData = new ObjectMap<>();
+        public int numLives;
+        public Checkpoint checkpoint;
+        public Array<ObjectMap<String, Object>> deadBodyData = new Array<>();
+
+        public LevelState(Level level){
+            this.numLives = level.getNumLives();
+            this.checkpoint = level.getCheckpoint();
+            for (Obstacle obs : level.getObjects()) {
+                if (obs instanceof DeadBody) {
+                    deadBodyData.add(obs.storeState());
+                } else {
+                    obstacleData.put(obs, obs.storeState());
+                }
+            }
+        }
+    }
 
 }

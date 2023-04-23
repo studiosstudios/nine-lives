@@ -7,12 +7,10 @@
     "volume": 0.1
   },
   "spikes" : {
-    "sensor_height_scale": 1,
-    "sensor_width_scale": 0.5,
-    "sensor_offset": [0, 0],
-    "solid_offset":[0, -0.25],
-    "solid_height_scale": 0.5,
-    "solid_width_scale": 1,
+    "solid_scale": [1, 0.95],
+    "pointy_scale": [0.9, 0.65],
+    "center_scale": [1, 0.65],
+    "friction": 5,
     "offset": [
       0.5,
       -0.5
@@ -50,6 +48,7 @@
   },
   "checkpoint": {
     "base_offset": [0, 1],
+    "respawn_offset": [0, 0.5],
     "offset": [0.5, -1],
     "solid_height_scale": 0.5,
     "solid_width_scale": 1
@@ -58,11 +57,29 @@
     "friction": 1,
     "density" : 1,
     "mass" : 1,
-    "damping" : 2,
+    "damping" : 1.2,
     "offset": [0, 0],
     "burnTicks" : 300,
-    "sensorRadius": 0.2,
-    "shrink": [0.6, 0.7]
+    "capsuleWidth": 0.875,
+    "capsuleHeight": 0.90312505,
+    "shrink": [0.5, 0.234375],
+    "draw_offset": [0, 0],
+    "switch_offset": [0, -0.2],
+    "sensor": {
+      "shrink": 0.9
+    },
+    "ground_sensor": {
+      "shrink" : 0.6,
+      "height" : 0.05
+    },
+    "side_sensor": {
+      "shrink" : 0.6,
+      "width": 0.2
+    },
+    "center_sensor": {
+      "width" : 0.3,
+      "height" : 1
+    }
   },
   "mirrors": {
     "shape": [0, 0, 0, 1, 1, 0],
@@ -104,7 +121,7 @@
     },
     "side_sensor": {
       "shrink" : 0.6,
-      "width": 0.2
+      "width": 0.05
     }
   },
   "exits": {

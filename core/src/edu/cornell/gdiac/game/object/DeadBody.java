@@ -260,7 +260,14 @@ public class DeadBody extends CapsuleObstacle implements Movable {
                 markRemoved(true);
             }
         }
+
+
         setRelativeVX(getRelativeVelocity().x/damping);
+
+//        // TODO: Changed this condition so that bodies on the ground have high damping, and bodies in air do not. Double check?
+//        if (groundFixtures.size != 0 && getVX() != 0){
+//            setVX(getVX()/damping);
+//        }
     }
 
     /**

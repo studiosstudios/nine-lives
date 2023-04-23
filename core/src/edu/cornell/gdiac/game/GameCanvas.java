@@ -125,7 +125,7 @@ public class GameCanvas {
 		
 		// Set the projection matrix (for proper scaling)
 		camera = new Camera(STANDARD_WIDTH, STANDARD_HEIGHT, CAMERA_ZOOM);
-		extendView = new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT, camera.getCamera());
+		extendView = new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, camera.getCamera());
 		extendView.apply(true);
 		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
 		debugRender.setProjectionMatrix(camera.getCamera().combined);

@@ -141,6 +141,7 @@ public class Cat extends CapsuleObstacle implements Movable {
     private int dashTimer = 0;
     private final Vector2 dashCache = new Vector2();
     private int wallJumpTimer = 0;
+    private int coyoteTimer = 6;
 
 
     /**
@@ -302,7 +303,7 @@ public class Cat extends CapsuleObstacle implements Movable {
     }
 
     /**
-     *
+     * Whether the player is currently pressing the climb input.
      */
     public void setClimbingPressed(boolean value) {
         climbingPressed = value;
@@ -332,6 +333,9 @@ public class Cat extends CapsuleObstacle implements Movable {
         }
         else if (!value) {
             setOrientation(Orientation.VERTICAL);
+            if (state == State.MOVING) {
+                coyoteTimer--;
+            }
         }
         isGrounded = value;
     }
@@ -647,10 +651,15 @@ public class Cat extends CapsuleObstacle implements Movable {
      */
     public void updateState() {
         failedSwitchTicks = Math.min(FAILED_SWITCH_TICKS, failedSwitchTicks + 1);
+        if (coyoteTimer < 6) {
+            System.out.println(coyoteTimer);
+            coyoteTimer--;
+            if (coyoteTimer <= 0) coyoteTimer = 6;
+        }
         switch (state) {
             case MOVING:
                 // MOVING -> JUMPING
-                if (isGrounded && jumpPressed) {
+                if (jumpPressed && (isGrounded || coyoteTimer < 4)) {
                     state = State.JUMPING;
                     soundBuffer.add("jump");
                     return;

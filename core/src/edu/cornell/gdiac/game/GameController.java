@@ -1,5 +1,7 @@
 package edu.cornell.gdiac.game;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
@@ -13,6 +15,7 @@ import edu.cornell.gdiac.game.object.*;
 import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.util.ScreenListener;
 
+import java.io.OutputStream;
 import java.util.HashMap;
 
 /**
@@ -45,8 +48,6 @@ public class GameController implements Screen {
     private float volume;
     /** JSON representing the level */
     private JsonValue levelJV;
-    /** Mark set to handle more sophisticated collision callbacks */
-    protected ObjectSet<Fixture> sensorFixtures;
     /** Whether to return to previous level */
     private boolean ret;
     /** Reference to the game canvas */
@@ -69,16 +70,27 @@ public class GameController implements Screen {
     private ActionController actionController;
     /** The CollisionController */
     private CollisionController collisionController;
-    /** The Level model */
-    private Level level;
+    /** The current level model */
+    private Level currLevel;
+    /** The next level */
     private Level nextLevel;
+    /** The previous level */
     private Level prevLevel;
+    /**
+     * Array of levels. Will always be of length 3, storing currLevel, nextLevel and prevLevel. We use both an array and
+     * three variables to handle level switching and to decrease verbosity and increase readability.
+     */
+    private Level[] levels;
+    /** The index of the current level in levels array.*/
+    private int currLevelIndex;
+    /** The total number of levels in the game */
     private int numLevels;
+    /** The current level index */
     private int levelNum;
     /** JSON for the previous level */
-    private JsonValue prevJSON;
+    private JsonValue prevJV;
     /** JSON for the next level */
-    private JsonValue nextJSON;
+    private JsonValue nextJV;
     /** The AssetDirectory */
     private AssetDirectory directory;
 
@@ -92,6 +104,8 @@ public class GameController implements Screen {
     private float respawnDelay;
     /** Amount of time to be delayed after respawn **/
     final float RESPAWN_DELAY = 60f; //about 17ms per RESPAWN_DELAY unit (holds 1 second-0.5s on dead body, 0.5s on respawned cat)
+    /** The background texture */
+    private Texture background;
 
     /**
      * PLAY: User has all controls and is in game
@@ -140,19 +154,35 @@ public class GameController implements Screen {
         this.scale = scale;
         debug = false;
         setRet(false);
-        sensorFixtures = new ObjectSet<>();
+        world = new World(gravity, true);
+
         this.numLevels = numLevels;
         levelNum = 1;
-        world = new World(gravity, false);
-        level = new Level(world, scale, MAX_NUM_LIVES);
+        levels = new Level[3];
+        for (int i = 0; i < 3; i++){
+            levels[i] = new Level(world, scale, MAX_NUM_LIVES);
+        }
+        currLevelIndex = 1;
+
+        setLevels();
         actionController = new ActionController(scale, volume);
-        actionController.setLevel(level);
+        actionController.setLevel(levels[currLevelIndex]);
         collisionController = new CollisionController(actionController);
-        collisionController.setLevel(level);
+        collisionController.setLevel(levels[currLevelIndex]);
 
         gameplayState = GameplayState.PLAY;
         panTime = 0;
         respawnDelay = 0;
+    }
+
+    /**
+     * Points <code>currLevel</code>, <code>nextLevel</code> and <code>prevLevel</code> to the correct elements of the
+     * <code>levels</code> array, based on <code>currLevelIndex</code>.
+     */
+    private void setLevels(){
+        currLevel = levels[currLevelIndex];
+        nextLevel = levels[(currLevelIndex + 1) % 3];
+        prevLevel = levels[Math.floorMod(currLevelIndex - 1, 3)];
     }
 
     /**
@@ -172,8 +202,8 @@ public class GameController implements Screen {
      *
      * @return level
      */
-    public Level getLevel() {
-        return level;
+    public Level getCurrLevel() {
+        return currLevel;
     }
 
     /**
@@ -245,9 +275,16 @@ public class GameController implements Screen {
         //send the relevant assets to classes that need them
         actionController.setVolume(constantsJSON.get("defaults").getFloat("volume"));
         actionController.setAssets(sMap);
-        level.setAssets(tMap);
+        for (Level l : levels){
+            l.setAssets(tMap);
+        }
     }
 
+    /**
+     * Sets the static constants for all objects.
+     *
+     * @param constants  Constants JSON
+     */
     private static void setConstants(JsonValue constants){
         DeadBody.setConstants(constants.get("deadBody"));
         Flamethrower.setConstants(constants.get("flamethrowers"));
@@ -271,19 +308,29 @@ public class GameController implements Screen {
      * The previous level is set to the current level<br>
      * The current level is set to the next level<br>
      * The next level is loaded in<br>
-     *
-     * @param resetSpawn whether the player spawns at the respawn point of the level or at the edge
-     *                    (from previous level)
      */
-    public void nextLevel(boolean resetSpawn){
+    public void nextLevel(){
         levelNum++;
-        prevJSON = getJSON();
-        setJSON(nextJSON);
+        prevJV = getJSON();
+        setJSON(nextJV);
         setRet(false);
-        reset();
+
+
+        currLevelIndex = (currLevelIndex + 1) % 3;
+        currLevel.setComplete(false);
+        setLevels();
+//        respawn();
+        currLevel.setCat(prevLevel.getCat());
+        prevLevel.removeCat();
+
+        nextLevel.dispose();
         if (levelNum < numLevels) {
-            nextJSON = tiledJSON(levelNum + 1);
+            nextJV = tiledJSON(levelNum + 1);
+            nextLevel.populateTiled(nextJV, currLevel.bounds.x + currLevel.bounds.width, currLevel.bounds.y, currLevel.goalY, true);
         }
+
+        initCurrLevel(true);
+        collisionController.setDidChange(true);
     }
 
     /**
@@ -292,24 +339,29 @@ public class GameController implements Screen {
      * The next level is set to the current level<br>
      * The current level is set to the previous level<br>
      * The previous level is loaded in<br>
-     *
-     * @param resetSpawn whether the player spawns at the respawn point of the level or at the edge
-     *                    (from previous level)
      */
-    public void prevLevel(boolean resetSpawn){
+    public void prevLevel(){
         levelNum--;
-        nextJSON = getJSON();
-        setJSON(prevJSON);
-        setRet(!resetSpawn);
-        reset();
+        nextJV = getJSON();
+        setJSON(prevJV);
+        setRet(false);
         if (levelNum > 1) {
-            prevJSON = tiledJSON(levelNum - 1);
+            prevJV = tiledJSON(levelNum - 1);
         }
-    }
-    public void setCurrLevel(int level) {
-        if (level < numLevels) {
-            setJSON(tiledJSON(level+1));
+        currLevelIndex = Math.floorMod(currLevelIndex - 1,  3);
+        setLevels();
+
+        currLevel.setCat(nextLevel.getCat());
+        nextLevel.removeCat();
+
+        prevLevel.dispose();
+        if (levelNum > 1) {
+            prevJV = tiledJSON(levelNum - 1);
+            prevLevel.populateTiled(prevJV, currLevel.bounds.x, currLevel.bounds.y, currLevel.returnY, false);
         }
+
+        initCurrLevel(true);
+        collisionController.setDidChange(true);
     }
 
     /**
@@ -360,16 +412,18 @@ public class GameController implements Screen {
         constants = directory.getEntry("constants", JsonValue.class);
         this.directory = directory;
 
+        background = textureRegionAssetMap.get("background").getTexture();
+
         // Giving assets to levelController
         setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants);
         setJSON(tiledJSON(1));
-        nextJSON = tiledJSON(2);
+        nextJV = tiledJSON(2);
 
         //Set controls
         InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
 
-//		InputController.getInstance().writeTo("inputLogs/alphademo.txt");
-//		InputController.getInstance().readFrom("inputLogs/alphademo.txt");
+		InputController.getInstance().writeTo("inputLogs/recent.txt");
+//		InputController.getInstance().readFrom("inputLogs/recent.txt");
     }
 
     /**
@@ -379,49 +433,84 @@ public class GameController implements Screen {
      * The level model cat is set to its respawn position
      */
     public void respawn() {
-        level.setDied(false);
-        level.getCat().setPosition(level.getRespawnPos());
-        level.getCat().setFacingRight(true);
-        level.getCat().setJumpPressed(false);
-        level.getCat().setGrounded(true);
+        currLevel.setDied(false);
+        currLevel.getCat().setPosition(currLevel.getRespawnPos());
+        currLevel.getCat().setFacingRight(true);
+        currLevel.getCat().setJumpPressed(false);
+        currLevel.getCat().setGrounded(true);
+        currLevel.getCat().setLinearVelocity(Vector2.Zero);
         justRespawned = true;
     }
 
     /**
      * Resets the status of the game so that we can play again.
+     */
+    protected void reset(){ init(levelNum); }
+
+    /**
+     * Initializes the game from a given level number.
      *
-     * Note that this method simply repopulates the existing level. Care needs to be taken to
+     * Note that this method simply repopulates the existing levels. Care needs to be taken to
      * properly dispose the level so that the level reset is clean.
      */
-    protected void reset() {
+    protected void init(int levelNum) {
 
-        level.dispose();
+        this.levelNum = levelNum;
+
+        prevLevel.dispose();
+        currLevel.dispose();
+        nextLevel.dispose();
         Vector2 gravity = new Vector2( world.getGravity() );
         world.dispose();
-        world = new World(gravity, false);
+        world = new World(gravity, true);
 
         justRespawned = true;
-        level.setWorld(world);
+        currLevelIndex = 1;
+        setLevels();
+        prevLevel.setWorld(world);
+        currLevel.setWorld(world);
+        nextLevel.setWorld(world);
         world.setContactListener(collisionController);
         world.setContactFilter(collisionController);
-
         collisionController.setReturn(false);
-
-        boolean tempRet = isRet();
         setRet(false);
-        level.populateTiled(levelJV, level.offset);
 
-        actionController.setMobControllers(level);
+        levelJV = tiledJSON(levelNum);
+        currLevel.populateTiled(levelJV);
+        if (levelNum < numLevels) {
+            nextJV = tiledJSON(levelNum + 1);
+            nextLevel.populateTiled(nextJV, currLevel.bounds.x + currLevel.bounds.width, currLevel.bounds.y, currLevel.goalY, true);
+        }
+        if (levelNum > 1) {
+            prevJV = tiledJSON(levelNum - 1);
+            prevLevel.populateTiled(prevJV, currLevel.bounds.x, currLevel.bounds.y, currLevel.returnY, false);
+        }
+
+        initCurrLevel(false);
+    }
+
+    /**
+     * Prepares the game for a new level: resets controllers, camera and stored states.
+     *
+     * @param cameraGlide True if the camera should glide to its new location.
+     */
+    private void initCurrLevel(boolean cameraGlide){
+        collisionController.setLevel(currLevel);
+        actionController.setLevel(currLevel);
+        actionController.setMobControllers(currLevel);
         prevLivesState = new LevelState[9];
-        canvas.getCamera().setLevelBounds(level.bounds, scale);
-        canvas.getCamera().updateCamera(level.getCat().getPosition().x*scale.x, level.getCat().getPosition().y*scale.y, false);
+        canvas.getCamera().setLevelBounds(currLevel.bounds, scale);
+        canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, cameraGlide);
+        currLevel.unpause();
+        nextLevel.pause();
+        prevLevel.pause();
     }
 
     /**
      * Dispose of all (non-static) resources allocated to this mode.
      */
     public void dispose() {
-        level.dispose();
+        currLevel.dispose();
         world.dispose();
         scale  = null;
         canvas = null;
@@ -462,7 +551,7 @@ public class GameController implements Screen {
 //            canvas.getCamera().debugCamera(debug);
         }
 
-        if (!level.isFailure() && level.getDied()) {
+        if (!currLevel.isFailure() && currLevel.getDied()) {
             respawn();
         }
 
@@ -472,20 +561,24 @@ public class GameController implements Screen {
             return false;
         }
 
-        if (level.isFailure() || input.didReset()) {
+        if (currLevel.isFailure() || input.didReset()) {
             reset();
-        } else if (level.isComplete() || input.didNext()) {
-            if (levelNum < numLevels) {
-                pause();
-                nextLevel(input.didNext());
-                return false;
-            }
-        } else if (isRet() || input.didPrev()) {
-            if (levelNum > 1) {
-                pause();
-                prevLevel(input.didPrev());
-                return false;
-            }
+        } else if (currLevel.isComplete() && levelNum < numLevels) {
+            pause();
+            nextLevel();
+            return false;
+        } else if (isRet() && levelNum > 1) {
+            pause();
+            prevLevel();
+            return false;
+        }  else if (input.didNext() && levelNum < numLevels) {
+            pause();
+            init(levelNum + 1);
+            return false;
+        }  else if (input.didPrev() && levelNum > 1) {
+            pause();
+            init(levelNum - 1);
+            return false;
         }
         return true;
     }
@@ -508,11 +601,11 @@ public class GameController implements Screen {
         }
         actionController.update(dt);
         flashColor.a -= flashColor.a/10;
-        for (Activator a : level.getActivators()){
+        for (Activator a : currLevel.getActivators()){
             if (a.isPressed() && a.getPan()){
                 a.setPan(false);
-                if(level.getActivationRelations().containsKey(a.getID())){
-                    panTarget = level.getActivationRelations().get(a.getID());
+                if(currLevel.getActivationRelations().containsKey(a.getID())){
+                    panTarget = currLevel.getActivationRelations().get(a.getID());
                 }
                 gameplayState = GameplayState.PAN;
             }
@@ -521,8 +614,8 @@ public class GameController implements Screen {
             panTime = 0;
             respawnDelay = 0;
             input.setDisableAll(false);
-            float x_pos = level.getCat().getPosition().x*scale.x;
-            float y_pos = level.getCat().getPosition().y*scale.y;
+            float x_pos = currLevel.getCat().getPosition().x*scale.x;
+            float y_pos = currLevel.getCat().getPosition().y*scale.y;
             if(justRespawned) {
                 gameplayState = GameplayState.RESPAWN;
             }
@@ -530,7 +623,7 @@ public class GameController implements Screen {
             if(!input.holdSwitch() && !input.didPan()){
                 cam.zoomOut(false);
             }
-            DeadBody nextDeadBody = level.getNextBody();
+            DeadBody nextDeadBody = currLevel.getNextBody();
             if(input.holdSwitch()&&nextDeadBody != null){
                 cam.setGlideMode("SWITCH_BODY");
                 cam.switchBodyCam(nextDeadBody.getX()*scale.x, nextDeadBody.getY()*scale.y);
@@ -560,13 +653,13 @@ public class GameController implements Screen {
         }
         else if(gameplayState == GameplayState.RESPAWN){
             justRespawned = false;
-            float x_pos = level.getCat().getPosition().x*scale.x;
-            float y_pos = level.getCat().getPosition().y*scale.y;
+            float x_pos = currLevel.getCat().getPosition().x*scale.x;
+            float y_pos = currLevel.getCat().getPosition().y*scale.y;
             input.setDisableAll(true);
             respawnDelay += 1;
-            if(level.getdeadBodyArray().size > 0 && respawnDelay < RESPAWN_DELAY/2){
-                x_pos = level.getdeadBodyArray().get(level.getdeadBodyArray().size-1).getX()*scale.x;
-                y_pos = level.getdeadBodyArray().get(level.getdeadBodyArray().size-1).getY()*scale.y;
+            if(currLevel.getdeadBodyArray().size > 0 && respawnDelay < RESPAWN_DELAY/2){
+                x_pos = currLevel.getdeadBodyArray().get(currLevel.getdeadBodyArray().size-1).getX()*scale.x;
+                y_pos = currLevel.getdeadBodyArray().get(currLevel.getdeadBodyArray().size-1).getY()*scale.y;
             }
             cam.updateCamera(x_pos, y_pos, true);
             if(respawnDelay == RESPAWN_DELAY){
@@ -600,8 +693,8 @@ public class GameController implements Screen {
      */
     public void postUpdate(float dt) {
         // Add any objects created by actions
-        level.addQueuedObjects();
-        level.addQueuedJoints();
+        currLevel.addQueuedObjects();
+        currLevel.addQueuedJoints();
 
         // Turn the physics engine crank.
         world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
@@ -615,13 +708,13 @@ public class GameController implements Screen {
         //testing.
 
         if (justRespawned) {
-            prevLivesState[9 - level.getNumLives()] = new LevelState(level);
+            prevLivesState[9 - currLevel.getNumLives()] = new LevelState(currLevel);
         }
 
 
         if (InputController.getInstance().didUndo()) {
-            if (level.getNumLives() < 9) {
-                loadLevelState(prevLivesState[8 - level.getNumLives()]);
+            if (currLevel.getNumLives() < 9) {
+                loadLevelState(prevLivesState[8 - currLevel.getNumLives()]);
                 flashColor.set(1, 1, 1, 1);
             }
         }
@@ -629,6 +722,15 @@ public class GameController implements Screen {
 
     @Override
     public void render(float delta) {
+        //FOR DEBUGGING
+		delta = 1/60f;
+		if (Gdx.input.isKeyPressed(Input.Keys.F)){
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		}
         if (preUpdate(delta)) {
             update(delta); // This is the one that must be defined.
             postUpdate(delta);
@@ -698,15 +800,32 @@ public class GameController implements Screen {
 
         canvas.begin();
         canvas.applyViewport();
-        level.draw(canvas);
-        canvas.drawRectangle(0, 0, level.bounds.width,level.bounds.height, flashColor, scale.x, scale.y);
+        canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight());
+        if (true) { //TODO: only draw when necessary
+            prevLevel.draw(canvas);
+            nextLevel.draw(canvas);
+        }
+        currLevel.draw(canvas);
+        canvas.drawRectangle(currLevel.bounds.x, currLevel.bounds.y, currLevel.bounds.width, currLevel.bounds.height, flashColor, scale.x, scale.y);
         canvas.end();
 
         if (debug) {
             canvas.beginDebug();
-            level.drawDebug(canvas);
+            if (levelNum > 1) prevLevel.drawDebug(canvas);
+            currLevel.drawDebug(canvas);
+            if (levelNum < numLevels) nextLevel.drawDebug(canvas);
             canvas.endDebug();
         }
+
+        //box2d debug check
+//        Array<Body> bodies = new Array<>();
+//        world.getBodies(bodies);
+//        System.out.println(bodies.size);
+//        int numBodies = 0;
+//        for (Level l : levels){
+//            numBodies += l.objects.size();
+//        }
+//        System.out.println(numBodies);
 
     }
 
@@ -740,18 +859,18 @@ public class GameController implements Screen {
      * @param state LevelState to load in
      */
     private void loadLevelState(LevelState state){
-        level.setNumLives(state.numLives);
+        currLevel.setNumLives(state.numLives);
         if (state.checkpoint != null) {
-            level.updateCheckpoints(state.checkpoint);
+            currLevel.updateCheckpoints(state.checkpoint);
         } else {
-            level.resetCheckpoints();
+            currLevel.resetCheckpoints();
         }
-        for (Obstacle obs : level.getObjects()){
+        for (Obstacle obs : currLevel.getObjects()){
 
             if (obs instanceof DeadBody){
                 //need to remove and rebuild dead body array because number of dead bodies can change between saved states
                 DeadBody db = (DeadBody) obs;
-                level.removeDeadBody(db);
+                currLevel.removeDeadBody(db);
             } else {
 
                 obs.loadState(state.obstacleData.get(obs));
@@ -765,7 +884,7 @@ public class GameController implements Screen {
 
         // rebuild dead body array
         for (ObjectMap<String, Object> dbState : state.deadBodyData){
-            level.loadDeadBodyState(dbState);
+            currLevel.loadDeadBodyState(dbState);
         }
     }
 }

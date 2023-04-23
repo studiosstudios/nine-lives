@@ -49,8 +49,6 @@ public class Camera {
     }
 
     /**
-     * TEMP: assuming bottom left corner of screen is pixel values 0,0
-     *
      * Focus determined by caller
      * Updates camera positioning based on focus's current position (in pixels)
      * @param xPos x coordinate of focus's current location in pixels
@@ -59,18 +57,18 @@ public class Camera {
      */
     public void updateCamera(float xPos, float yPos, boolean glide){
         float width_scaled = viewportWidth*camera.zoom; //width of viewport zoomed in
-        if(xPos > levelBounds.width - width_scaled + width_scaled/2){
-            xPos = levelBounds.width - width_scaled + width_scaled/2;
+        if(xPos > levelBounds.width - width_scaled/2 + levelBounds.x){
+            xPos = levelBounds.width - width_scaled + width_scaled/2 + levelBounds.x;
         }
-        if(xPos < width_scaled/2){
-            xPos = width_scaled/2;
+        if(xPos < width_scaled/2 + levelBounds.x){
+            xPos = width_scaled/2 + levelBounds.x;
         }
         float height_scaled = viewportHeight*camera.zoom; //height of viewport zoomed in
-        if(yPos > levelBounds.height - height_scaled + height_scaled/2){
-            yPos = levelBounds.height - height_scaled + height_scaled/2;
+        if(yPos > levelBounds.height - height_scaled/2 + levelBounds.y){
+            yPos = levelBounds.height - height_scaled + height_scaled/2 + levelBounds.y;
         }
-        if(yPos < height_scaled/2){
-            yPos = height_scaled/2;
+        if(yPos < height_scaled/2 + levelBounds.y){
+            yPos = height_scaled/2 + levelBounds.y;
         }
         if(glide) {
             x += (xPos - x) * cameraGlideRate;
@@ -115,13 +113,14 @@ public class Camera {
      */
     public void zoomOut(boolean z){
         if(z){
-            camera.zoom = 1;
+            float scaleX = levelBounds.width/viewportWidth;
+            float scaleY = levelBounds.height/viewportHeight;
+            camera.zoom = Float.min(scaleX,Float.min(scaleY, 1));
         }
         else{
             camera.zoom = zoom;
         }
     }
-
     /**
      * Camera movement when switching bodies
      * @param deadX x-coordinate of dead cat
@@ -142,17 +141,18 @@ public class Camera {
      * drawn at an offset
      */
     public Vector2 centerLevelTranslation(){
-        float levelHeight = levelBounds.height / camera.zoom;
-        float levelWidth = levelBounds.width / camera.zoom;
-        float xVal = 0;
-        float yVal = 0;
-        if(levelWidth < viewportWidth){
-            xVal = (viewportWidth - levelWidth)/1.4f;
-        }
-        if(levelHeight < viewportHeight){
-            yVal = (viewportHeight - levelHeight)/1.4f;
-        }
-        return new Vector2(xVal, yVal);
+//        float levelHeight = levelBounds.height / camera.zoom;
+//        float levelWidth = levelBounds.width / camera.zoom;
+//        float xVal = 0;
+//        float yVal = 0;
+//        if(levelWidth < viewportWidth){
+//            xVal = (viewportWidth - levelWidth)/1.4f;
+//        }
+//        if(levelHeight < viewportHeight){
+//            yVal = (viewportHeight - levelHeight)/1.4f;
+//        }
+//        return new Vector2(xVal, yVal);
+        return new Vector2(0,0);
     }
 
     /**

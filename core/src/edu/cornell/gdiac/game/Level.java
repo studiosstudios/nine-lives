@@ -1008,9 +1008,8 @@ public class Level {
         //draw everything except cat, dead bodies and spirit region
         for(Obstacle obj : objects) {
             if (obj != cat && !(obj instanceof DeadBody) && !(obj instanceof SpiritRegion)
-                    && !(obj instanceof Wall && !(obj instanceof Platform)) && !(obj instanceof Activator) ){
+                    && !(obj instanceof Wall && !(obj instanceof Platform)) && !(obj instanceof Activator) ) {
                 obj.draw(canvas);
-                if (obj instanceof Mob) {System.out.println("drew mob");}
             }
         }
 

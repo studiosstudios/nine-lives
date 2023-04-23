@@ -66,6 +66,8 @@ public class Mob extends CapsuleObstacle {
     private static final String sensorName = "mobsensor";
     /** The detector ray attached to this mob */
     public MobDetector detectorRay;
+    /** Height scale for mob */
+    public static final float H_SCALE = 0.9f;
 
 
     /**
@@ -137,7 +139,7 @@ public class Mob extends CapsuleObstacle {
 
     public Mob(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
         super(tMap.get("roboMob").getRegionWidth()/scale.x*textureScale.x/2f,
-                tMap.get("roboMob").getRegionHeight()/scale.y*textureScale.y);
+                tMap.get("roboMob").getRegionHeight()/scale.y*textureScale.y*H_SCALE);
 
         setFixedRotation(true);
         setName("mob");
@@ -146,7 +148,7 @@ public class Mob extends CapsuleObstacle {
         setDrawScale(scale);
         setTextureScale(textureScale);
         walkTime = 0f;
-        spriteFrames = TextureRegion.split(tMap.get("roboMobAnim").getTexture(), 2048, 2048);
+        spriteFrames = TextureRegion.split(tMap.get("roboMobAnim").getTexture(), 2058, 2058);
         walkAnimation = new Animation<>(0.15f, spriteFrames[0]);
         setTexture(tMap.get("roboMob"));
 
@@ -197,10 +199,8 @@ public class Mob extends CapsuleObstacle {
     public boolean activatePhysics(World world) {
         // create the box from our superclass
         if (!super.activatePhysics(world)) {
-            System.out.println("activate physics");
             return false;
         }
-        System.out.println("activate physics");
         body.setUserData(this);
         return true;
     }
@@ -247,12 +247,12 @@ public class Mob extends CapsuleObstacle {
      */
     public void draw(GameCanvas canvas) {
         float effect = faceRight ? 1.0f : -1.0f;
-        float x = getX() * drawScale.x - effect*25;
-        float y = getY()*drawScale.y-24f;
+        float x = getX() * drawScale.x;
+        float y = getY()*drawScale.y;
         walkAnimation.setPlayMode(Animation.PlayMode.LOOP_REVERSED);
         walkTime += Gdx.graphics.getDeltaTime();
         TextureRegion currentFrame = walkAnimation.getKeyFrame(walkTime);
-        canvas.draw(currentFrame,Color.WHITE, origin.x, origin.y,x,y, getAngle(),effect * textureScale.x,textureScale.y);
+        canvas.draw(currentFrame,Color.WHITE, origin.x, origin.y,x,y, getAngle(),effect * textureScale.x,textureScale.y*H_SCALE);
     }
 
     /**

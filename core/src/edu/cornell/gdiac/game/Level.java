@@ -1,9 +1,7 @@
 package edu.cornell.gdiac.game;
 
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
@@ -30,15 +28,15 @@ public class Level {
     protected Rectangle bounds;
     /** The world scale */
     protected Vector2 scale;
-    protected Vector2 offset;
-
     // Physics objects for the game
     /** Reference to the character cat */
     private Cat cat;
     /** Reference to the goal exit */
     private Exit goalExit;
+    protected float goalY;
     /**Reference to the return exit */
     private Exit returnExit;
+    protected float returnY;
 
     /** Tiles of level */
     protected Tiles tiles;
@@ -76,8 +74,6 @@ public class Level {
     private final Array<SpiritRegion> spiritRegionArray;
     /** The respawn position of the player */
     private Vector2 respawnPos;
-    /** The background texture */
-    private Texture background;
 
     /** texture assets */
     private HashMap<String, TextureRegion> textureRegionAssetMap;
@@ -130,6 +126,22 @@ public class Level {
     public Cat getCat() {
         return cat;
     }
+
+    /**
+     * Sets the cat for this level. This is used for level switching.
+     *
+     * @param cat New cat
+     */
+    public void setCat(Cat cat) {
+        objects.remove(this.cat);
+        objects.add(cat);
+        this.cat = cat;
+    }
+
+    /**
+     * Removes the cat from this level. This is used for level switching.
+     */
+    public void removeCat() { objects.remove(cat); cat = null; }
 
     public Checkpoint getCheckpoint() {return currCheckpoint;}
 
@@ -252,6 +264,10 @@ public class Level {
      */
     public int getNumLives() { return numLives; }
 
+    public Exit getGoalExit() { return goalExit; }
+
+    public Exit getReturnExit() { return returnExit; }
+
     /**
      * Sets the number of lives in this level
      *
@@ -272,10 +288,6 @@ public class Level {
      */
     public void setAssets(HashMap<String, TextureRegion> tMap){ textureRegionAssetMap = tMap; }
 
-    public Exit getGoalExit() {return goalExit;}
-
-    public Exit getReturnExit() {return returnExit;}
-
     /**
      * Creates a new LevelModel
      * <br><br>
@@ -291,7 +303,6 @@ public class Level {
         this.bounds = new Rectangle();
         this.scale = scale;
         this.numLives = numLives;
-        offset = new Vector2();
         maxLives = numLives;
         complete = false;
         failed = false;
@@ -304,6 +315,8 @@ public class Level {
         mobArray = new Array<>();
         spiritRegionArray = new Array<>();
         activationRelations = new HashMap<>();
+        spiritMode = false;
+        spiritLine = new SpiritLine(Color.WHITE, Color.CYAN, scale);
     }
 
     /**
@@ -339,15 +352,43 @@ public class Level {
         respawnPos = startRespawnPos;
     }
 
+    private void loadExitPositions(JsonValue data, int tileSize, int levelHeight){
+        goalY = 0;
+        returnY = 0;
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize, levelHeight);
+            if (propertiesMap.get("type", "goal").equals("goal")){
+                goalY = (float)propertiesMap.get("y") - (float)propertiesMap.get("height") - bounds.y;
+            } else {
+                returnY = (float)propertiesMap.get("y") - (float)propertiesMap.get("height") - bounds.y;
+            }
+        }
+    }
+
     /**
-     * Parses Tiled file
+     * Populates this level from data from a Tiled file.
      *
+     * @param tiledMap Tiled Json
      */
-    public void populateTiled(JsonValue tiledMap, Vector2 offset){
-        this.offset.set(offset);
+     public void populateTiled(JsonValue tiledMap){
+        populateTiled(tiledMap, 0, 0, returnY, null);
+    }
+
+    /**
+     * Populates this level from data from a Tiled file. Places the level into the world such that the exits between this
+     * level and an adjacent level are aligned.
+     *
+     * @param tiledMap    Tiled JSON
+     * @param xOffset     The x offset in Box2D coordinates to place this world at
+     * @param yOffset     The y offset in Box2D coordinates to place this world at
+     * @param prevExitY   The y position of the bottom left edge of the adjacent level's exit
+     * @param next        True if we are progressing from the previous level (i.e to the right),
+     *                    null if we should ignore offsets
+     */
+    public void populateTiled(JsonValue tiledMap, float xOffset, float yOffset, float prevExitY, Boolean next){
         world.setGravity( new Vector2(0,tiledMap.getFloat("gravity",-14.7f)) );
         activationRelations = new HashMap<>();
-        background = textureRegionAssetMap.get("background").getTexture();
 
         JsonValue layers = tiledMap.get("layers");
         JsonValue tileData = layers.get(0);
@@ -355,19 +396,27 @@ public class Level {
         tileSize = tiledMap.getInt("tilewidth");
         int levelWidth = tiledMap.getInt("width");
         int levelHeight = tiledMap.getInt("height");
-
-        bounds.width = levelWidth;
-        bounds.height = levelHeight;
+        bounds.set(xOffset, yOffset, levelWidth, levelHeight);
 
         Array<JsonValue> obstacleData = new Array<>();
-
         for (JsonValue layer : layers) {
-            if (layer.getInt("id") != 1) {
+            if (!layer.getString("type").equals("tilelayer")) {
                 obstacleData.add(layer);
+                if (layer.getString("name").equals("exits")){
+                    loadExitPositions(layer, tileSize, levelHeight);
+                }
+            }
+        }
+        if (next != null) {
+            if (next) {
+                bounds.y += prevExitY - returnY;
+            } else {
+                bounds.y += prevExitY - goalY;
+                bounds.x -= bounds.width;
             }
         }
 
-        populateObstacles(obstacleData, tileSize, levelHeight);
+        populateObstacles(obstacleData, tileSize, levelHeight, next == null);
         String biome = tiledMap.get("properties").get(0).getString("value");
 
         TextureRegion tileset = new TextureRegion();
@@ -390,10 +439,7 @@ public class Level {
                 }
             }
         }
-        tiles = new Tiles(tileData, 1024, levelWidth, levelHeight, tileset, fID, new Vector2(1/32f, 1/32f));
-
-        spiritMode = false;
-        spiritLine = new SpiritLine(Color.WHITE, Color.CYAN, scale);
+        tiles = new Tiles(tileData, 1024, levelWidth, levelHeight, tileset, bounds, fID, new Vector2(1/32f, 1/32f));
     }
 
     /**
@@ -402,8 +448,9 @@ public class Level {
      * @param data           Array of Tiled JSON layers
      * @param levelHeight    Height of the level (in grid cell units)
      * @param tileSize       Size of each tile in the Tiled JSON
+     * @param populateCat    True if we want to populate the cat
      */
-    public void populateObstacles(Array<JsonValue> data, int tileSize, int levelHeight) {
+    public void populateObstacles(Array<JsonValue> data, int tileSize, int levelHeight, boolean populateCat) {
         for (JsonValue obstacleData : data) {
             String name = obstacleData.getString("name");
             if (name.equals("wallsPoly")) {
@@ -431,13 +478,20 @@ public class Level {
             } else if (name.equals("mirrors")) {
                 populateMirrors(obstacleData, tileSize, levelHeight);
             } else if (name.equals("cat")) {
-                populateCat(obstacleData, tileSize, levelHeight);
+                populateCat(obstacleData, tileSize, levelHeight, populateCat);
             } else if (name.equals("exits")) {
                 populateExits(obstacleData, tileSize, levelHeight);
             }
         }
     }
 
+    /**
+     * Populates the walls for this level.
+     *
+     * @param data          Tiled JSON data for all walls
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateWalls(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         for (JsonValue objJV : objects) {
@@ -447,6 +501,13 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the platforms for this level.
+     *
+     * @param data          Tiled JSON data for all platforms
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populatePlatforms(JsonValue data, int tileSize, int levelHeight){
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1, 1);
@@ -457,6 +518,13 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the checkpoints for this level.
+     *
+     * @param data          Tiled JSON data for all checkpoints
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateCheckpoints(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1/32f, 1/32f);
@@ -467,6 +535,13 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the activators for this level.
+     *
+     * @param data          Tiled JSON data for all activators
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateActivators(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1, 1);
@@ -492,6 +567,13 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the spikes for this level.
+     *
+     * @param data          Tiled JSON data for all spikes
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateSpikes(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1/64f, 1/64f);
@@ -502,6 +584,13 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the flamethrowers for this level.
+     *
+     * @param data          Tiled JSON data for all flamethrowers
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateFlamethrowers(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1/64f, 1/64f);
@@ -512,7 +601,13 @@ public class Level {
         }
     }
 
-
+    /**
+     * Populates the lasers for this level.
+     *
+     * @param data          Tiled JSON data for all lasers
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateLasers(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1, 1);
@@ -524,6 +619,13 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the doors for this level.
+     *
+     * @param data          Tiled JSON data for all doors
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateDoors(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1, 1);
@@ -534,6 +636,13 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the spirit regions for this level.
+     *
+     * @param data          Tiled JSON data for all spirit regions
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateSpiritRegions(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1, 1);
@@ -545,6 +654,13 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the mobs for this level.
+     *
+     * @param data          Tiled JSON data for all mobs
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateMobs(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1/32f, 1/32f);
@@ -556,6 +672,13 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the boxes for this level.
+     *
+     * @param data          Tiled JSON data for all boxes
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateBoxes(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1, 1);
@@ -566,6 +689,13 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the mirrors for this level.
+     *
+     * @param data          Tiled JSON data for all mirrors
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateMirrors(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1, 1);
@@ -576,30 +706,44 @@ public class Level {
         }
     }
 
+    /**
+     * Populates the exits for this level.
+     *
+     * @param data          Tiled JSON data for all exits
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
     private void populateExits(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
             Exit exit = new Exit(propertiesMap, scale);
             addObject(exit);
-            if (exit.exitType() == Exit.ExitType.GOAL){
-                goalExit = exit;
-            } else {
-                returnExit = exit;
-            }
+            if (exit.exitType() == Exit.ExitType.GOAL) goalExit = exit;
+            if (exit.exitType() == Exit.ExitType.RETURN) returnExit = exit;
         }
     }
 
-    private void populateCat(JsonValue data, int tileSize, int levelHeight){
+    /**
+     * Populates the cat for this level.
+     *
+     * @param data          Tiled JSON data for the cat
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
+        private void populateCat(JsonValue data, int tileSize, int levelHeight, boolean shouldPopulate){
         JsonValue objects = data.get("objects");
         JsonValue catJV = objects.get(0);
         readProperties(catJV, tileSize, levelHeight);
         cat = new Cat(propertiesMap, textureRegionAssetMap, scale);
         respawnPos = cat.getPosition();
         startRespawnPos = respawnPos;
-        addObject(cat);
+        if (shouldPopulate) {
+            addObject(cat);
+        } else {
+            cat = null;
+        }
     }
-
 
     /**
      * Reads the properties array of an object in a Tiled JSON, and puts it into <code>propertiesMap</code>.
@@ -636,8 +780,8 @@ public class Level {
                 y = objectJV.getFloat("y");
                 break;
         }
-        x = x/tileSize + offset.x;
-        y = levelHeight - y/tileSize + offset.y;
+        x = x/tileSize + bounds.x;
+        y = levelHeight - y/tileSize + bounds.y;
         propertiesMap.put("x", x);
         propertiesMap.put("y", y);
 
@@ -717,6 +861,24 @@ public class Level {
     }
 
     /**
+     * Pauses all objects in the level: stores state locally and sets velocity to 0.
+     */
+    public void pause(){
+        for (Obstacle obj : objects) {
+            obj.pause();
+        }
+    }
+
+    /**
+     * Unpauses objects in the level: loads locally stored state if there is one.
+     */
+    public void unpause(){
+        for (Obstacle obj : objects) {
+            obj.unpause();
+        }
+    }
+
+    /**
      * Immediately adds the object to the physics world
      *
      * @param obj The object to add
@@ -790,6 +952,12 @@ public class Level {
         }
     }
 
+    /**
+     * Loads an activatable into this world. Assumes that the properties for the object is currently stored in
+     * <code>propertiesMap</code> (see {@link Level#readProperties(JsonValue, int, int)}).
+     *
+     * @param object  Activatable to load.
+     */
     private void loadTiledActivatable(Activatable object){
 
         addObject((Obstacle) object);
@@ -812,15 +980,15 @@ public class Level {
      * @param canvas	the drawing context
      */
     public void draw(GameCanvas canvas) {
-        if (background != null) {
-            //scales background with level size
-            float scaleX = bounds.width/background.getWidth() * scale.x;
-            float scaleY = bounds.height/background.getHeight() * scale.y;
-            canvas.draw(background, Color.WHITE, 0, 0, background.getWidth()*Float.max(scaleX,scaleY), background.getHeight()*Float.max(scaleX,scaleY));
-//            canvas.draw(background, 0, 0);
-        }
+//        if (background != null) {
+//            //scales background with level size
+//            float scaleX = bounds.width/background.getWidth() * scale.x;
+//            float scaleY = bounds.height/background.getHeight() * scale.y;
+//            canvas.draw(background, Color.WHITE, bounds.x * scale.x, bounds.y * scale.y, background.getWidth()*Float.max(scaleX,scaleY), background.getHeight()*Float.max(scaleX,scaleY));
+////            canvas.draw(background, 0, 0);
+//        }
 
-        tiles.draw(canvas);
+        if (tiles != null) tiles.draw(canvas);
 
         //draw everything except cat, dead bodies and spirit region
         for(Obstacle obj : objects) {
@@ -835,7 +1003,7 @@ public class Level {
         for (DeadBody db : deadBodyArray) {
             db.draw(canvas);
         }
-        cat.draw(canvas);
+        if (cat != null) cat.draw(canvas);
 
         for (SpiritRegion s : spiritRegionArray) {
             s.draw(canvas);

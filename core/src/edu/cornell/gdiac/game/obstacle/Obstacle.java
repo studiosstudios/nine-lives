@@ -77,6 +77,8 @@ public abstract class Obstacle {
 	/** The relative velocity for this obstacle if relative motion is desired. Linear velocity is defined as
 	 * <code>baseVelocity + relativeVelocity</code>*/
 	protected Vector2 relativeVelocity = new Vector2();
+	/** Hashmap to store data if this obstacle is paused. */
+	private ObjectMap<String, Object> pausedState;
 
 	/// BodyDef Methods
 	/**
@@ -1171,5 +1173,20 @@ public abstract class Obstacle {
 		relativeVelocity.set((Vector2) stateMap.get("relativeVelocity"));
 		baseVelocity.set((Vector2) stateMap.get("baseVelocity"));
 	}
+
+	/**
+	 * Saves the current state of this obstacle, and sets all velocities to zero.
+	 */
+	public void pause() {
+		pausedState = storeState();
+		setBaseVelocity(Vector2.Zero);
+		setRelativeVelocity(Vector2.Zero);
+		setLinearVelocity(Vector2.Zero);
+	}
+
+	/**
+	 * If this obstacle has been paused before, loads the state from the paused state, otherwise does nothing.
+	 */
+	public void unpause() { if (pausedState != null) loadState(pausedState); }
 
 }

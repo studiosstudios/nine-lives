@@ -7,7 +7,7 @@
     "volume": 0.1
   },
   "spikes" : {
-    "sensor_height_scale": 1,
+    "sensor_height_scale": 0.7,
     "sensor_width_scale": 0.5,
     "sensor_offset": [0, 0],
     "solid_offset":[0, -0.25],
@@ -56,7 +56,7 @@
   },
   "deadBody": {
     "friction": 1,
-    "density" : 1,
+    "density" : 7,
     "mass" : 1,
     "damping" : 2,
     "offset": [0, 0],
@@ -104,7 +104,7 @@
     },
     "side_sensor": {
       "shrink" : 0.6,
-      "width": 0.2
+      "width": 0.05
     }
   },
   "exits": {

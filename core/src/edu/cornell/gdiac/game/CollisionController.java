@@ -91,10 +91,17 @@ public class CollisionController implements ContactListener, ContactFilter {
                         cat.setGrounded(true);
                     }
 
-                    // See if we are touching a wall
-                    if (cat.getSideSensorName().equals(fd1) && bd2 instanceof Wall) {
+                    // See if right side is touching a wall
+                    if (cat.getRightSensorName().equals(fd1) && bd2 instanceof Wall) {
                         if (((Wall) bd2).isClimbable()){
-                            cat.incrementWalled();
+                            cat.incrementRightWalled();
+                        }
+                    }
+
+                    // See if left side is touching a wall
+                    if (cat.getLeftSensorName().equals(fd1) && bd2 instanceof Wall) {
+                        if (((Wall) bd2).isClimbable()){
+                            cat.incrementLeftWalled();
                         }
                     }
 
@@ -206,9 +213,13 @@ public class CollisionController implements ContactListener, ContactFilter {
                         }
                     }
 
-                    // Not handling case where there may be multiple walls at once
-                    if ((cat.getSideSensorName().equals(fd1) && cat != bd2) && (bd2 instanceof Wall) && ((Wall) bd2).isClimbable()) {
-                        cat.decrementWalled();
+                    // Right sensor walled
+                    if (((cat.getRightSensorName().equals(fd1)) && cat != bd2) && (bd2 instanceof Wall) && ((Wall) bd2).isClimbable()) {
+                        cat.decrementRightWalled();
+                    }
+                    // Left sensor walled
+                    if (((cat.getLeftSensorName().equals(fd1)) && cat != bd2) && (bd2 instanceof Wall) && ((Wall) bd2).isClimbable()) {
+                        cat.decrementLeftWalled();
                     }
 
                     if (bd2 instanceof SpiritRegion){

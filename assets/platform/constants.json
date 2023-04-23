@@ -128,6 +128,7 @@
     "width": 1
   },
   "doors" : {
+    "shrink": 0.4,
     "friction": 0.4,
     "density" : 0.0,
     "restitution": 0.1,

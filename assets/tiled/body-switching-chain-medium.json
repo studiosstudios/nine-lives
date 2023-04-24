@@ -113,7 +113,7 @@
          "name":"exits",
          "objects":[
                 {
-                 "height":3072,
+                 "height":7168,
                  "id":128,
                  "name":"",
                  "rotation":0,
@@ -121,7 +121,7 @@
                  "visible":true,
                  "width":1024,
                  "x":49152,
-                 "y":14336
+                 "y":10240
                 }, 
                 {
                  "height":4096,
@@ -692,7 +692,31 @@
          "draworder":"topdown",
          "id":3,
          "name":"checkpoints",
-         "objects":[],
+         "objects":[
+                {
+                 "gid":3,
+                 "height":2048,
+                 "id":230,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":1024,
+                 "x":20480,
+                 "y":11264
+                }, 
+                {
+                 "gid":3,
+                 "height":2048,
+                 "id":231,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":1024,
+                 "x":23552,
+                 "y":11264
+                }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -1029,7 +1053,7 @@
          "y":0
         }],
  "nextlayerid":23,
- "nextobjectid":228,
+ "nextobjectid":232,
  "orientation":"orthogonal",
  "properties":[
         {

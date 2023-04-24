@@ -70,7 +70,7 @@
       "tiledLevelTutorial": "tiled/tiledLevelTutorial1.json",
       "tiledLevel1": "tiled/tiledLevelEasy.json",
       "tiledLevel2": "tiled/tiledLevelMedium1.json",
-      "tiledLevel3": "tiled/tiledLevelMedium2.json",
+      "tiledLevel3": "tiled/body-switching-chain-medium.json",
       "tiledLevel4": "tiled/tiledLevelHard.json"
     },
     "sounds" : {

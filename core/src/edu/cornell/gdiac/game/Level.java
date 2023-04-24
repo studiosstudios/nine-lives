@@ -887,6 +887,7 @@ public class Level {
         spiritRegionArray.clear();
         numLives = maxLives;
         currCheckpoint = null;
+        climbables = null;
         setComplete(false);
         setFailure(false);
     }

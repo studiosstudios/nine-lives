@@ -84,6 +84,8 @@ public class DeadBody extends CapsuleObstacle implements Movable {
      * @return true if the dead body can be switched into
      */
     public boolean isSwitchable(){
+        System.out.println(hazardsTouching);
+        System.out.println(touchingLaser);
         return hazardsTouching == 0 && !touchingLaser;
     }
 

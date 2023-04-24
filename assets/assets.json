@@ -61,7 +61,8 @@
       "tiledLevel3": "tiled/spikes-testing.json",
       "tiledLevel4": "tiled/level-switch2.json",
       "tiledLevel5": "tiled/level-switch3.json",
-      "tiledLevel1": "tiled/tiledLevelTutorial1.json"
+      "tiledLevelTutorial": "tiled/tiledLevelTutorial1.json",
+      "tiledLevel1": "tiled/tiledLevelHard.json"
     },
     "sounds" : {
         "jump" : "platform/jumpCELESTE.wav",

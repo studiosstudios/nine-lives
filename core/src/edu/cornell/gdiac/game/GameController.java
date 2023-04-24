@@ -396,6 +396,7 @@ public class GameController implements Screen {
                 "metal_tileset", "steel","burnCat", "deadCat2"};
 
         for (String n : names){
+            System.out.println(n);
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
         }
 

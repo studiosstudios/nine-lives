@@ -190,6 +190,9 @@ public class Door extends PolygonObstacle implements Activatable {
         }
     }
 
+    @Override
+    public Vector2 getLinearVelocity(){return Vector2.Zero;}
+
     /**
      * Sets the shared constants for all instances of this class/
      * @param constants JSON storing the shared constants.

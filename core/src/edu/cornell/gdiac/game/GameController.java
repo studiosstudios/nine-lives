@@ -101,7 +101,8 @@ public class GameController implements Screen {
     final float PAN_HOLD = 50f; //about 17ms per PAN_HOLD unit (holds 0.85 second)
     /** Keeps track of amount of time delayed after respawn **/
     private float respawnDelay;
-    /** Amount of time to be delayed after respawn **/
+    /** Whether level was just reset (matters for respawn behavior) **/
+    private boolean justReset;
     final float RESPAWN_DELAY = 60f; //about 17ms per RESPAWN_DELAY unit (holds 1 second-0.5s on dead body, 0.5s on respawned cat)
     /** The background texture */
     private Texture background;
@@ -109,23 +110,23 @@ public class GameController implements Screen {
     private float undoTime;
     /** The max value of undoTime such that undoing will undo to the previous checkpoint and not the current checkpoint.*/
     private static final float MAX_UNDO_TIME = 180f;
+    public StageController stageController = null;
+    public boolean paused = false;
 
     /**
      * PLAY: User has all controls and is in game
-     * LEVEL_SWITCH: Camera transition to next level (all controls stripped from user)
      * PLAYER_PAN: Camera zooms out and player is free to pan around the level (all other gameplay controls stripped from user)
      * PAN: Camera movement not controlled by player (e.g. when activator is pressed or at beginning of level)
      * RESPAWN: Camera focuses on dead body for half of RESPAWN_DELAY and focuses on newly respawned cat for half of RESPAWN_DELAY
      */
-    enum GameplayState{
+    enum CameraGameState {
         PLAY,
-        LEVEL_SWITCH,
         PLAYER_PAN,
         PAN,
         RESPAWN
     }
-    /** State of gameplay */
-    private GameplayState gameplayState;
+    /** State of gameplay used for camera */
+    public static CameraGameState cameraGameState;
     /** If we have respawned in preUpdate(). Needed in postUpdate() for saving level state. */
     private boolean justRespawned;
     /** The color of the flash animation after resetting/undoing */
@@ -170,7 +171,7 @@ public class GameController implements Screen {
         collisionController = new CollisionController(actionController);
         collisionController.setLevel(levels[currLevelIndex]);
 
-        gameplayState = GameplayState.PLAY;
+        cameraGameState = CameraGameState.PLAY;
         panTime = 0;
         respawnDelay = 0;
     }
@@ -328,7 +329,6 @@ public class GameController implements Screen {
             nextJV = tiledJSON(levelNum + 1);
             nextLevel.populateTiled(nextJV, currLevel.bounds.x + currLevel.bounds.width, currLevel.bounds.y, currLevel.goalY, true);
         }
-
         initCurrLevel(true);
         collisionController.setDidChange(true);
     }
@@ -466,6 +466,7 @@ public class GameController implements Screen {
         world = new World(gravity, true);
 
         justRespawned = true;
+        justReset = true;
         currLevelIndex = 1;
         setLevels();
         prevLevel.setWorld(world);
@@ -506,6 +507,7 @@ public class GameController implements Screen {
         nextLevel.pause();
         prevLevel.pause();
         undoTime = 0;
+        resume();
     }
 
     /**
@@ -537,16 +539,6 @@ public class GameController implements Screen {
 
         InputController input = InputController.getInstance();
         input.readInput();
-        Camera cam = canvas.getCamera();
-        if(input.didPan()){
-            gameplayState = GameplayState.PLAYER_PAN;
-            //move camera
-            cam.updateCamera(cam.getX()+input.getCamHorizontal(),cam.getY()+ input.getCamVertical(),false);
-        }
-        else{
-            if(gameplayState == GameplayState.PLAYER_PAN)
-                gameplayState = GameplayState.PLAY;
-        }
         // Toggle debug
         if (input.didDebug()) {
             debug = !debug;
@@ -598,93 +590,12 @@ public class GameController implements Screen {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt) {
-        Camera cam = canvas.getCamera();
-        InputController input = InputController.getInstance();
         if (collisionController.getReturn()) {
             setRet(true);
         }
         actionController.update(dt);
         flashColor.a -= flashColor.a/10;
-        for (Activator a : currLevel.getActivators()){
-            if (a.isPressed() && a.getPan()){
-                a.setPan(false);
-                if(currLevel.getActivationRelations().containsKey(a.getID())){
-                    panTarget = currLevel.getActivationRelations().get(a.getID());
-                }
-                gameplayState = GameplayState.PAN;
-            }
-        }
-        if(gameplayState == GameplayState.PLAY){
-            panTime = 0;
-            respawnDelay = 0;
-            undoTime += 1;
-            input.setDisableAll(false);
-            float x_pos = currLevel.getCat().getPosition().x*scale.x;
-            float y_pos = currLevel.getCat().getPosition().y*scale.y;
-            if(justRespawned) {
-                gameplayState = GameplayState.RESPAWN;
-            }
-            //zoom normal when in play state and not panning and not switching bodies
-            if(!input.holdSwitch() && !input.didPan()){
-                cam.zoomOut(false);
-            }
-            DeadBody nextDeadBody = currLevel.getNextBody();
-            if(input.holdSwitch()&&nextDeadBody != null){
-                cam.setGlideMode("SWITCH_BODY");
-                cam.switchBodyCam(nextDeadBody.getX()*scale.x, nextDeadBody.getY()*scale.y);
-            }
-            else{
-                cam.setGlideMode("NORMAL");
-                cam.updateCamera(x_pos, y_pos, true);
-            }
-        }
-        else if(gameplayState == GameplayState.LEVEL_SWITCH){
-            /**
-             * TODO: Seamless Level Switching
-             */
-            gameplayState = GameplayState.PLAY;
-        }
-        else if(gameplayState == GameplayState.PAN){
-            cam.updateCamera(panTarget.get(0).getXPos()*scale.x,panTarget.get(0).getYPos()*scale.y, true);
-            if(!cam.isGliding()){
-                panTime += 1;
-                if(panTime == PAN_HOLD){
-                    gameplayState = GameplayState.PLAY;
-                }
-            }
-        }
-        else if(gameplayState == GameplayState.PLAYER_PAN){
-            cam.zoomOut(true);
-        }
-        else if(gameplayState == GameplayState.RESPAWN){
-            justRespawned = false;
-            float x_pos = currLevel.getCat().getPosition().x*scale.x;
-            float y_pos = currLevel.getCat().getPosition().y*scale.y;
-            input.setDisableAll(true);
-            respawnDelay += 1;
-            if(currLevel.getdeadBodyArray().size > 0 && respawnDelay < RESPAWN_DELAY/2){
-                x_pos = currLevel.getdeadBodyArray().get(currLevel.getdeadBodyArray().size-1).getX()*scale.x;
-                y_pos = currLevel.getdeadBodyArray().get(currLevel.getdeadBodyArray().size-1).getY()*scale.y;
-            }
-            cam.updateCamera(x_pos, y_pos, true);
-            if(respawnDelay == RESPAWN_DELAY){
-                respawnDelay = 0;
-                input.setDisableAll(false);
-                gameplayState = GameplayState.PLAY;
-            }
-        }
-    }
-
-    /**
-     * @param gameplayState "PLAY" or "SWITCH"
-     */
-    public void setGameplayState(String gameplayState){
-        if(gameplayState.equals("PLAY")){
-            this.gameplayState = GameplayState.PLAY;
-        }
-        else if(gameplayState.equals("SWITCH")){
-            this.gameplayState = GameplayState.LEVEL_SWITCH;
-        }
+        updateCamera();
     }
 
     /**
@@ -706,6 +617,8 @@ public class GameController implements Screen {
 
         // Update objects
         actionController.postUpdate(dt);
+        justRespawned = false;
+        justReset = false;
 
         if (InputController.getInstance().didUndo()) {
             Array<Level.LevelState> levelStates = currLevel.levelStates();
@@ -718,6 +631,87 @@ public class GameController implements Screen {
         }
     }
 
+    /**
+     * Updates CameraGameState and moves camera accordingly
+     */
+    public void updateCamera(){
+        Camera cam = canvas.getCamera();
+        InputController input = InputController.getInstance();
+        //resetting automatically resets camera to cat
+        if(justReset){
+            cameraGameState = CameraGameState.PLAY;
+        }
+        if(input.didPan()){
+            cameraGameState = CameraGameState.PLAYER_PAN;
+            //move camera
+            cam.updateCamera(cam.getX()+input.getCamHorizontal(),cam.getY()+ input.getCamVertical(),false);
+        }
+        else if(cameraGameState == CameraGameState.PLAYER_PAN){
+            cameraGameState = CameraGameState.PLAY;
+        }
+
+        for (Activator a : currLevel.getActivators()){
+            if (a.isPressed() && a.getPan()){
+                a.setPan(false);
+                if(currLevel.getActivationRelations().containsKey(a.getID())){
+                    panTarget = currLevel.getActivationRelations().get(a.getID());
+                }
+                cameraGameState = CameraGameState.PAN;
+            }
+        }
+        if(cameraGameState == CameraGameState.PLAY){
+            panTime = 0;
+            respawnDelay = 0;
+            input.setDisableAll(false);
+            float x_pos = currLevel.getCat().getPosition().x*scale.x;
+            float y_pos = currLevel.getCat().getPosition().y*scale.y;
+            if(justRespawned && !justReset) {
+                cameraGameState = CameraGameState.RESPAWN;
+            }
+            else {
+                //zoom normal when in play state and not panning and not switching bodies
+                if (!input.holdSwitch() && !input.didPan()) {
+                    cam.zoomOut(false);
+                }
+                DeadBody nextDeadBody = currLevel.getNextBody();
+                if (input.holdSwitch() && nextDeadBody != null) {
+                    cam.setGlideMode("SWITCH_BODY");
+                    cam.switchBodyCam(nextDeadBody.getX() * scale.x, nextDeadBody.getY() * scale.y);
+                } else {
+                    cam.setGlideMode("NORMAL");
+                    cam.updateCamera(x_pos, y_pos, true);
+                }
+            }
+        }
+        if(cameraGameState == CameraGameState.PAN){
+            cam.updateCamera(panTarget.get(0).getXPos()*scale.x,panTarget.get(0).getYPos()*scale.y, true);
+            if(!cam.isGliding()){
+                panTime += 1;
+                if(panTime == PAN_HOLD){
+                    cameraGameState = CameraGameState.PLAY;
+                }
+            }
+        }
+        if(cameraGameState == CameraGameState.PLAYER_PAN){
+            cam.zoomOut(true);
+        }
+        if(cameraGameState == CameraGameState.RESPAWN){
+            float xPos = currLevel.getCat().getPosition().x*scale.x;
+            float yPos = currLevel.getCat().getPosition().y*scale.y;
+            input.setDisableAll(true);
+            respawnDelay += 1;
+            if(currLevel.getdeadBodyArray().size > 0 && respawnDelay < RESPAWN_DELAY/2){
+                xPos = currLevel.getdeadBodyArray().get(currLevel.getdeadBodyArray().size-1).getX()*scale.x;
+                yPos = currLevel.getdeadBodyArray().get(currLevel.getdeadBodyArray().size-1).getY()*scale.y;
+            }
+            cam.updateCamera(xPos, yPos, true);
+            if(respawnDelay == RESPAWN_DELAY){
+                respawnDelay = 0;
+                input.setDisableAll(false);
+                cameraGameState = CameraGameState.PLAY;
+            }
+        }
+    }
     @Override
     public void render(float delta) {
         //FOR DEBUGGING
@@ -729,11 +723,16 @@ public class GameController implements Screen {
 //				Thread.currentThread().interrupt();
 //			}
 //		}
-        if (preUpdate(delta)) {
-            update(delta); // This is the one that must be defined.
-            postUpdate(delta);
+        if (!paused) {
+            if (preUpdate(delta)) {
+                update(delta); // This is the one that must be defined.
+                postUpdate(delta);
+            }
         }
+        if (paused) { updateCamera(); }
         draw(delta);
+        if (paused && stageController != null) { stageController.render(delta); }
+
     }
 
     /**
@@ -757,6 +756,7 @@ public class GameController implements Screen {
      * Pausing happens when we switch game modes.
      */
     public void pause() {
+        paused = true;
         actionController.pause();
     }
 
@@ -766,7 +766,8 @@ public class GameController implements Screen {
      * This is usually when it regains focus.
      */
     public void resume() {
-        // TODO Auto-generated method stub
+        paused = false;
+        stageController = null;
     }
 
     /**

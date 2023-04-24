@@ -1,7 +1,6 @@
 package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
@@ -1003,7 +1002,7 @@ public class Level {
         for (DeadBody db : deadBodyArray) {
             db.draw(canvas);
         }
-        if(cat != null && GameController.gameplayState != GameController.GameplayState.RESPAWN) {
+        if(cat != null && GameController.cameraGameState != GameController.CameraGameState.RESPAWN) {
             cat.draw(canvas);
         }
 

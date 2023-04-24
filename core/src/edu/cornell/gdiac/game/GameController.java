@@ -15,7 +15,6 @@ import edu.cornell.gdiac.game.object.*;
 import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.util.ScreenListener;
 
-import java.io.OutputStream;
 import java.util.HashMap;
 
 /**
@@ -111,20 +110,18 @@ public class GameController implements Screen {
 
     /**
      * PLAY: User has all controls and is in game
-     * LEVEL_SWITCH: Camera transition to next level (all controls stripped from user)
      * PLAYER_PAN: Camera zooms out and player is free to pan around the level (all other gameplay controls stripped from user)
      * PAN: Camera movement not controlled by player (e.g. when activator is pressed or at beginning of level)
      * RESPAWN: Camera focuses on dead body for half of RESPAWN_DELAY and focuses on newly respawned cat for half of RESPAWN_DELAY
      */
-    enum GameplayState{
+    enum CameraGameState {
         PLAY,
-        LEVEL_SWITCH,
         PLAYER_PAN,
         PAN,
         RESPAWN
     }
-    /** State of gameplay */
-    public static GameplayState gameplayState;
+    /** State of gameplay used for camera */
+    public static CameraGameState cameraGameState;
     /** Array storing level states of past lives. The ith element of this array is the state
      * of the level at the instant the player had died i times. */
     private LevelState[] prevLivesState = new LevelState[9];
@@ -172,7 +169,7 @@ public class GameController implements Screen {
         collisionController = new CollisionController(actionController);
         collisionController.setLevel(levels[currLevelIndex]);
 
-        gameplayState = GameplayState.PLAY;
+        cameraGameState = CameraGameState.PLAY;
         panTime = 0;
         respawnDelay = 0;
     }
@@ -536,16 +533,6 @@ public class GameController implements Screen {
 
         InputController input = InputController.getInstance();
         input.readInput();
-        Camera cam = canvas.getCamera();
-        if(input.didPan()){
-            gameplayState = GameplayState.PLAYER_PAN;
-            //move camera
-            cam.updateCamera(cam.getX()+input.getCamHorizontal(),cam.getY()+ input.getCamVertical(),false);
-        }
-        else{
-            if(gameplayState == GameplayState.PLAYER_PAN)
-                gameplayState = GameplayState.PLAY;
-        }
         // Toggle debug
         if (input.didDebug()) {
             debug = !debug;
@@ -600,76 +587,7 @@ public class GameController implements Screen {
         }
         actionController.update(dt);
         flashColor.a -= flashColor.a/10;
-        Camera cam = canvas.getCamera();
-        InputController input = InputController.getInstance();
-        for (Activator a : currLevel.getActivators()){
-            if (a.isPressed() && a.getPan()){
-                a.setPan(false);
-                if(currLevel.getActivationRelations().containsKey(a.getID())){
-                    panTarget = currLevel.getActivationRelations().get(a.getID());
-                }
-                gameplayState = GameplayState.PAN;
-            }
-        }
-        if(gameplayState == GameplayState.PLAY){
-            panTime = 0;
-            respawnDelay = 0;
-            input.setDisableAll(false);
-            float x_pos = currLevel.getCat().getPosition().x*scale.x;
-            float y_pos = currLevel.getCat().getPosition().y*scale.y;
-            if(justRespawned && !justReset) {
-                gameplayState = GameplayState.RESPAWN;
-            }
-            else {
-                //zoom normal when in play state and not panning and not switching bodies
-                if (!input.holdSwitch() && !input.didPan()) {
-                    cam.zoomOut(false);
-                }
-                DeadBody nextDeadBody = currLevel.getNextBody();
-                if (input.holdSwitch() && nextDeadBody != null) {
-                    cam.setGlideMode("SWITCH_BODY");
-                    cam.switchBodyCam(nextDeadBody.getX() * scale.x, nextDeadBody.getY() * scale.y);
-                } else {
-                    cam.setGlideMode("NORMAL");
-                    cam.updateCamera(x_pos, y_pos, true);
-                }
-            }
-            justReset = false;
-        }
-        if(gameplayState == GameplayState.LEVEL_SWITCH){
-            /**
-             * TODO: Seamless Level Switching
-             */
-            gameplayState = GameplayState.PLAY;
-        }
-        if(gameplayState == GameplayState.PAN){
-            cam.updateCamera(panTarget.get(0).getXPos()*scale.x,panTarget.get(0).getYPos()*scale.y, true);
-            if(!cam.isGliding()){
-                panTime += 1;
-                if(panTime == PAN_HOLD){
-                    gameplayState = GameplayState.PLAY;
-                }
-            }
-        }
-        if(gameplayState == GameplayState.PLAYER_PAN){
-            cam.zoomOut(true);
-        }
-        if(gameplayState == GameplayState.RESPAWN){
-            float xPos = currLevel.getCat().getPosition().x*scale.x;
-            float yPos = currLevel.getCat().getPosition().y*scale.y;
-            input.setDisableAll(true);
-            respawnDelay += 1;
-            if(currLevel.getdeadBodyArray().size > 0 && respawnDelay < RESPAWN_DELAY/2){
-                xPos = currLevel.getdeadBodyArray().get(currLevel.getdeadBodyArray().size-1).getX()*scale.x;
-                yPos = currLevel.getdeadBodyArray().get(currLevel.getdeadBodyArray().size-1).getY()*scale.y;
-            }
-            cam.updateCamera(xPos, yPos, true);
-            if(respawnDelay == RESPAWN_DELAY){
-                respawnDelay = 0;
-                input.setDisableAll(false);
-                gameplayState = GameplayState.PLAY;
-            }
-        }
+        updateCamera();
     }
 
     /**
@@ -702,6 +620,7 @@ public class GameController implements Screen {
             justRespawned = false;
         }
 
+        justReset = false;
 
         if (InputController.getInstance().didUndo()) {
             if (currLevel.getNumLives() < 9) {
@@ -711,6 +630,87 @@ public class GameController implements Screen {
         }
     }
 
+    /**
+     * Updates CameraGameState and moves camera accordingly
+     */
+    public void updateCamera(){
+        Camera cam = canvas.getCamera();
+        InputController input = InputController.getInstance();
+        //resetting automatically resets camera to cat
+        if(justReset){
+            cameraGameState = CameraGameState.PLAY;
+        }
+        if(input.didPan()){
+            cameraGameState = CameraGameState.PLAYER_PAN;
+            //move camera
+            cam.updateCamera(cam.getX()+input.getCamHorizontal(),cam.getY()+ input.getCamVertical(),false);
+        }
+        else if(cameraGameState == CameraGameState.PLAYER_PAN){
+            cameraGameState = CameraGameState.PLAY;
+        }
+
+        for (Activator a : currLevel.getActivators()){
+            if (a.isPressed() && a.getPan()){
+                a.setPan(false);
+                if(currLevel.getActivationRelations().containsKey(a.getID())){
+                    panTarget = currLevel.getActivationRelations().get(a.getID());
+                }
+                cameraGameState = CameraGameState.PAN;
+            }
+        }
+        if(cameraGameState == CameraGameState.PLAY){
+            panTime = 0;
+            respawnDelay = 0;
+            input.setDisableAll(false);
+            float x_pos = currLevel.getCat().getPosition().x*scale.x;
+            float y_pos = currLevel.getCat().getPosition().y*scale.y;
+            if(justRespawned && !justReset) {
+                cameraGameState = CameraGameState.RESPAWN;
+            }
+            else {
+                //zoom normal when in play state and not panning and not switching bodies
+                if (!input.holdSwitch() && !input.didPan()) {
+                    cam.zoomOut(false);
+                }
+                DeadBody nextDeadBody = currLevel.getNextBody();
+                if (input.holdSwitch() && nextDeadBody != null) {
+                    cam.setGlideMode("SWITCH_BODY");
+                    cam.switchBodyCam(nextDeadBody.getX() * scale.x, nextDeadBody.getY() * scale.y);
+                } else {
+                    cam.setGlideMode("NORMAL");
+                    cam.updateCamera(x_pos, y_pos, true);
+                }
+            }
+        }
+        if(cameraGameState == CameraGameState.PAN){
+            cam.updateCamera(panTarget.get(0).getXPos()*scale.x,panTarget.get(0).getYPos()*scale.y, true);
+            if(!cam.isGliding()){
+                panTime += 1;
+                if(panTime == PAN_HOLD){
+                    cameraGameState = CameraGameState.PLAY;
+                }
+            }
+        }
+        if(cameraGameState == CameraGameState.PLAYER_PAN){
+            cam.zoomOut(true);
+        }
+        if(cameraGameState == CameraGameState.RESPAWN){
+            float xPos = currLevel.getCat().getPosition().x*scale.x;
+            float yPos = currLevel.getCat().getPosition().y*scale.y;
+            input.setDisableAll(true);
+            respawnDelay += 1;
+            if(currLevel.getdeadBodyArray().size > 0 && respawnDelay < RESPAWN_DELAY/2){
+                xPos = currLevel.getdeadBodyArray().get(currLevel.getdeadBodyArray().size-1).getX()*scale.x;
+                yPos = currLevel.getdeadBodyArray().get(currLevel.getdeadBodyArray().size-1).getY()*scale.y;
+            }
+            cam.updateCamera(xPos, yPos, true);
+            if(respawnDelay == RESPAWN_DELAY){
+                respawnDelay = 0;
+                input.setDisableAll(false);
+                cameraGameState = CameraGameState.PLAY;
+            }
+        }
+    }
     @Override
     public void render(float delta) {
         //FOR DEBUGGING

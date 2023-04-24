@@ -66,12 +66,12 @@
       "tiledLevel2old": "tiled/tiledlevel2.json",
       "tiledLevel3old": "tiled/spikes-testing.json",
       "tiledLevel4old": "tiled/level-switch2.json",
-      "tiledLevel5": "tiled/level-switch3.json",
+      "tiledLevel5": "tiled/party-room.json",
       "tiledLevelTutorial": "tiled/tiledLevelTutorial1.json",
       "tiledLevel1": "tiled/tiledLevelEasy.json",
       "tiledLevel2": "tiled/tiledLevelMedium1.json",
       "tiledLevel3": "tiled/tiledLevelMedium2.json",
-      "tiledLevel4": "tiled/tiledLevelHard.json"
+      "tiledLevel4": "tiled/tiledLevelHard_v2.json"
     },
     "sounds" : {
         "jump" : "platform/jumpCELESTE.wav",

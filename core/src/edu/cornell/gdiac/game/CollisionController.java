@@ -91,10 +91,17 @@ public class CollisionController implements ContactListener, ContactFilter {
                         cat.setGrounded(true);
                     }
 
-                    // See if we are touching a wall
-                    if (cat.getSideSensorName().equals(fd1) && bd2 instanceof Wall) {
+                    // See if right side is touching a wall
+                    if (cat.getRightSensorName().equals(fd1) && bd2 instanceof Wall) {
                         if (((Wall) bd2).isClimbable()){
-                            cat.incrementWalled();
+                            cat.incrementRightWalled();
+                        }
+                    }
+
+                    // See if left side is touching a wall
+                    if (cat.getLeftSensorName().equals(fd1) && bd2 instanceof Wall) {
+                        if (((Wall) bd2).isClimbable()){
+                            cat.incrementLeftWalled();
                         }
                     }
 
@@ -102,14 +109,14 @@ public class CollisionController implements ContactListener, ContactFilter {
                     if (bd2 == level.getGoalExit() && !didChange) level.setComplete(true);
                     if (bd2 == level.getReturnExit() && !didChange) setReturn(true);
 
-                    if (fd2 instanceof Spikes) {
+                    if (bd2 instanceof Spikes && fd2.equals(Spikes.pointyName) && fd1.equals(Cat.bodyName)) {
                         actionController.die();
                     }
-                    if (fd2 instanceof Flamethrower.Flame){
+                    if (bd2 instanceof Flamethrower.Flame && fd2.equals(Flamethrower.flameSensorName)){
                         actionController.die();
                     }
                     if (bd2 instanceof Checkpoint && ((Checkpoint) bd2).getSensorName().equals(fd2)){
-                        level.updateCheckpoints(((Checkpoint) bd2));
+                        level.updateCheckpoints(((Checkpoint) bd2), true);
                     }
                     if (bd2 instanceof Mob){
 //                    System.out.println("hit a mob");
@@ -121,12 +128,16 @@ public class CollisionController implements ContactListener, ContactFilter {
                 }
 
                 //dead body collisions
-                if (fd1 instanceof DeadBody) {
-                    DeadBody db = (DeadBody) fd1;
-                    if (fd2 instanceof Spikes) {
-                        actionController.fixBodyToSpikes(db, (Spikes) fd2, contact.getWorldManifold().getPoints());
-                        db.addHazard();
-                    } else if (fd2 instanceof Flamethrower.Flame) {
+                if (bd1 instanceof DeadBody) {
+                    DeadBody db = (DeadBody) bd1;
+                    if (bd2 instanceof Spikes) {
+                        if (fd1.equals(DeadBody.centerSensorName) && fd2.equals(Spikes.centerName)) {
+                            actionController.fixBodyToSpikes(db, (Spikes) bd2, contact.getWorldManifold().getPoints());
+                        }
+                        if (fd1.equals(DeadBody.catBodyName) && fd2.equals(Spikes.pointyName)){
+                            db.addHazard();
+                        }
+                    } else if (bd2 instanceof Flamethrower.Flame) {
                         db.setBurning(true);
                         db.addHazard();
                     } else if (bd2 instanceof SpiritRegion){
@@ -206,9 +217,13 @@ public class CollisionController implements ContactListener, ContactFilter {
                         }
                     }
 
-                    // Not handling case where there may be multiple walls at once
-                    if ((cat.getSideSensorName().equals(fd1) && cat != bd2) && (bd2 instanceof Wall) && ((Wall) bd2).isClimbable()) {
-                        cat.decrementWalled();
+                    // Right sensor walled
+                    if (((cat.getRightSensorName().equals(fd1)) && cat != bd2) && (bd2 instanceof Wall) && ((Wall) bd2).isClimbable()) {
+                        cat.decrementRightWalled();
+                    }
+                    // Left sensor walled
+                    if (((cat.getLeftSensorName().equals(fd1)) && cat != bd2) && (bd2 instanceof Wall) && ((Wall) bd2).isClimbable()) {
+                        cat.decrementLeftWalled();
                     }
 
                     if (bd2 instanceof SpiritRegion){
@@ -221,11 +236,13 @@ public class CollisionController implements ContactListener, ContactFilter {
                 }
 
                 //dead body collisions
-                if (fd1 instanceof DeadBody) {
-                    DeadBody db = (DeadBody) fd1;
-                    if (fd2 instanceof Spikes) {
-                        db.removeHazard();
-                    } else if (fd2 instanceof Flamethrower.Flame) {
+                if (bd1 instanceof DeadBody) {
+                    DeadBody db = (DeadBody) bd1;
+                    if (bd2 instanceof Spikes) {
+                        if (fd1.equals(DeadBody.catBodyName) && fd2.equals(Spikes.pointyName)){
+                            db.removeHazard();
+                        }
+                    } else if (bd2 instanceof Flamethrower.Flame) {
                         db.setBurning(false);
                         db.removeHazard();
                     }
@@ -295,6 +312,17 @@ public class CollisionController implements ContactListener, ContactFilter {
                 //flame does not turn on activators
                 if (fd1 instanceof Activator && bd2 instanceof Flamethrower.Flame) {
                     return false;
+                }
+
+                //spikes and dead bodies
+                if (bd1 instanceof Spikes && bd2 instanceof DeadBody) {
+//                    System.out.println(fd1 + " and " + fd2 + ": " + (fd2.equals(DeadBody.centerSensorName) && fd1.equals(Spikes.centerName)));
+                    return !fd1.equals(Spikes.solidName) && !fd2.equals(DeadBody.hitboxSensorName);
+                }
+
+                //cat and spikes
+                if (bd1 instanceof Spikes && bd2 instanceof Cat) {
+                    return !fd1.equals(Spikes.solidName);
                 }
 
                 //swap everything

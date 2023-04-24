@@ -33,6 +33,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
     private final Vector2 flameOffset;
     /** If this flamethrower can be pushed */
     private final boolean pushable;
+    public static final String flameSensorName = "flameSensor";
 
     private ObjectSet<Fixture> groundFixtures = new ObjectSet<>();
     private PolygonShape groundSensorShape;
@@ -267,6 +268,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
             if (!super.activatePhysics(world)) {
                 return false;
             }
+            body.getFixtureList().get(0).setUserData("");
             FixtureDef sensorDef = new FixtureDef();
             sensorDef.density = 0;
             sensorDef.isSensor = true;
@@ -275,7 +277,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
             sensorDef.shape = sensorShape;
 
             Fixture sensorFixture = body.createFixture( sensorDef );
-            sensorFixture.setUserData(this);
+            sensorFixture.setUserData(flameSensorName);
             return true;
         }
 

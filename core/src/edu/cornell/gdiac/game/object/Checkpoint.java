@@ -90,6 +90,13 @@ public class Checkpoint extends BoxObstacle
     }
 
     /**
+     * @return respawn position of the cat for this checkpoint
+     */
+    public Vector2 getRespawnPosition(){
+        return getPosition().add(objectConstants.get("respawn_offset").getFloat(0),objectConstants.get("respawn_offset").getFloat(1));
+    }
+
+    /**
      * Creates the physics Body(s) for this object, adding them to the world.
      * <p>
      *

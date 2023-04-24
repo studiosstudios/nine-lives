@@ -54,18 +54,23 @@ public interface Activatable {
      * Sets the active status of the object based on the output from an activator/s.
      * @param activator  whether the corresponding activators are active
      * @param world      the Box2D world
+     *
+     * @return  1 if this object was just activated, -1 if this object was just deactivated, 0 otherwise
      */
-    default void updateActivated(boolean activator, World world){
+    default int updateActivated(boolean activator, World world){
         boolean next = getInitialActivation() ^ activator;
         if (next && !isActivated()) {
             //state switch from inactive to active
             setActivated(true);
             activated(world);
+            return 1;
         } else if (!next && isActivated()){
             //state switch from active to inactive
             setActivated(false);
             deactivated(world);
+            return -1;
         }
+        return 0;
     }
     float getXPos();
     float getYPos();

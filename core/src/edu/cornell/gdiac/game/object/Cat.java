@@ -24,10 +24,7 @@ import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
-import java.util.AbstractMap;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import java.util.HashMap;
@@ -69,7 +66,7 @@ public class Cat extends CapsuleObstacle implements Movable {
      * States used to handle the logic of the cat's movement
      */
     private enum State {
-        MOVING, JUMPING, CLIMBING, DASHING
+        MOVING, JUMPING, CLIMBING, DASHING, WALL_JUMPING
     }
 
     /**
@@ -143,6 +140,8 @@ public class Cat extends CapsuleObstacle implements Movable {
 
     private int dashTimer = 0;
     private final Vector2 dashCache = new Vector2();
+    private int wallJumpTimer = 0;
+    private int coyoteTimer = 6;
 
 
     /**
@@ -151,14 +150,34 @@ public class Cat extends CapsuleObstacle implements Movable {
     private final String groundSensorName;
 
     /**
-     * Identifier to allow us to track side sensor in ContactListener
+     * Identifier to allow us to track right side sensor in ContactListener
      */
-    private final String sideSensorName;
+    private final String rightSensorName;
+
+    /**
+     * User data of body fixtures for this cat. Used in Contact Listener
+     */
+    public static final String bodyName = "catBody";
 
     /**
      * Whether we are in contact with a wall
+     *
+     * Identifier to allow us to track left side sensor in ContactListener
      */
-    private int wallCount;
+    private final String leftSensorName;
+
+    private Fixture rightFixture;
+    private Fixture leftFixture;
+
+    /**
+     * The number of walls in contact with the right side sensor
+     */
+    private int rightWallCount;
+
+    /**
+     * The number of walls in contact with the left side sensor
+     */
+    private int leftWallCount;
 
     /**
      * Which direction is the character facing
@@ -166,7 +185,7 @@ public class Cat extends CapsuleObstacle implements Movable {
     private boolean facingRight;
 
     /**
-     * Whether we are actively jumping
+     * Whether we are actively meowing
      */
     private boolean isMeowing;
     /**
@@ -178,6 +197,7 @@ public class Cat extends CapsuleObstacle implements Movable {
      * Cache for internal force calculations
      */
     private ObjectSet<Fixture> groundFixtures;
+
     /**
      * The current spirit regions that the cat is inside
      */
@@ -195,29 +215,22 @@ public class Cat extends CapsuleObstacle implements Movable {
     private Animation<TextureRegion> walkAnimation;
     private Animation<TextureRegion> idleAnimation;
     private Animation<TextureRegion> idleStandAnimation;
-    private TextureRegion[][] spriteFrames;
-    private TextureRegion[][] spriteFrames2;
-    private TextureRegion[][] spriteFrames3;
-    private TextureRegion[][] spriteFrames4;
-    private TextureRegion[][] spriteFrames5;
     private float jumpTime;
     private float meowTime;
     private float walkTime;
-    private TextureRegion normal_texture;
-    private TextureRegion jumping_texture;
-    private TextureRegion sit_texture;
-    private float idleTime;
-    private float nonMoveTime;
-    private float standTime;
-    private int time;
-    private boolean jump_animated;
+    private TextureRegion normalTexture;
+    private TextureRegion jumpTexture;
+    private TextureRegion sitTexture;
+    private float stationaryTime;
 
     /** List of shapes corresponding to the sensors attached to this body */
     private Array<PolygonShape> sensorShapes;
-    private float failedTicks;
-    private static final float FAIL_ANIM_TICKS = 30f;
-    private Queue<Map.Entry<Vector3, Integer>> dashShadowQueue = new Queue<>();
-    private boolean dashShadowFacingRight = true;
+    private float failedSwitchTicks;
+    private static final float FAILED_SWITCH_TICKS = 30f;
+    private Color failColor = new Color(1, 0, 0, 1);
+    private Queue<DashShadow> dashShadowQueue = new Queue<>();
+    private Color dashColor = new Color(0.68f, 0.85f, 0.9f, 1f);
+    private TextureRegion currentFrame;
     //endregion
     /*/////*/
 
@@ -255,10 +268,8 @@ public class Cat extends CapsuleObstacle implements Movable {
 
     public void setHorizontalMovement(float value) {
         horizontalMovement = value * getForce();
-        if (horizontalMovement < 0) {
-            facingRight = false;
-        } else if (horizontalMovement > 0) {
-            facingRight = true;
+        if (horizontalMovement != 0) {
+            setFacingRight(horizontalMovement > 0);
         }
     }
 
@@ -299,7 +310,7 @@ public class Cat extends CapsuleObstacle implements Movable {
     }
 
     /**
-     *
+     * Whether the player is currently pressing the climb input.
      */
     public void setClimbingPressed(boolean value) {
         climbingPressed = value;
@@ -327,6 +338,12 @@ public class Cat extends CapsuleObstacle implements Movable {
             onGroundedReset();
             soundBuffer.add("metalLanding");
         }
+        else if (!value) {
+            setOrientation(Orientation.VERTICAL);
+            if (state == State.MOVING) {
+                coyoteTimer--;
+            }
+        }
         isGrounded = value;
     }
 
@@ -338,10 +355,10 @@ public class Cat extends CapsuleObstacle implements Movable {
     public void onGroundedReset() {
         canDash = true;
         dashTimer = 0;
-        jump_animated = false;
         jumpTime = 0;
         meowTime = 0;
         jumpMovement = jumpForce;
+        setOrientation(Orientation.TOP);
     }
 
     /**
@@ -373,28 +390,53 @@ public class Cat extends CapsuleObstacle implements Movable {
     }
 
     /**
-     * Returns the name of the side sensor
+     * Returns the name of the right side sensor
      * <p>
      * This is used by ContactListener
      *
-     * @return the name of the side sensor
+     * @return the name of the right side sensor
      */
-    public String getSideSensorName() {
-        return sideSensorName;
+    public String getRightSensorName() {
+        return rightSensorName;
     }
 
     /**
-     * Sets whether the cat is in contact with a wall
+     * Returns the name of the left side sensor
+     * <p>
+     * This is used by ContactListener
+     *
+     * @return the name of the right side sensor
      */
-    public void incrementWalled() {
-        wallCount++;
+    public String getLeftSensorName() {
+        return leftSensorName;
     }
 
     /**
-     * Sets whether the cat is in contact with a wall
+     * Increments when the right side sensor is in contact with a wall
      */
-    public void decrementWalled() {
-        wallCount--;
+    public void incrementRightWalled() {
+        rightWallCount++;
+    }
+
+    /**
+     * Decrements when the right side sensor lose contact with a wall
+     */
+    public void decrementRightWalled() {
+        rightWallCount--;
+    }
+
+    /**
+     * Increments when the right side sensor is in contact with a wall
+     */
+    public void incrementLeftWalled() {
+        leftWallCount++;
+    }
+
+    /**
+     * Decrements when the right side sensor lose contact with a wall
+     */
+    public void decrementLeftWalled() {
+        leftWallCount--;
     }
 
     /**
@@ -403,7 +445,7 @@ public class Cat extends CapsuleObstacle implements Movable {
      * @return whether the cat is in contact with a wall
      */
     public boolean isWalled() {
-        return wallCount > 0;
+        return (isFacingRight() ? rightWallCount : leftWallCount) > 0;
     }
 
     public void setMeowing(boolean value) {
@@ -428,11 +470,44 @@ public class Cat extends CapsuleObstacle implements Movable {
      * @param facingRight true if we want the cat to face right
      */
     public void setFacingRight(boolean facingRight) {
-        this.facingRight = facingRight;
+        if (state != State.CLIMBING) {
+            this.facingRight = facingRight;
+        }
     }
 
     public ObjectSet<SpiritRegion> getSpiritRegions() {
         return spiritRegions;
+    }
+    //endregion
+    /*/////*/
+
+    /*/////*/
+    //region GETTERS AND SETTERS: Animation
+
+    /**
+     * For flipping texture appropriately
+     * @return -1 if facing right, 1 if facing left
+     */
+    public int getDirectionFactor() {
+        return isFacingRight() ? -1 : 1;
+    }
+
+    /**
+     * To draw the cat texture, this method returns the x-coordinate of the center of its image, scaled
+     * appropriately and facing the correct orientation.
+     * @return The centered x-coordinate of the current cat frame.
+     */
+    public float getTextureCenterX() {
+        return getDrawX() - getDirectionFactor() * currentFrame.getRegionWidth()/drawScale.x/2;
+    }
+
+    /**
+     * To draw the cat texture, this method returns the y-coordinate of the center of its image, scaled
+     * appropriately and facing the correct orientation.
+     * @return The centered x-coordinate of the current cat frame.
+     */
+    public float getTextureCenterY() {
+        return getDrawY() - currentFrame.getRegionHeight()/drawScale.y/2;
     }
     //endregion
     /*/////*/
@@ -455,7 +530,8 @@ public class Cat extends CapsuleObstacle implements Movable {
         super((float) properties.get("x") + objectConstants.get("offset").getFloat(0),
                 (float) properties.get("y") + objectConstants.get("offset").getFloat(1),
                 tMap.get("cat").getRegionWidth()/scale.x*objectConstants.get("shrink").getFloat( 0 ),
-                tMap.get("cat").getRegionHeight()/scale.y*objectConstants.get("shrink").getFloat( 1 ), Orientation.TOP);
+                tMap.get("cat").getRegionHeight()/scale.y*objectConstants.get("shrink").getFloat( 1 ),
+                Orientation.TOP);
         setDrawScale(scale);
         setDensity(objectConstants.getFloat("density", 0));
         setFriction(
@@ -469,38 +545,34 @@ public class Cat extends CapsuleObstacle implements Movable {
         dashForce = objectConstants.getFloat("dashForce", 0);
         jumpDamping = objectConstants.getFloat("jumpDamping", 0);
         groundSensorName = "catGroundSensor";
-        sideSensorName = "catSideSensor";
+        rightSensorName = "catRightSensor";
+        leftSensorName = "catLeftSensor";
         sensorShapes = new Array<>();
         groundFixtures = new ObjectSet<>();
         spiritRegions = new ObjectSet<>();
         soundBuffer = new HashSet<>();
 
-        jump_animated = false;
-        normal_texture = tMap.get("cat");
-        jumping_texture = tMap.get("jumpingCat");
-        sit_texture = tMap.get("sit");
+        normalTexture = tMap.get("cat");
+        jumpTexture = tMap.get("jumpingCat");
+        sitTexture = tMap.get("sit");
+        currentFrame = sitTexture;
 
-        spriteFrames = TextureRegion.split(tMap.get("jump_anim").getTexture(), 2048,2048);
-        spriteFrames2 = TextureRegion.split(tMap.get("meow_anim").getTexture(), 2048, 2048);
-        spriteFrames3 = TextureRegion.split(tMap.get("walk").getTexture(), 2048, 2048);
-        spriteFrames4 = TextureRegion.split(tMap.get("idle_anim").getTexture(),2048,2048);
-        spriteFrames5 = TextureRegion.split(tMap.get("idle_anim_stand").getTexture(),2048,2048);
+        walkAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("walk").getTexture(),2048,2048)[0]);
 
-        jumpAnimation = new Animation<>(0.025f, spriteFrames[0]);
-        meowAnimation = new Animation<>(0.05f, spriteFrames2[0]);
-        walkAnimation = new Animation<>(0.15f, spriteFrames3[0]);
-        idleAnimation = new Animation<>(0.15f, spriteFrames4[0]);
-        idleStandAnimation = new Animation<>(0.15f, spriteFrames5[0]);
+        jumpAnimation = new Animation<>(0.025f, TextureRegion.split(tMap.get("jump_anim").getTexture(),2048,2048)[0]);
+        meowAnimation = new Animation<>(0.05f, TextureRegion.split(tMap.get("meow_anim").getTexture(),2048,2048)[0]);
+        meowAnimation.setPlayMode(Animation.PlayMode.REVERSED);
+        idleStandAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("idle_anim_stand").getTexture(),2048,2048)[0]);
+        idleStandAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+        idleAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("idle_anim").getTexture(),2048,2048)[0]);
+        idleAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+        walkAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
         jumpTime = 0f;
         meowTime = 0f;
         walkTime = 0f;
-        failedTicks = FAIL_ANIM_TICKS;
-
-        idleTime = 0f;
-        nonMoveTime = 0f;
-        standTime = 0f;
-        time = 0;
+        stationaryTime = 0f;
+        failedSwitchTicks = FAILED_SWITCH_TICKS;
 
         // Gameplay attributes
         state = State.MOVING;
@@ -523,11 +595,12 @@ public class Cat extends CapsuleObstacle implements Movable {
      * @return true if object allocation succeeded
      */
     public boolean activatePhysics(World world) {
-        // create the box from our superclass
+        // create the box from our xsuperclass
         if (!super.activatePhysics(world)) {
             return false;
         }
 
+        for (Fixture f : body.getFixtureList()) f.setUserData(bodyName);
         // Ground Sensor
         // -------------
         // We only allow the cat to jump when he's on the ground.
@@ -544,15 +617,14 @@ public class Cat extends CapsuleObstacle implements Movable {
 
         // Side sensors to help detect for wall climbing
         JsonValue sideSensorJV = objectConstants.get("side_sensor");
-        Fixture b = generateSensor(new Vector2(-getWidth() / 2, 0),
+        rightFixture = generateSensor(new Vector2(getWidth() / 2, 0),
                 sideSensorJV.getFloat("width", 0),
                 sideSensorJV.getFloat("shrink") * getHeight() / 2.0f,
-                getSideSensorName());
-
-        generateSensor(new Vector2(getWidth() / 2, 0),
+                getRightSensorName());
+        leftFixture = generateSensor(new Vector2(-getWidth() / 2, 0),
                 sideSensorJV.getFloat("width", 0),
                 sideSensorJV.getFloat("shrink") * getHeight() / 2.0f,
-                getSideSensorName());
+                getLeftSensorName());
 
         return true;
     }
@@ -586,11 +658,15 @@ public class Cat extends CapsuleObstacle implements Movable {
      * Handles STATE of the cat All STATE transitions should be contained here
      */
     public void updateState() {
-        failedTicks = Math.min(FAIL_ANIM_TICKS, failedTicks + 1);
+        failedSwitchTicks = Math.min(FAILED_SWITCH_TICKS, failedSwitchTicks + 1);
+        if (coyoteTimer < 6) {
+            coyoteTimer--;
+            if (coyoteTimer <= 0) coyoteTimer = 6;
+        }
         switch (state) {
             case MOVING:
                 // MOVING -> JUMPING
-                if (isGrounded && jumpPressed) {
+                if (jumpPressed && (isGrounded || coyoteTimer < 4)) {
                     state = State.JUMPING;
                     soundBuffer.add("jump");
                     return;
@@ -606,9 +682,12 @@ public class Cat extends CapsuleObstacle implements Movable {
                     state = State.DASHING;
                     setGravityScale(0);
                     calculateDashVector();
-                    dashShadowFacingRight = isFacingRight();
                     soundBuffer.add("dash");
                     return;
+                }
+                if (jumpPressed && !isGrounded && isWalled()) {
+                    forceCache.set(8 * getDirectionFactor(), 10);
+                    state = State.WALL_JUMPING;
                 }
                 break;
             case JUMPING:
@@ -628,7 +707,6 @@ public class Cat extends CapsuleObstacle implements Movable {
                     state = State.DASHING;
                     setGravityScale(0);
                     calculateDashVector();
-                    dashShadowFacingRight = isFacingRight();
                     soundBuffer.add("dash");
                     return;
                 }
@@ -640,6 +718,18 @@ public class Cat extends CapsuleObstacle implements Movable {
                     setGravityScale(2f);
                     return;
                 }
+                else if (jumpPressed) {
+                    // Kicking off from wall
+                    if (Math.signum(horizontalMovement) == getDirectionFactor()) {
+                        forceCache.set(13 * Math.signum(horizontalMovement), 6);
+                    }
+                    // Kicking higher onto wall
+                    else {
+                        forceCache.set(8 * getDirectionFactor(), 10);
+                    }
+                    state = State.WALL_JUMPING;
+                    setGravityScale(2f);
+                }
                 break;
             case DASHING:
                 // DASHING -> MOVING
@@ -648,12 +738,23 @@ public class Cat extends CapsuleObstacle implements Movable {
                     state = State.MOVING;
 //                    setVX(0);
                     if (getRelativeVelocity().y > 0) {
-                        setVY(maxSpeed);
+                        setRelativeVY(maxSpeed);
                     }
                     setGravityScale(2f);
+                    if (isGrounded) onGroundedReset();
                     return;
                 }
+                if (getOrientation() != Orientation.VERTICAL) {
+                    setOrientation(Orientation.VERTICAL);
+                }
                 break;
+            case WALL_JUMPING:
+                wallJumpTimer++;
+                if (wallJumpTimer > 5) {
+                    state = State.MOVING;
+                    wallJumpTimer = 0;
+                    return;
+                }
         }
     }
 
@@ -674,29 +775,41 @@ public class Cat extends CapsuleObstacle implements Movable {
                 forceCache.set(0, jumpMovement);
                 body.applyLinearImpulse(forceCache, getPosition(), true);
             case MOVING:
+                float speed;
                 if (horizontalMovement == 0){
-                    setRelativeVX(getRelativeVelocity().x * 0.5f);
+                    speed = getRelativeVelocity().x * 0.5f;
                 } else {
-                    setRelativeVX(0.84f * (getRelativeVelocity().x + horizontalMovement * 0.06f));
+                    speed = 0.84f * (getRelativeVelocity().x + horizontalMovement * 0.06f);
                 }
+                setRelativeVX(speed);
                 break;
             case CLIMBING:
                 setRelativeVX(0);
-                setRelativeVY(verticalMovement / 3f);
+                setRelativeVY(verticalMovement / 5f);
                 break;
             case DASHING:
                 setRelativeVX(dashCache.x);
                 setRelativeVY(dashCache.y);
-                processDashShadowQueue();
+                addDashShadow();
+                break;
+            case WALL_JUMPING:
+                setRelativeVX(forceCache.x);
+                setRelativeVY(forceCache.y);
                 break;
         }
     }
 
+    /**
+     * Calculates the dash vector - the vector describing the dash force according to the current
+     * combination of keys held down - and stores it in <code>dashCache</code>.
+     */
     private void calculateDashVector() {
         float horizontalForce = horizontalMovement / 1.8f;
         float verticalForce = verticalMovement / 1.8f;
         if (horizontalMovement == 0 && verticalMovement == 0) {
-            horizontalForce = (isFacingRight() ? 1 : -1) * getForce() / 2f;
+            // If the player dashes without holding any keys, we increase the force of the dash.
+            // Otherwise, the dash itself 'feels' too short.
+            horizontalForce = (isFacingRight() ? 1 : -1) * getForce() / 1.6f;
         } else if (horizontalMovement != 0 && verticalMovement != 0) {
             horizontalForce = horizontalForce / (float)Math.sqrt(2);
             verticalForce = verticalForce / (float)Math.sqrt(2);
@@ -705,12 +818,13 @@ public class Cat extends CapsuleObstacle implements Movable {
         dashCache.set(horizontalForce, verticalForce);
     }
 
-    private void processDashShadowQueue() {
+    /**
+     * Creates a new Dash Shadow according to the cat's current state and adds it to <code>dashShadowQueue</code>
+     * to be drawn.
+     */
+    private void addDashShadow() {
         if (dashTimer % 3 == 0) {
-            // We're basically using 4-tuples here with a hideous SimpleEntry<Vector3<>, Integer> set-up
-            // The dash currently uses the cat's current frame, but it'd be better if we had a way to save the cat's drawing frame whenever a new shadow is added
-            // That will best be done by modularizing the drawing code more + making DashShadow a static inner class to store the 5-tuple
-            dashShadowQueue.addLast(new SimpleEntry<>(new Vector3(getX() * drawScale.x, getY() * drawScale.y, isFacingRight() ? -1 : 1), 10));
+            dashShadowQueue.addLast(new DashShadow(getTextureCenterX(), getTextureCenterY(), getDirectionFactor(), currentFrame));
         }
     }
 
@@ -732,85 +846,92 @@ public class Cat extends CapsuleObstacle implements Movable {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
-        float effect = facingRight ? -1.0f : 1.0f;
-        float x = getX() * drawScale.x;
-        float y = getY()* drawScale.y;
-        //walking animation
-        TextureRegion frame = sit_texture;
-        float xOffset = 0;
-        float yOffset = 0;
+        updateAnimation();
+        drawDashShadows(canvas);
 
-        if (state != State.JUMPING && horizontalMovement != 0) {
-            walkAnimation.setPlayMode(Animation.PlayMode.LOOP);
-            walkTime += Gdx.graphics.getDeltaTime();
-            frame = walkAnimation.getKeyFrame(walkTime);
+        float directionFactor = getDirectionFactor();
+        float x = getTextureCenterX();
+        float y = getTextureCenterY();
 
-            nonMoveTime = 0;
+        if (failedSwitchTicks < FAILED_SWITCH_TICKS){
+            float xOffset = ((float) (Math.sin(-failedSwitchTicks /2) * Math.exp(-failedSwitchTicks
+                    /30)))*drawScale.x/2;
+            failColor.a = 0.5f - Math.abs(failedSwitchTicks-FAILED_SWITCH_TICKS/2)/ FAILED_SWITCH_TICKS;
+            canvas.draw(currentFrame, failColor, origin.x, origin.y, x + xOffset, y, 0, directionFactor/drawScale.x, 1f/drawScale.y);
         }
-        //jump animation
-        else if (state == State.JUMPING && !jump_animated && jumpTime < 0.025f*6) {
-            jumpAnimation.setPlayMode(Animation.PlayMode.REVERSED);
-            jumpTime += Gdx.graphics.getDeltaTime();
-            frame = jumpAnimation.getKeyFrame(jumpTime);
 
-            nonMoveTime = 0;
+        canvas.draw(currentFrame, Color.WHITE, origin.x, origin.y, x, y, 0, directionFactor/drawScale.x, 1f/drawScale.y);
+    }
+
+    /**
+     * This method updates the animation of the cat by a step, along with handling changes
+     * to the cat's active movement (such as going from walking to jumping)
+     */
+    private void updateAnimation() {
+        float delta = Gdx.graphics.getDeltaTime();
+        // WALKING
+        if (state == State.MOVING && horizontalMovement != 0 && isGrounded()) {
+            walkTime += delta;
+            currentFrame = walkAnimation.getKeyFrame(walkTime);
+
+            stationaryTime = 0;
         }
-        //meow animation
-        else if ((isMeowing && state != State.JUMPING) || meowTime != 0) {
-            meowAnimation.setPlayMode(Animation.PlayMode.REVERSED);
-            meowTime += Gdx.graphics.getDeltaTime();
-            frame = meowAnimation.getKeyFrame(meowTime);
+        // JUMPING (or in the air, such as falling from a platform)
+        else if (!isGrounded()) {
+            jumpTime += delta;
+            if (!jumpAnimation.isAnimationFinished(jumpTime)) {
+                currentFrame = jumpAnimation.getKeyFrame(jumpTime);
+            }
+            else {
+                currentFrame = jumpTexture;
+            }
+
+            // Ideally, we don't set these to 0 all the time in the update methods, but otherwise it will grow unbounded
+            // An easy optimization will be to set them in the state changes for the movement system
+            // But that slightly couples animation logic with movement logic, so we can push that off for now -CJ
+            walkTime = 0;
+            stationaryTime = 0;
+        }
+        // MEOWING
+        else if ((isMeowing && state == State.MOVING) || meowTime != 0) {
+            meowTime += delta;
+            currentFrame = meowAnimation.getKeyFrame(meowTime);
             if (meowTime >= (0.6)){
                 meowTime = 0;
-                isMeowing = false;
             }
         }
+        // CLIMBING
+        else if (state == State.CLIMBING) {
 
-        //sit
-        else if(horizontalMovement == 0 && verticalMovement == 0 && !(state == State.JUMPING)){
-            if(nonMoveTime >= 10){
-                idleAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-                idleTime += Gdx.graphics.getDeltaTime();
-                frame = idleAnimation.getKeyFrame(idleTime);
-            }
-            else if(nonMoveTime >= 5){
-                nonMoveTime += Gdx.graphics.getDeltaTime();
-            }
-            else{
-                nonMoveTime += Gdx.graphics.getDeltaTime();
-                idleStandAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-                standTime += Gdx.graphics.getDeltaTime();
-                frame = idleStandAnimation.getKeyFrame(standTime);
-            }
-        } else {
-            frame = jumping_texture;
-            nonMoveTime = 0;
         }
+        // SITTING
+        else if (state == State.MOVING && horizontalMovement == 0 && verticalMovement == 0) {
+            stationaryTime += delta;
+            if (stationaryTime < 5) {
+                currentFrame = idleStandAnimation.getKeyFrame(stationaryTime);
+            }
+            else {
+                currentFrame = idleAnimation.getKeyFrame(stationaryTime);
+            }
+        }
+    }
 
-        Color dashColor = (new Color(0.68f, 0.85f, 0.9f, 1f));
+    /**
+     * Loops through <code>dashShadowQueue</code> and draws the dash shadows. Discards any dash shadow
+     * whose timer has expired.
+     *
+     * @param canvas Drawing context
+     */
+    private void drawDashShadows(GameCanvas canvas) {
         for (int i = 0; i < dashShadowQueue.size; i++) {
-            Map.Entry<Vector3, Integer> shadow = dashShadowQueue.removeFirst();
-            Vector3 drawData = shadow.getKey();
-            float directionFactor = drawData.z;
-            dashColor.a = shadow.getValue() / 10f;
-            canvas.draw(frame, dashColor, origin.x, origin.y, drawData.x-directionFactor*frame.getRegionWidth()/drawScale.x/2, drawData.y-frame.getRegionHeight()/drawScale.y/2, 0, directionFactor/drawScale.x, 1f/drawScale.y);
-            if (shadow.getValue() - 1 > 0) {
-                shadow.setValue(shadow.getValue() - 1);
+            DashShadow shadow = dashShadowQueue.removeFirst();
+            dashColor.a = shadow.timer / 10f;
+            canvas.draw(currentFrame, dashColor, origin.x, origin.y, shadow.x, shadow.y, 0, shadow.directionFactor/drawScale.x, 1f/drawScale.y);
+            if (shadow.timer - 1 > 0) {
+                shadow.timer--;
                 dashShadowQueue.addLast(shadow);
             }
         }
-
-        if (failedTicks < FAIL_ANIM_TICKS){
-            xOffset += ((float) (Math.sin(-failedTicks/2) * Math.exp(-failedTicks/30)))*drawScale.x/2;
-            Color c = new Color(1, 0 , 0, 0.5f - Math.abs(failedTicks - FAIL_ANIM_TICKS/2)/FAIL_ANIM_TICKS);
-            canvas.draw(frame, c, origin.x, origin.y, x - effect*frame.getRegionWidth()/drawScale.x/2 + xOffset, y-frame.getRegionHeight()/drawScale.y/2, 0, effect/drawScale.x, 1f/drawScale.y);
-        }
-
-        canvas.draw(frame, Color.WHITE, origin.x, origin.y, x - effect*frame.getRegionWidth()/drawScale.x/2, y-frame.getRegionHeight()/drawScale.y/2, 0, effect/drawScale.x, 1f/drawScale.y);
-
-
-//            canvas.draw(frame, c, origin.x, origin.y, x + xOffset, y + yOffset, getAngle());
-//            canvas.draw(frame, c, origin.x, origin.y, x + xOffset, y + yOffset, getAngle(), effect * flip, 1.0f);
     }
 
     /**
@@ -843,7 +964,33 @@ public class Cat extends CapsuleObstacle implements Movable {
     }
 
     public void failedSwitch() {
-        failedTicks = 0f;
+        failedSwitchTicks = 0f;
+    }
+
+    /**
+     * Inner data class to hold relevant information for dash shadows
+     */
+    private class DashShadow {
+        public float x;
+        public float y;
+        public float directionFactor;
+        public TextureRegion shadowTexture;
+        public int timer = 10;
+
+        /**
+         * Creates a new DashShadow object. We use the cat's current state to populate the shadow data,
+         * namely the cat's current position, heading, and texture.
+         * @param x Current drawing x position of the cat
+         * @param y Current drawing y position of the cat
+         * @param dir Current directionFactor of the cat (isFacingRight() ? -1 : 1)
+         * @param shadowTexture Current texture of the cat
+         */
+        public DashShadow(float x, float y, float dir, TextureRegion shadowTexture) {
+            this.x = x;
+            this.y = y;
+            this.directionFactor = dir;
+            this.shadowTexture = shadowTexture;
+        }
     }
 
 }

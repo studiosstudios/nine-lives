@@ -677,7 +677,6 @@ public class Cat extends CapsuleObstacle implements Movable {
      * Handles STATE of the cat All STATE transitions should be contained here
      */
     public void updateState() {
-        System.out.println("fixtures: " + groundFixtures + " doors:" + groundDoors);
         failedSwitchTicks = Math.min(FAILED_SWITCH_TICKS, failedSwitchTicks + 1);
         if (coyoteTimer < 6) {
             coyoteTimer--;

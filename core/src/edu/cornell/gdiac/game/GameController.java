@@ -110,6 +110,8 @@ public class GameController implements Screen {
     private float undoTime;
     /** The max value of undoTime such that undoing will undo to the previous checkpoint and not the current checkpoint.*/
     private static final float MAX_UNDO_TIME = 180f;
+    public StageController stageController = null;
+    public boolean paused = false;
 
     /**
      * PLAY: User has all controls and is in game
@@ -505,6 +507,7 @@ public class GameController implements Screen {
         nextLevel.pause();
         prevLevel.pause();
         undoTime = 0;
+        resume();
     }
 
     /**
@@ -720,11 +723,16 @@ public class GameController implements Screen {
 //				Thread.currentThread().interrupt();
 //			}
 //		}
-        if (preUpdate(delta)) {
-            update(delta); // This is the one that must be defined.
-            postUpdate(delta);
+        if (!paused) {
+            if (preUpdate(delta)) {
+                update(delta); // This is the one that must be defined.
+                postUpdate(delta);
+            }
         }
+        if (paused) { updateCamera(); }
         draw(delta);
+        if (paused && stageController != null) { stageController.render(delta); }
+
     }
 
     /**
@@ -748,6 +756,7 @@ public class GameController implements Screen {
      * Pausing happens when we switch game modes.
      */
     public void pause() {
+        paused = true;
         actionController.pause();
     }
 
@@ -757,7 +766,8 @@ public class GameController implements Screen {
      * This is usually when it regains focus.
      */
     public void resume() {
-        // TODO Auto-generated method stub
+        paused = false;
+        stageController = null;
     }
 
     /**

@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import edu.cornell.gdiac.assets.AssetDirectory;
 
 public class MainMenuStage extends StageWrapper{
@@ -12,6 +11,10 @@ public class MainMenuStage extends StageWrapper{
     private Actor levelSelectActor;
     private Actor settingsActor;
     private Actor exitButtonActor;
+    private Actor playCatpawActor;
+    private Actor levelCatpawActor;
+    private Actor settingsCatpawActor;
+    private Actor exitCatpawActor;
     private int playButtonState;
     private int levelSelectState;
     private int settingsState;
@@ -40,12 +43,35 @@ public class MainMenuStage extends StageWrapper{
      */
     @Override
     public void createActors() {
-        addActor(new Image(internal.getEntry( "background", Texture.class )));
-        addActor(internal.getEntry("mainMenuCat", Texture.class),-50,-65);
-        playButtonActor = addActor(internal.getEntry("playGame", Texture.class),buttonX, buttonY);
-        levelSelectActor = addActor(internal.getEntry("levelSelect", Texture.class),buttonX, buttonY-75);
-        settingsActor = addActor(internal.getEntry("settings", Texture.class),buttonX, buttonY-150);
-        exitButtonActor = addActor(internal.getEntry("exit", Texture.class),buttonX, buttonY-225);
+        Actor backgroundActor = addActor(internal.getEntry("background", Texture.class), 0,0);
+        backgroundActor.setScale(0.5f);
+//        addActor(internal.getEntry("mainMenuCat", Texture.class),-50,-65);
+        playButtonActor = addActor(internal.getEntry("playGame", Texture.class),buttonX+15+250, buttonY+25);
+        playButtonActor.setScale(0.5f);
+        levelSelectActor = addActor(internal.getEntry("levelSelect", Texture.class),buttonX+15+250-18, buttonY-25);
+        levelSelectActor.setScale(0.5f);
+        settingsActor = addActor(internal.getEntry("settings", Texture.class),buttonX+15+250+29, buttonY-75-16);
+        settingsActor.setScale(0.5f);
+        exitButtonActor = addActor(internal.getEntry("exit", Texture.class),buttonX+15+250+6, buttonY-75-16-50);
+        exitButtonActor.setScale(0.5f);
+
+        playCatpawActor = addActor(internal.getEntry("catpaw", Texture.class), buttonX+30, buttonY+25);
+        playCatpawActor.setScale(0.5f);
+        playCatpawActor.setVisible(false);
+        levelCatpawActor = addActor(internal.getEntry("catpaw", Texture.class), buttonX+30, buttonY-25-4);
+        levelCatpawActor.setScale(0.5f);
+        levelCatpawActor.setVisible(false);
+        settingsCatpawActor = addActor(internal.getEntry("catpaw", Texture.class), buttonX+30, buttonY-75-12);
+        settingsCatpawActor.setScale(0.5f);
+        settingsCatpawActor.setVisible(false);
+        exitCatpawActor = addActor(internal.getEntry("catpaw", Texture.class), buttonX+30, buttonY-75-16-50);
+        exitCatpawActor.setScale(0.5f);
+        exitCatpawActor.setVisible(false);
+
+        playButtonActor.addListener(createCatpawListener(playButtonActor, playCatpawActor));
+        levelSelectActor.addListener(createCatpawListener(levelSelectActor,levelCatpawActor));
+        settingsActor.addListener(createCatpawListener(settingsActor,settingsCatpawActor));
+        exitButtonActor.addListener(createCatpawListener(exitButtonActor,exitCatpawActor));
     }
 
     /**

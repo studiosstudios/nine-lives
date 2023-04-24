@@ -201,7 +201,7 @@ public class Cat extends CapsuleObstacle implements Movable {
     /**
      * The current spirit regions that the cat is inside
      */
-    private ObjectSet<SpiritRegion> spiritRegions;
+    private ObjectMap<String, Integer> spiritRegions;
     //endregion
     /*/////*/
 
@@ -475,9 +475,24 @@ public class Cat extends CapsuleObstacle implements Movable {
         }
     }
 
-    public ObjectSet<SpiritRegion> getSpiritRegions() {
+    public ObjectMap<String, Integer> getSpiritRegions() {
         return spiritRegions;
     }
+
+    public void addSpiritRegion(SpiritRegion sr){
+        String color = sr.getColorString();
+        spiritRegions.put(color, spiritRegions.get(color, 0) + 1);
+    }
+
+    public void removeSpiritRegion(SpiritRegion sr){
+        String color = sr.getColorString();
+        if (!spiritRegions.containsKey(color) || spiritRegions.get(color) <= 1) {
+            spiritRegions.remove(color);
+        } else {
+            spiritRegions.put(color, spiritRegions.get(color) - 1);
+        }
+    }
+
     //endregion
     /*/////*/
 
@@ -549,7 +564,7 @@ public class Cat extends CapsuleObstacle implements Movable {
         leftSensorName = "catLeftSensor";
         sensorShapes = new Array<>();
         groundFixtures = new ObjectSet<>();
-        spiritRegions = new ObjectSet<>();
+        spiritRegions = new ObjectMap<>();
         soundBuffer = new HashSet<>();
 
         normalTexture = tMap.get("cat");
@@ -658,6 +673,7 @@ public class Cat extends CapsuleObstacle implements Movable {
      * Handles STATE of the cat All STATE transitions should be contained here
      */
     public void updateState() {
+
         failedSwitchTicks = Math.min(FAILED_SWITCH_TICKS, failedSwitchTicks + 1);
         if (coyoteTimer < 6) {
             coyoteTimer--;

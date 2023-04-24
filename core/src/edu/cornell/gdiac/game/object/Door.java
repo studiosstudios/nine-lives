@@ -216,31 +216,38 @@ public class Door extends BoxObstacle implements Activatable {
         }
         float topY = y, botY = y;
         float topX = x, botX = x;
+        float midX = x, midY = y;
         float rotation = 0;
         switch (angle) {
-            case UP:
             case DOWN:
+                midY += height * (1 - ticks/totalTicks);
+            case UP:
                 topY += height/2f - 1;
                 botY -= height/2f;
                 topX -= (width+shrink)/2f;
                 botX -= (width+shrink)/2f;
+                midX = botX;
+                midY -= height/2f;
                 middle.setRegionHeight((int) (height * 1024* ticks/totalTicks));
                 for (float dx = 0; dx < width; dx++){
-                    if (isActive()) canvas.draw(middle, Color.WHITE, 0, 0, (botX+dx)*drawScale.x, botY*drawScale.y, rotation, textureScale.x, textureScale.y);
+                    if (isActive()) canvas.draw(middle, Color.WHITE, 0, 0, (midX+dx)*drawScale.x, midY*drawScale.y, rotation, textureScale.x, textureScale.y);
                     canvas.draw(top, Color.WHITE, 0, 0, (topX+dx)*drawScale.x, topY*drawScale.y, rotation, textureScale.x, textureScale.y);
                     canvas.draw(bottom, Color.WHITE, 0, 0, (botX+dx)*drawScale.x, botY*drawScale.y, rotation, textureScale.x, textureScale.y);
                 }
                 break;
-            case RIGHT:
             case LEFT:
+                midX += width * (1 - ticks/totalTicks);
+            case RIGHT:
                 rotation = (float) Math.PI/2*3;
                 topX += width/2f - 1;
                 botX -= width/2f;
                 topY += (height+shrink)/2f;
                 botY += (height+shrink)/2f;
+                midX -= width/2f;
+                midY = botY;
                 middle.setRegionHeight((int) (width * 1024* ticks/totalTicks));
                 for (float dy = 0; dy < height; dy++){
-                    if (isActive()) canvas.draw(middle, Color.WHITE, 0, 0, botX*drawScale.x, (botY+dy)*drawScale.y, rotation, textureScale.x, textureScale.y);
+                    if (isActive()) canvas.draw(middle, Color.WHITE, 0, 0, midX*drawScale.x, (midY+dy)*drawScale.y, rotation, textureScale.x, textureScale.y);
                     canvas.draw(top, Color.WHITE, 0, 0, topX*drawScale.x, (topY+dy)*drawScale.y, rotation, textureScale.x, textureScale.y);
                     canvas.draw(bottom, Color.WHITE, 0, 0, botX*drawScale.x, (botY+dy)*drawScale.y, rotation, textureScale.x, textureScale.y);
                 }

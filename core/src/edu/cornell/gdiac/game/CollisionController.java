@@ -123,7 +123,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                         actionController.die();
                     }
                     if (bd2 instanceof SpiritRegion){
-                        cat.getSpiritRegions().add((SpiritRegion) bd2);
+                        cat.addSpiritRegion((SpiritRegion) bd2);
                     }
                 }
 
@@ -141,7 +141,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                         db.setBurning(true);
                         db.addHazard();
                     } else if (bd2 instanceof SpiritRegion){
-                        db.getSpiritRegions().add((SpiritRegion) bd2);
+                        db.addSpiritRegion((SpiritRegion) bd2);
                     }
                 }
 
@@ -227,7 +227,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                     }
 
                     if (bd2 instanceof SpiritRegion){
-                        cat.getSpiritRegions().remove((SpiritRegion) bd2);
+                        cat.removeSpiritRegion((SpiritRegion) bd2);
                     }
 
                     if (bd2 instanceof Exit) {
@@ -247,7 +247,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                         db.removeHazard();
                     }
                     if (bd2 instanceof SpiritRegion){
-                        db.getSpiritRegions().remove((SpiritRegion) bd2);
+                        db.removeSpiritRegion((SpiritRegion) bd2);
                     }
                 }
 

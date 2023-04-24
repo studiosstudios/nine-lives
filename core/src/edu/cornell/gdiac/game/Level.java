@@ -1,7 +1,6 @@
 package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
@@ -823,7 +822,9 @@ public class Level {
                     propertiesMap.put(name, property.getFloat("value"));
                     break;
                 case "color":
-                    propertiesMap.put(name, Color.valueOf(property.getString("value")));
+                    //tiles parses colors as ARGB >:(
+                    String color = property.getString("value");
+                    propertiesMap.put(name, Color.valueOf("#" + color.substring(3) + color.substring(1, 3)));
                     break;
                 case "class":
                     switch (property.getString("propertytype")){
@@ -1104,7 +1105,7 @@ public class Level {
         float minDist = Float.MAX_VALUE;
         DeadBody nextdb = null;
         for (DeadBody db : deadBodyArray){
-            if (sharesElement(db.getSpiritRegions(), cat.getSpiritRegions())){
+            if (sharesKey(db.getSpiritRegions(), cat.getSpiritRegions())){
                 float dist = cat.getPosition().dst(db.getPosition());
                 if (dist < minDist){
                     minDist = dist;
@@ -1123,10 +1124,10 @@ public class Level {
      * @return    True if set 1 and set 2 share any element, or if both are empty.
      * @param <T> The type of elements in s1 and s2
      */
-    private <T> boolean sharesElement(ObjectSet<T> s1, ObjectSet<T> s2){
+    private <K, V> boolean sharesKey(ObjectMap<K, V> s1, ObjectMap<K, V> s2){
         if (s1.isEmpty() && s2.isEmpty()) return true;
-        for (T r : s1){
-            if (s2.contains(r)) return true;
+        for (K r : s1.keys()){
+            if (s2.containsKey(r)) return true;
         }
         return false;
     }

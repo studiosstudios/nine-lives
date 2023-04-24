@@ -1024,7 +1024,9 @@ public class Level {
         for (DeadBody db : deadBodyArray) {
             db.draw(canvas);
         }
-        if (cat != null) cat.draw(canvas);
+        if(cat != null && GameController.cameraGameState != GameController.CameraGameState.RESPAWN) {
+            cat.draw(canvas);
+        }
 
         for (SpiritRegion s : spiritRegionArray) {
             s.draw(canvas);

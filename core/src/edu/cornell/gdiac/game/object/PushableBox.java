@@ -17,6 +17,7 @@ public class PushableBox extends BoxObstacle implements Movable {
     /** Constants that are shared between all instances of this class */
     private static JsonValue objectConstants;
     private ObjectSet<Fixture> groundFixtures = new ObjectSet<>();
+    private ObjectSet<Door> groundDoors = new ObjectSet<>();
     private PolygonShape sensorShape;
     private final String groundSensorName;
     private float damping;
@@ -90,6 +91,8 @@ public class PushableBox extends BoxObstacle implements Movable {
     }
 
     public ObjectSet<Fixture> getGroundFixtures() { return groundFixtures; }
+
+    public ObjectSet<Door> getGroundDoors(){ return groundDoors; }
 
     public String getGroundSensorName(){ return groundSensorName; }
     @Override

@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.game.object;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -7,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
+import edu.cornell.gdiac.game.obstacle.BoxObstacle;
 import edu.cornell.gdiac.game.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.util.Direction;
 
@@ -15,7 +17,7 @@ import java.util.HashMap;
 /**
  * An activatable that changes dimension when activated.
  */
-public class Door extends PolygonObstacle implements Activatable {
+public class Door extends BoxObstacle implements Activatable {
 
     /** Current activation state */
     private boolean activated;
@@ -40,6 +42,14 @@ public class Door extends PolygonObstacle implements Activatable {
     /** y position of the door when fully closed */
     private final float y;
 
+    private TextureRegion top;
+
+    private TextureRegion bottom;
+
+    private TextureRegion middle;
+
+    private static float shrink;
+
     /**
      * Creates a new Door object.
      *
@@ -51,12 +61,15 @@ public class Door extends PolygonObstacle implements Activatable {
      * @param textureScale   Texture scale for rescaling texture
      */
     public Door(float width, float height, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
-        super(new float[]{0, 0, width, 0, width, height, 0, height});
-        this.width = width;
-        this.height = height;
-        setTexture(tMap.get("steel"));
-        setTextureScale(textureScale);
+        super(width, height);
+//
+//        setTexture(tMap.get("door"));
+        TextureRegion[][] tiles = tMap.get("door").split(tMap.get("door").getTexture(), 1024, 1024);
+        top = tiles[0][1];
+        middle = tiles[0][0];
+        bottom = tiles[0][2];
         setDrawScale(scale);
+        setTextureScale(textureScale);
         setBodyType(BodyDef.BodyType.StaticBody);
         setDensity(objectConstants.getFloat( "density", 0.0f ));
         setFriction(objectConstants.getFloat( "friction", 0.0f ));
@@ -65,11 +78,24 @@ public class Door extends PolygonObstacle implements Activatable {
         angle = Direction.angleToDir((int) properties.get("closeAngle", 0));
         totalTicks = (int) properties.get("totalTicks", 60);
         ticks = (int) totalTicks;
-        x =(float) properties.get("x")+ objectConstants.get("offset").getFloat(0);
-        y = (float) properties.get("y") + objectConstants.get("offset").getFloat(1) - height;
+        closing = 0;
+        x =(float) properties.get("x") + objectConstants.get("offset").getFloat(0) + width/2f;
+        y = (float) properties.get("y") + objectConstants.get("offset").getFloat(1) - height/2f;
+        switch (angle) {
+            case UP:
+            case DOWN:
+                width -= shrink;
+                break;
+            case RIGHT:
+            case LEFT:
+                height -= shrink;
+                break;
+        }
+        this.width = width;
+        this.height = height;
+        setDimension(width, height);
         setX(x);
         setY(y);
-        closing = 0;
         initTiledActivations(properties);
     }
 
@@ -102,26 +128,29 @@ public class Door extends PolygonObstacle implements Activatable {
         if (ticks >= totalTicks){
             ticks = (int) totalTicks;
             closing = 0;
+            return;
         }
         switch (angle) {
             case DOWN:
-                setY(y + height * (1-ticks / totalTicks));
-                setDimension(width,  height * ticks / totalTicks, true, width, 0);
+                setY(y + height * (1-ticks / totalTicks)/2f);
+                setDimension(getWidth(),  height * ticks / totalTicks);
                 break;
             case UP:
-                setY(y - height * (1-ticks / totalTicks));
-                setDimension(width,  height * ticks / totalTicks, true, width, height);
+                setY(y - height * (1-ticks / totalTicks)/2f);
+                setDimension(getWidth(),  height * ticks / totalTicks);
                 break;
             case LEFT:
-                setX(x + width * (1-ticks / totalTicks));
-                setDimension(width * ticks / totalTicks,  height, true, 0, height);
+                setX(x + width * (1-ticks / totalTicks)/2f);
+                setDimension(width * ticks / totalTicks,  getHeight());
                 break;
             case RIGHT:
-                setX(x - width * (1-ticks / totalTicks));
-                setDimension(width * ticks / totalTicks,  height, true, width, height);
+                setX(x - width * (1-ticks / totalTicks)/2f);
+                setDimension(width * ticks / totalTicks,  getHeight());
                 break;
         }
     }
+
+    public boolean isMoving(){ return closing != 0; }
 
 
     /**
@@ -188,6 +217,46 @@ public class Door extends PolygonObstacle implements Activatable {
         if (isActive()){
             super.draw(canvas);
         }
+        float topY = y, botY = y;
+        float topX = x, botX = x;
+        float midX = x, midY = y;
+        float rotation = 0;
+        switch (angle) {
+            case DOWN:
+                midY += height * (1 - ticks/totalTicks);
+            case UP:
+                topY += height/2f - 1;
+                botY -= height/2f;
+                topX -= (width+shrink)/2f;
+                botX -= (width+shrink)/2f;
+                midX = botX;
+                midY -= height/2f;
+                middle.setRegionHeight((int) (height * 1024* ticks/totalTicks));
+                for (float dx = 0; dx < width; dx++){
+                    if (isActive()) canvas.draw(middle, Color.WHITE, 0, 0, (midX+dx)*drawScale.x, midY*drawScale.y, rotation, textureScale.x, textureScale.y);
+                    canvas.draw(top, Color.WHITE, 0, 0, (topX+dx)*drawScale.x, topY*drawScale.y, rotation, textureScale.x, textureScale.y);
+                    canvas.draw(bottom, Color.WHITE, 0, 0, (botX+dx)*drawScale.x, botY*drawScale.y, rotation, textureScale.x, textureScale.y);
+                }
+                break;
+            case LEFT:
+                midX += width * (1 - ticks/totalTicks);
+            case RIGHT:
+                rotation = (float) Math.PI/2*3;
+                topX += width/2f - 1;
+                botX -= width/2f;
+                topY += (height+shrink)/2f;
+                botY += (height+shrink)/2f;
+                midX -= width/2f;
+                midY = botY;
+                middle.setRegionHeight((int) (width * 1024* ticks/totalTicks));
+                for (float dy = 0; dy < height; dy++){
+                    if (isActive()) canvas.draw(middle, Color.WHITE, 0, 0, midX*drawScale.x, (midY+dy)*drawScale.y, rotation, textureScale.x, textureScale.y);
+                    canvas.draw(top, Color.WHITE, 0, 0, topX*drawScale.x, (topY+dy)*drawScale.y, rotation, textureScale.x, textureScale.y);
+                    canvas.draw(bottom, Color.WHITE, 0, 0, botX*drawScale.x, (botY+dy)*drawScale.y, rotation, textureScale.x, textureScale.y);
+                }
+                break;
+        }
+
     }
 
     @Override
@@ -197,7 +266,10 @@ public class Door extends PolygonObstacle implements Activatable {
      * Sets the shared constants for all instances of this class/
      * @param constants JSON storing the shared constants.
      */
-    public static void setConstants(JsonValue constants) {objectConstants = constants;}
+    public static void setConstants(JsonValue constants) {
+        objectConstants = constants;
+        shrink = constants.getFloat("shrink");
+    }
 
     public ObjectMap<String, Object> storeState(){
         ObjectMap<String, Object> stateMap = super.storeState();

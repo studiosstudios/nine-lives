@@ -123,7 +123,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                         actionController.die();
                     }
                     if (bd2 instanceof SpiritRegion){
-                        cat.getSpiritRegions().add((SpiritRegion) bd2);
+                        cat.addSpiritRegion((SpiritRegion) bd2);
                     }
                 }
 
@@ -141,13 +141,18 @@ public class CollisionController implements ContactListener, ContactFilter {
                         db.setBurning(true);
                         db.addHazard();
                     } else if (bd2 instanceof SpiritRegion){
-                        db.getSpiritRegions().add((SpiritRegion) bd2);
+                        db.addSpiritRegion((SpiritRegion) bd2);
                     }
                 }
 
                 //Add ground fixture to moveable
                 if (bd1 instanceof Movable && !fix2.isSensor() && bd1 != bd2 && bd2 != cat && ((Movable) bd1).getGroundSensorName().equals(fd1)){
-                    ((Movable) bd1).getGroundFixtures().add(fix2);
+                    if (bd2 instanceof Door) {
+                        System.out.println(bd1 + " added " + bd2);
+                        ((Movable) bd1).getGroundDoors().add((Door) bd2);
+                    } else {
+                        ((Movable) bd1).getGroundFixtures().add(fix2);
+                    }
                 }
 
                 // TODO: fix collisions when obstacles collide with top and bottom
@@ -211,8 +216,13 @@ public class CollisionController implements ContactListener, ContactFilter {
                 if (bd1 == cat) {
 
                     if (cat.getGroundSensorName().equals(fd1) && cat != bd2) {
-                        cat.getGroundFixtures().remove(fix2);
-                        if (cat.getGroundFixtures().size == 0) {
+                        if (!(bd2 instanceof Door)) {
+                            cat.getGroundFixtures().remove(fix2);
+                        } else {
+                            cat.getGroundDoors().remove((Door) bd2);
+                        }
+                        //temporary fix because doors are constantly recreated in the world to change size
+                        if (cat.getGroundFixtures().size == 0 && cat.getGroundDoors().size == 0) {
                             cat.setGrounded(false);
                         }
                     }
@@ -227,7 +237,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                     }
 
                     if (bd2 instanceof SpiritRegion){
-                        cat.getSpiritRegions().remove((SpiritRegion) bd2);
+                        cat.removeSpiritRegion((SpiritRegion) bd2);
                     }
 
                     if (bd2 instanceof Exit) {
@@ -247,7 +257,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                         db.removeHazard();
                     }
                     if (bd2 instanceof SpiritRegion){
-                        db.getSpiritRegions().remove((SpiritRegion) bd2);
+                        db.removeSpiritRegion((SpiritRegion) bd2);
                     }
                 }
 
@@ -259,7 +269,11 @@ public class CollisionController implements ContactListener, ContactFilter {
 //        }
 
                 if (bd1 instanceof Movable && !fix2.isSensor() && bd1 != bd2 && bd2 != cat && ((Movable) bd1).getGroundSensorName().equals(fd1)) {
-                    ((Movable) bd1).getGroundFixtures().remove(fix2);
+                    if (bd2 instanceof Door) {
+                        ((Movable) bd1).getGroundDoors().remove((Door) bd2);
+                    } else {
+                        ((Movable) bd1).getGroundFixtures().remove(fix2);
+                    }
                 }
 
 

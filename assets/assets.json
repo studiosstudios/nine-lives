@@ -10,6 +10,11 @@
           "wrapU": "repeated",
           "wrapV": "repeated"
         },
+      "door": {
+        "file": "platform/doors.png",
+        "wrapU": "repeated",
+        "wrapV": "repeated"
+      },
         "goal":   "shared/goaldoor.png",
         "cat":  "platform/cat.png",
         "sit": "platform/sit.png",

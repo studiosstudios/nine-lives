@@ -128,6 +128,7 @@ public class Door extends BoxObstacle implements Activatable {
         if (ticks >= totalTicks){
             ticks = (int) totalTicks;
             closing = 0;
+            return;
         }
         switch (angle) {
             case DOWN:
@@ -148,6 +149,8 @@ public class Door extends BoxObstacle implements Activatable {
                 break;
         }
     }
+
+    public boolean isMoving(){ return closing != 0; }
 
 
     /**

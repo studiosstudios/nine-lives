@@ -25,6 +25,10 @@ public interface Movable {
     ObjectSet<Fixture> getGroundFixtures();
 
     /**
+     * TEMPORARY FIX TO DOOR COLLISIONS
+     */
+    ObjectSet<Door> getGroundDoors();
+    /**
      * Returns the name of the ground sensor
      *
      * This is used by ContactListener

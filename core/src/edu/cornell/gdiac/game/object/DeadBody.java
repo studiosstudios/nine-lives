@@ -41,6 +41,8 @@ public class DeadBody extends CapsuleObstacle implements Movable {
     private Animation<TextureRegion> animation;
     private float time;
     private ObjectSet<Fixture> groundFixtures = new ObjectSet<>();
+    private ObjectSet<Door> groundDoors = new ObjectSet<>();
+
     public static final String groundSensorName = "deadBodyGround";
     public static final String centerSensorName = "deadBodyCenter";
     public static final String catBodyName = "deadCatBody";
@@ -352,6 +354,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
     public boolean isMovable() {return true;}
 
     public ObjectSet<Fixture> getGroundFixtures() { return groundFixtures; }
+    public ObjectSet<Door> getGroundDoors() { return groundDoors; }
 
     @Override
     public String getGroundSensorName() { return groundSensorName; }

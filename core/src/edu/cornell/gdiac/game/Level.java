@@ -40,6 +40,8 @@ public class Level {
 
     /** Tiles of level */
     protected Tiles tiles;
+    /** Climbables of level */
+    protected Climbable climbables;
     /** All the objects in the world. */
     protected PooledList<Obstacle> objects  = new PooledList<>();
     /** Queue for adding objects */
@@ -397,6 +399,7 @@ public class Level {
 
         JsonValue layers = tiledMap.get("layers");
         JsonValue tileData = layers.get(0);
+        JsonValue climbableData = null;
 
         tileSize = tiledMap.getInt("tilewidth");
         int levelWidth = tiledMap.getInt("width");
@@ -410,6 +413,10 @@ public class Level {
                 if (layer.getString("name").equals("exits")){
                     loadExitPositions(layer, tileSize, levelHeight);
                 }
+            }
+            else if (layer.getString("name").equals("climbables")) {
+                System.out.println("found climbables");
+                climbableData = layer;
             }
         }
         if (next != null) {
@@ -425,13 +432,18 @@ public class Level {
         String biome = tiledMap.get("properties").get(0).getString("value");
 
         TextureRegion tileset = new TextureRegion();
+        TextureRegion tileset_climbable = new TextureRegion();
 
         int fID = 1;
+        int fID_climbable = 1;
         if (biome.equals("metal")) {
             tileset = textureRegionAssetMap.get("metal_tileset");
             for (JsonValue tilesetData : tiledMap.get("tilesets")){
                 if (tilesetData.getString("source").endsWith("metal-walls.tsx")){
                     fID = tilesetData.getInt("firstgid");
+                }
+                else if (tilesetData.getString("source").endsWith("climbables.tsx")){
+                    fID_climbable = tilesetData.getInt("firstgid");
                 }
             }
         }
@@ -442,9 +454,20 @@ public class Level {
                 if (tilesetData.getString("source").endsWith("metal-walls.tsx")){
                     fID = tilesetData.getInt("firstgid");
                 }
+                else if (tilesetData.getString("source").endsWith("climbables.tsx")){
+                    fID_climbable = tilesetData.getInt("firstgid");
+                }
             }
         }
+
         tiles = new Tiles(tileData, 1024, levelWidth, levelHeight, tileset, bounds, fID, new Vector2(1/32f, 1/32f));
+
+        if (climbableData != null) {
+            System.out.println("CLIMBABLE DATAAAAA");
+            climbables = new Climbable(climbableData, 1024, levelWidth, levelHeight,
+                    textureRegionAssetMap.get("climbable_tileset"), bounds, fID_climbable, new Vector2(1/32f, 1/32f));
+        }
+
         if (cat != null) saveState();
     }
 
@@ -1014,6 +1037,8 @@ public class Level {
         }
 
         if (tiles != null) tiles.draw(canvas);
+
+        if (climbables != null) climbables.draw(canvas);
 
         for (Activator a : activators) {
             a.draw(canvas);

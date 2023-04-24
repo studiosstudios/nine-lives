@@ -45,6 +45,7 @@
         "idle_anim": "platform/idle.png",
         "idle_anim_stand": "platform/standing_idle.png",
         "metal_tileset": "tiled/metal_tileset.png",
+        "climbable_tileset": "tiled/climbable_tileset.png",
         "steel": "shared/steeltile.png",
         "deadCat2" : "platform/deadCat2.png"
     },

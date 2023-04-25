@@ -91,6 +91,8 @@ public class Level {
 
     private Array<LevelState> levelStates;
 
+    private int levelNum;
+
     /**
      * Returns the bounding rectangle for the physics world
      * <br><br>
@@ -371,13 +373,19 @@ public class Level {
         }
     }
 
+    private class InvalidTiledJSON extends RuntimeException {
+        private InvalidTiledJSON(String errorMessage) {
+            super("Error loading Tiled level " + levelNum + ": " + errorMessage);
+        }
+    }
+
     /**
      * Populates this level from data from a Tiled file.
      *
      * @param tiledMap Tiled Json
      */
-     public void populateTiled(JsonValue tiledMap){
-        populateTiled(tiledMap, 0, 0, returnY, null);
+     public void populateTiled(JsonValue tiledMap, int levelNum) {
+        populateTiled(tiledMap, 0, 0, levelNum, returnY, null);
     }
 
     /**
@@ -391,7 +399,14 @@ public class Level {
      * @param next        True if we are progressing from the previous level (i.e to the right),
      *                    null if we should ignore offsets
      */
-    public void populateTiled(JsonValue tiledMap, float xOffset, float yOffset, float prevExitY, Boolean next){
+    public void populateTiled(JsonValue tiledMap, float xOffset, float yOffset, int levelNum, float prevExitY, Boolean next) {
+
+        this.levelNum = levelNum;
+
+        if (tiledMap == null) throw new InvalidTiledJSON("missing Tiled JSON");
+
+        if (tiledMap.getBoolean("infinite")) throw new InvalidTiledJSON("map size cannot be infinite");
+
         world.setGravity( new Vector2(0,tiledMap.getFloat("gravity",-14.7f)) );
         activationRelations = new HashMap<>();
         levelStates = new Array<>();
@@ -759,17 +774,21 @@ public class Level {
      * @param tileSize      Tile size in the Tiled JSON
      * @param levelHeight   Level height in Box2D units
      */
-        private void populateCat(JsonValue data, int tileSize, int levelHeight, boolean shouldPopulate){
-        JsonValue objects = data.get("objects");
-        JsonValue catJV = objects.get(0);
-        readProperties(catJV, tileSize, levelHeight);
-        cat = new Cat(propertiesMap, textureRegionAssetMap, scale);
-        respawnPos = cat.getPosition();
-        startRespawnPos = respawnPos;
-        if (shouldPopulate) {
-            addObject(cat);
-        } else {
-            cat = null;
+    private void populateCat(JsonValue data, int tileSize, int levelHeight, boolean shouldPopulate){
+        try {
+            JsonValue objects = data.get("objects");
+            JsonValue catJV = objects.get(0);
+            readProperties(catJV, tileSize, levelHeight);
+            cat = new Cat(propertiesMap, textureRegionAssetMap, scale);
+            respawnPos = cat.getPosition();
+            startRespawnPos = respawnPos;
+            if (shouldPopulate) {
+                addObject(cat);
+            } else {
+                cat = null;
+            }
+        } catch (NullPointerException e){
+            throw new InvalidTiledJSON("level must contain a cat");
         }
     }
 
@@ -857,11 +876,11 @@ public class Level {
                             propertiesMap.put(name, v);
                             break;
                         default:
-                            throw new IllegalArgumentException("unexpected class: " + property.getString("type"));
+                            throw new InvalidTiledJSON("unexpected class: " + property.getString("type"));
                     }
                     break;
                 default:
-                    throw new IllegalArgumentException("unexpected property type: " + property.getString("type"));
+                    throw new InvalidTiledJSON("unexpected property type: " + property.getString("type"));
             }
         }
     }

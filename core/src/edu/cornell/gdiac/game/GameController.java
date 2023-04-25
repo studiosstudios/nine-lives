@@ -327,7 +327,7 @@ public class GameController implements Screen {
         nextLevel.dispose();
         if (levelNum < numLevels) {
             nextJV = tiledJSON(levelNum + 1);
-            nextLevel.populateTiled(nextJV, currLevel.bounds.x + currLevel.bounds.width, currLevel.bounds.y, currLevel.goalY, true);
+            nextLevel.populateTiled(nextJV, currLevel.bounds.x + currLevel.bounds.width, currLevel.bounds.y, levelNum + 1, currLevel.goalY, true);
         }
         initCurrLevel(true);
         collisionController.setDidChange(true);
@@ -357,7 +357,7 @@ public class GameController implements Screen {
         prevLevel.dispose();
         if (levelNum > 1) {
             prevJV = tiledJSON(levelNum - 1);
-            prevLevel.populateTiled(prevJV, currLevel.bounds.x, currLevel.bounds.y, currLevel.returnY, false);
+            prevLevel.populateTiled(prevJV, currLevel.bounds.x, currLevel.bounds.y, levelNum - 1, currLevel.returnY, false);
         }
 
         initCurrLevel(true);
@@ -478,14 +478,14 @@ public class GameController implements Screen {
         setRet(false);
 
         levelJV = tiledJSON(levelNum);
-        currLevel.populateTiled(levelJV);
+        currLevel.populateTiled(levelJV, levelNum);
         if (levelNum < numLevels) {
             nextJV = tiledJSON(levelNum + 1);
-            nextLevel.populateTiled(nextJV, currLevel.bounds.x + currLevel.bounds.width, currLevel.bounds.y, currLevel.goalY, true);
+            nextLevel.populateTiled(nextJV, currLevel.bounds.x + currLevel.bounds.width, currLevel.bounds.y, levelNum + 1, currLevel.goalY, true);
         }
         if (levelNum > 1) {
             prevJV = tiledJSON(levelNum - 1);
-            prevLevel.populateTiled(prevJV, currLevel.bounds.x, currLevel.bounds.y, currLevel.returnY, false);
+            prevLevel.populateTiled(prevJV, currLevel.bounds.x, currLevel.bounds.y, levelNum - 1, currLevel.returnY, false);
         }
 
         initCurrLevel(false);

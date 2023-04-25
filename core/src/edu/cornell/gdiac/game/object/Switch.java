@@ -29,7 +29,7 @@ public class Switch extends Activator {
      * @param textureScale   Texture scale for rescaling texture
      */
     public Switch(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
-        super(properties, "switch_top",tMap, scale, textureScale);
+        super(properties, "button_top",tMap, scale, textureScale);
         prevPressed = false;
         setName("switch");
     }

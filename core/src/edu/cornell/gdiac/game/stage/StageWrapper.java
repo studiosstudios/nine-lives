@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.game.stage;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -58,5 +59,35 @@ public abstract class StageWrapper extends Stage {
         public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) { return listenerTouchDown(event,x,y,pointer,button); }
         @Override
         public void touchUp(InputEvent event, float x, float y, int pointer, int button) { listenerTouchUp(event,x,y,pointer,button); }
+    }
+
+    public InputListener createCatpawListener(Actor actor, Actor catpaw) {
+        return new InputListener() {
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                actor.setColor(Color.LIGHT_GRAY);
+                catpaw.setColor(Color.LIGHT_GRAY);
+                catpaw.setVisible(true);
+            }
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                actor.setColor(Color.WHITE);
+                catpaw.setColor(Color.WHITE);
+                catpaw.setVisible(false);
+            }
+        };
+    }
+
+    public InputListener createHoverListener(Actor actor) {
+        return new InputListener() {
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                actor.setColor(Color.LIGHT_GRAY);
+            }
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                actor.setColor(Color.WHITE);
+            }
+        };
     }
 }

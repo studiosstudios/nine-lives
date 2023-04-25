@@ -22,6 +22,7 @@ public class Camera {
     private float y;
     /** Rate at which camera glides towards destination coordinates**/
     private final float CAMERA_GLIDE_NORMAL = 0.075f;
+    /** Rate at which camera glides towards dead body **/
     private final float CAMERA_GLIDE_SWITCH_BODY = 0.025f;
     private float cameraGlideRate;
     /** Gameplay zoom **/

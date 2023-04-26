@@ -8,7 +8,7 @@
   },
   "spikes" : {
     "solid_scale": [1, 0.95],
-    "pointy_scale": [0.9, 0.65],
+    "pointy_scale": [0.75, 0.65],
     "center_scale": [1, 0.65],
     "friction": 5,
     "offset": [

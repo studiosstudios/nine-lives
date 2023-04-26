@@ -10,8 +10,13 @@
           "wrapU": "repeated",
           "wrapV": "repeated"
         },
+      "platforms" : {
+        "file":  "platform/moving_platform.png",
+        "wrapU": "repeated",
+        "wrapV": "repeated"
+      },
       "door": {
-        "file": "platform/doors2.png",
+        "file": "platform/doors.png",
         "wrapU": "repeated",
         "wrapV": "repeated"
       },
@@ -27,7 +32,7 @@
         "barrier": "platform/barrier.png",
         "bullet":  "platform/bullet.png",
         "button_anim": "platform/button_anim.png",
-        "spikes": "platform/spikes2.png",
+        "spikes": "platform/spikes.png",
         "button": "platform/button.png",
         "flamethrower": "platform/flamethrower.png",
         "flame": "platform/flame.png",

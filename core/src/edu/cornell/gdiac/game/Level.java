@@ -551,10 +551,9 @@ public class Level {
      */
     private void populatePlatforms(JsonValue data, int tileSize, int levelHeight){
         JsonValue objects = data.get("objects");
-        textureScaleCache.set(1, 1);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
-            Platform platform = new Platform(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
+            Platform platform = new Platform(propertiesMap, textureRegionAssetMap, scale, 128);
             loadTiledActivatable(platform);
         }
     }
@@ -617,7 +616,7 @@ public class Level {
      */
     private void populateSpikes(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
-        textureScaleCache.set(1/64f, 1/64f);
+        textureScaleCache.set(1/4f, 1/4f);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
             Spikes spikes = new Spikes(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);

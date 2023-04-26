@@ -217,10 +217,7 @@ public class Door extends BoxObstacle implements Activatable {
     @Override
     public void draw(GameCanvas canvas){
         //dont worry i hate this too
-        float topY = y, botY = y;
-        float topX = x, botX = x;
-        float midX = x, midY = y;
-        float rotation = 0;
+        float topY, botY, topX, botX, midX, midY, rotation;
         float scale = 32f/textureSize;
 
         float length = angle == Direction.UP || angle == Direction.DOWN ? height : width;
@@ -237,20 +234,17 @@ public class Door extends BoxObstacle implements Activatable {
             if (angle == Direction.UP) {
                 rotation = 0;
                 botY = y - height/2f;
-                midY = botY;
                 topY = y + midHeight - height/2f;
                 topX = x - (width+shrink)/2f;
-                midX = topX;
-                botX = topX;
             } else {
                 rotation = (float) Math.PI;
                 botY = y + height/2f;
-                midY = botY;
                 topY = y - midHeight + height/2f;
                 topX = x - (width+shrink)/2f + 1;
-                midX = topX;
-                botX = topX;
             }
+            midY = botY;
+            midX = topX;
+            botX = topX;
             for (float dx = 0; dx < width; dx++){
                 if (isActive()) {
                     canvas.draw(top, Color.WHITE, 0, 0, (topX+dx)*drawScale.x, topY*drawScale.y, rotation, scale, scale);
@@ -262,20 +256,17 @@ public class Door extends BoxObstacle implements Activatable {
             if (angle == Direction.RIGHT) {
                 rotation = (float) Math.PI * 3/2;
                 topY = y - (height+shrink)/2f + 1;
-                botY = topY;
-                midY = topY;
                 topX = x + midHeight - width/2f;
                 midX = x - width/2f;
-                botX = midX;
             } else {
                 rotation = (float) Math.PI / 2;
                 topY = y - (height+shrink)/2f;
-                botY = topY;
-                midY = topY;
                 topX = x - midHeight + width/2f;
                 midX = x + width/2f;
-                botX = midX;
             }
+            botY = topY;
+            midY = topY;
+            botX = midX;
             for (float dy = 0; dy < height; dy++){
                 if (isActive()) {
                     canvas.draw(top, Color.WHITE, 0, 0, topX * drawScale.x, (topY + dy) * drawScale.y, rotation, scale, scale);

@@ -672,7 +672,7 @@ public class Level {
         textureScaleCache.set(1/32f, 1/32f);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
-            Door door = new Door(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
+            Door door = new Door(propertiesMap, textureRegionAssetMap, scale, 128);
             loadTiledActivatable(door);
         }
     }

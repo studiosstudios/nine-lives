@@ -11,7 +11,7 @@
           "wrapV": "repeated"
         },
       "door": {
-        "file": "platform/doors.png",
+        "file": "platform/doors2.png",
         "wrapU": "repeated",
         "wrapV": "repeated"
       },

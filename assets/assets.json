@@ -57,21 +57,14 @@
     "jsons"  : {
         "constants": "platform/constants.json",
         "controls": "platform/controls.json",
-        "level1": "platform/level1.json",
-        "level2": "platform/level2.json",
-        "level3": "platform/level3.json",
-        "level4": "platform/level4.json",
-        "level5": "platform/level_testplayground.json",
         "tiledSuperJump": "tiled/super-jump.json",
-      "tiledLevel2old": "tiled/tiledlevel2.json",
-      "tiledLevel3old": "tiled/spikes-testing.json",
-      "tiledLevel4old": "tiled/level-switch2.json",
-      "tiledLevel5": "tiled/level-switch3.json",
       "tiledLevelTutorial": "tiled/tiledLevelTutorial1.json",
-      "tiledLevel1": "tiled/tiledLevelEasy.json",
-      "tiledLevel2": "tiled/tiledLevelMedium1.json",
+      "tiledLevel1": "tiled/spikes-deaths-easy.json",
+      "tiledLevel2": "tiled/level-beta-med1.json",
       "tiledLevel3": "tiled/body-switching-chain-medium.json",
-      "tiledLevel4": "tiled/tiledLevelHard.json"
+      "tiledLevel4": "tiled/super-jump.json",
+      "tiledLevel5": "tiled/level-beta-hard.json",
+      "tiledLevel6": "tiled/party-room.json"
     },
     "sounds" : {
         "jump" : "platform/jumpCELESTE.wav",

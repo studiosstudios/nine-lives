@@ -429,7 +429,6 @@ public class Level {
                 }
             }
             else if (layer.getString("name").equals("climbables")) {
-                System.out.println("found climbables");
                 climbableData = layer;
             }
         }
@@ -477,7 +476,6 @@ public class Level {
         tiles = new Tiles(tileData, 1024, levelWidth, levelHeight, tileset, bounds, fID, new Vector2(1/32f, 1/32f));
 
         if (climbableData != null) {
-            System.out.println("CLIMBABLE DATAAAAA");
             climbables = new Climbable(climbableData, 1024, levelWidth, levelHeight,
                     textureRegionAssetMap.get("climbable_tileset"), bounds, fID_climbable, new Vector2(1/32f, 1/32f));
         }

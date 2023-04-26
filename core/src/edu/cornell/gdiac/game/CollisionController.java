@@ -148,7 +148,6 @@ public class CollisionController implements ContactListener, ContactFilter {
                 //Add ground fixture to moveable
                 if (bd1 instanceof Movable && !fix2.isSensor() && bd1 != bd2 && bd2 != cat && ((Movable) bd1).getGroundSensorName().equals(fd1)){
                     if (bd2 instanceof Door) {
-                        System.out.println(bd1 + " added " + bd2);
                         ((Movable) bd1).getGroundDoors().add((Door) bd2);
                     } else {
                         ((Movable) bd1).getGroundFixtures().add(fix2);

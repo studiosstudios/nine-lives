@@ -1,5 +1,7 @@
 package edu.cornell.gdiac.game;
 
+import box2dLight.PointLight;
+import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -89,6 +91,8 @@ public class Level {
     private ObjectMap<String, Object> propertiesMap = new ObjectMap<>();
 
     private Array<LevelState> levelStates;
+
+    private RayHandler rayHandler;
 
     /**
      * Returns the bounding rectangle for the physics world
@@ -246,6 +250,15 @@ public class Level {
     public void setWorld(World world) { this.world = world; }
 
     /**
+     * Sets the level's ray handler for Box2DLights
+     * <br>
+     * Note that currently a new Ray Handler does not do anything unless the world's objects are
+     * created with their associated lights linked to the new ray handler.
+     * @param rayHandler new ray handler that this world should use
+     */
+    public void setRayHandler(RayHandler rayHandler) { this.rayHandler = rayHandler; }
+
+    /**
      * Sets whether the player died in the level
      *
      * @param died the value to set died to
@@ -300,11 +313,12 @@ public class Level {
      * @param scale Drawing scale
      * @param numLives Number of lives
      */
-    public Level(World world, Vector2 scale, int numLives) {
+    public Level(World world, Vector2 scale, int numLives, RayHandler rayHandler) {
         this.world  = world;
         this.bounds = new Rectangle();
         this.scale = scale;
         this.numLives = numLives;
+        this.rayHandler = rayHandler;
         maxLives = numLives;
         complete = false;
         failed = false;
@@ -743,6 +757,9 @@ public class Level {
         readProperties(catJV, tileSize, levelHeight);
         cat = new Cat(propertiesMap, textureRegionAssetMap, scale);
         respawnPos = cat.getPosition();
+        System.out.println("Associating new light with cat");
+
+//        (new PointLight(rayHandler, 100, Color.WHITE, 100, 150, 150)).attachToBody(cat.getBody());
         startRespawnPos = respawnPos;
         if (shouldPopulate) {
             addObject(cat);

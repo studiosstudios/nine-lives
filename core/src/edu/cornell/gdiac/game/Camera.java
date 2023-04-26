@@ -88,6 +88,7 @@ public class Camera {
             isGliding = true;
         }
         camera.position.set(x, y, 0);
+        System.out.println("Updated: "+camera.position+" "+camera);
         camera.update();
     }
 

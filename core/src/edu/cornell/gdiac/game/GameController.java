@@ -1,5 +1,7 @@
 package edu.cornell.gdiac.game;
 
+import box2dLight.PointLight;
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -9,6 +11,7 @@ import com.badlogic.gdx.audio.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.game.object.*;
 
@@ -132,6 +135,11 @@ public class GameController implements Screen {
     /** The color of the flash animation after resetting/undoing */
     private Color flashColor = new Color(1, 1, 1, 0);
 
+    /** RayHandler that takes care of Box2DLights */
+    private RayHandler rayHandler;
+
+    private PointLight tempPointLight;
+
 
     /**
      * Creates a new game world with the default values.
@@ -156,12 +164,18 @@ public class GameController implements Screen {
         debug = false;
         setRet(false);
         world = new World(gravity, true);
+//        RayHandler.useDiffuseLight(true);
+//        rayHandler = new RayHandler(world);
+//        rayHandler.setAmbientLight(0.9f);
+//        rayHandler.setAmbientLight(0.35f, 0.35f, 0.35f, 0.01f);
+
+//        tempPointLight = new PointLight(rayHandler, 100, Color.WHITE, 200, 0, 0);
 
         this.numLevels = numLevels;
         levelNum = 1;
         levels = new Level[3];
         for (int i = 0; i < 3; i++){
-            levels[i] = new Level(world, scale, MAX_NUM_LIVES);
+            levels[i] = new Level(world, scale, MAX_NUM_LIVES, rayHandler);
         }
         currLevelIndex = 1;
 
@@ -455,7 +469,7 @@ public class GameController implements Screen {
      * properly dispose the level so that the level reset is clean.
      */
     protected void init(int levelNum) {
-
+        System.out.println("Executing init");
         this.levelNum = levelNum;
 
         prevLevel.dispose();
@@ -464,6 +478,10 @@ public class GameController implements Screen {
         Vector2 gravity = new Vector2( world.getGravity() );
         world.dispose();
         world = new World(gravity, true);
+        rayHandler = new RayHandler(world);
+        rayHandler.setAmbientLight(0.8f);
+        tempPointLight = new PointLight(rayHandler, 100, Color.WHITE, 100, 400, 400);
+
 
         justRespawned = true;
         justReset = true;
@@ -472,6 +490,9 @@ public class GameController implements Screen {
         prevLevel.setWorld(world);
         currLevel.setWorld(world);
         nextLevel.setWorld(world);
+        prevLevel.setRayHandler(rayHandler);
+        currLevel.setRayHandler(rayHandler);
+        nextLevel.setRayHandler(rayHandler);
         world.setContactListener(collisionController);
         world.setContactFilter(collisionController);
         collisionController.setReturn(false);
@@ -598,6 +619,7 @@ public class GameController implements Screen {
         updateCamera();
     }
 
+
     /**
      * Processes physics
      * <br><br>
@@ -723,6 +745,7 @@ public class GameController implements Screen {
 //				Thread.currentThread().interrupt();
 //			}
 //		}
+        System.out.println("before:" + canvas.getCamera().getCamera().position);
         if (!paused) {
             if (preUpdate(delta)) {
                 update(delta); // This is the one that must be defined.
@@ -732,7 +755,32 @@ public class GameController implements Screen {
         if (paused) { updateCamera(); }
         draw(delta);
         if (paused && stageController != null) { stageController.render(delta); }
+        System.out.println("after:" +canvas.getCamera().getCamera().position);
+//        rayHandler.setCombinedMatrix(canvas.getCamera().getCamera());
+        OrthographicCamera c = canvas.getCamera().getCamera();
+        canvas.getCamera().getCamera().update();
+        System.out.println("Drawing in GameController:" +c.position+" "+c);
+        rayHandler.setCombinedMatrix(
+                c.combined.cpy(),
+                c.position.x,
+                c.position.y,
+                c.viewportWidth,
+                c.viewportHeight
+        );
+//        Vector3 projected = c.unproject(new Vector3(400, 400, 0));
+        Vector2 newPos = new Vector2(800, 800).sub(canvas.getCamera().getX(), canvas.getCamera().getY());
+        tempPointLight.setPosition(newPos);
 
+//        System.out.println(c.position+" "+c); this should work idk why it doesnt work
+//        System.out.println(canvas.getCamera().getX() + " " + canvas.getCamera().getY());
+
+
+//        Viewport vp = canvas.getViewport();
+//        System.out.println(Math.round(Gdx.graphics.getBackBufferScale()));
+//        int backBufferScale = Math.round(Gdx.graphics.getBackBufferScale());
+//        rayHandler.useCustomViewport(vp.getScreenX() * backBufferScale, vp.getScreenY() * backBufferScale,
+//                                    vp.getScreenWidth() * backBufferScale, vp.getScreenHeight() * backBufferScale);
+        rayHandler.updateAndRender();
     }
 
     /**

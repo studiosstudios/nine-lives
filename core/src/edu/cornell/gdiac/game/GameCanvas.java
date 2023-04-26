@@ -347,6 +347,10 @@ public class GameCanvas {
 		}
 		blend = state;
 	}
+
+	public Viewport getViewport() {
+		return extendView;
+	}
 	
 	/**
 	 * Clear the screen, so we can start a new animation frame

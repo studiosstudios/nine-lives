@@ -109,7 +109,7 @@ public class GameController implements Screen {
     /** Ticks since the player has undone */
     private float undoTime;
     /** The max value of undoTime such that undoing will undo to the previous checkpoint and not the current checkpoint.*/
-    private static final float MAX_UNDO_TIME = 180f;
+    private static final float MAX_UNDO_TIME = 120f;
     public StageController stageController = null;
     public boolean paused = false;
 
@@ -327,7 +327,7 @@ public class GameController implements Screen {
         nextLevel.dispose();
         if (levelNum < numLevels) {
             nextJV = tiledJSON(levelNum + 1);
-            nextLevel.populateTiled(nextJV, currLevel.bounds.x + currLevel.bounds.width, currLevel.bounds.y, currLevel.goalY, true);
+            nextLevel.populateTiled(nextJV, currLevel.bounds.x + currLevel.bounds.width, currLevel.bounds.y, levelNum + 1, currLevel.goalY, true);
         }
         initCurrLevel(true);
         collisionController.setDidChange(true);
@@ -357,7 +357,7 @@ public class GameController implements Screen {
         prevLevel.dispose();
         if (levelNum > 1) {
             prevJV = tiledJSON(levelNum - 1);
-            prevLevel.populateTiled(prevJV, currLevel.bounds.x, currLevel.bounds.y, currLevel.returnY, false);
+            prevLevel.populateTiled(prevJV, currLevel.bounds.x, currLevel.bounds.y, levelNum - 1, currLevel.returnY, false);
         }
 
         initCurrLevel(true);
@@ -393,7 +393,8 @@ public class GameController implements Screen {
                 "background", "flame_anim", "roboMob",
                 "spirit_anim", "spirit_photon", "spirit_photon_cat", "spirit_region",
                 "meow_anim", "idle_anim", "idle_anim_stand",
-                "metal_tileset", "steel","burnCat", "deadCat2","button_base","button_top","switch_top"};
+                 "button_base","button_top","switch_top",
+                "metal_tileset", "climbable_tileset", "steel","burnCat", "deadCat2", "door", "platforms"};
 
         for (String n : names){
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
@@ -478,14 +479,14 @@ public class GameController implements Screen {
         setRet(false);
 
         levelJV = tiledJSON(levelNum);
-        currLevel.populateTiled(levelJV);
+        currLevel.populateTiled(levelJV, levelNum);
         if (levelNum < numLevels) {
             nextJV = tiledJSON(levelNum + 1);
-            nextLevel.populateTiled(nextJV, currLevel.bounds.x + currLevel.bounds.width, currLevel.bounds.y, currLevel.goalY, true);
+            nextLevel.populateTiled(nextJV, currLevel.bounds.x + currLevel.bounds.width, currLevel.bounds.y, levelNum + 1, currLevel.goalY, true);
         }
         if (levelNum > 1) {
             prevJV = tiledJSON(levelNum - 1);
-            prevLevel.populateTiled(prevJV, currLevel.bounds.x, currLevel.bounds.y, currLevel.returnY, false);
+            prevLevel.populateTiled(prevJV, currLevel.bounds.x, currLevel.bounds.y, levelNum - 1, currLevel.returnY, false);
         }
 
         initCurrLevel(false);
@@ -662,6 +663,8 @@ public class GameController implements Screen {
         if(cameraGameState == CameraGameState.PLAY){
             panTime = 0;
             respawnDelay = 0;
+            undoTime++;
+
             input.setDisableAll(false);
             float x_pos = currLevel.getCat().getPosition().x*scale.x;
             float y_pos = currLevel.getCat().getPosition().y*scale.y;
@@ -715,14 +718,14 @@ public class GameController implements Screen {
     @Override
     public void render(float delta) {
         //FOR DEBUGGING
-//		delta = 1/60f;
-//		if (Gdx.input.isKeyPressed(Input.Keys.F)){
-//			try {
-//				Thread.sleep(500);
-//			} catch (InterruptedException e) {
-//				Thread.currentThread().interrupt();
-//			}
-//		}
+		delta = 1/60f;
+		if (Gdx.input.isKeyPressed(Input.Keys.F)){
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		}
         if (!paused) {
             if (preUpdate(delta)) {
                 update(delta); // This is the one that must be defined.

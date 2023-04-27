@@ -23,6 +23,8 @@ public class NineLives extends Game implements ScreenListener {
 	/** The WorldController that contains all LevelControllers*/
 	private GameController controller;
 
+	private final int TOTAL_LEVELS = 6;
+
 	/**
 	 * Creates a new game from the configuration settings.
 	 *
@@ -115,9 +117,9 @@ public class NineLives extends Game implements ScreenListener {
 	public void exitScreen(Screen screen, int exitCode) {
 		if (screen == menu && exitCode == 0) {
 			menu.loadAssets();
-			startGame(5, 1);
+			startGame(TOTAL_LEVELS, 1);
 		} else if (screen == menu && exitCode == 69) {
-			startGame(5, menu.getSelectedLevel());
+			startGame(TOTAL_LEVELS, menu.getSelectedLevel());
 		} else if (screen == menu && exitCode == 25) {
 			controller.resume();
 			setScreen(controller);

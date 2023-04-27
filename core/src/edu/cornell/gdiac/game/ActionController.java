@@ -55,6 +55,7 @@ public class ActionController {
     private float closestFraction;
     private Vector2 startPointCache = new Vector2();
     private Vector2 endPointCache = new Vector2();
+    private ObjectMap<DeadBody, Float> hitDeadbodies = new ObjectMap<>();
 
     /**
      * Creates and initialize a new instance of a ActionController
@@ -366,6 +367,7 @@ public class ActionController {
      */
     private void rayCastLaser(Laser l){
         l.beginRayCast();
+        hitDeadbodies.clear();
 
         //initial beam
         closestFraction = 1;
@@ -407,8 +409,12 @@ public class ActionController {
         if (level.getCat().getBody().getFixtureList().contains(rayCastFixture, true)){
             die();
         }
-        if (rayCastFixture != null && rayCastFixture.getBody().getUserData() instanceof DeadBody){
-            ((DeadBody) rayCastFixture.getBody().getUserData()).setTouchingLaser(true);
+
+        //check deadbodies
+        for (DeadBody db : hitDeadbodies.keys()){
+            if (hitDeadbodies.get(db) < closestFraction) {
+                db.setTouchingLaser(true);
+            }
         }
     }
 
@@ -541,7 +547,7 @@ public class ActionController {
         public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
             Obstacle obs = (Obstacle) fixture.getBody().getUserData();
             if (fixture.getUserData() != null && fixture.getUserData().equals(DeadBody.catBodyName)) {
-                ((DeadBody) (obs)).setTouchingLaser(true);
+                hitDeadbodies.put((DeadBody) fixture.getBody().getUserData(), fraction);
             } else if ( fraction < closestFraction && (!fixture.isSensor() || obs instanceof Cat)) {
                 closestFraction = fraction;
                 rayCastPoint.set(point);

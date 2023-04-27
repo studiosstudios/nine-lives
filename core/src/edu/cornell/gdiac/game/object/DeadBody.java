@@ -36,11 +36,13 @@ public class DeadBody extends CapsuleObstacle implements Movable {
     /** The offset of the solid hitbox of the dead body */
     private Vector2 drawOffset;
     /** The set of spirit regions that this dead body is inside */
-    private ObjectSet<SpiritRegion> spiritRegions;
+    private ObjectMap<String, Integer> spiritRegions;
     private TextureRegion[][] spriteFrames;
     private Animation<TextureRegion> animation;
     private float time;
     private ObjectSet<Fixture> groundFixtures = new ObjectSet<>();
+    private ObjectSet<Door> groundDoors = new ObjectSet<>();
+
     public static final String groundSensorName = "deadBodyGround";
     public static final String centerSensorName = "deadBodyCenter";
     public static final String catBodyName = "deadCatBody";
@@ -83,19 +85,6 @@ public class DeadBody extends CapsuleObstacle implements Movable {
      */
     public boolean isSwitchable(){
         return hazardsTouching == 0 && !touchingLaser;
-    }
-
-    /**
-     * If the dead body is in the same spirit region.
-     * @return true if the dead body is in the same spirit region
-     */
-    public boolean inSameSpiritRegion(ObjectSet<SpiritRegion> otherRegions){
-        for (SpiritRegion region : otherRegions) {
-            if (spiritRegions.contains(region)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -151,7 +140,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
         burnTicks = 0;
         burning = false;
         faceRight = true;
-        spiritRegions = new ObjectSet<>();
+        spiritRegions = new ObjectMap<>();
         //create centre sensor (for fixing to spikes)
 
         setName("deadBody");
@@ -280,7 +269,21 @@ public class DeadBody extends CapsuleObstacle implements Movable {
     /**
      * @return The set of spirit regions that this dead body is inside
      */
-    public ObjectSet<SpiritRegion> getSpiritRegions() { return spiritRegions; }
+    public ObjectMap<String, Integer> getSpiritRegions() { return spiritRegions; }
+
+
+    public void addSpiritRegion(SpiritRegion sr){
+        String color = sr.getColorString();
+        spiritRegions.put(color, spiritRegions.get(color, 0) + 1); }
+
+    public void removeSpiritRegion(SpiritRegion sr){
+        String color = sr.getColorString();
+        if (!spiritRegions.containsKey(color) || spiritRegions.get(color) <= 1) {
+            spiritRegions.remove(color);
+        } else {
+            spiritRegions.put(color, spiritRegions.get(color) - 1);
+        }
+    }
 
     /** Destroy all joints connected to this deadbody */
     public void destroyJoints(World world){
@@ -351,6 +354,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
     public boolean isMovable() {return true;}
 
     public ObjectSet<Fixture> getGroundFixtures() { return groundFixtures; }
+    public ObjectSet<Door> getGroundDoors() { return groundDoors; }
 
     @Override
     public String getGroundSensorName() { return groundSensorName; }

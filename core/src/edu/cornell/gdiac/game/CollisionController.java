@@ -125,6 +125,9 @@ public class CollisionController implements ContactListener, ContactFilter {
                     if (bd2 instanceof SpiritRegion){
                         cat.addSpiritRegion((SpiritRegion) bd2);
                     }
+                    if (bd2 instanceof Goal) {
+                        level.setGoal(true);
+                    }
                 }
 
                 //dead body collisions

@@ -54,6 +54,12 @@
     "solid_height_scale": 0.5,
     "solid_width_scale": 1
   },
+  "goal": {
+    "base_offset": [0, 1],
+    "offset": [0.5, -1],
+    "solid_height_scale": 1,
+    "solid_width_scale": 1
+  },
   "deadBody": {
     "friction": 1,
     "density" : 1,

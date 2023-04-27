@@ -37,6 +37,9 @@ public class Level {
     private Exit returnExit;
     protected float returnY;
 
+    /** Reference to the goal object */
+    private Goal goal;
+
     /** Tiles of level */
     protected Tiles tiles;
     /** Climbables of level */
@@ -122,7 +125,6 @@ public class Level {
         return world;
     }
 
-
     /**
      * Returns a reference to the player cat
      *
@@ -131,6 +133,34 @@ public class Level {
     public Cat getCat() {
         return cat;
     }
+
+    /**
+     * Returns a reference to the current checkpoint
+     *
+     * @return a reference to the current checkpoint
+     */
+    public Checkpoint getCheckpoint() {return currCheckpoint;}
+
+    /**
+     * Returns a reference to the array of activators
+     *
+     * @return a reference to the activators
+     */
+    public Array<Activator> getActivators() { return activators; }
+
+    /**
+     * Returns a reference to the array of lasers
+     *
+     * @return a reference to the lasers
+     */
+    public Array<Laser> getLasers() { return lasers; }
+
+    /**
+     * Returns a reference to the goal object
+     *
+     * @return a reference to the goal
+     */
+    public Goal getGoal() { return goal; }
 
     /**
      * Sets the cat for this level. This is used for level switching.
@@ -147,17 +177,6 @@ public class Level {
      * Removes the cat from this level. This is used for level switching.
      */
     public void removeCat() { objects.remove(cat); cat = null; }
-
-    public Checkpoint getCheckpoint() {return currCheckpoint;}
-
-    /**
-     * Returns a reference to the array of activators
-     *
-     * @return a reference to the activators
-     */
-    public Array<Activator> getActivators() { return activators; }
-
-    public Array<Laser> getLasers() { return lasers; }
 
     /**
      * Returns a reference to the hashmap of activation relations
@@ -333,6 +352,14 @@ public class Level {
      */
     public void setComplete(boolean value) {
         complete = value;
+    }
+
+    /**
+     * Sets goal active to be some value
+     * @param val to set active
+     */
+    public void setGoal(Boolean val) {
+        goal.setActive(val);
     }
 
     /**
@@ -522,6 +549,8 @@ public class Level {
                 populateCat(obstacleData, tileSize, levelHeight, populateCat);
             } else if (name.equals("exits")) {
                 populateExits(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("goal")) {
+                populateGoal(obstacleData, tileSize, levelHeight);
             }
         }
     }
@@ -761,6 +790,17 @@ public class Level {
             addObject(exit);
             if (exit.exitType() == Exit.ExitType.GOAL) goalExit = exit;
             if (exit.exitType() == Exit.ExitType.RETURN) returnExit = exit;
+        }
+    }
+
+    private void populateGoal(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        textureScaleCache.set(1/32f, 1/32f);
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize, levelHeight);
+            Goal goal_obj = new Goal(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
+            goal = goal_obj;
+            addObject(goal);
         }
     }
 

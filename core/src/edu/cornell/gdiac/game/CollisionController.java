@@ -119,13 +119,13 @@ public class CollisionController implements ContactListener, ContactFilter {
                         level.updateCheckpoints(((Checkpoint) bd2), true);
                     }
                     if (bd2 instanceof Mob){
-//                    System.out.println("hit a mob");
                         actionController.die();
                     }
                     if (bd2 instanceof SpiritRegion){
                         cat.addSpiritRegion((SpiritRegion) bd2);
                     }
                     if (bd2 instanceof Goal) {
+                        //TODO: if not active then collect dead bodies with action controller
                         level.setGoal(true);
                     }
                 }

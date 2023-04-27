@@ -291,7 +291,7 @@ public class GameCanvas {
 
 	/** Activates the ExtendViewport for drawing to canvas */
 	public void applyViewport() {
-		extendView.apply(true);
+		extendView.apply(false);
 	}
 
 	/**

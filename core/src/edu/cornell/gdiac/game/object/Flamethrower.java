@@ -17,7 +17,7 @@ import edu.cornell.gdiac.game.obstacle.ComplexObstacle;
 
 import java.util.HashMap;
 
-public class Flamethrower extends ComplexObstacle implements Activatable, Movable {
+public class Flamethrower extends ComplexObstacle implements Activatable {
     /** Constants that are shared between all instances of this class*/
     private static JsonValue objectConstants;
     /** The flame object of this flamethrower*/
@@ -34,11 +34,6 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
     /** If this flamethrower can be pushed */
     private final boolean pushable;
     public static final String flameSensorName = "flameSensor";
-
-    private ObjectSet<Fixture> groundFixtures = new ObjectSet<>();
-    private ObjectSet<Door> groundDoors = new ObjectSet<>();
-    private PolygonShape groundSensorShape;
-    private final String groundSensorName;
 
     /**
      * Creates a new Flamethrower object.
@@ -87,7 +82,6 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
 
         bodies.add(flameBase);
         bodies.add(flame);
-        groundSensorName = "flameBaseGroundSensor";
         initTiledActivations(properties);
     }
 
@@ -127,19 +121,6 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
         if (!activated){
             deactivated(world);
         }
-
-        //ground sensor
-        FixtureDef sensorDef = new FixtureDef();
-        sensorDef.friction = 0;
-        sensorDef.isSensor = true;
-        Vector2 location = new Vector2(0, -flameBase.getDimension().y/2f);
-        groundSensorShape = new PolygonShape();
-        groundSensorShape.setAsBox(flameBase.getDimension().x/2.5f, 0.1f, location, 0.0f);
-        sensorDef.shape = groundSensorShape;
-
-        flameBase.getBody().setUserData(this);
-        Fixture sensorFixture = flameBase.getBody().createFixture( sensorDef );
-        sensorFixture.setUserData(groundSensorName);
         return true;
     }
 
@@ -191,13 +172,6 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
      */
     public static void setConstants(JsonValue constants) { objectConstants = constants; }
 
-    public boolean isMovable() {return pushable;}
-
-    public ObjectSet<Fixture> getGroundFixtures() { return groundFixtures; }
-    public ObjectSet<Door> getGroundDoors() { return groundDoors; }
-
-    public String getGroundSensorName(){ return groundSensorName; }
-
     public ObjectMap<String, Object> storeState(){
         ObjectMap<String, Object> stateMap = new ObjectMap<>();
         stateMap.put("basePosition", flameBase.getPosition().cpy());
@@ -217,12 +191,6 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
         markDirty(true);
     }
 
-    public void drawDebug(GameCanvas canvas) {
-        super.drawDebug(canvas);
-        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
-        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
-        canvas.drawPhysics(groundSensorShape,Color.RED,flameBase.getX()-xTranslate, flameBase.getY()-yTranslate,getAngle(),drawScale.x,drawScale.y);
-    }
 
     /**
      * Represents a flame that a flamethrower can produce.

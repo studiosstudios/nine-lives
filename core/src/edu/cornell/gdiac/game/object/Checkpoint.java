@@ -73,7 +73,7 @@ public class Checkpoint extends BoxObstacle
         setX((float) properties.get("x") + objectConstants.get("offset").getFloat(0));
         setY((float) properties.get("y") + objectConstants.get("offset").getFloat(1));
         setSensor(true);
-        setBodyType(BodyDef.BodyType.StaticBody);
+        setBodyType(properties.containsKey("attachName") ? BodyDef.BodyType.DynamicBody : BodyDef.BodyType.StaticBody);
         Vector2 solidCenter = new Vector2(0,0);
         sensorShape = new PolygonShape();
         sensorShape.setAsBox(getWidth() / 2 * objectConstants.getFloat("solid_width_scale"),

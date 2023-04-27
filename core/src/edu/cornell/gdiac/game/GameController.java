@@ -435,7 +435,11 @@ public class GameController implements Screen {
      */
     public void respawn(boolean cameraMovement) {
         currLevel.setDied(false);
-        currLevel.getCat().setPosition(currLevel.getRespawnPos());
+        if (currLevel.getCheckpoint() != null) {
+            currLevel.getCat().setPosition(currLevel.getCheckpoint().getRespawnPosition());
+        } else {
+            currLevel.getCat().setPosition(currLevel.getRespawnPos());
+        }
         currLevel.getCat().setFacingRight(true);
         currLevel.getCat().setJumpPressed(false);
         currLevel.getCat().setGrounded(true);

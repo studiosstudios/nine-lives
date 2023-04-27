@@ -3,6 +3,7 @@ package edu.cornell.gdiac.game;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.game.object.*;
@@ -88,10 +89,14 @@ public class Level {
     private Vector2 startRespawnPos;
     /** properties map cache */
     private ObjectMap<String, Object> propertiesMap = new ObjectMap<>();
-
     private Array<LevelState> levelStates;
-
     private int levelNum;
+    /** map of names of the obstacles defined from Tiled JSON */
+    private ObjectMap<String, Obstacle> objectNames = new ObjectMap<>();
+    /** map of obstacle to name of obstacle to attach joint to */
+    private ObjectMap<Obstacle, String> objectJoints = new ObjectMap<>();
+    /** joints added between obstacles in this level */
+    private Array<Joint> joints = new Array<>();
 
     /**
      * Returns the bounding rectangle for the physics world
@@ -347,7 +352,6 @@ public class Level {
         shouldSave = shouldSave && c != currCheckpoint;
         currCheckpoint = c;
         currCheckpoint.setCurrent(true);
-        respawnPos = currCheckpoint.getRespawnPosition();
         if (shouldSave) saveState();
     }
 
@@ -480,7 +484,20 @@ public class Level {
                     textureRegionAssetMap.get("climbable_tileset"), bounds, fID_climbable, new Vector2(1/32f, 1/32f));
         }
 
+        //make joints
+        for (Obstacle obj : objectJoints.keys()) {
+            WeldJointDef jointDef = new WeldJointDef();
+            jointDef.bodyA = obj.getBody();
+            jointDef.bodyB = objectNames.get(objectJoints.get(obj)).getBody();
+            jointDef.localAnchorB.set(jointDef.bodyB.getLocalPoint(jointDef.bodyA.getPosition()));
+            jointDef.collideConnected = false;
+            Joint joint = world.createJoint(jointDef);
+            joints.add(joint);
+        }
+
         if (cat != null) saveState();
+
+        propertiesMap.clear();
     }
 
     /**
@@ -802,6 +819,7 @@ public class Level {
         propertiesMap.put("height", objectJV.getFloat("height")/tileSize);
         float angle = (360 - objectJV.getFloat("rotation")) % 360;
         propertiesMap.put("rotation", angle);
+        propertiesMap.put("name", objectJV.getString("name"));
 
         //this is because tiled rotates about the top left corner
         float x, y;
@@ -889,19 +907,26 @@ public class Level {
      * and sets the level to not completed and not failed.
      */
     public void dispose() {
+        for (Joint j : joints){
+            world.destroyJoint(j);
+        }
         for(Obstacle obj : objects) {
             obj.deactivatePhysics(world);
         }
         cat = null;
         addQueue.clear();
         objects.clear();
+        joints.clear();
         activators.clear();
         lasers.clear();
         deadBodyArray.clear();
         activatables.clear();
         mobArray.clear();
         spiritRegionArray.clear();
+        objectNames.clear();
+        objectJoints.clear();
         numLives = maxLives;
+        tiles = null;
         currCheckpoint = null;
         climbables = null;
         setComplete(false);
@@ -935,6 +960,12 @@ public class Level {
         assert inBounds(obj) : "Object is not in bounds";
         objects.add(obj);
         obj.activatePhysics(world);
+        if (propertiesMap.containsKey("name")) {
+            objectNames.put((String) propertiesMap.get("name"), obj);
+        }
+        if (propertiesMap.containsKey("attachName")) {
+            objectJoints.put(obj, (String) propertiesMap.get("attachName"));
+        }
     }
 
     /**

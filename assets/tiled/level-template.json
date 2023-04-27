@@ -550,7 +550,7 @@
                         {
                          "name":"id",
                          "type":"string",
-                         "value":""
+                         "value":"switch1"
                         }, 
                         {
                          "name":"type",

@@ -137,7 +137,8 @@ public class CollisionController implements ContactListener, ContactFilter {
                         cat.getSpiritRegions().add((SpiritRegion) bd2);
                     }
                     if (bd2 instanceof CameraTile){
-                        camera.setZoom(true, ((CameraTile) bd2).getZoom());
+                        System.out.println("begin contact");
+                        camera.setDefaultZoom(((CameraTile) bd2).getZoom());
                     }
                 }
 
@@ -246,6 +247,11 @@ public class CollisionController implements ContactListener, ContactFilter {
 
                     if (bd2 instanceof Exit) {
                         didChange = false;
+                    }
+
+                    if (bd2 instanceof CameraTile) {
+                        System.out.println("end contact");
+                        System.out.println(fd1);
                     }
                 }
 

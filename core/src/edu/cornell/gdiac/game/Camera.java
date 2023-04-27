@@ -25,22 +25,24 @@ public class Camera {
     /** Rate at which camera glides towards dead body **/
     private final float CAMERA_GLIDE_SWITCH_BODY = 0.025f;
     private float cameraGlideRate;
-    /** Gameplay zoom **/
-    private float zoom;
+    /** Default gameplay zoom (not necessarily CAMERA_ZOOM) **/
+    private float defaultZoom;
     /** Whether camera is moving **/
     private boolean isGliding;
+    /** Default camera zoom when no other specified zoom */
+    public static final float CAMERA_ZOOM = 0.6f;
+
 
     /**
      * Wrapper for the OrthographicCamera class that takes into account dynamic level metadata.
      * @param viewportWidth width of visible window
      * @param viewportHeight height of visible window
-     * @param zoom zoom relative to viewport sizes
      */
-    public Camera(float viewportWidth, float viewportHeight, float zoom){
+    public Camera(float viewportWidth, float viewportHeight){
         camera = new OrthographicCamera(viewportWidth, viewportHeight);
         camera.setToOrtho(false, viewportWidth, viewportHeight);
-        camera.zoom = zoom;
-        this.zoom = zoom;
+        camera.zoom = CAMERA_ZOOM;
+        defaultZoom = camera.zoom;
         this.viewportWidth = viewportWidth;
         this.viewportHeight = viewportHeight;
         x = camera.position.x;
@@ -120,10 +122,17 @@ public class Camera {
             camera.zoom = Float.min(scaleX,Float.min(scaleY, Float.min(1, zoom)));
         }
         else{
-            camera.zoom = this.zoom;
+            camera.zoom = defaultZoom;
         }
     }
 
+    /**
+     * Set default zoom
+     * @param zoom the value to zoom the camera to
+     */
+    public void setDefaultZoom(float zoom){
+        defaultZoom = zoom;
+    }
     /**
      * Camera movement when switching bodies
      * @param deadX x-coordinate of dead cat

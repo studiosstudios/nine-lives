@@ -709,7 +709,7 @@ public class GameController implements Screen {
                 cameraGameState = CameraGameState.PLAY;
             }
         }
-        System.out.println(canvas.getCamera().getCamera().zoom);
+//        System.out.println(canvas.getCamera().getCamera().zoom);
     }
     @Override
     public void render(float delta) {

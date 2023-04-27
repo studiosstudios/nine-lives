@@ -104,7 +104,6 @@ public class GameCanvas {
 	private Vector2 vertex;
 	/** Cache object to handle raw textures */
 	private TextureRegion holder;
-	private final float CAMERA_ZOOM = 0.6f;
 
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
@@ -124,8 +123,8 @@ public class GameCanvas {
 		region = new TextureRegion(new Texture("white.png"));
 		
 		// Set the projection matrix (for proper scaling)
-		camera = new Camera(STANDARD_WIDTH, STANDARD_HEIGHT, CAMERA_ZOOM);
-		extendView = new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, camera.getCamera());
+		camera = new Camera(STANDARD_WIDTH, STANDARD_HEIGHT);
+		extendView = new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT, camera.getCamera());
 		extendView.apply(true);
 		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
 		debugRender.setProjectionMatrix(camera.getCamera().combined);

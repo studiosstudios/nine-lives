@@ -23,9 +23,10 @@ public class CameraTile extends BoxObstacle {
      * @param scale World scale
      */
     public CameraTile(ObjectMap<String, Object> properties, Vector2 scale){
-        super(32/scale.x, 32/scale.y);
+        super((float)properties.get("width"), (float)properties.get("height"));
         this.zoom = (float) properties.get("zoom");
         setSensor(true);
+        setDrawScale(scale);
         setX((float) properties.get("x") + getDimension().x/2);
         setY((float) properties.get("y") - getDimension().y/2);
     }

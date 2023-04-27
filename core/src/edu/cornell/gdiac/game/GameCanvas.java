@@ -1194,9 +1194,9 @@ public class GameCanvas {
 			Gdx.app.error("GameCanvas", "Cannot draw without active begin", new IllegalStateException());
 			return;
 		}
-		float xTranslate = camera.centerLevelTranslation().x;
-		float yTranslate = camera.centerLevelTranslation().y;
-		Path2 path = pathFactory.makeLine(xTranslate, yTranslate, (p2.x-p1.x)*sx+xTranslate, (p2.y-p1.y)*sy+yTranslate);
+//		float xTranslate = camera.centerLevelTranslation().x;
+//		float yTranslate = camera.centerLevelTranslation().y;
+		Path2 path = pathFactory.makeLine(0, 0, (p2.x-p1.x)*sx+0, (p2.y-p1.y)*sy+0);
 		extruder.set(path);
 		extruder.calculate(thickness);
 		spriteBatch.setColor(color);

@@ -487,6 +487,8 @@ public class Level {
                 populateCat(obstacleData, tileSize, levelHeight, populateCat);
             } else if (name.equals("exits")) {
                 populateExits(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("cameraRegions")) {
+                populateCameraRegions(obstacleData, tileSize, levelHeight);
             }
         }
     }
@@ -727,6 +729,22 @@ public class Level {
             addObject(exit);
             if (exit.exitType() == Exit.ExitType.GOAL) goalExit = exit;
             if (exit.exitType() == Exit.ExitType.RETURN) returnExit = exit;
+        }
+    }
+
+    /**
+     * Populates the cameraRegions for this level.
+     *
+     * @param data          Tiled JSON data for all exits
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
+    private void populateCameraRegions(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize, levelHeight);
+            CameraTile cameraTile = new CameraTile(propertiesMap, scale);
+            addObject(cameraTile);
         }
     }
 
@@ -1045,16 +1063,16 @@ public class Level {
     public void drawDebug(GameCanvas canvas){
         //draw grid
         Color lineColor = new Color(0.8f, 0.8f, 0.8f, 1);
-        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/scale.x;
-        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/scale.y;
+//        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/scale.x;
+//        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/scale.y;
         for (int x = 0; x < bounds.width; x++) {
-            Vector2 p1 = new Vector2(x-xTranslate, 0-yTranslate);
-            Vector2 p2 = new Vector2(x-xTranslate, bounds.height-yTranslate);
+            Vector2 p1 = new Vector2(x, 0);
+            Vector2 p2 = new Vector2(x, bounds.height);
             canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
         }
         for (int y = 0; y < bounds.height; y++) {
-            Vector2 p1 = new Vector2(0-xTranslate, y-yTranslate);
-            Vector2 p2 = new Vector2(bounds.width-xTranslate, y-yTranslate);
+            Vector2 p1 = new Vector2(0, y);
+            Vector2 p2 = new Vector2(bounds.width, y);
             canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
         }
         for (Obstacle obj : objects) {

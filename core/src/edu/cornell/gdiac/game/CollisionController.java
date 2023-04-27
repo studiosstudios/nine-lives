@@ -16,6 +16,9 @@ public class CollisionController implements ContactListener, ContactFilter {
     /** Whether the player just progressed to a new level */
     private boolean didChange;
 
+    /** Camera to set zoom for CameraRegions*/
+    private Camera camera;
+
     /**
      * Creates and initialize a new instance of a CollisionController
      *
@@ -58,6 +61,14 @@ public class CollisionController implements ContactListener, ContactFilter {
      * @param value given to didNext
      */
     public void setDidChange(boolean value) { didChange = value; }
+
+    /**
+     * Set camera for current instance of collisionController
+     * @param camera camera for current canvas
+     */
+    public void setCamera(Camera camera){
+        this.camera = camera;
+    }
 
     /**
      * Callback method for the start of a collision
@@ -124,6 +135,9 @@ public class CollisionController implements ContactListener, ContactFilter {
                     }
                     if (bd2 instanceof SpiritRegion){
                         cat.getSpiritRegions().add((SpiritRegion) bd2);
+                    }
+                    if (bd2 instanceof CameraTile){
+                        camera.setZoom(true, ((CameraTile) bd2).getZoom());
                     }
                 }
 

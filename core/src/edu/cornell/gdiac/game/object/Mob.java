@@ -241,15 +241,15 @@ public class Mob extends CapsuleObstacle {
      */
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
-        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
-        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+//        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+//        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
         // Draw detectorRay
         if (detectorRay.getPoints().size > 1) {
-            canvas.drawLineDebug(detectorRay.getPoints().get(0).sub(xTranslate,yTranslate), detectorRay.getPoints().get(detectorRay.getPoints().size-1).sub(xTranslate,yTranslate), Color.BLUE, getDrawScale().x, getDrawScale().y);
+            canvas.drawLineDebug(detectorRay.getPoints().get(0).sub(0,0), detectorRay.getPoints().get(detectorRay.getPoints().size-1).sub(0,0), Color.BLUE, getDrawScale().x, getDrawScale().y);
         }
 
         for (PolygonShape shape : sensorShapes) {
-            canvas.drawPhysics(shape,Color.RED,getX()-xTranslate,getY()-yTranslate,getAngle(),drawScale.x,drawScale.y);
+            canvas.drawPhysics(shape,Color.RED,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
         }
     }
 

@@ -194,6 +194,7 @@ public class GameController implements Screen {
      */
     public void setCanvas(GameCanvas canvas) {
         this.canvas = canvas;
+        collisionController.setCamera(canvas.getCamera());
     }
 
     /**
@@ -668,7 +669,7 @@ public class GameController implements Screen {
             else {
                 //zoom normal when in play state and not panning and not switching bodies
                 if (!input.holdSwitch() && !input.didPan()) {
-                    cam.zoomOut(false);
+                    cam.setZoom(false, -1f);
                 }
                 DeadBody nextDeadBody = currLevel.getNextBody();
                 if (input.holdSwitch() && nextDeadBody != null) {
@@ -690,7 +691,7 @@ public class GameController implements Screen {
             }
         }
         if(cameraGameState == CameraGameState.PLAYER_PAN){
-            cam.zoomOut(true);
+            cam.setZoom(true, 1.0f);
         }
         if(cameraGameState == CameraGameState.RESPAWN){
             float xPos = currLevel.getCat().getPosition().x*scale.x;
@@ -708,6 +709,7 @@ public class GameController implements Screen {
                 cameraGameState = CameraGameState.PLAY;
             }
         }
+        System.out.println(canvas.getCamera().getCamera().zoom);
     }
     @Override
     public void render(float delta) {

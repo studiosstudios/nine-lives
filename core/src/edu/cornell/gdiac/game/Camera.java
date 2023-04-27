@@ -109,19 +109,21 @@ public class Camera {
     }
 
     /**
-     * Zooms camera out to x1
-     * @param z true if we want to zoom out
+     * Sets to default or specified zoom
+     * @param z true if we want to specify zoom, false if default zoom
+     * @param zoom the value to zoom the camera to
      */
-    public void zoomOut(boolean z){
+    public void setZoom(boolean z, float zoom){
         if(z){
             float scaleX = levelBounds.width/viewportWidth;
             float scaleY = levelBounds.height/viewportHeight;
-            camera.zoom = Float.min(scaleX,Float.min(scaleY, 1));
+            camera.zoom = Float.min(scaleX,Float.min(scaleY, Float.min(1, zoom)));
         }
         else{
-            camera.zoom = zoom;
+            camera.zoom = this.zoom;
         }
     }
+
     /**
      * Camera movement when switching bodies
      * @param deadX x-coordinate of dead cat

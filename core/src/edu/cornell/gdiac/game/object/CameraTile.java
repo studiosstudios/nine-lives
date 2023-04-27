@@ -19,12 +19,12 @@ public class CameraTile extends BoxObstacle {
     private static JsonValue objectConstants;
 
     /**
-     * @param zoom  Zoom percentage of camera after collision with this camera tile
+     * @param properties     String-Object map of properties for this object
      * @param scale World scale
      */
-    public CameraTile(ObjectMap<String, Object> properties, float zoom, Vector2 scale){
+    public CameraTile(ObjectMap<String, Object> properties, Vector2 scale){
         super(32/scale.x, 32/scale.y);
-        this.zoom = zoom;
+        this.zoom = (float) properties.get("zoom");
         setSensor(true);
         setX((float) properties.get("x") + getDimension().x/2);
         setY((float) properties.get("y") - getDimension().y/2);
@@ -39,8 +39,8 @@ public class CameraTile extends BoxObstacle {
 
     @Override
     public void drawDebug(GameCanvas canvas){
-        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
-        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
-        canvas.drawPhysics(shape, Color.PURPLE,getX()-xTranslate,getY()-yTranslate,getAngle(),drawScale.x,drawScale.y);
+//        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+//        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+        canvas.drawPhysics(shape, Color.PURPLE,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
     }
 }

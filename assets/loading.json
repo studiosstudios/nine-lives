@@ -17,6 +17,10 @@
         "bgLab": "shared/bgLab.png",
         "bgSelect": "shared/bgSelect.png",
             "one": "shared/one.png",
-            "two": "shared/two.png"
+            "two": "shared/two.png",
+        "loadingTutorial": "shared/loadingTutorial.png",
+        "catpaw": "shared/catpaw.png",
+        "first": "shared/first.png",
+        "levelSelectBackground": "shared/levelSelectBackground.png"
 	}
 }

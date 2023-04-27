@@ -36,6 +36,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
     public static final String flameSensorName = "flameSensor";
 
     private ObjectSet<Fixture> groundFixtures = new ObjectSet<>();
+    private ObjectSet<Door> groundDoors = new ObjectSet<>();
     private PolygonShape groundSensorShape;
     private final String groundSensorName;
 
@@ -193,6 +194,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
     public boolean isMovable() {return pushable;}
 
     public ObjectSet<Fixture> getGroundFixtures() { return groundFixtures; }
+    public ObjectSet<Door> getGroundDoors() { return groundDoors; }
 
     public String getGroundSensorName(){ return groundSensorName; }
 

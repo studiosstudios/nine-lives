@@ -1,7 +1,6 @@
 package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
@@ -40,6 +39,8 @@ public class Level {
 
     /** Tiles of level */
     protected Tiles tiles;
+    /** Climbables of level */
+    protected Climbable climbables;
     /** All the objects in the world. */
     protected PooledList<Obstacle> objects  = new PooledList<>();
     /** Queue for adding objects */
@@ -89,6 +90,8 @@ public class Level {
     private ObjectMap<String, Object> propertiesMap = new ObjectMap<>();
 
     private Array<LevelState> levelStates;
+
+    private int levelNum;
 
     /**
      * Returns the bounding rectangle for the physics world
@@ -370,13 +373,19 @@ public class Level {
         }
     }
 
+    private class InvalidTiledJSON extends RuntimeException {
+        private InvalidTiledJSON(String errorMessage) {
+            super("Error loading Tiled level " + levelNum + ": " + errorMessage);
+        }
+    }
+
     /**
      * Populates this level from data from a Tiled file.
      *
      * @param tiledMap Tiled Json
      */
-     public void populateTiled(JsonValue tiledMap){
-        populateTiled(tiledMap, 0, 0, returnY, null);
+     public void populateTiled(JsonValue tiledMap, int levelNum) {
+        populateTiled(tiledMap, 0, 0, levelNum, returnY, null);
     }
 
     /**
@@ -390,13 +399,21 @@ public class Level {
      * @param next        True if we are progressing from the previous level (i.e to the right),
      *                    null if we should ignore offsets
      */
-    public void populateTiled(JsonValue tiledMap, float xOffset, float yOffset, float prevExitY, Boolean next){
+    public void populateTiled(JsonValue tiledMap, float xOffset, float yOffset, int levelNum, float prevExitY, Boolean next) {
+
+        this.levelNum = levelNum;
+
+        if (tiledMap == null) throw new InvalidTiledJSON("missing Tiled JSON");
+
+        if (tiledMap.getBoolean("infinite")) throw new InvalidTiledJSON("map size cannot be infinite");
+
         world.setGravity( new Vector2(0,tiledMap.getFloat("gravity",-14.7f)) );
         activationRelations = new HashMap<>();
         levelStates = new Array<>();
 
         JsonValue layers = tiledMap.get("layers");
         JsonValue tileData = layers.get(0);
+        JsonValue climbableData = null;
 
         tileSize = tiledMap.getInt("tilewidth");
         int levelWidth = tiledMap.getInt("width");
@@ -410,6 +427,9 @@ public class Level {
                 if (layer.getString("name").equals("exits")){
                     loadExitPositions(layer, tileSize, levelHeight);
                 }
+            }
+            else if (layer.getString("name").equals("climbables")) {
+                climbableData = layer;
             }
         }
         if (next != null) {
@@ -425,13 +445,18 @@ public class Level {
         String biome = tiledMap.get("properties").get(0).getString("value");
 
         TextureRegion tileset = new TextureRegion();
+        TextureRegion tileset_climbable = new TextureRegion();
 
         int fID = 1;
+        int fID_climbable = 1;
         if (biome.equals("metal")) {
             tileset = textureRegionAssetMap.get("metal_tileset");
             for (JsonValue tilesetData : tiledMap.get("tilesets")){
                 if (tilesetData.getString("source").endsWith("metal-walls.tsx")){
                     fID = tilesetData.getInt("firstgid");
+                }
+                else if (tilesetData.getString("source").endsWith("climbables.tsx")){
+                    fID_climbable = tilesetData.getInt("firstgid");
                 }
             }
         }
@@ -442,9 +467,19 @@ public class Level {
                 if (tilesetData.getString("source").endsWith("metal-walls.tsx")){
                     fID = tilesetData.getInt("firstgid");
                 }
+                else if (tilesetData.getString("source").endsWith("climbables.tsx")){
+                    fID_climbable = tilesetData.getInt("firstgid");
+                }
             }
         }
+
         tiles = new Tiles(tileData, 1024, levelWidth, levelHeight, tileset, bounds, fID, new Vector2(1/32f, 1/32f));
+
+        if (climbableData != null) {
+            climbables = new Climbable(climbableData, 1024, levelWidth, levelHeight,
+                    textureRegionAssetMap.get("climbable_tileset"), bounds, fID_climbable, new Vector2(1/32f, 1/32f));
+        }
+
         if (cat != null) saveState();
     }
 
@@ -516,10 +551,9 @@ public class Level {
      */
     private void populatePlatforms(JsonValue data, int tileSize, int levelHeight){
         JsonValue objects = data.get("objects");
-        textureScaleCache.set(1, 1);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
-            Platform platform = new Platform(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
+            Platform platform = new Platform(propertiesMap, textureRegionAssetMap, scale, 128);
             loadTiledActivatable(platform);
         }
     }
@@ -582,7 +616,7 @@ public class Level {
      */
     private void populateSpikes(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
-        textureScaleCache.set(1/64f, 1/64f);
+        textureScaleCache.set(1/4f, 1/4f);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
             Spikes spikes = new Spikes(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
@@ -634,10 +668,10 @@ public class Level {
      */
     private void populateDoors(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
-        textureScaleCache.set(1, 1);
+        textureScaleCache.set(1/32f, 1/32f);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
-            Door door = new Door(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
+            Door door = new Door(propertiesMap, textureRegionAssetMap, scale, 128);
             loadTiledActivatable(door);
         }
     }
@@ -737,17 +771,21 @@ public class Level {
      * @param tileSize      Tile size in the Tiled JSON
      * @param levelHeight   Level height in Box2D units
      */
-        private void populateCat(JsonValue data, int tileSize, int levelHeight, boolean shouldPopulate){
-        JsonValue objects = data.get("objects");
-        JsonValue catJV = objects.get(0);
-        readProperties(catJV, tileSize, levelHeight);
-        cat = new Cat(propertiesMap, textureRegionAssetMap, scale);
-        respawnPos = cat.getPosition();
-        startRespawnPos = respawnPos;
-        if (shouldPopulate) {
-            addObject(cat);
-        } else {
-            cat = null;
+    private void populateCat(JsonValue data, int tileSize, int levelHeight, boolean shouldPopulate){
+        try {
+            JsonValue objects = data.get("objects");
+            JsonValue catJV = objects.get(0);
+            readProperties(catJV, tileSize, levelHeight);
+            cat = new Cat(propertiesMap, textureRegionAssetMap, scale);
+            respawnPos = cat.getPosition();
+            startRespawnPos = respawnPos;
+            if (shouldPopulate) {
+                addObject(cat);
+            } else {
+                cat = null;
+            }
+        } catch (NullPointerException e){
+            throw new InvalidTiledJSON("level must contain a cat");
         }
     }
 
@@ -823,7 +861,9 @@ public class Level {
                     propertiesMap.put(name, property.getFloat("value"));
                     break;
                 case "color":
-                    propertiesMap.put(name, Color.valueOf(property.getString("value")));
+                    //tiles parses colors as ARGB >:(
+                    String color = property.getString("value");
+                    propertiesMap.put(name, Color.valueOf("#" + color.substring(3) + color.substring(1, 3)));
                     break;
                 case "class":
                     switch (property.getString("propertytype")){
@@ -833,11 +873,11 @@ public class Level {
                             propertiesMap.put(name, v);
                             break;
                         default:
-                            throw new IllegalArgumentException("unexpected class: " + property.getString("type"));
+                            throw new InvalidTiledJSON("unexpected class: " + property.getString("type"));
                     }
                     break;
                 default:
-                    throw new IllegalArgumentException("unexpected property type: " + property.getString("type"));
+                    throw new InvalidTiledJSON("unexpected property type: " + property.getString("type"));
             }
         }
     }
@@ -863,6 +903,7 @@ public class Level {
         spiritRegionArray.clear();
         numLives = maxLives;
         currCheckpoint = null;
+        climbables = null;
         setComplete(false);
         setFailure(false);
     }
@@ -1015,6 +1056,8 @@ public class Level {
 
         if (tiles != null) tiles.draw(canvas);
 
+        if (climbables != null) climbables.draw(canvas);
+
         for (Activator a : activators) {
             a.draw(canvas);
         }
@@ -1024,7 +1067,9 @@ public class Level {
         for (DeadBody db : deadBodyArray) {
             db.draw(canvas);
         }
-        if (cat != null) cat.draw(canvas);
+        if(cat != null && GameController.cameraGameState != GameController.CameraGameState.RESPAWN) {
+            cat.draw(canvas);
+        }
 
         for (SpiritRegion s : spiritRegionArray) {
             s.draw(canvas);
@@ -1104,7 +1149,7 @@ public class Level {
         float minDist = Float.MAX_VALUE;
         DeadBody nextdb = null;
         for (DeadBody db : deadBodyArray){
-            if (sharesElement(db.getSpiritRegions(), cat.getSpiritRegions())){
+            if (sharesKey(db.getSpiritRegions(), cat.getSpiritRegions())){
                 float dist = cat.getPosition().dst(db.getPosition());
                 if (dist < minDist){
                     minDist = dist;
@@ -1123,10 +1168,10 @@ public class Level {
      * @return    True if set 1 and set 2 share any element, or if both are empty.
      * @param <T> The type of elements in s1 and s2
      */
-    private <T> boolean sharesElement(ObjectSet<T> s1, ObjectSet<T> s2){
+    private <K, V> boolean sharesKey(ObjectMap<K, V> s1, ObjectMap<K, V> s2){
         if (s1.isEmpty() && s2.isEmpty()) return true;
-        for (T r : s1){
-            if (s2.contains(r)) return true;
+        for (K r : s1.keys()){
+            if (s2.containsKey(r)) return true;
         }
         return false;
     }

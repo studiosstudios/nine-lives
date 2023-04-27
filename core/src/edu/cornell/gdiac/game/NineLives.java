@@ -23,6 +23,8 @@ public class NineLives extends Game implements ScreenListener {
 	/** The WorldController that contains all LevelControllers*/
 	private GameController controller;
 
+	private final int TOTAL_LEVELS = 6;
+
 	/**
 	 * Creates a new game from the configuration settings.
 	 *
@@ -39,7 +41,7 @@ public class NineLives extends Game implements ScreenListener {
 	 */
 	public void create() {
 		canvas  = new GameCanvas();
-		menu = new StageController("assets.json", canvas, 1);
+		menu = new StageController("assets.json", canvas, 1, true, false);
 
 		menu.setScreenListener(this);
 		setScreen(menu);
@@ -114,9 +116,10 @@ public class NineLives extends Game implements ScreenListener {
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
 		if (screen == menu && exitCode == 0) {
-			startGame(5, 1);
+			menu.loadAssets();
+			startGame(TOTAL_LEVELS, 1);
 		} else if (screen == menu && exitCode == 69) {
-			startGame(5, menu.getSelectedLevel());
+			startGame(TOTAL_LEVELS, menu.getSelectedLevel());
 		} else if (screen == menu && exitCode == 25) {
 			controller.resume();
 			setScreen(controller);
@@ -124,12 +127,13 @@ public class NineLives extends Game implements ScreenListener {
 			menu = null;
 		} else if (exitCode == GameController.EXIT_QUIT && screen == controller) {
 			// pause stage
-			menu = new StageController("assets.json", canvas, 1);
+			menu = new StageController("assets.json", canvas, 1, false, true);
 			menu.setScreenListener(this);
 			menu.pause = true;
 			menu.currLevel = controller;
-//			controller.pause();
-			setScreen(menu);
+			controller.stageController = menu;
+			controller.pause();
+//			setScreen(menu);
 //			controller.getCurrLevel().getLevel().draw(canvas,false);
 		} else if (exitCode == 99) {
 			Gdx.app.exit();

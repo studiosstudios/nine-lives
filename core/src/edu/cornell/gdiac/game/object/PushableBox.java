@@ -85,12 +85,7 @@ public class PushableBox extends BoxObstacle implements Movable {
 
     public boolean isMovable() {return true;}
 
-    public void update(float dt){
-        setRelativeVX(getRelativeVelocity().x/damping);
-        for (Fixture fix : groundFixtures) {
-            System.out.println(fix.getBody().getUserData());
-        }
-    }
+    public void update(float dt){ setRelativeVX(getRelativeVelocity().x/damping); }
 
     public ObjectSet<Fixture> getGroundFixtures() { return groundFixtures; }
     public String getGroundSensorName(){ return groundSensorName; }

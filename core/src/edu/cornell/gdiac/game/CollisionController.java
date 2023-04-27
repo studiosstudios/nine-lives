@@ -110,17 +110,17 @@ public class CollisionController implements ContactListener, ContactFilter {
                     if (bd2 == level.getReturnExit() && !didChange) setReturn(true);
 
                     if (bd2 instanceof Spikes && fd2.equals(Spikes.pointyName) && fd1.equals(Cat.bodyName)) {
-                        actionController.die();
+                        actionController.die(true);
                     }
                     if (bd2 instanceof Flamethrower.Flame && fd2.equals(Flamethrower.flameSensorName)){
-                        actionController.die();
+                        actionController.die(true);
                     }
                     if (bd2 instanceof Checkpoint && ((Checkpoint) bd2).getSensorName().equals(fd2)){
                         level.updateCheckpoints(((Checkpoint) bd2), true);
                     }
                     if (bd2 instanceof Mob){
 //                    System.out.println("hit a mob");
-                        actionController.die();
+                        actionController.die(true);
                     }
                     if (bd2 instanceof SpiritRegion){
                         cat.addSpiritRegion((SpiritRegion) bd2);

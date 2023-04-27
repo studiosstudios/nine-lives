@@ -142,18 +142,9 @@ public class ActionController {
 
         updateSpiritLine(dt, ic.holdSwitch() && !ic.didSwitch());
 
-        if (ic.holdSwitch()) {
-            for (SpiritRegion sr : level.getSpiritRegionArray()) {
-                sr.setSpiritRegionColorOpacity(true);
-            }
-        } else {
-            for (SpiritRegion sr : level.getSpiritRegionArray()) {
-                sr.setSpiritRegionColorOpacity(false);
-            }
-        }
-
-        for (SpiritRegion spiritRegion : level.getSpiritRegionArray()) {
-            spiritRegion.update();
+        for (SpiritRegion sr : level.getSpiritRegionArray()) {
+            sr.setSpiritRegionColorOpacity(ic.holdSwitch());
+            sr.update();
         }
 
         if (ic.didSwitch()) {
@@ -188,7 +179,7 @@ public class ActionController {
 
         //Die if off-screen
         if (level.bounds.y - cat.getY() > 10){
-            die();
+            die(false);
         }
 
         //Prepare dead bodies for raycasting
@@ -412,7 +403,7 @@ public class ActionController {
         }
 
         if (level.getCat().getBody().getFixtureList().contains(rayCastFixture, true)){
-            die();
+            die(true);
         }
 
         //check deadbodies
@@ -478,8 +469,10 @@ public class ActionController {
 
     /**
      * Called when a player dies. Decrements lives, and fails level/spawns body when necessary.
+     *
+     * @param spawn If we should spawn a dead body. This should only be false when dying from falling offscreen
      */
-    public void die() {
+    public void die(boolean spawn) {
         if (!level.getDied()) {
             level.setDied(true);
             // decrement lives
@@ -490,7 +483,7 @@ public class ActionController {
                 level.setFailure(true);
             } else {
                 // create dead body
-                level.spawnDeadBody();
+                if (spawn) level.spawnDeadBody();
             }
         }
     }

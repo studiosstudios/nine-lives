@@ -197,8 +197,6 @@ public class Cat extends CapsuleObstacle implements Movable {
      * Cache for internal force calculations
      */
     private ObjectSet<Fixture> groundFixtures;
-    private ObjectSet<Door> groundDoors;
-
     /**
      * The current spirit regions that the cat is inside
      */
@@ -390,8 +388,6 @@ public class Cat extends CapsuleObstacle implements Movable {
         return groundFixtures;
     }
 
-    public ObjectSet<Door> getGroundDoors(){ return groundDoors; }
-
     /**
      * Returns the name of the right side sensor
      * <p>
@@ -567,7 +563,6 @@ public class Cat extends CapsuleObstacle implements Movable {
         leftSensorName = "catLeftSensor";
         sensorShapes = new Array<>();
         groundFixtures = new ObjectSet<>();
-        groundDoors = new ObjectSet<>();
         spiritRegions = new ObjectMap<>();
         soundBuffer = new HashSet<>();
 

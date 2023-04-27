@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
@@ -135,19 +136,19 @@ public class Door extends BoxObstacle implements Activatable {
         switch (angle) {
             case DOWN:
                 setY(y + height * (1-ticks / totalTicks)/2f);
-                setDimension(getWidth(),  height * ticks / totalTicks);
+                setDimension(getWidth(),  height * ticks / totalTicks, false);
                 break;
             case UP:
                 setY(y - height * (1-ticks / totalTicks)/2f);
-                setDimension(getWidth(),  height * ticks / totalTicks);
+                setDimension(getWidth(),  height * ticks / totalTicks, false);
                 break;
             case LEFT:
                 setX(x + width * (1-ticks / totalTicks)/2f);
-                setDimension(width * ticks / totalTicks,  getHeight());
+                setDimension(width * ticks / totalTicks,  getHeight(), false);
                 break;
             case RIGHT:
                 setX(x - width * (1-ticks / totalTicks)/2f);
-                setDimension(width * ticks / totalTicks,  getHeight());
+                setDimension(width * ticks / totalTicks,  getHeight(), false);
                 break;
         }
     }

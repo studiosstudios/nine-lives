@@ -65,12 +65,22 @@ public class BoxObstacle extends SimpleObstacle {
 	 * @param width   The width of this box
 	 * @param height  The height of this box
 	 */
-	public void setDimension(float width, float height) {
+	public void setDimension(float width, float height) {setDimension(width, height, true);}
+
+	/**
+	 * Sets the dimensions of this box
+	 *
+	 * @param width   The width of this box
+	 * @param height  The height of this box
+	 * @param markDirty  If the fixture should be recreated
+	 */
+	public void setDimension(float width, float height, boolean markDirty) {
 		dimension.set(width, height);
-		markDirty(true);
+		markDirty(markDirty);
 		resize(width, height);
+		if (!markDirty) { ((PolygonShape) geometry.getShape()).set(vertices); }
 	}
-	
+
 	/**
 	 * Returns the box width
 	 *

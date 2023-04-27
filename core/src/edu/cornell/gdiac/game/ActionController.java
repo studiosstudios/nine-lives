@@ -341,6 +341,11 @@ public class ActionController {
                     numGrounded++;
                     baseVel.add(groundObs.getLinearVelocity());
                 }
+
+                //wake up if on opening door
+                if (!obj.isAwake() && groundObs instanceof Door && ((Door) groundObs).isMoving()) {
+                    obj.setAwake(true);
+                }
             }
 
             //object is grounded, update base velocity to be average of velocities of grounds

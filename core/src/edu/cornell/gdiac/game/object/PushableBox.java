@@ -17,7 +17,6 @@ public class PushableBox extends BoxObstacle implements Movable {
     /** Constants that are shared between all instances of this class */
     private static JsonValue objectConstants;
     private ObjectSet<Fixture> groundFixtures = new ObjectSet<>();
-    private ObjectSet<Door> groundDoors = new ObjectSet<>();
     private PolygonShape sensorShape;
     private final String groundSensorName;
     private float damping;
@@ -88,12 +87,12 @@ public class PushableBox extends BoxObstacle implements Movable {
 
     public void update(float dt){
         setRelativeVX(getRelativeVelocity().x/damping);
+        for (Fixture fix : groundFixtures) {
+            System.out.println(fix.getBody().getUserData());
+        }
     }
 
     public ObjectSet<Fixture> getGroundFixtures() { return groundFixtures; }
-
-    public ObjectSet<Door> getGroundDoors(){ return groundDoors; }
-
     public String getGroundSensorName(){ return groundSensorName; }
     @Override
     public void drawDebug(GameCanvas canvas){

@@ -1,15 +1,15 @@
 package edu.cornell.gdiac.game.object;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
+
+import java.util.HashMap;
 
 /** NOT USED YET **/
 public class CameraTile extends BoxObstacle {
@@ -25,6 +25,7 @@ public class CameraTile extends BoxObstacle {
     public CameraTile(ObjectMap<String, Object> properties, Vector2 scale){
         super((float)properties.get("width"), (float)properties.get("height"));
         this.zoom = (float) properties.get("zoom");
+        setBodyType(BodyDef.BodyType.StaticBody); //lmao
         setSensor(true);
         setDrawScale(scale);
         setX((float) properties.get("x") + getDimension().x/2);

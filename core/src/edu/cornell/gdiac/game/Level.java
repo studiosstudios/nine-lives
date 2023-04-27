@@ -756,18 +756,18 @@ public class Level {
      * @param levelHeight   Level height in Box2D units
      */
         private void populateCat(JsonValue data, int tileSize, int levelHeight, boolean shouldPopulate){
-        JsonValue objects = data.get("objects");
-        JsonValue catJV = objects.get(0);
-        readProperties(catJV, tileSize, levelHeight);
-        cat = new Cat(propertiesMap, textureRegionAssetMap, scale);
-        respawnPos = cat.getPosition();
-        startRespawnPos = respawnPos;
-        if (shouldPopulate) {
-            addObject(cat);
-        } else {
-            cat = null;
+            JsonValue objects = data.get("objects");
+            JsonValue catJV = objects.get(0);
+            readProperties(catJV, tileSize, levelHeight);
+            cat = new Cat(propertiesMap, textureRegionAssetMap, scale);
+            respawnPos = cat.getPosition();
+            startRespawnPos = respawnPos;
+            if (shouldPopulate) {
+                addObject(cat);
+            } else {
+                cat = null;
+            }
         }
-    }
 
     /**
      * Reads the properties array of an object in a Tiled JSON, and puts it into <code>propertiesMap</code>.

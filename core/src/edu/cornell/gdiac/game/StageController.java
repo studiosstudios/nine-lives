@@ -255,11 +255,11 @@ public class StageController implements Screen {
 			}
 			if (loading) {
 				loading = false;
-				try {
-					Thread.sleep(2000);
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-				}
+//				try {
+//					Thread.sleep(2000);
+//				} catch (InterruptedException e) {
+//					Thread.currentThread().interrupt();
+//				}
 				listener.exitScreen(this,0);
 			}
 

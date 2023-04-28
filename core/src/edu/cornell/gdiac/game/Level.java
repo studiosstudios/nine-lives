@@ -757,7 +757,7 @@ public class Level {
         readProperties(catJV, tileSize, levelHeight);
         cat = new Cat(propertiesMap, textureRegionAssetMap, scale);
         respawnPos = cat.getPosition();
-        System.out.println("Associating new light with cat");
+        System.out.println(cat.getTextureCenterX() + " " + cat.getTextureCenterY());
 
 //        (new PointLight(rayHandler, 100, Color.WHITE, 100, 150, 150)).attachToBody(cat.getBody());
         startRespawnPos = respawnPos;

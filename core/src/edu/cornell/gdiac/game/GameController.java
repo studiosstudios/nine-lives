@@ -480,7 +480,7 @@ public class GameController implements Screen {
         world = new World(gravity, true);
         rayHandler = new RayHandler(world);
         rayHandler.setAmbientLight(0.8f);
-        tempPointLight = new PointLight(rayHandler, 100, Color.WHITE, 100, 400, 400);
+        tempPointLight = new PointLight(rayHandler, 100, Color.WHITE, 100, 48f, 48f);
 
 
         justRespawned = true;
@@ -745,7 +745,7 @@ public class GameController implements Screen {
 //				Thread.currentThread().interrupt();
 //			}
 //		}
-        System.out.println("before:" + canvas.getCamera().getCamera().position);
+//        System.out.println("before:" + canvas.getCamera().getCamera().position);
         if (!paused) {
             if (preUpdate(delta)) {
                 update(delta); // This is the one that must be defined.
@@ -755,21 +755,22 @@ public class GameController implements Screen {
         if (paused) { updateCamera(); }
         draw(delta);
         if (paused && stageController != null) { stageController.render(delta); }
-        System.out.println("after:" +canvas.getCamera().getCamera().position);
-//        rayHandler.setCombinedMatrix(canvas.getCamera().getCamera());
-        OrthographicCamera c = canvas.getCamera().getCamera();
-        canvas.getCamera().getCamera().update();
-        System.out.println("Drawing in GameController:" +c.position+" "+c);
-        rayHandler.setCombinedMatrix(
-                c.combined.cpy(),
-                c.position.x,
-                c.position.y,
-                c.viewportWidth,
-                c.viewportHeight
-        );
+//        System.out.println("after:" +canvas.getCamera().getCamera().position);
+        rayHandler.setCombinedMatrix(canvas.getCamera().getCamera());
+//        OrthographicCamera c = canvas.getCamera().getCamera();
+//        canvas.getCamera().getCamera().update();
+//        System.out.println("Drawing in GameController:" +c.position+" "+c);
+//        rayHandler.setCombinedMatrix(c);
+//        rayHandler.setCombinedMatrix(
+//                c.combined.cpy(),
+//                c.position.x,
+//                c.position.y,
+//                c.viewportWidth,
+//                c.viewportHeight
+//        );
 //        Vector3 projected = c.unproject(new Vector3(400, 400, 0));
-        Vector2 newPos = new Vector2(800, 800).sub(canvas.getCamera().getX(), canvas.getCamera().getY());
-        tempPointLight.setPosition(newPos);
+//        Vector2 newPos = new Vector2(800, 800).sub(canvas.getCamera().getX(), canvas.getCamera().getY());
+//        tempPointLight.setPosition(newPos);
 
 //        System.out.println(c.position+" "+c); this should work idk why it doesnt work
 //        System.out.println(canvas.getCamera().getX() + " " + canvas.getCamera().getY());
@@ -846,7 +847,7 @@ public class GameController implements Screen {
         canvas.clear();
 
         canvas.begin();
-        canvas.applyViewport();
+        canvas.applyViewport(false);
         canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight());
         if (true) { //TODO: only draw when necessary
             prevLevel.draw(canvas);

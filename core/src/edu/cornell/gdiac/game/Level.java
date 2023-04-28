@@ -1,7 +1,6 @@
 package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
@@ -743,8 +742,8 @@ public class Level {
         JsonValue objects = data.get("objects");
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
-            CameraTile cameraTile = new CameraTile(propertiesMap, scale);
-            addObject(cameraTile);
+            CameraRegion cameraRegion = new CameraRegion(propertiesMap, scale);
+            addObject(cameraRegion);
         }
     }
 

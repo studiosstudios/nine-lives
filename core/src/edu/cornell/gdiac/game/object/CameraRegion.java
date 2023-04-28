@@ -1,7 +1,6 @@
 package edu.cornell.gdiac.game.object;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
@@ -10,10 +9,8 @@ import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
 import com.badlogic.gdx.math.Rectangle;
 
-import java.util.HashMap;
-
 /** NOT USED YET **/
-public class CameraTile extends BoxObstacle {
+public class CameraRegion extends BoxObstacle {
     /** Zoom percentage of camera after collision with this camera tile **/
     private float zoom;
     /** Constants that are shared between all instances of this class */
@@ -23,7 +20,7 @@ public class CameraTile extends BoxObstacle {
      * @param properties     String-Object map of properties for this object
      * @param scale World scale
      */
-    public CameraTile(ObjectMap<String, Object> properties, Vector2 scale){
+    public CameraRegion(ObjectMap<String, Object> properties, Vector2 scale){
         super((float)properties.get("width"), (float)properties.get("height"));
         this.zoom = (float) properties.get("zoom");
         setBodyType(BodyDef.BodyType.StaticBody); //lmao

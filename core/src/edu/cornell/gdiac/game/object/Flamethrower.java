@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
 import edu.cornell.gdiac.game.obstacle.ComplexObstacle;
+import edu.cornell.gdiac.util.Direction;
 
 import java.util.HashMap;
 
@@ -31,9 +32,8 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
     /** Starting activation state */
     private boolean initialActivation;
     private final Vector2 flameOffset;
-    /** If this flamethrower can be pushed */
-    private final boolean pushable;
     public static final String flameSensorName = "flameSensor";
+    private Direction dir;
 
     /**
      * Creates a new Flamethrower object.
@@ -54,31 +54,26 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
         flameBase.setDrawScale(drawScale);
         flameBase.setTextureScale(textureScale);
         flameBase.setTexture(tMap.get("flamethrower"));
-        pushable = (boolean) properties.get("pushable", false);
         flameBase.setFriction(objectConstants.getFloat("friction", 0));
         flameBase.setRestitution(objectConstants.getFloat("restitution", 0));
         flameBase.setDensity(objectConstants.getFloat("density", 0));
         flameBase.setMass(objectConstants.getFloat("mass", 0));
         flameBase.setName("flamethrower");
         float angle = (float) ((float) properties.get("rotation") * Math.PI/180);
+        dir = Direction.angleToDir((int) ((float) properties.get("rotation")));
         flameBase.setAngle(angle);
-        flameBase.setX((float) properties.get("x")+objectConstants.get("base_offset").getFloat(0));
-        flameBase.setY((float) properties.get("y")+objectConstants.get("base_offset").getFloat(1));
+        Vector2 offset = new Vector2(objectConstants.get("base_offset").getFloat(0), objectConstants.get("base_offset").getFloat(1));
+        Direction.rotateVector(offset, dir);
+        flameBase.setX((float) properties.get("x") + offset.x);
+        flameBase.setY((float) properties.get("y") + offset.y);
 
         flameOffset = new Vector2(objectConstants.get("flame_offset").getFloat(0)*(float)Math.cos(angle)-
                 objectConstants.get("flame_offset").getFloat(1)*(float)Math.sin(angle),
                 objectConstants.get("flame_offset").getFloat(1)*(float)Math.cos(angle)-
                         objectConstants.get("flame_offset").getFloat(0)*(float)Math.sin(angle));
         flame = new Flame(flameTexture, drawScale, flameBase.getPosition(), flameBase.getAngle(),textureScale);
-
-        if (pushable){
-            flame.setBodyType(BodyDef.BodyType.DynamicBody);
-            flameBase.setBodyType(BodyDef.BodyType.DynamicBody);
-        } else {
-            flame.setBodyType(BodyDef.BodyType.StaticBody);
-            flameBase.setBodyType(BodyDef.BodyType.StaticBody);
-        }
-
+        flameBase.setBodyType(properties.containsKey("attachName") ? BodyDef.BodyType.DynamicBody : BodyDef.BodyType.StaticBody);
+        flame.setBodyType(flameBase.getBodyType());
 
         bodies.add(flameBase);
         bodies.add(flame);

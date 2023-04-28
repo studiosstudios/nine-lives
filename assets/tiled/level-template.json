@@ -78,7 +78,7 @@
                  "visible":true,
                  "width":14336,
                  "x":0,
-                 "y":0
+                 "y":1024
                 }, 
                 {
                  "height":17408,
@@ -377,6 +377,24 @@
                  "width":1024,
                  "x":7168,
                  "y":14336
+                }, 
+                {
+                 "gid":4,
+                 "height":1024,
+                 "id":78,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"attachName",
+                         "type":"string",
+                         "value":"platform1"
+                        }],
+                 "rotation":270,
+                 "type":"",
+                 "visible":true,
+                 "width":1024,
+                 "x":2048,
+                 "y":12288
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -413,11 +431,53 @@
                          "value":"platform1"
                         }],
                  "rotation":0,
-                 "type":"",
+                 "type":"Checkpoint",
                  "visible":true,
                  "width":1024,
                  "x":3072,
                  "y":9216
+                }, 
+                {
+                 "gid":3,
+                 "height":2048,
+                 "id":67,
+                 "name":"",
+                 "rotation":90,
+                 "type":"",
+                 "visible":true,
+                 "width":1024,
+                 "x":26624,
+                 "y":9216
+                }, 
+                {
+                 "gid":3,
+                 "height":2048,
+                 "id":68,
+                 "name":"",
+                 "rotation":270,
+                 "type":"",
+                 "visible":true,
+                 "width":1024,
+                 "x":16384,
+                 "y":10240
+                }, 
+                {
+                 "gid":3,
+                 "height":2048,
+                 "id":70,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"attachName",
+                         "type":"string",
+                         "value":"box1"
+                        }],
+                 "rotation":180,
+                 "type":"",
+                 "visible":true,
+                 "width":1024,
+                 "x":21504,
+                 "y":12288
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -441,6 +501,24 @@
                  "width":1024,
                  "x":15360,
                  "y":9216
+                }, 
+                {
+                 "gid":5,
+                 "height":1024,
+                 "id":79,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"attachName",
+                         "type":"string",
+                         "value":"box1"
+                        }],
+                 "rotation":90,
+                 "type":"",
+                 "visible":true,
+                 "width":1024,
+                 "x":4096,
+                 "y":13312
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -669,7 +747,19 @@
          "draworder":"topdown",
          "id":14,
          "name":"boxes",
-         "objects":[],
+         "objects":[
+                {
+                 "gid":2,
+                 "height":1024,
+                 "id":73,
+                 "name":"box1",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":1024,
+                 "x":2048,
+                 "y":13312
+                }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -717,7 +807,7 @@
          "y":0
         }],
  "nextlayerid":20,
- "nextobjectid":67,
+ "nextobjectid":80,
  "orientation":"orthogonal",
  "properties":[
         {

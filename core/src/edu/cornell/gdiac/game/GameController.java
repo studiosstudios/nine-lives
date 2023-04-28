@@ -1,7 +1,5 @@
 package edu.cornell.gdiac.game;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
@@ -119,14 +117,14 @@ public class GameController implements Screen {
      * PAN: Camera movement not controlled by player (e.g. when activator is pressed or at beginning of level)
      * RESPAWN: Camera focuses on dead body for half of RESPAWN_DELAY and focuses on newly respawned cat for half of RESPAWN_DELAY
      */
-    enum CameraGameState {
+    enum GameState {
         PLAY,
         PLAYER_PAN,
         PAN,
         RESPAWN
     }
     /** State of gameplay used for camera */
-    public static CameraGameState cameraGameState;
+    public static GameState gameState;
     /** If we have respawned in preUpdate(). Needed in postUpdate() for saving level state. */
     private boolean justRespawned;
     /** The color of the flash animation after resetting/undoing */
@@ -171,7 +169,7 @@ public class GameController implements Screen {
         collisionController = new CollisionController(actionController);
         collisionController.setLevel(levels[currLevelIndex]);
 
-        cameraGameState = CameraGameState.PLAY;
+        gameState = GameState.PLAY;
         panTime = 0;
         respawnDelay = 0;
     }
@@ -435,12 +433,8 @@ public class GameController implements Screen {
      */
     public void respawn(boolean cameraMovement) {
         currLevel.setDied(false);
-        if (currLevel.getCheckpoint() != null) {
-            currLevel.getCat().setPosition(currLevel.getCheckpoint().getRespawnPosition());
-        } else {
-            currLevel.getCat().setPosition(currLevel.getRespawnPos());
-        }
-        currLevel.getCat().setFacingRight(true);
+        currLevel.getCat().setActive(false);
+        currLevel.getCat().setFacingRight(currLevel.getCheckpoint() != null ? currLevel.getCheckpoint().facingRight() : true);
         currLevel.getCat().setJumpPressed(false);
         currLevel.getCat().setGrounded(true);
         currLevel.getCat().setLinearVelocity(Vector2.Zero);
@@ -636,22 +630,22 @@ public class GameController implements Screen {
     }
 
     /**
-     * Updates CameraGameState and moves camera accordingly
+     * Updates GameState and moves camera accordingly
      */
     public void updateCamera(){
         Camera cam = canvas.getCamera();
         InputController input = InputController.getInstance();
         //resetting automatically resets camera to cat
         if(justReset){
-            cameraGameState = CameraGameState.PLAY;
+            gameState = GameState.PLAY;
         }
         if(input.didPan()){
-            cameraGameState = CameraGameState.PLAYER_PAN;
+            gameState = GameState.PLAYER_PAN;
             //move camera
             cam.updateCamera(cam.getX()+input.getCamHorizontal(),cam.getY()+ input.getCamVertical(),false);
         }
-        else if(cameraGameState == CameraGameState.PLAYER_PAN){
-            cameraGameState = CameraGameState.PLAY;
+        else if(gameState == GameState.PLAYER_PAN){
+            gameState = GameState.PLAY;
         }
 
         for (Activator a : currLevel.getActivators()){
@@ -660,10 +654,10 @@ public class GameController implements Screen {
                 if(currLevel.getActivationRelations().containsKey(a.getID())){
                     panTarget = currLevel.getActivationRelations().get(a.getID());
                 }
-                cameraGameState = CameraGameState.PAN;
+                gameState = GameState.PAN;
             }
         }
-        if(cameraGameState == CameraGameState.PLAY){
+        if(gameState == GameState.PLAY){
             panTime = 0;
             respawnDelay = 0;
             undoTime++;
@@ -672,7 +666,7 @@ public class GameController implements Screen {
             float x_pos = currLevel.getCat().getPosition().x*scale.x;
             float y_pos = currLevel.getCat().getPosition().y*scale.y;
             if(justRespawned && !justReset) {
-                cameraGameState = CameraGameState.RESPAWN;
+                gameState = GameState.RESPAWN;
             }
             else {
                 //zoom normal when in play state and not panning and not switching bodies
@@ -689,19 +683,19 @@ public class GameController implements Screen {
                 }
             }
         }
-        if(cameraGameState == CameraGameState.PAN){
+        if(gameState == GameState.PAN){
             cam.updateCamera(panTarget.get(0).getXPos()*scale.x,panTarget.get(0).getYPos()*scale.y, true);
             if(!cam.isGliding()){
                 panTime += 1;
                 if(panTime == PAN_HOLD){
-                    cameraGameState = CameraGameState.PLAY;
+                    gameState = GameState.PLAY;
                 }
             }
         }
-        if(cameraGameState == CameraGameState.PLAYER_PAN){
+        if(gameState == GameState.PLAYER_PAN){
             cam.zoomOut(true);
         }
-        if(cameraGameState == CameraGameState.RESPAWN){
+        if(gameState == GameState.RESPAWN){
             float xPos = currLevel.getCat().getPosition().x*scale.x;
             float yPos = currLevel.getCat().getPosition().y*scale.y;
             input.setDisableAll(true);
@@ -714,21 +708,28 @@ public class GameController implements Screen {
             if(respawnDelay == RESPAWN_DELAY){
                 respawnDelay = 0;
                 input.setDisableAll(false);
-                cameraGameState = CameraGameState.PLAY;
+                gameState = GameState.PLAY;
+
+                currLevel.getCat().setActive(true);
+                if (currLevel.getCheckpoint() != null) {
+                    currLevel.getCat().setPosition(currLevel.getCheckpoint().getRespawnPosition());
+                } else {
+                    currLevel.getCat().setPosition(currLevel.getRespawnPos());
+                }
             }
         }
     }
     @Override
     public void render(float delta) {
         //FOR DEBUGGING
-		delta = 1/60f;
-		if (Gdx.input.isKeyPressed(Input.Keys.F)){
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-			}
-		}
+//		delta = 1/60f;
+//		if (Gdx.input.isKeyPressed(Input.Keys.F)){
+//			try {
+//				Thread.sleep(500);
+//			} catch (InterruptedException e) {
+//				Thread.currentThread().interrupt();
+//			}
+//		}
         if (!paused) {
             if (preUpdate(delta)) {
                 update(delta); // This is the one that must be defined.
@@ -807,10 +808,10 @@ public class GameController implements Screen {
         canvas.applyViewport();
         canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight());
         if (true) { //TODO: only draw when necessary
-            prevLevel.draw(canvas);
-            nextLevel.draw(canvas);
+            prevLevel.draw(canvas, false);
+            nextLevel.draw(canvas, false);
         }
-        currLevel.draw(canvas);
+        currLevel.draw(canvas, gameState != GameState.RESPAWN);
         canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
         canvas.end();
 
@@ -873,6 +874,10 @@ public class GameController implements Screen {
         } else {
             currLevel.resetCheckpoints();
         }
-        if (currLevel.getCheckpoint() != null) respawn(cameraMovement);
+        if (currLevel.getCheckpoint() != null) {
+            respawn(cameraMovement);
+            currLevel.getCat().setActive(true);
+            currLevel.getCat().setPosition(currLevel.getCheckpoint().getRespawnPosition());
+        }
     }
 }

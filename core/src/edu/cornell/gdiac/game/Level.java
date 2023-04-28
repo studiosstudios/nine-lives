@@ -347,17 +347,17 @@ public class Level {
      */
     public void updateCheckpoints(Checkpoint c, boolean shouldSave){
         if(currCheckpoint != null){
-            currCheckpoint.setCurrent(false);
+            currCheckpoint.setCurrent(false, true);
         }
         shouldSave = shouldSave && c != currCheckpoint;
         currCheckpoint = c;
-        currCheckpoint.setCurrent(true);
+        currCheckpoint.setCurrent(true, cat.isFacingRight());
         if (shouldSave) saveState();
     }
 
     public void resetCheckpoints(){
         if(currCheckpoint != null){
-            currCheckpoint.setCurrent(false);
+            currCheckpoint.setCurrent(false, true);
         }
         currCheckpoint = null;
         respawnPos = startRespawnPos;
@@ -823,24 +823,12 @@ public class Level {
 
         //this is because tiled rotates about the top left corner
         float x, y;
-        switch ((int) angle) {
-            default:
-            case 0:
-                x = objectJV.getFloat("x");
-                y = objectJV.getFloat("y");
-                break;
-            case 90:
-                x = objectJV.getFloat("x");
-                y = objectJV.getFloat("y") - tileSize;
-                break;
-            case 180:
-                x = objectJV.getFloat("x") - tileSize;
-                y = objectJV.getFloat("y") - tileSize;
-                break;
-            case 270:
-                x = objectJV.getFloat("x") - tileSize;
-                y = objectJV.getFloat("y");
-                break;
+        if ((int) angle == 90) {
+            x = objectJV.getFloat("x");
+            y = objectJV.getFloat("y") - objectJV.getFloat("width");
+        } else {
+            x = objectJV.getFloat("x");
+            y = objectJV.getFloat("y");
         }
         x = x/tileSize + bounds.x;
         y = levelHeight - y/tileSize + bounds.y;
@@ -1063,8 +1051,9 @@ public class Level {
      * Draws the level to the given game canvas. Assumes <code>canvas.begin()</code> has already been called.
      *
      * @param canvas	the drawing context
+     * @param drawCat   if we should draw the cat
      */
-    public void draw(GameCanvas canvas) {
+    public void draw(GameCanvas canvas, boolean drawCat) {
 //        if (background != null) {
 //            //scales background with level size
 //            float scaleX = bounds.width/background.getWidth() * scale.x;
@@ -1098,7 +1087,7 @@ public class Level {
         for (DeadBody db : deadBodyArray) {
             db.draw(canvas);
         }
-        if(cat != null && GameController.cameraGameState != GameController.CameraGameState.RESPAWN) {
+        if(cat != null && drawCat) {
             cat.draw(canvas);
         }
 

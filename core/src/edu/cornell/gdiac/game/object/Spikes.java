@@ -39,7 +39,7 @@ public class Spikes extends BoxObstacle implements Activatable {
     private float ticks;
     /** 1 if closing, -1 if opening, 0 if static */
     private float closing;
-    private Direction angle;
+    private Direction dir;
     /** initial x position */
     private final float x;
     /** initial y position */
@@ -58,7 +58,7 @@ public class Spikes extends BoxObstacle implements Activatable {
         super(tMap.get("spikes").getRegionWidth()/scale.x*textureScale.x,
                 tMap.get("spikes").getRegionHeight()/scale.y*textureScale.y);
 
-        setBodyType(BodyDef.BodyType.StaticBody);
+        setBodyType(properties.containsKey("attachName") ? BodyDef.BodyType.DynamicBody : BodyDef.BodyType.StaticBody);
         setSensor(true);
         setFixedRotation(true);
         setName("spikes");
@@ -68,11 +68,13 @@ public class Spikes extends BoxObstacle implements Activatable {
         setFriction(objectConstants.getFloat("friction"));
         fixtureShapes = new Array<>();
 
-        setX((float) properties.get("x")+objectConstants.get("offset").getFloat(0));
-        setY((float) properties.get("y")+objectConstants.get("offset").getFloat(1));
+        dir = Direction.angleToDir((int) ((float) properties.get("rotation", 0f)));
+        Vector2 offset = new Vector2(objectConstants.get("offset").getFloat(0), objectConstants.get("offset").getFloat(1));
+        Direction.rotateVector(offset, dir);
+        setX((float) properties.get("x") + offset.x);
+        setY((float) properties.get("y") + offset.y);
         x = getX();
         y = getY();
-        angle = Direction.angleToDir((int) ((float) properties.get("rotation", 0f)));
         ticks = totalTicks;
         closing = 0;
         setAngle((float) ((float) properties.get("rotation") * Math.PI/180));
@@ -98,7 +100,7 @@ public class Spikes extends BoxObstacle implements Activatable {
             ticks = totalTicks;
             closing = 0;
         }
-        switch (angle) {
+        switch (dir) {
             case LEFT:
                 setX(x + (1-ticks / totalTicks));
                 break;

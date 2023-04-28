@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
+import com.badlogic.gdx.math.Rectangle;
 
 import java.util.HashMap;
 
@@ -37,6 +38,14 @@ public class CameraTile extends BoxObstacle {
      */
     public float getZoom(){
         return zoom;
+    }
+
+    /**
+     * gets bounds of CameraRegion
+     * @return bounds of CameraRegion as a Rectangle
+     */
+    public Rectangle getBounds(){
+        return new Rectangle(getX(),getY(),getWidth(),getHeight());
     }
 
     @Override

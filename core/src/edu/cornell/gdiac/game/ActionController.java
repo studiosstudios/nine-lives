@@ -185,6 +185,9 @@ public class ActionController {
         //Prepare dead bodies for raycasting
         for (DeadBody d: level.getdeadBodyArray()){
             d.setTouchingLaser(false);
+            if (level.bounds.y - d.getY() > 10) {
+                level.removeDeadBody(d);
+            }
             if (d.isRemoved()){
                 level.getdeadBodyArray().removeValue(d, true);
             }

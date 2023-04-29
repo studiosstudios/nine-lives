@@ -204,7 +204,7 @@ public class Level {
      *
      * @return a reference to the respawn position
      */
-    public Vector2 getRespawnPos() { return respawnPos; }
+    public Vector2 getRespawnPos() { return currCheckpoint == null ? respawnPos : currCheckpoint.getRespawnPosition(); }
 
     /**
      * Sets the respawn position

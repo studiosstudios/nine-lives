@@ -66,6 +66,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
         Direction.rotateVector(offset, dir);
         flameBase.setX((float) properties.get("x") + offset.x);
         flameBase.setY((float) properties.get("y") + offset.y);
+        flameBase.setSensor((boolean) properties.get("baseSensor", false));
 
         flameOffset = new Vector2(objectConstants.get("flame_offset").getFloat(0)*(float)Math.cos(angle)-
                 objectConstants.get("flame_offset").getFloat(1)*(float)Math.sin(angle),

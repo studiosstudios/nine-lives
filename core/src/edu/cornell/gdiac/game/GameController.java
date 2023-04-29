@@ -1,5 +1,7 @@
 package edu.cornell.gdiac.game;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
@@ -438,6 +440,7 @@ public class GameController implements Screen {
         currLevel.getCat().setJumpPressed(false);
         currLevel.getCat().setGrounded(true);
         currLevel.getCat().setLinearVelocity(Vector2.Zero);
+        currLevel.getCat().setPosition(currLevel.getRespawnPos());
         justRespawned = cameraMovement;
     }
 
@@ -711,11 +714,7 @@ public class GameController implements Screen {
                 gameState = GameState.PLAY;
 
                 currLevel.getCat().setActive(true);
-                if (currLevel.getCheckpoint() != null) {
-                    currLevel.getCat().setPosition(currLevel.getCheckpoint().getRespawnPosition());
-                } else {
-                    currLevel.getCat().setPosition(currLevel.getRespawnPos());
-                }
+                currLevel.getCat().setPosition(currLevel.getRespawnPos());
             }
         }
     }
@@ -877,7 +876,7 @@ public class GameController implements Screen {
         if (currLevel.getCheckpoint() != null) {
             respawn(cameraMovement);
             currLevel.getCat().setActive(true);
-            currLevel.getCat().setPosition(currLevel.getCheckpoint().getRespawnPosition());
         }
+        currLevel.getCat().setPosition(currLevel.getRespawnPos());
     }
 }

@@ -390,7 +390,7 @@ public class GameController implements Screen {
         String[] names = {"cat", "sit", "deadCat", "jumpingCat", "jump_anim", "walk", "button_anim",
                 "spikes", "button", "flamethrower", "flame", "laser", "checkpoint", "checkpointActive",
                 "checkpoint_anim", "checkpoint_active_anim", "checkpoint_base", "checkpoint_base_active",
-                "background", "flame_anim", "roboMob",
+                "background", "flame_anim", "roboMob", "roboMobAnim",
                 "spirit_anim", "spirit_photon", "spirit_photon_cat", "spirit_region",
                 "meow_anim", "idle_anim", "idle_anim_stand",
                 "metal_tileset", "climbable_tileset", "steel","burnCat", "deadCat2", "door", "platforms"};

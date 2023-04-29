@@ -46,7 +46,8 @@
         "checkpoint_base_active" : "platform/checkpoint_base_active.png",
         "background": "platform/labBkg_concept.png",
         "flame_anim": "platform/flame_anim.png",
-        "roboMob": "platform/robo_mob.png",
+        "roboMobAnim": "platform/robot_anim.png",
+        "roboMob": "platform/robot_mob.png",
         "meow_anim": "platform/meow.png",
         "spirit_anim": "platform/spirit_anim.png",
         "spirit_photon": "platform/spirit_photon.png",
@@ -63,15 +64,13 @@
         "constants": "platform/constants.json",
         "controls": "platform/controls.json",
         "tiledSuperJump": "tiled/super-jump.json",
-      "tiledLevelTutorial": "tiled/tiledLevelTutorial1.json",
-//      "tiledLevel1": "tiled/moving-checkpoints-tutorial.json",
-      "tiledLevel1": "tiled/spikes-deaths-easy.json",
-//      "tiledLevel1": "tiled/elevator.json",
-      "tiledLevel2": "tiled/level-beta-med1.json",
-      "tiledLevel3": "tiled/body-switching-chain-medium.json",
-      "tiledLevel4": "tiled/super-jump.json",
-      "tiledLevel5": "tiled/level-beta-hard.json",
-      "tiledLevel6": "tiled/party-room.json"
+        "tiledLevelTutorial": "tiled/tiledLevelTutorial1.json",
+        "tiledLevel1": "tiled/spikes-deaths-easy.json",
+        "tiledLevel2": "tiled/level-beta-med1.json",
+        "tiledLevel3": "tiled/body-switching-chain-medium.json",
+        "tiledLevel4": "tiled/super-jump.json",
+        "tiledLevel5": "tiled/level-beta-hard.json",
+        "tiledLevel6": "tiled/party-room.json"
     },
     "sounds" : {
         "jump" : "platform/jumpCELESTE.wav",
@@ -79,8 +78,7 @@
         "metalLanding" : "platform/metalLandingCELESTE.wav",
         "pew"  : "platform/pew.mp3",
         "plop" : "platform/plop.mp3",
-        "meow" : "platform/meow.mp3",
-
+        "meow" : "platform/meow.mp3"
     },
     "fonts": {
         "retro": {

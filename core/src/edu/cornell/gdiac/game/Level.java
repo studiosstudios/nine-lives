@@ -1138,6 +1138,10 @@ public class Level {
         if (currCheckpoint != null) {
             currCheckpoint.drawBase(canvas);
         }
+
+        if (goal != null) {
+            goal.draw(canvas);
+        }
     }
 
     /**

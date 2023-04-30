@@ -100,6 +100,8 @@ public class Level {
     private ObjectMap<Obstacle, String> objectJoints = new ObjectMap<>();
     /** joints added between obstacles in this level */
     private Array<Joint> joints = new Array<>();
+    private Array<Particle> spiritParticles = new Array<>();
+
 
     /**
      * Returns the bounding rectangle for the physics world
@@ -166,6 +168,9 @@ public class Level {
      * @return a reference to the goal
      */
     public Goal getGoal() { return goal; }
+
+    public Array<Particle> getSpiritParticles() { return spiritParticles; }
+
 
     /**
      * Sets the cat for this level. This is used for level switching.
@@ -957,6 +962,7 @@ public class Level {
         tiles = null;
         currCheckpoint = null;
         climbables = null;
+        goal = null;
         setComplete(false);
         setFailure(false);
     }
@@ -1133,6 +1139,10 @@ public class Level {
 
         for (SpiritRegion s : spiritRegionArray) {
             s.draw(canvas);
+        }
+
+        for (Particle spirit : spiritParticles) {
+            spirit.draw(canvas, textureRegionAssetMap.get("spirit_photon").getTexture());
         }
 
         if (currCheckpoint != null) {

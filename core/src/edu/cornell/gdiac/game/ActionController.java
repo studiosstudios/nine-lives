@@ -60,7 +60,6 @@ public class ActionController {
     /**
      * Creates and initialize a new instance of a ActionController
      *
-     * @param bounds    The game bounds in Box2d coordinates
      * @param scale	    The game scale Vector2
      * @param volume    The volume of the game
      */
@@ -487,6 +486,35 @@ public class ActionController {
             } else {
                 // create dead body
                 if (spawn) level.spawnDeadBody();
+            }
+        }
+    }
+
+    public void recombineLives() {
+        level.resetLives();
+        for (DeadBody body: level.getdeadBodyArray()) {
+            level.removeDeadBody(body);
+            Particle spirit = new Particle();
+            spirit.setX(body.getX());
+            spirit.setY(body.getY());
+            float x = level.getCat().getX() - body.getX();
+            float y = level.getCat().getY() - body.getY();
+            float angle = (float) Math.atan((double)x/(double)y);
+            spirit.setAngle(angle);
+//            level.getSpiritParticles().add(spirit);
+        }
+//        moveSpirits();
+    }
+
+
+    public void moveSpirits() {
+        while (level.getSpiritParticles().size != 0) {
+            System.out.println(level.getSpiritParticles());
+            for (Particle spirit : level.getSpiritParticles()) {
+                spirit.move();
+                if (Math.abs(spirit.getX() - level.getCat().getX()) <= 5f) {
+                    level.getSpiritParticles().removeValue(spirit, true);
+                }
             }
         }
     }

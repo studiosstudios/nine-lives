@@ -182,11 +182,11 @@ public class Goal extends BoxObstacle
 
     public String getSensorName(){ return sensorName; }
 
-//    @Override
-//    public void loadState(ObjectMap<String, Object> state){
-//        super.loadState(state);
-//        Vector2 pos = (Vector2) state.get("position");
-//        setX(pos.x + objectConstants.get("base_offset").getFloat(0));
-//        setY(pos.y + objectConstants.get("base_offset").getFloat(1));
-//    }
+    @Override
+    public void loadState(ObjectMap<String, Object> state){
+        super.loadState(state);
+        Vector2 pos = (Vector2) state.get("position");
+        setX(pos.x + objectConstants.get("base_offset").getFloat(0));
+        setY(pos.y + objectConstants.get("base_offset").getFloat(1));
+    }
 }

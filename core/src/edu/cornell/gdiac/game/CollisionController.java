@@ -126,7 +126,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                     }
                     if (bd2 instanceof Goal) {
                         //TODO: if not active then collect dead bodies with action controller
-                        level.setGoal(true);
+                        actionController.recombineLives();
                     }
                 }
 

@@ -1,12 +1,7 @@
 {
 	"textures": {
-        "earth" : {
-            "file":  "shared/earthtile.png",
-            "wrapU": "repeated",
-            "wrapV": "repeated"
-        },
         "steel" : {
-          "file":  "shared/steeltile.png",
+          "file":  "obstacles/shared/steel.png",
           "wrapU": "repeated",
           "wrapV": "repeated"
         },
@@ -20,7 +15,6 @@
         "wrapU": "repeated",
         "wrapV": "repeated"
       },
-        "goal":   "shared/goaldoor.png",
         "cat":  "platform/cat.png",
         "sit": "platform/sit.png",
         "deadCat": "platform/deadCat.png",
@@ -57,7 +51,7 @@
         "idle_anim_stand": "platform/standing_idle.png",
         "metal_tileset": "tiled/metal_tileset.png",
         "climbable_tileset": "tiled/climbable_tileset.png",
-        "steel": "shared/steeltile.png",
+//        "steel": "shared/steeltile.png",
         "deadCat2" : "platform/deadCat2.png",
       "button_base": "platform/base.png",
       "button_top": "platform/button_top.png",
@@ -82,11 +76,5 @@
         "pew"  : "platform/pew.mp3",
         "plop" : "platform/plop.mp3",
         "meow" : "platform/meow.mp3"
-    },
-    "fonts": {
-        "retro": {
-            "file": "shared/RetroGame.ttf",
-            "size": 64
-        }
     }
 }

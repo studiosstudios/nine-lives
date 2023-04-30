@@ -1,4 +1,6 @@
 {
+	"size": [32, 18], //[width, height]
+	"offset": [0,0], //[x,y] bottom left corner
 	"cat" : {
 		"pos": [0.5, 15],
 		"ret_pos": [31.5,13]

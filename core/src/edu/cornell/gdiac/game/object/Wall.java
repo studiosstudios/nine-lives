@@ -22,10 +22,8 @@ public class Wall extends PolygonObstacle  {
 
     /**
      * Creates a new wall object.
-     * @param texture  TextureRegion for drawing.
+     * @param properties Data for object
      * @param scale    Draw scale for drawing.
-     * @param shape    Polygon shape.
-     * @param isClimbable Whether wall is climbable or not.
      */
     public Wall(ObjectMap<String, Object> properties, Vector2 scale){
         super((float[]) properties.get("polygon"));

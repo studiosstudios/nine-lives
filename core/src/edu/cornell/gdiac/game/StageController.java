@@ -154,6 +154,10 @@ public class StageController implements Screen {
 		animation = new Animation<>(frameDuration, spriteFrames[0]);
 		animationTime = 0f;
 
+		if(!Save.exists()) {
+			Save.create();
+		}
+
 		mainMenuStage = new MainMenuStage(internal, true);
 		settingsStage = new SettingsStage(internal, true);
 		pauseStage = new PauseStage(internal, true);
@@ -285,6 +289,9 @@ public class StageController implements Screen {
 				mainMenuStage.setLevelSelectState(0);
 				changeStage(levelSelectStage);
 			} else if (settingsStage.isBack() || levelSelectStage.isBack()) {
+				if (settingsStage.isBack()) {
+					settingsStage.exit();
+				}
 				settingsStage.setBackButtonState(0);
 				levelSelectStage.setBackButtonState(0);
 				changeStage(mainMenuStage);

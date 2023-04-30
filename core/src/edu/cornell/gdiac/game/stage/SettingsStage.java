@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.game.Save;
 
 public class SettingsStage extends StageWrapper {
     private Table table;
@@ -83,7 +84,7 @@ public class SettingsStage extends StageWrapper {
 
             }
         });
-        volumeSlider.setValue(0.5f);
+        volumeSlider.setValue(Save.getVolume());
 
 //        volumeSlider.setPosition(100, 100);
 //        volumeSlider.setWidth(460);
@@ -149,5 +150,9 @@ public class SettingsStage extends StageWrapper {
             backButtonState = 2;
             backButtonActor.setColor(Color.WHITE);
         }
+    }
+
+    public void exit() {
+        Save.setVolume(volumeSlider.getValue());
     }
 }

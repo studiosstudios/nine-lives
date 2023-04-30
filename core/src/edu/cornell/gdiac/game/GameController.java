@@ -13,6 +13,7 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.game.object.*;
 
 import edu.cornell.gdiac.game.obstacle.*;
+import edu.cornell.gdiac.game.stage.HudStage;
 import edu.cornell.gdiac.util.ScreenListener;
 
 import java.util.HashMap;
@@ -113,6 +114,8 @@ public class GameController implements Screen {
     public StageController stageController = null;
     public boolean paused = false;
 
+    public HudStage hud;
+
     /**
      * PLAY: User has all controls and is in game
      * PLAYER_PAN: Camera zooms out and player is free to pan around the level (all other gameplay controls stripped from user)
@@ -174,6 +177,13 @@ public class GameController implements Screen {
         gameState = GameState.PLAY;
         panTime = 0;
         respawnDelay = 0;
+
+        AssetDirectory internal = new AssetDirectory("loading.json");
+        internal.loadAssets();
+        internal.finishLoading();
+
+        hud = new HudStage(internal, true);
+        hud.lives = currLevel.getNumLives();
     }
 
     /**
@@ -597,6 +607,9 @@ public class GameController implements Screen {
         actionController.update(dt);
         flashColor.a -= flashColor.a/10;
         updateCamera();
+
+        hud.lives = currLevel.getNumLives();
+        hud.updateLives();
     }
 
     /**
@@ -752,7 +765,7 @@ public class GameController implements Screen {
      */
     @Override
     public void resize(int width, int height) {
-
+        hud.getViewport().update(width, height, true);
     }
 
     /**
@@ -813,6 +826,7 @@ public class GameController implements Screen {
         currLevel.draw(canvas, gameState != GameState.RESPAWN);
         canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
         canvas.end();
+        hud.draw();
 
         if (debug) {
             canvas.beginDebug();

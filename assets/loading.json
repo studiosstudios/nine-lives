@@ -21,6 +21,8 @@
         "loadingTutorial": "shared/loadingTutorial.png",
         "catpaw": "shared/catpaw.png",
         "first": "shared/first.png",
-        "levelSelectBackground": "shared/levelSelectBackground.png"
+        "levelSelectBackground": "shared/levelSelectBackground.png",
+            "bar": "shared/bar.png",
+            "bell": "shared/bell.png"
 	}
 }

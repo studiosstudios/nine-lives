@@ -23,6 +23,14 @@
         "first": "shared/first.png",
         "levelSelectBackground": "shared/levelSelectBackground.png",
             "bar": "shared/bar.png",
-            "bell": "shared/bell.png"
-	}
+            "bell": "shared/bell.png",
+        "progressbar": "shared/progressbar.png",
+        "progressbarbefore": "shared/progressbarbefore.png"
+	},
+  "fonts": {
+    "chewy": {
+      "file": "shared/chewy.ttf",
+      "size": 36,
+    }
+  }
 }

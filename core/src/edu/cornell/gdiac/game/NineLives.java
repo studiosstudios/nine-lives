@@ -119,6 +119,7 @@ public class NineLives extends Game implements ScreenListener {
 			menu.loadAssets();
 			startGame(TOTAL_LEVELS, 1);
 		} else if (screen == menu && exitCode == 69) {
+			menu.loadAssets();
 			startGame(TOTAL_LEVELS, menu.getSelectedLevel());
 		} else if (screen == menu && exitCode == 25) {
 			controller.resume();
@@ -135,6 +136,10 @@ public class NineLives extends Game implements ScreenListener {
 			controller.pause();
 //			setScreen(menu);
 //			controller.getCurrLevel().getLevel().draw(canvas,false);
+		} else if (exitCode == 79) {
+			if (menu != null) {
+				setScreen(menu);
+			}
 		} else if (exitCode == 99) {
 			Gdx.app.exit();
 		}

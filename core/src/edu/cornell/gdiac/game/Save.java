@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 
 public class Save {
-    private final static String prefsName = "save";
+    private final static String prefsName = "Nine Lives";
 
     public static boolean exists() {
         return Gdx.app.getPreferences(prefsName).getBoolean("exists", false);

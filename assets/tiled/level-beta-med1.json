@@ -728,7 +728,7 @@
                         {
                          "name":"totalTicks",
                          "type":"int",
-                         "value":15
+                         "value":60
                         }],
                  "rotation":0,
                  "type":"Door",

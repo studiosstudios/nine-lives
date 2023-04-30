@@ -41,6 +41,7 @@ public class Platform extends PolygonObstacle implements Activatable {
     private Vector2 startPos;
     private TextureRegion[][] textures;
     private int tileSize;
+    private Vector2 other;
 
     /**
      * Creates a new Door object.
@@ -71,6 +72,7 @@ public class Platform extends PolygonObstacle implements Activatable {
         disp = (Vector2) properties.get("disp", Vector2.Zero);
         isClimbable = (boolean) properties.get("climbable", false);
         target = new Vector2();
+        other = new Vector2();
         initTiledActivations(properties);
     }
 
@@ -146,12 +148,6 @@ public class Platform extends PolygonObstacle implements Activatable {
     public void update(float dt){
         super.update(dt);
         if (moving == 0) { return; }
-        if (moving == 1){
-            target.set(disp.x + startPos.x, disp.y + startPos.y);
-        } else {
-            target.set(startPos);
-        }
-
 
         //check if should start slowing down to 0
         if (target.dst(getPosition()) - estimateDist(dt) <= 0){
@@ -167,10 +163,8 @@ public class Platform extends PolygonObstacle implements Activatable {
             setVY(0);
         }
 
-        //check if passing through target pos: velocity is parallel to target velocity and target is between
-        //current position and next position
-        if (targetVel.dot(getLinearVelocity()) >= 0 && !targetVel.equals(Vector2.Zero) &&
-                target.dst(getPosition()) < target.dst(getPosition().add(getLinearVelocity().scl(dt)))) {
+        //check if passed through target pos
+        if (other.dst(getPosition()) > other.dst(target)) {
             moving = 0;
             setPosition(target);
             setVX(0);
@@ -224,12 +218,16 @@ public class Platform extends PolygonObstacle implements Activatable {
     public void activated(World world){
         moving = -1;
         targetVel.set(-disp.x, -disp.y).nor().scl(speed);
+        target.set(startPos);
+        other.set(disp.x + startPos.x, disp.y + startPos.y);
     }
 
     //region ACTIVATABLE METHODS
     public void deactivated(World world){
         moving = 1;
         targetVel.set(disp.x, disp.y).nor().scl(speed);
+        target.set(disp.x + startPos.x, disp.y + startPos.y);
+        other.set(startPos);
     }
 
     //region ACTIVATABLE METHODS
@@ -244,13 +242,11 @@ public class Platform extends PolygonObstacle implements Activatable {
 
     @Override
     public float getXPos() {
-        return getX();
+        return getX() + getWidth()/2f;
     }
 
     @Override
-    public float getYPos() {
-        return getY();
-    }
+    public float getYPos() { return getY() + getHeight()/2f; }
 
     @Override
     public boolean getInitialActivation() { return initialActivation; }

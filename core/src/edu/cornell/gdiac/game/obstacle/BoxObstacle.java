@@ -58,6 +58,18 @@ public class BoxObstacle extends SimpleObstacle {
 	public void setDimension(Vector2 value) {
 		setDimension(value.x, value.y);
 	}
+
+	/**
+	 * Sets the dimensions of this box
+	 *
+	 * This method does not keep a reference to the parameter.
+	 *
+	 * @param value     the dimensions of this box
+	 * @param markDirty if the fixture should be recreated
+	 */
+	public void setDimension(Vector2 value, boolean markDirty) {
+		setDimension(value.x, value.y, markDirty);
+	}
 	
 	/** 
 	 * Sets the dimensions of this box
@@ -65,12 +77,22 @@ public class BoxObstacle extends SimpleObstacle {
 	 * @param width   The width of this box
 	 * @param height  The height of this box
 	 */
-	public void setDimension(float width, float height) {
+	public void setDimension(float width, float height) {setDimension(width, height, true);}
+
+	/**
+	 * Sets the dimensions of this box
+	 *
+	 * @param width   The width of this box
+	 * @param height  The height of this box
+	 * @param markDirty  If the fixture should be recreated
+	 */
+	public void setDimension(float width, float height, boolean markDirty) {
 		dimension.set(width, height);
-		markDirty(true);
+		markDirty(markDirty);
 		resize(width, height);
+		if (!markDirty) { ((PolygonShape) geometry.getShape()).set(vertices); }
 	}
-	
+
 	/**
 	 * Returns the box width
 	 *
@@ -209,14 +231,13 @@ public class BoxObstacle extends SimpleObstacle {
 
 	public ObjectMap<String, Object> storeState(){
 		ObjectMap<String, Object> stateMap = super.storeState();
-		stateMap.put("dimension", dimension);
+		stateMap.put("dimension", dimension.cpy());
 		return stateMap;
 	}
 
 	public void loadState(ObjectMap<String, Object> stateMap){
 		super.loadState(stateMap);
-		setDimension((Vector2) stateMap.get("dimension"));
-		markDirty(false);
+		setDimension((Vector2) stateMap.get("dimension"), false);
 	}
 
 

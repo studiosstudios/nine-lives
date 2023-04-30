@@ -29,23 +29,24 @@ public class Exit extends BoxObstacle {
      * Creates a new Exit.
      *
      * @param properties     String-Object map of properties for this object
-     * @param tileSize       Tile size of the Tiled map for loading positions
-     * @param levelHeight    Height of level (in grid cell units) for loading y position
+     * @param scale          Draw scale for drawing
      */
-    public Exit(ObjectMap<String, Object> properties, Vector2 scale, int tileSize, int levelHeight){
-        super((float) properties.get("width")/tileSize, (float) properties.get("height")/tileSize);
+    public Exit(ObjectMap<String, Object> properties, Vector2 scale){
+        super((float) properties.get("width"), (float) properties.get("height"));
         setBodyType(BodyDef.BodyType.StaticBody);
         setDensity(0);
         setFriction(0);
         setRestitution(0);
         setSensor(true);
-        setX((float) properties.get("x")/tileSize + getDimension().x/2);
-        setY(levelHeight - (float) properties.get("y")/tileSize - getDimension().y/2);
+        setX((float) properties.get("x") + getDimension().x/2);
+        setY((float) properties.get("y") - getDimension().y/2);
         setDrawScale(scale);
         if (((properties.get("type", "goal")).equals("goal"))){
             exitType = ExitType.GOAL;
+            setX(getX() + 1);
         } else {
             exitType = ExitType.RETURN;
+            setX(getX() - 1);
         }
         setName((String) properties.get("type"));
     }

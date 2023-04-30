@@ -10,6 +10,16 @@
           "wrapU": "repeated",
           "wrapV": "repeated"
         },
+      "platforms" : {
+        "file":  "platform/moving_platform.png",
+        "wrapU": "repeated",
+        "wrapV": "repeated"
+      },
+      "door": {
+        "file": "platform/doors.png",
+        "wrapU": "repeated",
+        "wrapV": "repeated"
+      },
         "goal":   "shared/goaldoor.png",
         "cat":  "platform/cat.png",
         "sit": "platform/sit.png",
@@ -22,7 +32,7 @@
         "barrier": "platform/barrier.png",
         "bullet":  "platform/bullet.png",
         "button_anim": "platform/button_anim.png",
-        "spikes": "platform/spikes2.png",
+        "spikes": "platform/spikes.png",
         "button": "platform/button.png",
         "flamethrower": "platform/flamethrower.png",
         "flame": "platform/flame.png",
@@ -34,9 +44,11 @@
         "checkpoint_active_anim" : "platform/checkpoint_active_anim.png",
         "checkpoint_base" : "platform/checkpoint_base.png",
         "checkpoint_base_active" : "platform/checkpoint_base_active.png",
+        "goal_obj" : "platform/goal_obj.png",
         "background": "platform/labBkg_concept.png",
         "flame_anim": "platform/flame_anim.png",
-        "roboMob": "platform/robo_mob.png",
+        "roboMobAnim": "platform/robot_anim.png",
+        "roboMob": "platform/robot_mob.png",
         "meow_anim": "platform/meow.png",
         "spirit_anim": "platform/spirit_anim.png",
         "spirit_photon": "platform/spirit_photon.png",
@@ -45,19 +57,21 @@
         "idle_anim": "platform/idle.png",
         "idle_anim_stand": "platform/standing_idle.png",
         "metal_tileset": "tiled/metal_tileset.png",
-        "steel": "shared/steeltile.png"
+        "climbable_tileset": "tiled/climbable_tileset.png",
+        "steel": "shared/steeltile.png",
+        "deadCat2" : "platform/deadCat2.png"
     },
     "jsons"  : {
         "constants": "platform/constants.json",
         "controls": "platform/controls.json",
-        "level1": "platform/level1.json",
-        "level2": "platform/level2.json",
-        "level3": "platform/level3.json",
-        "level4": "platform/level4.json",
-        "level5": "platform/level_testplayground.json",
-        "tiledLevel1": "tiled/tiledLevel1.json",
-      "tiledLevel2": "tiled/tiledLevel2.json",
-      "tiledLevel3": "tiled/tiledLevel3.json"
+        "tiledSuperJump": "tiled/super-jump.json",
+        "tiledLevelTutorial": "tiled/tiledLevelTutorial1.json",
+        "tiledLevel1": "tiled/spikes-deaths-easy.json",
+        "tiledLevel2": "tiled/level-beta-med1.json",
+        "tiledLevel3": "tiled/body-switching-chain-medium.json",
+        "tiledLevel4": "tiled/super-jump.json",
+        "tiledLevel5": "tiled/level-beta-hard.json",
+        "tiledLevel6": "tiled/party-room.json"
     },
     "sounds" : {
         "jump" : "platform/jumpCELESTE.wav",
@@ -65,8 +79,7 @@
         "metalLanding" : "platform/metalLandingCELESTE.wav",
         "pew"  : "platform/pew.mp3",
         "plop" : "platform/plop.mp3",
-        "meow" : "platform/meow.mp3",
-
+        "meow" : "platform/meow.mp3"
     },
     "fonts": {
         "retro": {

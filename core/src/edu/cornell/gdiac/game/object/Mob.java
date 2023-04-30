@@ -10,7 +10,10 @@
  */
 package edu.cornell.gdiac.game.object;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
@@ -31,6 +34,16 @@ import java.util.HashMap;
  * no other subclasses that we might loop through.
  */
 public class Mob extends CapsuleObstacle {
+    /** The initializing data (to avoid magic numbers) */
+//    private final JsonValue data;
+
+    /** walking animation */
+    private Animation<TextureRegion> walkAnimation;
+
+    private float walkTime;
+    private TextureRegion[][] spriteFrames;
+    /** The factor to multiply by the input */
+//    private final float force;
     /** The amount to slow the character down */
     private final float damping;
     /** The maximum character speed */
@@ -53,12 +66,14 @@ public class Mob extends CapsuleObstacle {
     private static final String sensorName = "mobsensor";
     /** The detector ray attached to this mob */
     public MobDetector detectorRay;
+    /** Height scale for mob */
+    public static final float H_SCALE = 0.9f;
 
 
     /**
      * Returns left/right movement of this character.
      *
-     * This is the result of input times cat force.
+     * This is the result of input times mob force.
      *
      * @return left/right movement of this character.
      */
@@ -119,21 +134,22 @@ public class Mob extends CapsuleObstacle {
      * @param properties     String-Object map of properties for this object
      * @param tMap           Texture map for loading textures
      * @param scale          Draw scale for drawing
-     * @param tileSize       Tile size of the Tiled map for loading positions
-     * @param levelHeight    Height of level (in grid cell units) for loading y position
      * @param textureScale   Texture scale for rescaling texture
      */
-    public Mob(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
-        super(tMap.get("roboMob").getRegionWidth()/scale.x*textureScale.x/2f,
-                tMap.get("roboMob").getRegionHeight()/scale.y*textureScale.y);
 
+    public Mob(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
+        super(tMap.get("roboMob").getRegionWidth()/scale.x*textureScale.x/2f,
+                tMap.get("roboMob").getRegionHeight()/scale.y*textureScale.y*H_SCALE);
 
         setFixedRotation(true);
         setName("mob");
-        setX((float) properties.get("x")/tileSize + objectConstants.get("offset").getFloat(0));
-        setY(levelHeight - (float) properties.get("y")/tileSize + objectConstants.get("offset").getFloat(1)-getDimension().y/2);
+        setX((float) properties.get("x") + objectConstants.get("offset").getFloat(0));
+        setY((float) properties.get("y") + objectConstants.get("offset").getFloat(1)-getDimension().y/2);
         setDrawScale(scale);
         setTextureScale(textureScale);
+        walkTime = 0f;
+        spriteFrames = TextureRegion.split(tMap.get("roboMobAnim").getTexture(), 2058, 2058);
+        walkAnimation = new Animation<>(0.15f, spriteFrames[0]);
         setTexture(tMap.get("roboMob"));
 
         setDensity(objectConstants.getFloat("density", 0));
@@ -190,7 +206,7 @@ public class Mob extends CapsuleObstacle {
     }
 
     /**
-     * Applies the force to the body of this cat
+     * Applies the force to the body of this mob
      *
      * This method should be called after the force attribute is set.
      */
@@ -231,7 +247,12 @@ public class Mob extends CapsuleObstacle {
      */
     public void draw(GameCanvas canvas) {
         float effect = faceRight ? 1.0f : -1.0f;
-        canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),effect * textureScale.x, textureScale.y);
+        float x = getX() * drawScale.x;
+        float y = getY()*drawScale.y;
+        walkAnimation.setPlayMode(Animation.PlayMode.LOOP_REVERSED);
+        walkTime += Gdx.graphics.getDeltaTime();
+        TextureRegion currentFrame = walkAnimation.getKeyFrame(walkTime);
+        canvas.draw(currentFrame,Color.WHITE, origin.x, origin.y,x,y, getAngle(),effect * textureScale.x,textureScale.y*H_SCALE);
     }
 
     /**

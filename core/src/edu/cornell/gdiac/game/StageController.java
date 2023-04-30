@@ -24,7 +24,7 @@ public class StageController implements Screen {
 	/** Internal assets for this loading screen */
 	private final AssetDirectory internal;
 	/** The actual assets to be loaded */
-	private final AssetDirectory assets;
+	private AssetDirectory assets;
 	/** Standard window size (for scaling) */
 	private static int STANDARD_WIDTH  = 1024;
 	/** Standard window height (for scaling) */
@@ -40,7 +40,10 @@ public class StageController implements Screen {
 	private ScreenListener listener;
 	/** Whether this player mode is still active */
 	private boolean active;
-	public boolean pause;
+	public boolean pause = false;
+	public boolean loading;
+	public boolean starting;
+	public boolean fromSelect;
 
 	/** The current stage being rendered on the screen */
 	private StageWrapper stage;
@@ -54,6 +57,8 @@ public class StageController implements Screen {
 	private PauseStage pauseStage;
 	/** The stage for the level select menu */
 	private LevelSelectStage levelSelectStage;
+	private LoadingStage loadingStage;
+	private StartStage startStage;
 
 	private float animationTime;
 	/** Background texture for start-up */
@@ -62,7 +67,7 @@ public class StageController implements Screen {
 	private Animation<TextureRegion> animation;
 	private Texture jump_texture;
 
-	public LevelController currLevel;
+	public GameController currLevel;
 	private int selectedLevel;
 
 	public int getSelectedLevel() { return selectedLevel; }
@@ -106,6 +111,7 @@ public class StageController implements Screen {
 	}
 
 	public StageWrapper getStage() { return stage; }
+	public StageWrapper getPauseStage() { return pauseStage; }
 
 	/**
 	 * Creates a LoadingMode with the default budget, size and position.
@@ -114,7 +120,7 @@ public class StageController implements Screen {
 	 * @param canvas 	The game canvas to draw to
 	 */
 	public StageController(String file, GameCanvas canvas) {
-		this(file, canvas, DEFAULT_BUDGET);
+		this(file, canvas, DEFAULT_BUDGET, false, false);
 	}
 
 	/**
@@ -129,7 +135,7 @@ public class StageController implements Screen {
 	 * @param canvas 	The game canvas to draw to
 	 * @param millis 	The loading budget in milliseconds
 	 */
-	public StageController(String file, GameCanvas canvas, int millis) {
+	public StageController(String file, GameCanvas canvas, int millis, boolean start, boolean paused) {
 		this.canvas  = canvas;
 		budget = millis;
 
@@ -148,12 +154,25 @@ public class StageController implements Screen {
 		animation = new Animation<>(frameDuration, spriteFrames[0]);
 		animationTime = 0f;
 
-		mainMenuStage = new MainMenuStage(internal, false);
+		if(!Save.exists()) {
+			Save.create();
+		}
+
+		mainMenuStage = new MainMenuStage(internal, true);
 		settingsStage = new SettingsStage(internal, true);
 		pauseStage = new PauseStage(internal, true);
 		levelSelectStage = new LevelSelectStage(internal, true);
+		loadingStage = new LoadingStage(internal, true);
 
-		stage = mainMenuStage;
+		if (start) {
+			starting = true;
+			startStage = new StartStage(internal, true);
+			stage = startStage;
+		} else if (paused) {
+			stage = pauseStage;
+		} else {
+			stage = mainMenuStage;
+		}
 
 		Gdx.input.setInputProcessor( stage );
 
@@ -170,6 +189,12 @@ public class StageController implements Screen {
 		internal.unloadAssets();
 		internal.dispose();
 	}
+
+	public void loadAssets() {
+		assets = new AssetDirectory("assets.json");
+		assets.loadAssets();
+		assets.finishLoading();
+	}
 	
 	/**
 	 * Update the status of this player mode.
@@ -181,10 +206,14 @@ public class StageController implements Screen {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	private void update(float delta) {
-		if(!assets.isFinished()) {
-			assets.update(budget);
-			if (assets.getProgress() >= 1.0f) {
-				stage.createActors();
+		if (starting) {
+			if(!assets.isFinished()) {
+				assets.update(budget);
+				if (assets.getProgress() >= 1.0f) {
+					starting = false;
+					changeStage(mainMenuStage);
+					startStage = null;
+				}
 			}
 		}
 	}
@@ -197,8 +226,10 @@ public class StageController implements Screen {
 	 * prefer this in lecture.
 	 */
 	private void draw() {
-		Gdx.gl.glClearColor(0, 0, 0, 1.0f);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		if (!pause) {
+			Gdx.gl.glClearColor(0, 0, 0, 1.0f);
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		}
 		animation.setPlayMode(Animation.PlayMode.LOOP);
 		animationTime += Gdx.graphics.getDeltaTime();
 		TextureRegion currentFrame = animation.getKeyFrame(animationTime);
@@ -221,17 +252,36 @@ public class StageController implements Screen {
 	 */
 	public void render(float delta) {
 		if (active) {
-			update(delta);
+			if (!pause && startStage != null) { update(delta); }
 			draw();
 			if (pause) {
-				pause = false;
 				pauseStage.currLevel = this.currLevel;
-				changeStage(pauseStage);
+//				changeStage(pauseStage);
+			}
+			if (loading) {
+				loading = false;
+//				try {
+//					Thread.sleep(1000);
+//				} catch (InterruptedException e) {
+//					Thread.currentThread().interrupt();
+//				}
+				if (fromSelect) {
+					fromSelect = false;
+					listener.exitScreen(this, 69);
+				} else {
+					fromSelect = false;
+					listener.exitScreen(this,0);
+				}
 			}
 
 			// We are ready, notify our listener
 			if (mainMenuStage.isPlay() && listener != null) {
-				listener.exitScreen(this, 0);
+				loading = true;
+				fromSelect = false;
+				changeStage(loadingStage);
+				getStage().act();
+				getStage().draw();
+//				listener.exitScreen(this, 0);
 			} else if (mainMenuStage.isSettings()) {
 				mainMenuStage.setSettingsState(0);
 				changeStage(settingsStage);
@@ -239,22 +289,33 @@ public class StageController implements Screen {
 				mainMenuStage.setLevelSelectState(0);
 				changeStage(levelSelectStage);
 			} else if (settingsStage.isBack() || levelSelectStage.isBack()) {
+				if (settingsStage.isBack()) {
+					settingsStage.exit();
+				}
 				settingsStage.setBackButtonState(0);
 				levelSelectStage.setBackButtonState(0);
 				changeStage(mainMenuStage);
 			} else if (levelSelectStage.isPlay() && listener != null) {
+				loading = true;
+				fromSelect = true;
+				changeStage(loadingStage);
+				getStage().act();
+				getStage().draw();
 				levelSelectStage.setPlayButtonState(0);
 				selectedLevel = levelSelectStage.getSelectedLevel();
-				listener.exitScreen(this, 69);
+//				listener.exitScreen(this, 69);
 			} else if (pauseStage.isResume() && listener != null) {
+				pause = false;
 				pauseStage.setResumeButtonState(0);
 				pauseStage.currLevel = null;
 				listener.exitScreen(this, 25);
 			} else if (pauseStage.isMainMenu() && listener != null) {
+				pause = false;
 				pauseStage.setMainMenuState(0);
 				pauseStage.currLevel = null;
 				mainMenuStage.createActors();
 				changeStage(mainMenuStage);
+				listener.exitScreen(this, 79);
 			} else if (mainMenuStage.isExit() && listener != null) {
 				listener.exitScreen(this, 99);
 			}

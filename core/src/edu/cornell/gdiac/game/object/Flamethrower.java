@@ -14,10 +14,11 @@ import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
 import edu.cornell.gdiac.game.obstacle.ComplexObstacle;
+import edu.cornell.gdiac.util.Direction;
 
 import java.util.HashMap;
 
-public class Flamethrower extends ComplexObstacle implements Activatable, Movable {
+public class Flamethrower extends ComplexObstacle implements Activatable {
     /** Constants that are shared between all instances of this class*/
     private static JsonValue objectConstants;
     /** The flame object of this flamethrower*/
@@ -31,12 +32,8 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
     /** Starting activation state */
     private boolean initialActivation;
     private final Vector2 flameOffset;
-    /** If this flamethrower can be pushed */
-    private final boolean pushable;
-
-    private ObjectSet<Fixture> groundFixtures = new ObjectSet<>();
-    private PolygonShape groundSensorShape;
-    private final String groundSensorName;
+    public static final String flameSensorName = "flameSensor";
+    private Direction dir;
 
     /**
      * Creates a new Flamethrower object.
@@ -44,11 +41,9 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
      * @param properties     String-Object map of properties for this object
      * @param tMap           Texture map for loading textures
      * @param drawScale      Draw scale for drawing
-     * @param tileSize       Tile size of the Tiled map for loading positions
-     * @param levelHeight    Height of level (in grid cell units) for loading y position
      * @param textureScale   Texture scale for rescaling texture
      */
-    public Flamethrower(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 drawScale, int tileSize, int levelHeight, Vector2 textureScale) {
+    public Flamethrower(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 drawScale, Vector2 textureScale) {
         super();
 
 
@@ -59,35 +54,30 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
         flameBase.setDrawScale(drawScale);
         flameBase.setTextureScale(textureScale);
         flameBase.setTexture(tMap.get("flamethrower"));
-        pushable = (boolean) properties.get("pushable", false);
         flameBase.setFriction(objectConstants.getFloat("friction", 0));
         flameBase.setRestitution(objectConstants.getFloat("restitution", 0));
         flameBase.setDensity(objectConstants.getFloat("density", 0));
         flameBase.setMass(objectConstants.getFloat("mass", 0));
         flameBase.setName("flamethrower");
         float angle = (float) ((float) properties.get("rotation") * Math.PI/180);
+        dir = Direction.angleToDir((int) ((float) properties.get("rotation")));
         flameBase.setAngle(angle);
-        flameBase.setX((float) properties.get("x")/tileSize+objectConstants.get("base_offset").getFloat(0));
-        flameBase.setY(levelHeight - (float) properties.get("y")/tileSize+objectConstants.get("base_offset").getFloat(1));
+        Vector2 offset = new Vector2(objectConstants.get("base_offset").getFloat(0), objectConstants.get("base_offset").getFloat(1));
+        Direction.rotateVector(offset, dir);
+        flameBase.setX((float) properties.get("x") + offset.x);
+        flameBase.setY((float) properties.get("y") + offset.y);
+        flameBase.setSensor((boolean) properties.get("baseSensor", false));
 
         flameOffset = new Vector2(objectConstants.get("flame_offset").getFloat(0)*(float)Math.cos(angle)-
                 objectConstants.get("flame_offset").getFloat(1)*(float)Math.sin(angle),
                 objectConstants.get("flame_offset").getFloat(1)*(float)Math.cos(angle)-
                         objectConstants.get("flame_offset").getFloat(0)*(float)Math.sin(angle));
         flame = new Flame(flameTexture, drawScale, flameBase.getPosition(), flameBase.getAngle(),textureScale);
-
-        if (pushable){
-            flame.setBodyType(BodyDef.BodyType.DynamicBody);
-            flameBase.setBodyType(BodyDef.BodyType.DynamicBody);
-        } else {
-            flame.setBodyType(BodyDef.BodyType.StaticBody);
-            flameBase.setBodyType(BodyDef.BodyType.StaticBody);
-        }
-
+        flameBase.setBodyType(properties.containsKey("attachName") ? BodyDef.BodyType.DynamicBody : BodyDef.BodyType.StaticBody);
+        flame.setBodyType(flameBase.getBodyType());
 
         bodies.add(flameBase);
         bodies.add(flame);
-        groundSensorName = "flameBaseGroundSensor";
         initTiledActivations(properties);
     }
 
@@ -127,19 +117,6 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
         if (!activated){
             deactivated(world);
         }
-
-        //ground sensor
-        FixtureDef sensorDef = new FixtureDef();
-        sensorDef.friction = 0;
-        sensorDef.isSensor = true;
-        Vector2 location = new Vector2(0, -flameBase.getDimension().y/2f);
-        groundSensorShape = new PolygonShape();
-        groundSensorShape.setAsBox(flameBase.getDimension().x/2.5f, 0.1f, location, 0.0f);
-        sensorDef.shape = groundSensorShape;
-
-        flameBase.getBody().setUserData(this);
-        Fixture sensorFixture = flameBase.getBody().createFixture( sensorDef );
-        sensorFixture.setUserData(groundSensorName);
         return true;
     }
 
@@ -172,6 +149,16 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
     public void setInitialActivation(boolean initialActivation){ this.initialActivation = initialActivation; }
 
     @Override
+    public float getXPos() {
+        return getX();
+    }
+
+    @Override
+    public float getYPos() {
+        return getY();
+    }
+
+    @Override
     public boolean getInitialActivation() { return initialActivation; }
     //endregion
 
@@ -180,12 +167,6 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
      * @param constants JSON storing the shared constants.
      */
     public static void setConstants(JsonValue constants) { objectConstants = constants; }
-
-    public boolean isMovable() {return pushable;}
-
-    public ObjectSet<Fixture> getGroundFixtures() { return groundFixtures; }
-
-    public String getGroundSensorName(){ return groundSensorName; }
 
     public ObjectMap<String, Object> storeState(){
         ObjectMap<String, Object> stateMap = new ObjectMap<>();
@@ -206,12 +187,6 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
         markDirty(true);
     }
 
-    public void drawDebug(GameCanvas canvas) {
-        super.drawDebug(canvas);
-        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
-        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
-        canvas.drawPhysics(groundSensorShape,Color.RED,flameBase.getX()-xTranslate, flameBase.getY()-yTranslate,getAngle(),drawScale.x,drawScale.y);
-    }
 
     /**
      * Represents a flame that a flamethrower can produce.
@@ -259,6 +234,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
             if (!super.activatePhysics(world)) {
                 return false;
             }
+            body.getFixtureList().get(0).setUserData("");
             FixtureDef sensorDef = new FixtureDef();
             sensorDef.density = 0;
             sensorDef.isSensor = true;
@@ -267,7 +243,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable, Movabl
             sensorDef.shape = sensorShape;
 
             Fixture sensorFixture = body.createFixture( sensorDef );
-            sensorFixture.setUserData(this);
+            sensorFixture.setUserData(flameSensorName);
             return true;
         }
 

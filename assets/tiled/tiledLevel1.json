@@ -1380,6 +1380,11 @@
               "propertytype":"activators",
               "type":"string",
               "value":"switch"
+            },
+            {
+              "name":"shouldPan",
+              "type": "bool",
+              "value": true
             }],
           "rotation":0,
           "type":"",
@@ -1404,6 +1409,11 @@
               "propertytype":"activators",
               "type":"string",
               "value":"button"
+            },
+            {
+              "name":"shouldPan",
+              "type": "bool",
+              "value": true
             }],
           "rotation":0,
           "type":"",
@@ -1452,6 +1462,11 @@
               "propertytype":"activators",
               "type":"string",
               "value":"button"
+            },
+            {
+              "name":"shouldPan",
+              "type": "bool",
+              "value": true
             }],
           "rotation":0,
           "type":"",

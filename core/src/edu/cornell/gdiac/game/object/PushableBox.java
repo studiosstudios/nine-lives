@@ -19,6 +19,7 @@ public class PushableBox extends BoxObstacle implements Movable {
     private ObjectSet<Fixture> groundFixtures = new ObjectSet<>();
     private PolygonShape sensorShape;
     private final String groundSensorName;
+    private float damping;
 
     /**
      * Sets the shared constants for all instances of this class.
@@ -33,11 +34,9 @@ public class PushableBox extends BoxObstacle implements Movable {
      * @param properties     String-Object map of properties for this object
      * @param tMap           Texture map for loading textures
      * @param scale          Draw scale for drawing
-     * @param tileSize       Tile size of the Tiled map for loading positions
-     * @param levelHeight    Height of level (in grid cell units) for loading y position
      * @param textureScale   Texture scale for rescaling texture
      */
-    public PushableBox(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, int levelHeight, Vector2 textureScale){
+    public PushableBox(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
         super(tMap.get("steel").getRegionWidth()/scale.x,
                 tMap.get("steel").getRegionHeight()/scale.y);
 
@@ -52,8 +51,9 @@ public class PushableBox extends BoxObstacle implements Movable {
         setFriction(objectConstants.getFloat("friction", 0));
         setDensity(objectConstants.getFloat("density", 0));
         setMass(objectConstants.getFloat("mass", 0));
-        setX((float) properties.get("x")/tileSize+objectConstants.get("offset").getFloat(0));
-        setY(levelHeight - (float) properties.get("y")/tileSize+objectConstants.get("offset").getFloat(1));
+        setX((float) properties.get("x")+objectConstants.get("offset").getFloat(0));
+        setY((float) properties.get("y")+objectConstants.get("offset").getFloat(1));
+        damping = objectConstants.getFloat("damping", 0);
 
         groundSensorName = "boxGroundSensor";
     }
@@ -85,13 +85,16 @@ public class PushableBox extends BoxObstacle implements Movable {
 
     public boolean isMovable() {return true;}
 
-    public ObjectSet<Fixture> getGroundFixtures() { return groundFixtures; }
+    public void update(float dt){ setRelativeVX(getRelativeVelocity().x/damping); }
 
+    public ObjectSet<Fixture> getGroundFixtures() { return groundFixtures; }
     public String getGroundSensorName(){ return groundSensorName; }
     @Override
     public void drawDebug(GameCanvas canvas){
         super.drawDebug(canvas);
-        canvas.drawPhysics(sensorShape, Color.RED,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
+        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+        canvas.drawPhysics(sensorShape, Color.RED,getX() - xTranslate,getY() - yTranslate,getAngle(),drawScale.x,drawScale.y);
     }
 
     public ObjectMap<String, Object> storeState(){

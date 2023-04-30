@@ -4,6 +4,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Array;
@@ -54,15 +55,15 @@ public class ActionController {
     private float closestFraction;
     private Vector2 startPointCache = new Vector2();
     private Vector2 endPointCache = new Vector2();
+    private ObjectMap<DeadBody, Float> hitDeadbodies = new ObjectMap<>();
+
     /**
      * Creates and initialize a new instance of a ActionController
      *
-     * @param bounds    The game bounds in Box2d coordinates
      * @param scale	    The game scale Vector2
      * @param volume    The volume of the game
      */
-    public ActionController(Rectangle bounds, Vector2 scale, float volume) {
-        this.bounds = bounds;
+    public ActionController(Vector2 scale, float volume) {
         this.scale = scale;
         this.volume = volume;
         mobControllers = new Array<>();
@@ -80,6 +81,7 @@ public class ActionController {
      */
     public void setLevel(Level level){
         this.level = level;
+        this.bounds = level.bounds;
     }
 
     /**
@@ -88,6 +90,7 @@ public class ActionController {
      * @param level The target level to associate the AI controllers with
      */
     public void setMobControllers(Level level) {
+
         mobControllers.clear();
         for (Mob mob : level.getMobArray()) {
             mobControllers.add(new AIController(bounds, level, mob));
@@ -114,12 +117,12 @@ public class ActionController {
      * <br><br>
      * We need this method to stop all sounds when we pause.
      * Pausing happens when we switch game modes.
+     * //TODO: pause sounds
      */
     public void pause() {
-        soundAssetMap.get("jump").stop(jumpId);
-        soundAssetMap.get("plop").stop(plopId);
-        soundAssetMap.get("fire").stop(fireId);
-        soundAssetMap.get("meow").stop(meowId);
+//        soundAssetMap.get("jump").stop(jumpId);
+//        soundAssetMap.get("plop").stop(plopId);
+//        soundAssetMap.get("meow").stop(meowId);
     }
 
     /**
@@ -138,18 +141,9 @@ public class ActionController {
 
         updateSpiritLine(dt, ic.holdSwitch() && !ic.didSwitch());
 
-        if (ic.holdSwitch()) {
-            for (SpiritRegion sr : level.getSpiritRegionArray()) {
-                sr.setSpiritRegionColorOpacity(true);
-            }
-        } else {
-            for (SpiritRegion sr : level.getSpiritRegionArray()) {
-                sr.setSpiritRegionColorOpacity(false);
-            }
-        }
-
-        for (SpiritRegion spiritRegion : level.getSpiritRegionArray()) {
-            spiritRegion.update();
+        for (SpiritRegion sr : level.getSpiritRegionArray()) {
+            sr.setSpiritRegionColorOpacity(ic.holdSwitch());
+            sr.update();
         }
 
         if (ic.didSwitch()) {
@@ -158,7 +152,7 @@ public class ActionController {
             if (body != null && body.isSwitchable()){
 //                if (body != null && body.isSwitchable() && body.inSameSpiritRegion(cat.getSpiritRegions())){
                 level.spawnDeadBody();
-                cat.setPosition(body.getPosition());
+                cat.setPosition(body.getSwitchPosition());
                 cat.setLinearVelocity(body.getLinearVelocity());
                 cat.setFacingRight(body.isFacingRight());
                 level.removeDeadBody(body);
@@ -182,9 +176,17 @@ public class ActionController {
             cat.getSoundBuffer().clear();
         }
 
+        //Die if off-screen
+        if (level.bounds.y - cat.getY() > 10){
+            die(false);
+        }
+
         //Prepare dead bodies for raycasting
         for (DeadBody d: level.getdeadBodyArray()){
             d.setTouchingLaser(false);
+            if (level.bounds.y - d.getY() > 10) {
+                level.removeDeadBody(d);
+            }
             if (d.isRemoved()){
                 level.getdeadBodyArray().removeValue(d, true);
             }
@@ -202,7 +204,18 @@ public class ActionController {
             a.updateActivated();
             if (level.getActivationRelations().containsKey(a.getID())){
                 for (Activatable s : level.getActivationRelations().get(a.getID())){
-                    s.updateActivated(a.isActivating(), level.getWorld());
+                    int activated = s.updateActivated(a.isActivating(), level.getWorld());
+
+                    //destroy joints if spikes deactivated
+                    if (activated == -1 && s instanceof Spikes){
+                        Spikes spikes = (Spikes) s;
+
+                        for (Joint j : spikes.getJoints()){
+                            ((DeadBody) j.getBodyA().getUserData()).clearJoints();
+                        }
+
+                        spikes.destroyJoints(level.world);
+                    }
                 }
             }
         }
@@ -321,6 +334,11 @@ public class ActionController {
                     numGrounded++;
                     baseVel.add(groundObs.getLinearVelocity());
                 }
+
+                //wake up if on opening door
+                if (!obj.isAwake() && groundObs instanceof Door && ((Door) groundObs).isMoving()) {
+                    obj.setAwake(true);
+                }
             }
 
             //object is grounded, update base velocity to be average of velocities of grounds
@@ -347,6 +365,7 @@ public class ActionController {
      */
     private void rayCastLaser(Laser l){
         l.beginRayCast();
+        hitDeadbodies.clear();
 
         //initial beam
         closestFraction = 1;
@@ -386,10 +405,14 @@ public class ActionController {
         }
 
         if (level.getCat().getBody().getFixtureList().contains(rayCastFixture, true)){
-            die();
+            die(true);
         }
-        if (rayCastFixture != null && rayCastFixture.getBody().getUserData() instanceof DeadBody){
-            ((DeadBody) rayCastFixture.getBody().getUserData()).setTouchingLaser(true);
+
+        //check deadbodies
+        for (DeadBody db : hitDeadbodies.keys()){
+            if (hitDeadbodies.get(db) < closestFraction) {
+                db.setTouchingLaser(true);
+            }
         }
     }
 
@@ -448,8 +471,10 @@ public class ActionController {
 
     /**
      * Called when a player dies. Decrements lives, and fails level/spawns body when necessary.
+     *
+     * @param spawn If we should spawn a dead body. This should only be false when dying from falling offscreen
      */
-    public void die() {
+    public void die(boolean spawn) {
         if (!level.getDied()) {
             level.setDied(true);
             // decrement lives
@@ -460,7 +485,36 @@ public class ActionController {
                 level.setFailure(true);
             } else {
                 // create dead body
-                level.spawnDeadBody();
+                if (spawn) level.spawnDeadBody();
+            }
+        }
+    }
+
+    public void recombineLives() {
+        level.resetLives();
+        for (DeadBody body: level.getdeadBodyArray()) {
+            level.removeDeadBody(body);
+            Particle spirit = new Particle();
+            spirit.setX(body.getX());
+            spirit.setY(body.getY());
+            float x = level.getCat().getX() - body.getX();
+            float y = level.getCat().getY() - body.getY();
+            float angle = (float) Math.atan((double)x/(double)y);
+            spirit.setAngle(angle);
+//            level.getSpiritParticles().add(spirit);
+        }
+//        moveSpirits();
+    }
+
+
+    public void moveSpirits() {
+        while (level.getSpiritParticles().size != 0) {
+            System.out.println(level.getSpiritParticles());
+            for (Particle spirit : level.getSpiritParticles()) {
+                spirit.move();
+                if (Math.abs(spirit.getX() - level.getCat().getX()) <= 5f) {
+                    level.getSpiritParticles().removeValue(spirit, true);
+                }
             }
         }
     }
@@ -520,7 +574,10 @@ public class ActionController {
          */
         @Override
         public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-            if ( fraction < closestFraction ) {
+            Obstacle obs = (Obstacle) fixture.getBody().getUserData();
+            if (fixture.getUserData() != null && fixture.getUserData().equals(DeadBody.catBodyName)) {
+                hitDeadbodies.put((DeadBody) fixture.getBody().getUserData(), fraction);
+            } else if ( fraction < closestFraction && (!fixture.isSensor() || obs instanceof Cat)) {
                 closestFraction = fraction;
                 rayCastPoint.set(point);
                 rayCastFixture = fixture;

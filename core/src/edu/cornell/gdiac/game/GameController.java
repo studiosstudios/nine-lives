@@ -387,10 +387,10 @@ public class GameController implements Screen {
         soundAssetMap = new HashMap<>();
         fontAssetMap = new HashMap<>();
 
-        String[] names = {"cat", "sit", "deadCat", "jumpingCat", "jump_anim", "walk", "button_anim",
+        String[] names = {"cat", "sit", "deadCat", "jumpingCat", "jump_anim", "walk",
                 "spikes", "button", "flamethrower", "flame", "laser", "checkpoint", "checkpointActive",
                 "checkpoint_anim", "checkpoint_active_anim", "checkpoint_base", "checkpoint_base_active",
-                "background", "flame_anim", "roboMob",
+                "background", "flame_anim", "roboMob", "roboMobAnim",
                 "spirit_anim", "spirit_photon", "spirit_photon_cat", "spirit_region",
                 "meow_anim", "idle_anim", "idle_anim_stand",
                  "button_base","button_top","switch_top",

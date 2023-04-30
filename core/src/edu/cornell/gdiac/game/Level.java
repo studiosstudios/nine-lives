@@ -3,6 +3,7 @@ package edu.cornell.gdiac.game;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.game.object.*;
@@ -37,6 +38,9 @@ public class Level {
     /**Reference to the return exit */
     private Exit returnExit;
     protected float returnY;
+
+    /** Reference to the goal object */
+    private Goal goal;
 
     /** Tiles of level */
     protected Tiles tiles;
@@ -89,10 +93,16 @@ public class Level {
     private Vector2 startRespawnPos;
     /** properties map cache */
     private ObjectMap<String, Object> propertiesMap = new ObjectMap<>();
-
     private Array<LevelState> levelStates;
-
     private int levelNum;
+    /** map of names of the obstacles defined from Tiled JSON */
+    private ObjectMap<String, Obstacle> objectNames = new ObjectMap<>();
+    /** map of obstacle to name of obstacle to attach joint to */
+    private ObjectMap<Obstacle, String> objectJoints = new ObjectMap<>();
+    /** joints added between obstacles in this level */
+    private Array<Joint> joints = new Array<>();
+    private Array<Particle> spiritParticles = new Array<>();
+
 
     /**
      * Returns the bounding rectangle for the physics world
@@ -123,7 +133,6 @@ public class Level {
         return world;
     }
 
-
     /**
      * Returns a reference to the player cat
      *
@@ -132,6 +141,37 @@ public class Level {
     public Cat getCat() {
         return cat;
     }
+
+    /**
+     * Returns a reference to the current checkpoint
+     *
+     * @return a reference to the current checkpoint
+     */
+    public Checkpoint getCheckpoint() {return currCheckpoint;}
+
+    /**
+     * Returns a reference to the array of activators
+     *
+     * @return a reference to the activators
+     */
+    public Array<Activator> getActivators() { return activators; }
+
+    /**
+     * Returns a reference to the array of lasers
+     *
+     * @return a reference to the lasers
+     */
+    public Array<Laser> getLasers() { return lasers; }
+
+    /**
+     * Returns a reference to the goal object
+     *
+     * @return a reference to the goal
+     */
+    public Goal getGoal() { return goal; }
+
+    public Array<Particle> getSpiritParticles() { return spiritParticles; }
+
 
     /**
      * Sets the cat for this level. This is used for level switching.
@@ -148,17 +188,6 @@ public class Level {
      * Removes the cat from this level. This is used for level switching.
      */
     public void removeCat() { objects.remove(cat); cat = null; }
-
-    public Checkpoint getCheckpoint() {return currCheckpoint;}
-
-    /**
-     * Returns a reference to the array of activators
-     *
-     * @return a reference to the activators
-     */
-    public Array<Activator> getActivators() { return activators; }
-
-    public Array<Laser> getLasers() { return lasers; }
 
     /**
      * Returns a reference to the hashmap of activation relations
@@ -200,7 +229,7 @@ public class Level {
      *
      * @return a reference to the respawn position
      */
-    public Vector2 getRespawnPos() { return respawnPos; }
+    public Vector2 getRespawnPos() { return currCheckpoint == null ? respawnPos : currCheckpoint.getRespawnPosition(); }
 
     /**
      * Sets the respawn position
@@ -337,24 +366,31 @@ public class Level {
     }
 
     /**
+     * Sets goal active to be some value
+     * @param val to set active
+     */
+    public void setGoal(Boolean val) {
+        goal.setActive(val);
+    }
+
+    /**
      * Updates active checkpoints and cat respawning position
      *
      * @param c The most recent checkpoint the cat has come in contact with
      */
     public void updateCheckpoints(Checkpoint c, boolean shouldSave){
         if(currCheckpoint != null){
-            currCheckpoint.setCurrent(false);
+            currCheckpoint.setCurrent(false, true);
         }
         shouldSave = shouldSave && c != currCheckpoint;
         currCheckpoint = c;
-        currCheckpoint.setCurrent(true);
-        respawnPos = currCheckpoint.getRespawnPosition();
+        currCheckpoint.setCurrent(true, cat.isFacingRight());
         if (shouldSave) saveState();
     }
 
     public void resetCheckpoints(){
         if(currCheckpoint != null){
-            currCheckpoint.setCurrent(false);
+            currCheckpoint.setCurrent(false, true);
         }
         currCheckpoint = null;
         respawnPos = startRespawnPos;
@@ -481,7 +517,20 @@ public class Level {
                     textureRegionAssetMap.get("climbable_tileset"), bounds, fID_climbable, new Vector2(1/32f, 1/32f));
         }
 
+        //make joints
+        for (Obstacle obj : objectJoints.keys()) {
+            WeldJointDef jointDef = new WeldJointDef();
+            jointDef.bodyA = obj.getBody();
+            jointDef.bodyB = objectNames.get(objectJoints.get(obj)).getBody();
+            jointDef.localAnchorB.set(jointDef.bodyB.getLocalPoint(jointDef.bodyA.getPosition()));
+            jointDef.collideConnected = false;
+            Joint joint = world.createJoint(jointDef);
+            joints.add(joint);
+        }
+
         if (cat != null) saveState();
+
+        propertiesMap.clear();
     }
 
     /**
@@ -523,6 +572,8 @@ public class Level {
                 populateCat(obstacleData, tileSize, levelHeight, populateCat);
             } else if (name.equals("exits")) {
                 populateExits(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("goal")) {
+                populateGoal(obstacleData, tileSize, levelHeight);
             }
         }
     }
@@ -765,6 +816,17 @@ public class Level {
         }
     }
 
+    private void populateGoal(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        textureScaleCache.set(1/32f, 1/32f);
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize, levelHeight);
+            Goal goal_obj = new Goal(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
+            goal = goal_obj;
+            addObject(goal);
+        }
+    }
+
     /**
      * Populates the cat for this level.
      *
@@ -803,27 +865,16 @@ public class Level {
         propertiesMap.put("height", objectJV.getFloat("height")/tileSize);
         float angle = (360 - objectJV.getFloat("rotation")) % 360;
         propertiesMap.put("rotation", angle);
+        propertiesMap.put("name", objectJV.getString("name"));
 
         //this is because tiled rotates about the top left corner
         float x, y;
-        switch ((int) angle) {
-            default:
-            case 0:
-                x = objectJV.getFloat("x");
-                y = objectJV.getFloat("y");
-                break;
-            case 90:
-                x = objectJV.getFloat("x");
-                y = objectJV.getFloat("y") - tileSize;
-                break;
-            case 180:
-                x = objectJV.getFloat("x") - tileSize;
-                y = objectJV.getFloat("y") - tileSize;
-                break;
-            case 270:
-                x = objectJV.getFloat("x") - tileSize;
-                y = objectJV.getFloat("y");
-                break;
+        if ((int) angle == 90) {
+            x = objectJV.getFloat("x");
+            y = objectJV.getFloat("y") - objectJV.getFloat("width");
+        } else {
+            x = objectJV.getFloat("x");
+            y = objectJV.getFloat("y");
         }
         x = x/tileSize + bounds.x;
         y = levelHeight - y/tileSize + bounds.y;
@@ -890,21 +941,29 @@ public class Level {
      * and sets the level to not completed and not failed.
      */
     public void dispose() {
+        for (Joint j : joints){
+            world.destroyJoint(j);
+        }
         for(Obstacle obj : objects) {
             obj.deactivatePhysics(world);
         }
         cat = null;
         addQueue.clear();
         objects.clear();
+        joints.clear();
         activators.clear();
         lasers.clear();
         deadBodyArray.clear();
         activatables.clear();
         mobArray.clear();
         spiritRegionArray.clear();
+        objectNames.clear();
+        objectJoints.clear();
         numLives = maxLives;
+        tiles = null;
         currCheckpoint = null;
         climbables = null;
+        goal = null;
         setComplete(false);
         setFailure(false);
     }
@@ -936,6 +995,12 @@ public class Level {
         assert inBounds(obj) : "Object is not in bounds";
         objects.add(obj);
         obj.activatePhysics(world);
+        if (propertiesMap.containsKey("name")) {
+            objectNames.put((String) propertiesMap.get("name"), obj);
+        }
+        if (propertiesMap.containsKey("attachName")) {
+            objectJoints.put(obj, (String) propertiesMap.get("attachName"));
+        }
     }
 
     /**
@@ -1033,8 +1098,9 @@ public class Level {
      * Draws the level to the given game canvas. Assumes <code>canvas.begin()</code> has already been called.
      *
      * @param canvas	the drawing context
+     * @param drawCat   if we should draw the cat
      */
-    public void draw(GameCanvas canvas) {
+    public void draw(GameCanvas canvas, boolean drawCat) {
 //        if (background != null) {
 //            //scales background with level size
 //            float scaleX = bounds.width/background.getWidth() * scale.x;
@@ -1068,7 +1134,7 @@ public class Level {
         for (DeadBody db : deadBodyArray) {
             db.draw(canvas);
         }
-        if(cat != null && GameController.cameraGameState != GameController.CameraGameState.RESPAWN) {
+        if(cat != null && drawCat) {
             cat.draw(canvas);
         }
 
@@ -1076,8 +1142,16 @@ public class Level {
             s.draw(canvas);
         }
 
+        for (Particle spirit : spiritParticles) {
+            spirit.draw(canvas, textureRegionAssetMap.get("spirit_photon").getTexture());
+        }
+
         if (currCheckpoint != null) {
             currCheckpoint.drawBase(canvas);
+        }
+
+        if (goal != null) {
+            goal.draw(canvas);
         }
     }
 

@@ -36,7 +36,7 @@ public class LevelSelectStage extends StageWrapper {
         super(internal, createActors);
     }
     public int getSelectedLevel() {
-        int l = (oneState == 1 && twoState == 0) ? 0 : 1;
+        int l = (oneState == 1 && twoState == 0) ? 1 : 2;
         return l;
     }
 

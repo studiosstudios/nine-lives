@@ -60,7 +60,6 @@ public class ActionController {
     /**
      * Creates and initialize a new instance of a ActionController
      *
-     * @param bounds    The game bounds in Box2d coordinates
      * @param scale	    The game scale Vector2
      * @param volume    The volume of the game
      */
@@ -142,18 +141,9 @@ public class ActionController {
 
         updateSpiritLine(dt, ic.holdSwitch() && !ic.didSwitch());
 
-        if (ic.holdSwitch()) {
-            for (SpiritRegion sr : level.getSpiritRegionArray()) {
-                sr.setSpiritRegionColorOpacity(true);
-            }
-        } else {
-            for (SpiritRegion sr : level.getSpiritRegionArray()) {
-                sr.setSpiritRegionColorOpacity(false);
-            }
-        }
-
-        for (SpiritRegion spiritRegion : level.getSpiritRegionArray()) {
-            spiritRegion.update();
+        for (SpiritRegion sr : level.getSpiritRegionArray()) {
+            sr.setSpiritRegionColorOpacity(ic.holdSwitch());
+            sr.update();
         }
 
         if (ic.didSwitch()) {
@@ -188,12 +178,15 @@ public class ActionController {
 
         //Die if off-screen
         if (level.bounds.y - cat.getY() > 10){
-            die();
+            die(false);
         }
 
         //Prepare dead bodies for raycasting
         for (DeadBody d: level.getdeadBodyArray()){
             d.setTouchingLaser(false);
+            if (level.bounds.y - d.getY() > 10) {
+                level.removeDeadBody(d);
+            }
             if (d.isRemoved()){
                 level.getdeadBodyArray().removeValue(d, true);
             }
@@ -341,6 +334,11 @@ public class ActionController {
                     numGrounded++;
                     baseVel.add(groundObs.getLinearVelocity());
                 }
+
+                //wake up if on opening door
+                if (!obj.isAwake() && groundObs instanceof Door && ((Door) groundObs).isMoving()) {
+                    obj.setAwake(true);
+                }
             }
 
             //object is grounded, update base velocity to be average of velocities of grounds
@@ -407,7 +405,7 @@ public class ActionController {
         }
 
         if (level.getCat().getBody().getFixtureList().contains(rayCastFixture, true)){
-            die();
+            die(true);
         }
 
         //check deadbodies
@@ -473,8 +471,10 @@ public class ActionController {
 
     /**
      * Called when a player dies. Decrements lives, and fails level/spawns body when necessary.
+     *
+     * @param spawn If we should spawn a dead body. This should only be false when dying from falling offscreen
      */
-    public void die() {
+    public void die(boolean spawn) {
         if (!level.getDied()) {
             level.setDied(true);
             // decrement lives
@@ -485,7 +485,36 @@ public class ActionController {
                 level.setFailure(true);
             } else {
                 // create dead body
-                level.spawnDeadBody();
+                if (spawn) level.spawnDeadBody();
+            }
+        }
+    }
+
+    public void recombineLives() {
+        level.resetLives();
+        for (DeadBody body: level.getdeadBodyArray()) {
+            level.removeDeadBody(body);
+            Particle spirit = new Particle();
+            spirit.setX(body.getX());
+            spirit.setY(body.getY());
+            float x = level.getCat().getX() - body.getX();
+            float y = level.getCat().getY() - body.getY();
+            float angle = (float) Math.atan((double)x/(double)y);
+            spirit.setAngle(angle);
+//            level.getSpiritParticles().add(spirit);
+        }
+//        moveSpirits();
+    }
+
+
+    public void moveSpirits() {
+        while (level.getSpiritParticles().size != 0) {
+            System.out.println(level.getSpiritParticles());
+            for (Particle spirit : level.getSpiritParticles()) {
+                spirit.move();
+                if (Math.abs(spirit.getX() - level.getCat().getX()) <= 5f) {
+                    level.getSpiritParticles().removeValue(spirit, true);
+                }
             }
         }
     }

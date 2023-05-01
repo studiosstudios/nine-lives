@@ -23,6 +23,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.game.*;
+import edu.cornell.gdiac.game.Camera;
 import edu.cornell.gdiac.game.obstacle.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -137,6 +138,11 @@ public class Cat extends CapsuleObstacle implements Movable {
      * Whether we are climbing on a wall
      */
     private boolean isClimbing;
+
+    /**
+     * Camera regions we are currently in contact with
+     */
+    private Array<CameraRegion> cameraRegions;
 
     private int dashTimer = 0;
     private final Vector2 dashCache = new Vector2();
@@ -475,6 +481,13 @@ public class Cat extends CapsuleObstacle implements Movable {
         }
     }
 
+    /**
+     * @return cameraRegion colliding with most amount of fixtures
+     */
+    public Array<CameraRegion> getCameraRegions(){
+        return cameraRegions;
+    }
+
     public ObjectSet<SpiritRegion> getSpiritRegions() {
         return spiritRegions;
     }
@@ -550,6 +563,7 @@ public class Cat extends CapsuleObstacle implements Movable {
         sensorShapes = new Array<>();
         groundFixtures = new ObjectSet<>();
         spiritRegions = new ObjectSet<>();
+        cameraRegions = new Array<>();
         soundBuffer = new HashSet<>();
 
         normalTexture = tMap.get("cat");

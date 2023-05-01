@@ -500,7 +500,7 @@ public class GameController implements Screen {
         actionController.setLevel(currLevel);
         actionController.setMobControllers(currLevel);
         if (currLevel.levelStates().size == 0) currLevel.saveState();
-        canvas.getCamera().setLevelBounds(currLevel.bounds, scale);
+        canvas.getCamera().setLevelBounds(currLevel.bounds, scale, true);
         canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, cameraGlide);
         currLevel.unpause();
         nextLevel.pause();
@@ -658,6 +658,7 @@ public class GameController implements Screen {
             }
         }
         if(cameraGameState == CameraGameState.PLAY){
+//            System.out.println(canvas.getCamera().getCamera().zoom);
             panTime = 0;
             respawnDelay = 0;
             input.setDisableAll(false);

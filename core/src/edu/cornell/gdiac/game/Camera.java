@@ -14,7 +14,7 @@ public class Camera {
     private float viewportWidth;
     /** Height of visible window **/
     private float viewportHeight;
-    /** Bounds of current level **/
+    /** Bounds of current level (in pixels) **/
     private Rectangle levelBounds = new Rectangle();
     /** Camera center x-coordinate **/
     private float x;
@@ -104,10 +104,16 @@ public class Camera {
      * Adjusting level size used for camera positioning calculations
      * @param bounds bounds of current level
      * @param scale  draw scale
+     * @param world true if bounds in world units, false if bounds in pixels
      */
-    public void setLevelBounds(Rectangle bounds, Vector2 scale){
+    public void setLevelBounds(Rectangle bounds, Vector2 scale, boolean world){
 //        System.out.println("setting level size:" + height);
-        levelBounds.set(bounds.x*scale.x, bounds.y*scale.y, bounds.width*scale.x, bounds.height*scale.y);
+        if (!world) {
+            levelBounds.set(bounds.x, bounds.y, bounds.width, bounds.height);
+        }
+        else {
+            levelBounds.set(bounds.x * scale.x, bounds.y * scale.y, bounds.width * scale.x, bounds.height * scale.y);
+        }
     }
 
     /**

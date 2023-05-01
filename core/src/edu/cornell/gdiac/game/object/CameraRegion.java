@@ -15,6 +15,8 @@ public class CameraRegion extends BoxObstacle {
     private float zoom;
     /** Constants that are shared between all instances of this class */
     private static JsonValue objectConstants;
+    /** number of fixture colliding with this camera region */
+    private int fixtureCount;
 
     /**
      * @param properties     String-Object map of properties for this object
@@ -28,8 +30,30 @@ public class CameraRegion extends BoxObstacle {
         setDrawScale(scale);
         setX((float) properties.get("x") + getDimension().x/2);
         setY((float) properties.get("y") - getDimension().y/2);
+        setName((String) properties.get("name"));
+        fixtureCount = 0;
     }
 
+    /**
+     * @return number of fixtures colliding with this camera region
+     */
+    public int getFixtureCount(){
+        return fixtureCount;
+    }
+
+    /**
+     * Add one to fixture count
+     */
+    public void addFixture(){
+        fixtureCount += 1;
+    }
+
+    /**
+     * Subtract one from fixture count
+     */
+    public void removeFixture(){
+        fixtureCount -= 1;
+    }
     /**
      * @return the zoom percentage of camera after collision with this camera tile
      */

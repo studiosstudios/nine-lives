@@ -781,6 +781,7 @@ public class Level {
         propertiesMap.put("height", objectJV.getFloat("height")/tileSize);
         float angle = (360 - objectJV.getFloat("rotation")) % 360;
         propertiesMap.put("rotation", angle);
+        propertiesMap.put("name", objectJV.getString("name"));
 
         //this is because tiled rotates about the top left corner
         float x, y;

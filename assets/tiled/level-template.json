@@ -66,7 +66,7 @@
                 {
                  "height":17408,
                  "id":64,
-                 "name":"",
+                 "name":"cameraRegion1",
                  "properties":[
                         {
                          "name":"zoom",
@@ -83,12 +83,12 @@
                 {
                  "height":17408,
                  "id":65,
-                 "name":"",
+                 "name":"cameraRegion2",
                  "properties":[
                         {
                          "name":"zoom",
                          "type":"float",
-                         "value":0.6
+                         "value":0.5
                         }],
                  "rotation":0,
                  "type":"CameraRegion",

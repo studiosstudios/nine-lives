@@ -398,21 +398,39 @@ public class GameController implements Screen {
         soundAssetMap = new HashMap<>();
         fontAssetMap = new HashMap<>();
 
-        String[] names = {"cat", "sit", "deadCat", "jumpingCat", "jump_anim", "walk",
-                "spikes", "flamethrower", "flame", "laser", "goal_obj",
-                "checkpoint_anim", "checkpoint_active_anim", "checkpoint_base",
-                "checkpoint_base_active",
-                "background", "flame_anim", "roboMob", "roboMobAnim",
-                "spirit_anim", "spirit_photon", "spirit_photon_cat", "spirit_region",
-                "meow_anim", "idle_anim", "idle_anim_stand",
-                 "button_base","button_top","switch_top",
-                "metal_tileset", "climbable_tileset", "steel","burnCat", "deadCat2", "door", "platforms"};
-
+        // List of textures we extract. These should be the SAME NAME as the keys in the assets.json.
+        // A couple naming conventions: use hyphens, affix animation sprites with "-anim".
+        String[] names = {
+                // CAT
+                "cat", "walk-anim", "jump", "jump-anim", "sit", "idle-sit-anim", "idle-stand-anim", "meow-anim",
+                "corpse", "corpse2", "corpse-burnt",
+                // SPIKES
+                "spikes",
+                // BUTTONS & SWITCHES
+                "button-base", "button-top", "switch-top",
+                // FLAMETHROWERS
+                "flamethrower", "flame", "flame-anim",
+                // LASERS
+                "laser",
+                // CHECKPOINTS
+                "checkpoint-anim", "checkpoint-active-anim", "checkpoint-base", "checkpoint-base-active",
+                // GOAL
+                "goal",
+                // ROBOT & MOBS
+                "robot", "robot-anim",
+                // SPIRIT BOUNDARIES
+                "spirit-anim", "spirit-photon", "spirit-photon-cat", "spirit-region",
+                // TILESETS
+                "metal-tileset", "climbable-tileset", "steel",
+                // DOORS & PLATFORMS
+                "door", "platforms",
+                // BACKGROUNDS
+                "background",};
         for (String n : names){
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
         }
 
-        names = new String[]{"jump", "dash", "metalLanding", "pew", "plop", "meow"};
+        names = new String[]{"jump", "dash", "metal-landing", "meow"};
         for (String n : names){
             soundAssetMap.put(n, directory.getEntry(n, Sound.class));
         }

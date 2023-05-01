@@ -138,8 +138,8 @@ public class Mob extends CapsuleObstacle {
      */
 
     public Mob(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
-        super(tMap.get("roboMob").getRegionWidth()/scale.x*textureScale.x/2f,
-                tMap.get("roboMob").getRegionHeight()/scale.y*textureScale.y*H_SCALE);
+        super(tMap.get("robot").getRegionWidth()/scale.x*textureScale.x/2f,
+                tMap.get("robot").getRegionHeight()/scale.y*textureScale.y*H_SCALE);
 
         setFixedRotation(true);
         setName("mob");
@@ -148,9 +148,9 @@ public class Mob extends CapsuleObstacle {
         setDrawScale(scale);
         setTextureScale(textureScale);
         walkTime = 0f;
-        spriteFrames = TextureRegion.split(tMap.get("roboMobAnim").getTexture(), 2058, 2058);
+        spriteFrames = TextureRegion.split(tMap.get("robot-anim").getTexture(), 2058, 2058);
         walkAnimation = new Animation<>(0.15f, spriteFrames[0]);
-        setTexture(tMap.get("roboMob"));
+        setTexture(tMap.get("robot"));
 
         setDensity(objectConstants.getFloat("density", 0));
         setFriction(objectConstants.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET

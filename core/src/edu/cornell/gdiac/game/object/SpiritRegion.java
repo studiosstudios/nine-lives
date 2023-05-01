@@ -82,8 +82,8 @@ public class SpiritRegion extends BoxObstacle {
      */
     public SpiritRegion(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
         super((float) properties.get("width"), (float) properties.get("height"));
-        this.photonTexture = tMap.get("spirit_photon").getTexture();
-        this.regionTexture = tMap.get("spirit_region").getTexture();
+        this.photonTexture = tMap.get("spirit-photon").getTexture();
+        this.regionTexture = tMap.get("spirit-region").getTexture();
 
         particleColor.set((Color) properties.get("color", Color.RED));
         particleColor.a = PARTICLE_OPACITY_INACTIVE;
@@ -92,7 +92,7 @@ public class SpiritRegion extends BoxObstacle {
         regionColor.a = REGION_OPACITY_INACTIVE;
 
         setTextureScale(textureScale);
-        setTexture(tMap.get("spirit_region"));
+        setTexture(tMap.get("spirit-region"));
         setDrawScale(scale);
         setTextureScale(textureScale);
         setSensor(true);

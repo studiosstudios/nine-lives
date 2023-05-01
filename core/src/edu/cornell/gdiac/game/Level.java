@@ -12,6 +12,7 @@ import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.util.PooledList;
 
 import java.util.HashMap;
+import java.util.Random;
 /**
  * Represents a single level in our game
  * <br><br>
@@ -486,7 +487,7 @@ public class Level {
         int fID = 1;
         int fID_climbable = 1;
         if (biome.equals("metal")) {
-            tileset = textureRegionAssetMap.get("metal_tileset");
+            tileset = textureRegionAssetMap.get("metal-tileset");
             for (JsonValue tilesetData : tiledMap.get("tilesets")){
                 if (tilesetData.getString("source").endsWith("metal-walls.tsx")){
                     fID = tilesetData.getInt("firstgid");
@@ -498,7 +499,7 @@ public class Level {
         }
         else if (biome.equals("forest")) {
             // TODO: change this in future
-            tileset = textureRegionAssetMap.get("metal_tileset");
+            tileset = textureRegionAssetMap.get("metal-tileset");
             for (JsonValue tilesetData : tiledMap.get("tilesets")){
                 if (tilesetData.getString("source").endsWith("metal-walls.tsx")){
                     fID = tilesetData.getInt("firstgid");
@@ -513,7 +514,7 @@ public class Level {
 
         if (climbableData != null) {
             climbables = new Climbable(climbableData, 1024, levelWidth, levelHeight,
-                    textureRegionAssetMap.get("climbable_tileset"), bounds, fID_climbable, new Vector2(1/32f, 1/32f));
+                    textureRegionAssetMap.get("climbable-tileset"), bounds, fID_climbable, new Vector2(1/32f, 1/32f));
         }
 
         //make joints
@@ -820,8 +821,7 @@ public class Level {
         textureScaleCache.set(1/32f, 1/32f);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
-            Goal goal_obj = new Goal(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
-            goal = goal_obj;
+            goal = new Goal(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
             addObject(goal);
         }
     }
@@ -1142,7 +1142,7 @@ public class Level {
         }
 
         for (Particle spirit : spiritParticles) {
-            spirit.draw(canvas, textureRegionAssetMap.get("spirit_photon").getTexture());
+            spirit.draw(canvas, textureRegionAssetMap.get("spirit-photon").getTexture());
         }
 
         if (currCheckpoint != null) {
@@ -1186,7 +1186,14 @@ public class Level {
      * */
     public void spawnDeadBody(){
         textureScaleCache.set(1/34f, 1/34f);
-        DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat2"),textureRegionAssetMap.get("burnCat"), scale, cat.getPosition(), textureScaleCache);
+        double rand = Math.random();
+        DeadBody deadBody;
+        if(rand <0.5){
+            deadBody = new DeadBody(textureRegionAssetMap.get("corpse2"),textureRegionAssetMap.get("corpse-burnt"), scale, cat.getPosition(), textureScaleCache);
+        }
+        else{
+            deadBody = new DeadBody(textureRegionAssetMap.get("corpse"),textureRegionAssetMap.get("corpse-burnt"), scale, cat.getPosition(), textureScaleCache);
+        }
         deadBody.setLinearVelocity(cat.getLinearVelocity());
         deadBody.setFacingRight(cat.isFacingRight());
         queueObject(deadBody);
@@ -1199,7 +1206,7 @@ public class Level {
      */
     public DeadBody loadDeadBodyState(ObjectMap<String, Object> state){
         textureScaleCache.set(1/34f, 1/34f);
-        DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat2"), textureRegionAssetMap.get("burnCat"),scale, Vector2.Zero, textureScaleCache);
+        DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("corpse2"), textureRegionAssetMap.get("corpse-burnt"),scale, Vector2.Zero, textureScaleCache);
         deadBody.loadState(state);
         addObject(deadBody);
         deadBodyArray.add(deadBody);

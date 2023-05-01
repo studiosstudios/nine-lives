@@ -45,7 +45,7 @@ public class NineLives extends Game implements ScreenListener {
 	 */
 	public void create() {
 		canvas  = new GameCanvas();
-		menu = new StageController("assets.json", canvas, 1, true, false);
+		menu = new StageController("jsons/assets.json", canvas, 1, true, false);
 
 		menu.setScreenListener(this);
 		setScreen(menu);
@@ -136,7 +136,7 @@ public class NineLives extends Game implements ScreenListener {
 			menu = null;
 		} else if (exitCode == GameController.EXIT_QUIT && screen == controller) {
 			// pause stage
-			menu = new StageController("assets.json", canvas, 1, false, true);
+			menu = new StageController("jsons/assets.json", canvas, 1, false, true);
 			menu.setScreenListener(this);
 			menu.pause = true;
 			menu.currLevel = controller;

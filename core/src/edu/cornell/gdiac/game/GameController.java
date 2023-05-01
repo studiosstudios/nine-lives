@@ -192,7 +192,7 @@ public class GameController implements Screen {
         panTime = 0;
         respawnDelay = 0;
 
-        AssetDirectory internal = new AssetDirectory("loading.json");
+        AssetDirectory internal = new AssetDirectory("jsons/loading.json");
         internal.loadAssets();
         internal.finishLoading();
 
@@ -404,6 +404,17 @@ public class GameController implements Screen {
      * <br><br>
      * This method extracts the asset variables from the given asset directory. It
      * should only be called after the asset directory is completed.
+     * <br><br>
+     * Whenever you add an asset to the game, you will need to:<br>
+     * 1. Place it in the correct location in the assets/ directory<br>
+     * 2. Add it to the assets.json file in the form of "file-name: file-path"<br>
+     * 3. Add "file-name" to the correct String array within this method to be accessible from the
+     *    corresponding map (For example, if its a sound asset, add it to the array preceding the soundAssetMap<br><br>
+     * Note the naming conventions that file names follow:<br>
+     * 1. Use hyphens<br>
+     * 2. For sprites that are for animations, affix their name with "-anim"<br>
+     * 3. For textures that serve as backgrounds, prefix their names with "bg-"<br>
+     * 4. Make sure to use the file name (with hyphens) for the assets.json key, and the texture map key as well<br>
      *
      * @param directory	Reference to global asset manager.
      */
@@ -414,20 +425,39 @@ public class GameController implements Screen {
         soundAssetMap = new HashMap<>();
         fontAssetMap = new HashMap<>();
 
-        String[] names = {"cat", "sit", "deadCat", "jumpingCat", "jump_anim", "walk", "button_anim",
-                "spikes", "button", "flamethrower", "flame", "laser", "checkpoint", "goal_obj",
-                "checkpointActive", "checkpoint_anim", "checkpoint_active_anim", "checkpoint_base",
-                "checkpoint_base_active",
-                "background", "flame_anim", "roboMob", "roboMobAnim",
-                "spirit_anim", "spirit_photon", "spirit_photon_cat", "spirit_region",
-                "meow_anim", "idle_anim", "idle_anim_stand",
-                "metal_tileset", "climbable_tileset", "steel","burnCat", "deadCat2", "door", "platforms"};
-
+        // List of textures we extract. These should be the SAME NAME as the keys in the assets.json.
+        // A couple naming conventions: use hyphens, affix animation sprites with "-anim".
+        String[] names = {
+                // CAT
+                "cat", "walk-anim", "jump", "jump-anim", "sit", "idle-sit-anim", "idle-stand-anim", "meow-anim",
+                "corpse", "corpse2", "corpse-burnt",
+                // SPIKES
+                "spikes",
+                // BUTTONS & SWITCHES
+                "button-base", "button-top", "switch-top",
+                // FLAMETHROWERS
+                "flamethrower", "flame", "flame-anim",
+                // LASERS
+                "laser",
+                // CHECKPOINTS
+                "checkpoint-anim", "checkpoint-active-anim", "checkpoint-base", "checkpoint-base-active",
+                // GOAL
+                "goal",
+                // ROBOT & MOBS
+                "robot", "robot-anim",
+                // SPIRIT BOUNDARIES
+                "spirit-anim", "spirit-photon", "spirit-photon-cat", "spirit-region",
+                // TILESETS
+                "metal-tileset", "climbable-tileset", "steel",
+                // DOORS & PLATFORMS
+                "door", "platform",
+                // BACKGROUNDS
+                "bg-lab",}; // Unsure if this is actually being used
         for (String n : names){
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
         }
 
-        names = new String[]{"jump", "dash", "metalLanding", "pew", "plop", "meow"};
+        names = new String[]{"jump", "dash", "metal-landing", "meow"};
         for (String n : names){
             soundAssetMap.put(n, directory.getEntry(n, Sound.class));
         }
@@ -440,7 +470,7 @@ public class GameController implements Screen {
         constants = directory.getEntry("constants", JsonValue.class);
         this.directory = directory;
 
-        background = textureRegionAssetMap.get("background").getTexture();
+        background = textureRegionAssetMap.get("bg-lab").getTexture();
 
         // Giving assets to levelController
         setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants);
@@ -450,8 +480,8 @@ public class GameController implements Screen {
         //Set controls
         InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
 
-//		InputController.getInstance().writeTo("inputLogs/recent.txt");
-//		InputController.getInstance().readFrom("inputLogs/recent.txt");
+//		InputController.getInstance().writeTo("debug-input/recent.txt");
+//		InputController.getInstance().readFrom("debug-input/recent.txt");
     }
 
     /**

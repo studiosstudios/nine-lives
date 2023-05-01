@@ -16,7 +16,7 @@ public class LoadingStage extends StageWrapper {
      */
     @Override
     public void createActors() {
-        Actor loadingTutorial = addActor(internal.getEntry("loadingTutorial", Texture.class), 0, 0);
+        Actor loadingTutorial = addActor(internal.getEntry("loading-tutorial", Texture.class), 0, 0);
         loadingTutorial.setScale(0.5f);
     }
 

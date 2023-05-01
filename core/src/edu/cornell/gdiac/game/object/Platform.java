@@ -63,7 +63,7 @@ public class Platform extends PolygonObstacle implements Activatable {
         setDrawScale(scale);
         setTexture(tMap.get("steel"));
         this.tileSize = tileSize;
-        initTextures(tMap.get("platforms"), (int) width, (int) height);
+        initTextures(tMap.get("platform"), (int) width, (int) height);
         setX((float) properties.get("x"));
         setY((float) properties.get("y") - height);
         startPos = getPosition().cpy();

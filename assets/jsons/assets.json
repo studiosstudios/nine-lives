@@ -26,16 +26,16 @@
         "flamethrower": "obstacles/flamethrower/flamethrower.png",
         "flame": "obstacles/flamethrower/flame.png",
         "laser": "obstacles/laser/laser.png",
-        "laserBeam": "obstacles/laser/laserbeam.png",
+        "laserBeam": "obstacles/laser/laser-beam.png",
         "checkpoint_anim" : "obstacles/checkpoint/checkpoint-anim.png",
         "checkpoint_active_anim" : "obstacles/checkpoint/checkpoint-active-anim.png",
         "checkpoint_base" : "obstacles/checkpoint/checkpoint-base.png",
         "checkpoint_base_active" : "obstacles/checkpoint/checkpoint-base-active.png",
-        "goal_obj" : "obstacles/goal/goal_obj.png",
+        "goal_obj" : "obstacles/goal/goal.png",
         "background": "world/backgrounds/bg-lab.png",
-        "flame_anim": "obstacles/flamethrower/flame_anim.png",
-        "roboMobAnim": "mob/robot/robot_anim.png",
-        "roboMob": "mob/robot/robot_mob.png",
+        "flame_anim": "obstacles/flamethrower/flame-anim.png",
+        "roboMobAnim": "mob/robot/robot-anim.png",
+        "roboMob": "mob/robot/robot-mob.png",
         "meow_anim": "cat/meow.png",
         "spirit_anim": "obstacles/spirit-region/spirit-anim.png",
         "spirit_photon": "obstacles/spirit-region/spirit-photon.png",
@@ -48,8 +48,8 @@
         "steel": "obstacles/shared/steel.png",
         "deadCat2" : "obstacles/corpse/corpse2.png",
       "button_base": "obstacles/button/base.png",
-      "button_top": "platform/button_top.png",
-      "switch_top": "platform/switch_top.png"
+      "button_top": "obstacles/button/button-top.png",
+      "switch_top": "obstacles/button/switch-top.png"
     },
     "jsons"  : {
         "constants": "jsons/constants.json",
@@ -64,8 +64,8 @@
         "tiledLevel6": "levels/party-room.json"
     },
     "sounds" : {
-        "jump" : "cat/jumpCELESTE.wav",
-        "dash" : "cat/dashCELESTE.wav",
+        "jump" : "cat/jump-CELESTE.wav",
+        "dash" : "cat/dash-CELESTE.wav",
         "metalLanding" : "cat/metal-landing-CELESTE.wav",
         "meow" : "cat//meow.mp3"
     }

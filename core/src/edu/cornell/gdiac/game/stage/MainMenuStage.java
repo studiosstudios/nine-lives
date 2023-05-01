@@ -45,26 +45,26 @@ public class MainMenuStage extends StageWrapper{
     public void createActors() {
         Actor backgroundActor = addActor(internal.getEntry("background", Texture.class), 0,0);
         backgroundActor.setScale(0.5f);
-//        addActor(internal.getEntry("mainMenuCat", Texture.class),-50,-65);
-        playButtonActor = addActor(internal.getEntry("playGame", Texture.class),buttonX+15+250, buttonY+25);
+//        addActor(internal.getEntry("main-menu-cat", Texture.class),-50,-65);
+        playButtonActor = addActor(internal.getEntry("play-game", Texture.class),buttonX+15+250, buttonY+25);
         playButtonActor.setScale(0.5f);
-        levelSelectActor = addActor(internal.getEntry("levelSelect", Texture.class),buttonX+15+250-18, buttonY-25);
+        levelSelectActor = addActor(internal.getEntry("level-select", Texture.class),buttonX+15+250-18, buttonY-25);
         levelSelectActor.setScale(0.5f);
         settingsActor = addActor(internal.getEntry("settings", Texture.class),buttonX+15+250+29, buttonY-75-16);
         settingsActor.setScale(0.5f);
         exitButtonActor = addActor(internal.getEntry("exit", Texture.class),buttonX+15+250+6, buttonY-75-16-50);
         exitButtonActor.setScale(0.5f);
 
-        playCatpawActor = addActor(internal.getEntry("catpaw", Texture.class), buttonX+30, buttonY+25);
+        playCatpawActor = addActor(internal.getEntry("paw", Texture.class), buttonX+30, buttonY+25);
         playCatpawActor.setScale(0.5f);
         playCatpawActor.setVisible(false);
-        levelCatpawActor = addActor(internal.getEntry("catpaw", Texture.class), buttonX+30, buttonY-25-4);
+        levelCatpawActor = addActor(internal.getEntry("paw", Texture.class), buttonX+30, buttonY-25-4);
         levelCatpawActor.setScale(0.5f);
         levelCatpawActor.setVisible(false);
-        settingsCatpawActor = addActor(internal.getEntry("catpaw", Texture.class), buttonX+30, buttonY-75-12);
+        settingsCatpawActor = addActor(internal.getEntry("paw", Texture.class), buttonX+30, buttonY-75-12);
         settingsCatpawActor.setScale(0.5f);
         settingsCatpawActor.setVisible(false);
-        exitCatpawActor = addActor(internal.getEntry("catpaw", Texture.class), buttonX+30, buttonY-75-16-50);
+        exitCatpawActor = addActor(internal.getEntry("paw", Texture.class), buttonX+30, buttonY-75-16-50);
         exitCatpawActor.setScale(0.5f);
         exitCatpawActor.setVisible(false);
 

@@ -80,7 +80,7 @@ public abstract class Activator extends PolygonObstacle {
     public Activator(ObjectMap<String, Object> properties, String texture_name, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
         super(objectConstants.get("body_shape").asFloatArray());
         topTexture = tMap.get(texture_name).getTexture();
-        bottomTexture = tMap.get("button_base");
+        bottomTexture = tMap.get("button-base");
         setTexture(bottomTexture);
         setTextureScale(textureScale);
         spriteFrames = TextureRegion.split(tMap.get(texture_name).getTexture(), 2048,2048);

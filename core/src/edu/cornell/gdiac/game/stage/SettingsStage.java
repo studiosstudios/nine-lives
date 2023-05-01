@@ -44,27 +44,27 @@ public class SettingsStage extends StageWrapper {
     public void createActors() {
         table = new Table();
         BitmapFont font = internal.getEntry("chewy", BitmapFont.class);
-        Texture knob = internal.getEntry("catpaw", Texture.class);
-        Texture slider = internal.getEntry("progressbar", Texture.class);
-        Texture before = internal.getEntry("progressbarbefore", Texture.class);
+        Texture knob = internal.getEntry("paw", Texture.class);
+        Texture slider = internal.getEntry("slider-empty", Texture.class);
+        Texture before = internal.getEntry("slider-full", Texture.class);
         sliderTexture = new TextureRegionDrawable(new TextureRegion(slider));
         sliderKnobTexture = new TextureRegionDrawable(new TextureRegion(knob));
         sliderTextureBefore = new TextureRegionDrawable(new TextureRegion(before));
-//        addActor(new Image(internal.getEntry("settingsBackground", Texture.class)));
-        Actor background = addActor(internal.getEntry("settingsBackground", Texture.class), 0, 0);
+//        addActor(new Image(internal.getEntry("bg-settings", Texture.class)));
+        Actor background = addActor(internal.getEntry("bg-settings", Texture.class), 0, 0);
         background.setScale(0.5f);
         backButtonActor = addActor(internal.getEntry("back", Texture.class),32,buttonY-225);
         backButtonActor.setScale(0.5f);
 
-        backCatpawActor = addActor(internal.getEntry("catpaw", Texture.class), 332, buttonY-225);
+        backCatpawActor = addActor(internal.getEntry("paw", Texture.class), 332, buttonY-225);
         backCatpawActor.setScale(0.5f);
         backCatpawActor.setVisible(false);
 
         backButtonActor.addListener(createCatpawListener(backButtonActor, backCatpawActor));
 
-//        catpaw1Actor = addActor(internal.getEntry("catpaw", Texture.class), 332, 370);
+//        catpaw1Actor = addActor(internal.getEntry("paw", Texture.class), 332, 370);
 //        catpaw1Actor.setScale(0.5f);
-//        catpaw2Actor = addActor(internal.getEntry("catpaw", Texture.class), 332, 370-60);
+//        catpaw2Actor = addActor(internal.getEntry("paw", Texture.class), 332, 370-60);
 //        catpaw2Actor.setScale(0.5f);
 
         table.align(Align.topLeft);

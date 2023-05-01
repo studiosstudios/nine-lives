@@ -60,13 +60,6 @@ public class StageController implements Screen {
 	private LoadingStage loadingStage;
 	private StartStage startStage;
 
-	private float animationTime;
-	/** Background texture for start-up */
-	private boolean jump_animated;
-	private TextureRegion[][] spriteFrames;
-	private Animation<TextureRegion> animation;
-	private Texture jump_texture;
-
 	public GameController currLevel;
 	private int selectedLevel;
 
@@ -140,19 +133,9 @@ public class StageController implements Screen {
 		budget = millis;
 
 		// We need these files loaded immediately
-		internal = new AssetDirectory( "loading.json" );
+		internal = new AssetDirectory( "jsons/loading.json" );
 		internal.loadAssets();
 		internal.finishLoading();
-
-		// Load the next two images immediately.
-		jump_texture = internal.getEntry( "jump", Texture.class );
-		jump_animated = false;
-		int spriteWidth = 250;
-		int spriteHeight = 250;
-		spriteFrames = TextureRegion.split(jump_texture,spriteWidth, spriteHeight);
-		float frameDuration = 0.05f;
-		animation = new Animation<>(frameDuration, spriteFrames[0]);
-		animationTime = 0f;
 
 		if(!Save.exists()) {
 			Save.create();
@@ -191,7 +174,7 @@ public class StageController implements Screen {
 	}
 
 	public void loadAssets() {
-		assets = new AssetDirectory("assets.json");
+		assets = new AssetDirectory("jsons/assets.json");
 		assets.loadAssets();
 		assets.finishLoading();
 	}
@@ -230,14 +213,10 @@ public class StageController implements Screen {
 			Gdx.gl.glClearColor(0, 0, 0, 1.0f);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		}
-		animation.setPlayMode(Animation.PlayMode.LOOP);
-		animationTime += Gdx.graphics.getDeltaTime();
-		TextureRegion currentFrame = animation.getKeyFrame(animationTime);
 		canvas.begin();
 		stage.getViewport().apply();
 		stage.act();
 		stage.draw();
-//		canvas.draw(jump_texture, Color.WHITE, 100,100,500,500);
 		canvas.end();
 	}
 

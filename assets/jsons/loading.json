@@ -1,30 +1,30 @@
 {
 	"textures": {
         "background": "ui/main/bg-main-menu.png",
-        "settingsBackground" : "ui/settings/bg-settings.png",
+        "bg-settings" : "ui/settings/bg-settings.png",
 		"play": "ui/main/play.png",
-        "playGame" : "ui/main/play-game.png",
+        "play-game" : "ui/main/play-game.png",
         "settings" : "ui/main/settings.png",
-        "levelSelect" : "ui/main/level-select.png",
-        "mainMenu": "ui/pause/main-menu.png",
+        "level-select" : "ui/main/level-select.png",
+        "main-menu": "ui/pause/main-menu.png",
         "resume": "ui/pause/resume.png",
         "back" : "ui/shared/back.png",
         "exit" : "ui/main/exit-game.png",
-        "mainMenuCat": "ui/main/main-menu-cat.png",
-        "bgBlur": "ui/shared/bg-blur.png",
-        "bgPause": "ui/pause/bg-pause.png",
-        "bgLab": "world/backgrounds/bg-lab.png",
-        "bgSelect": "ui/level-select/bg-select.png",
+        "main-menu-cat": "ui/main/main-menu-cat.png",
+        "bg-blur": "ui/shared/bg-blur.png", //UNUSED
+        "bg-pause": "ui/pause/bg-pause.png",
+        "bg-lab": "world/backgrounds/bg-lab.png", //UNUSED
+        "bg-select": "ui/level-select/bg-select.png", //UNUSED
         "one": "ui/level-select/one.png",
         "two": "ui/level-select/two.png",
-        "loadingTutorial": "ui/loading/loading-tutorial.png",
-        "catpaw": "ui/shared/paw.png",
-        "first": "ui/loading/splash-screen.png",
-        "levelSelectBackground": "ui/level-select/bg-level-select.png",
+        "loading-tutorial": "ui/loading/loading-tutorial.png",
+        "paw": "ui/shared/paw.png",
+        "splash-screen": "ui/loading/splash-screen.png",
+        "bg-level-select": "ui/level-select/bg-level-select.png",
         "bar": "ui/hud/bar.png",
         "bell": "ui/hud/bell.png",
-        "progressbar": "ui/settings/slider-empty.png",
-        "progressbarbefore": "ui/settings/slider-full.png"
+        "slider-empty": "ui/settings/slider-empty.png",
+        "slider-full": "ui/settings/slider-full.png"
 	},
   "fonts": {
     "chewy": {

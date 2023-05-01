@@ -388,6 +388,17 @@ public class GameController implements Screen {
      * <br><br>
      * This method extracts the asset variables from the given asset directory. It
      * should only be called after the asset directory is completed.
+     * <br><br>
+     * Whenever you add an asset to the game, you will need to:<br>
+     * 1. Place it in the correct location in the assets/ directory<br>
+     * 2. Add it to the assets.json file in the form of "file-name: file-path"<br>
+     * 3. Add "file-name" to the correct String array within this method to be accessible from the
+     *    corresponding map (For example, if its a sound asset, add it to the array preceding the soundAssetMap<br><br>
+     * Note the naming conventions that file names follow:<br>
+     * 1. Use hyphens<br>
+     * 2. For sprites that are for animations, affix their name with "-anim"<br>
+     * 3. For textures that serve as backgrounds, prefix their names with "bg-"<br>
+     * 4. Make sure to use the file name (with hyphens) for the assets.json key, and the texture map key as well<br>
      *
      * @param directory	Reference to global asset manager.
      */
@@ -423,9 +434,9 @@ public class GameController implements Screen {
                 // TILESETS
                 "metal-tileset", "climbable-tileset", "steel",
                 // DOORS & PLATFORMS
-                "door", "platforms",
+                "door", "platform",
                 // BACKGROUNDS
-                "background",};
+                "bg-lab",}; // Unsure if this is actually being used
         for (String n : names){
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
         }
@@ -443,7 +454,7 @@ public class GameController implements Screen {
         constants = directory.getEntry("constants", JsonValue.class);
         this.directory = directory;
 
-        background = textureRegionAssetMap.get("background").getTexture();
+        background = textureRegionAssetMap.get("bg-lab").getTexture();
 
         // Giving assets to levelController
         setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants);

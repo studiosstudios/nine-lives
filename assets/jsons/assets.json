@@ -5,13 +5,13 @@
           "wrapU": "repeated",
           "wrapV": "repeated"
         },
-      "platforms" : {
-        "file":  "world/platforms/moving-platform.png",
+      "platform" : {
+        "file":  "world/platforms/platform.png",
         "wrapU": "repeated",
         "wrapV": "repeated"
       },
       "door": {
-        "file": "obstacles/door/doors.png",
+        "file": "obstacles/door/door.png",
         "wrapU": "repeated",
         "wrapV": "repeated"
       },
@@ -49,7 +49,7 @@
       "metal-tileset": "world/platforms/metal-tileset.png",
       "climbable-tileset": "world/platforms/climbable-tileset.png",
       "steel": "obstacles/shared/steel.png",
-      "background": "world/backgrounds/bg-lab.png"
+      "bg-lab": "world/backgrounds/bg-lab.png"
     },
     "jsons"  : {
         "constants": "jsons/constants.json",

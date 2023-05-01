@@ -1,0 +1,35 @@
+{
+	"textures": {
+        "background": "ui/main/bg-main-menu.png",
+        "settingsBackground" : "ui/settings/bg-settings.png",
+		"play": "ui/main/play.png",
+        "playGame" : "ui/main/play-game.png",
+        "settings" : "ui/main/settings.png",
+        "levelSelect" : "ui/main/level-select.png",
+        "mainMenu": "ui/pause/main-menu.png",
+        "resume": "ui/pause/resume.png",
+        "back" : "ui/shared/back.png",
+        "exit" : "ui/main/exit-game.png",
+        "mainMenuCat": "ui/main/main-menu-cat.png",
+        "bgBlur": "ui/shared/bg-blur.png",
+        "bgPause": "ui/pause/bg-pause.png",
+        "bgLab": "world/backgrounds/bg-lab.png",
+        "bgSelect": "ui/level-select/bg-select.png",
+        "one": "ui/level-select/one.png",
+        "two": "ui/level-select/two.png",
+        "loadingTutorial": "ui/loading/loading-tutorial.png",
+        "catpaw": "ui/shared/paw.png",
+        "first": "ui/loading/splash-screen.png",
+        "levelSelectBackground": "ui/level-select/bg-level-select.png",
+        "bar": "ui/hud/bar.png",
+        "bell": "ui/hud/bell.png",
+        "progressbar": "ui/settings/slider-empty.png",
+        "progressbarbefore": "ui/settings/slider-full.png"
+	},
+  "fonts": {
+    "chewy": {
+      "file": "fonts/chewy.ttf",
+      "size": 36
+    }
+  }
+}

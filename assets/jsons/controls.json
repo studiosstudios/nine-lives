@@ -1,0 +1,70 @@
+{
+  "reset": {
+    "key": "R",
+    "disableWhenPan": true
+  },
+  "debug": {
+    "key": "B",
+    "disableWhenPan": false
+  },
+  "up": {
+    "key": "UP",
+    "disableWhenPan": false
+  },
+  "down": {
+    "key": "DOWN",
+    "disableWhenPan": false
+  },
+  "left": {
+    "key": "LEFT",
+    "disableWhenPan": false
+  },
+  "right": {
+    "key": "RIGHT",
+    "disableWhenPan": false
+  },
+  "jump": {
+    "key": "C",
+    "disableWhenPan": true
+  },
+  "dash": {
+    "key": "X",
+    "disableWhenPan": true
+  },
+  "climb": {
+    "key": "Z",
+    "disableWhenPan": true
+  },
+  "switch": {
+    "key": "SHIFT_LEFT",
+    "disableWhenPan": true
+  },
+  "cancel": {
+    "key": "CONTROL_LEFT",
+    "disableWhenPan": true
+  },
+  "undo": {
+    "key": "U",
+    "disableWhenPan": true
+  },
+  "exit": {
+    "key": "ESCAPE",
+    "disableWhenPan": true
+  },
+  "meow": {
+    "key": "M",
+    "disableWhenPan": true
+  },
+  "next": {
+    "key": "N",
+    "disableWhenPan": true
+  },
+  "previous": {
+    "key": "P",
+    "disableWhenPan": true
+  },
+  "pan": {
+    "key": "TAB",
+    "disableWhenPan": false
+  }
+}

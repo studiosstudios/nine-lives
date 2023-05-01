@@ -1,0 +1,72 @@
+{
+	"textures": {
+        "steel" : {
+          "file":  "obstacles/shared/steel.png",
+          "wrapU": "repeated",
+          "wrapV": "repeated"
+        },
+      "platforms" : {
+        "file":  "world/platforms/moving-platform.png",
+        "wrapU": "repeated",
+        "wrapV": "repeated"
+      },
+      "door": {
+        "file": "obstacles/door/doors.png",
+        "wrapU": "repeated",
+        "wrapV": "repeated"
+      },
+        "cat":  "cat/cat.png",
+        "sit": "cat/sit.png",
+        "deadCat": "obstacles/corpse/corpse.png",
+        "burnCat": "cat/burn.png",
+        "jumpingCat": "cat/jump.png",
+        "jump_anim": "cat/jump-start-anim.png",
+        "walk": "cat/walk-anim.png",
+        "spikes": "obstacles/spikes/spikes.png",
+        "flamethrower": "obstacles/flamethrower/flamethrower.png",
+        "flame": "obstacles/flamethrower/flame.png",
+        "laser": "obstacles/laser/laser.png",
+        "laserBeam": "obstacles/laser/laserbeam.png",
+        "checkpoint_anim" : "obstacles/checkpoint/checkpoint-anim.png",
+        "checkpoint_active_anim" : "obstacles/checkpoint/checkpoint-active-anim.png",
+        "checkpoint_base" : "obstacles/checkpoint/checkpoint-base.png",
+        "checkpoint_base_active" : "obstacles/checkpoint/checkpoint-base-active.png",
+        "goal_obj" : "obstacles/goal/goal_obj.png",
+        "background": "world/backgrounds/bg-lab.png",
+        "flame_anim": "obstacles/flamethrower/flame_anim.png",
+        "roboMobAnim": "mob/robot/robot_anim.png",
+        "roboMob": "mob/robot/robot_mob.png",
+        "meow_anim": "cat/meow.png",
+        "spirit_anim": "obstacles/spirit-region/spirit-anim.png",
+        "spirit_photon": "obstacles/spirit-region/spirit-photon.png",
+        "spirit_photon_cat": "obstacles/spirit-region/spirit-photon-cat.png",
+        "spirit_region": "obstacles/spirit-region/spirit-region.png",
+        "idle_anim": "cat/idle.png",
+        "idle_anim_stand": "cat/stand-idle-anim.png",
+        "metal_tileset": "world/platforms/metal-tileset.png",
+        "climbable_tileset": "world/platforms/climbable-tileset.png",
+        "steel": "obstacles/shared/steel.png",
+        "deadCat2" : "obstacles/corpse/corpse2.png",
+      "button_base": "obstacles/button/base.png",
+      "button_top": "platform/button_top.png",
+      "switch_top": "platform/switch_top.png"
+    },
+    "jsons"  : {
+        "constants": "jsons/constants.json",
+        "controls": "jsons/controls.json",
+        "tiledSuperJump": "levels/super-jump.json",
+        "tiledLevelTutorial": "levels/tiledLevelTutorial1.json",
+        "tiledLevel1": "levels/spikes-deaths-easy.json",
+        "tiledLevel2": "levels/level-beta-med1.json",
+        "tiledLevel3": "levels/body-switching-chain-medium.json",
+        "tiledLevel4": "levels/super-jump.json",
+        "tiledLevel5": "levels/level-beta-hard.json",
+        "tiledLevel6": "levels/party-room.json"
+    },
+    "sounds" : {
+        "jump" : "cat/jumpCELESTE.wav",
+        "dash" : "cat/dashCELESTE.wav",
+        "metalLanding" : "cat/metal-landing-CELESTE.wav",
+        "meow" : "cat//meow.mp3"
+    }
+}

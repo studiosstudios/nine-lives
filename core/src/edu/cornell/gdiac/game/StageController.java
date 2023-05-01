@@ -133,7 +133,7 @@ public class StageController implements Screen {
 		budget = millis;
 
 		// We need these files loaded immediately
-		internal = new AssetDirectory( "loading.json" );
+		internal = new AssetDirectory( "jsons/loading.json" );
 		internal.loadAssets();
 		internal.finishLoading();
 
@@ -174,7 +174,7 @@ public class StageController implements Screen {
 	}
 
 	public void loadAssets() {
-		assets = new AssetDirectory("assets.json");
+		assets = new AssetDirectory("jsons/assets.json");
 		assets.loadAssets();
 		assets.finishLoading();
 	}

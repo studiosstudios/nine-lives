@@ -178,7 +178,7 @@ public class GameController implements Screen {
         panTime = 0;
         respawnDelay = 0;
 
-        AssetDirectory internal = new AssetDirectory("loading.json");
+        AssetDirectory internal = new AssetDirectory("jsons/loading.json");
         internal.loadAssets();
         internal.finishLoading();
 
@@ -399,8 +399,8 @@ public class GameController implements Screen {
         fontAssetMap = new HashMap<>();
 
         String[] names = {"cat", "sit", "deadCat", "jumpingCat", "jump_anim", "walk",
-                "spikes", "button", "flamethrower", "flame", "laser", "checkpoint", "goal_obj",
-                "checkpointActive", "checkpoint_anim", "checkpoint_active_anim", "checkpoint_base",
+                "spikes", "flamethrower", "flame", "laser", "goal_obj",
+                "checkpoint_anim", "checkpoint_active_anim", "checkpoint_base",
                 "checkpoint_base_active",
                 "background", "flame_anim", "roboMob", "roboMobAnim",
                 "spirit_anim", "spirit_photon", "spirit_photon_cat", "spirit_region",
@@ -435,8 +435,8 @@ public class GameController implements Screen {
         //Set controls
         InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
 
-//		InputController.getInstance().writeTo("inputLogs/recent.txt");
-//		InputController.getInstance().readFrom("inputLogs/recent.txt");
+//		InputController.getInstance().writeTo("debug-input/recent.txt");
+//		InputController.getInstance().readFrom("debug-input/recent.txt");
     }
 
     /**

@@ -16,6 +16,8 @@ public class Camera {
     private float viewportHeight;
     /** Bounds of current level (in pixels) **/
     private Rectangle levelBounds = new Rectangle();
+    /** Bounds indicating how much of current level one is able to see while not in pan mode (in pixels) **/
+    private Rectangle gameplayBounds = new Rectangle();
     /** Camera center x-coordinate **/
     private float x;
     /** Camera center y-coordinate **/
@@ -60,27 +62,27 @@ public class Camera {
      * @param yPos y coordinate of focus's current location in pixels
      * @param glide smoothed camera movement
      */
-    public void updateCamera(float xPos, float yPos, boolean glide){
+    public void updateCamera(float xPos, float yPos, boolean glide, Rectangle bounds){
         if(Math.abs(camera.zoom - zoomGoal) > 0.01)
         {
-            camera.zoom = camera.zoom < zoomGoal ? camera.zoom + 0.01f:camera.zoom - 0.01f;
+            camera.zoom = camera.zoom < zoomGoal ? camera.zoom + 0.01f : camera.zoom - 0.01f;
         }
         else {
             camera.zoom = zoomGoal;
         }
         float width_scaled = viewportWidth*camera.zoom; //width of viewport zoomed in
-        if(xPos > levelBounds.width - width_scaled/2 + levelBounds.x){
-            xPos = levelBounds.width - width_scaled + width_scaled/2 + levelBounds.x;
+        if(xPos > bounds.width - width_scaled/2 + bounds.x){
+            xPos = bounds.width - width_scaled + width_scaled/2 + bounds.x;
         }
-        if(xPos < width_scaled/2 + levelBounds.x){
-            xPos = width_scaled/2 + levelBounds.x;
+        if(xPos < width_scaled/2 + bounds.x){
+            xPos = width_scaled/2 + bounds.x;
         }
         float height_scaled = viewportHeight*camera.zoom; //height of viewport zoomed in
-        if(yPos > levelBounds.height - height_scaled/2 + levelBounds.y){
-            yPos = levelBounds.height - height_scaled + height_scaled/2 + levelBounds.y;
+        if(yPos > bounds.height - height_scaled/2 + bounds.y){
+            yPos = bounds.height - height_scaled + height_scaled/2 + bounds.y;
         }
-        if(yPos < height_scaled/2 + levelBounds.y){
-            yPos = height_scaled/2 + levelBounds.y;
+        if(yPos < height_scaled/2 + bounds.y){
+            yPos = height_scaled/2 + bounds.y;
         }
         if(glide) {
             x += (xPos - x) * cameraGlideRate;
@@ -110,7 +112,7 @@ public class Camera {
     }
 
     /**
-     * Adjusting level size used for camera positioning calculations
+     * Adjusting level size (set in pixel units)
      * @param bounds bounds of current level
      * @param scale  draw scale
      * @param world true if bounds in world units, false if bounds in pixels
@@ -125,6 +127,36 @@ public class Camera {
         }
     }
 
+    /**
+     * Adjusting bounds size relevant to gameplay at certain point in time used for camera positioning calculations (set in pixel units)
+     * @param bounds Bounds indicating how much of current level one is able to see while not in pan mode
+     * @param scale draw scale
+     * @param world true if bounds in world units, false if bounds in pixels
+     */
+    public void setGameplayBounds(Rectangle bounds, Vector2 scale, boolean world){
+        if (!world) {
+            gameplayBounds.set(bounds.x, bounds.y, bounds.width, bounds.height);
+        }
+        else {
+            gameplayBounds.set(bounds.x * scale.x, bounds.y * scale.y, bounds.width * scale.x, bounds.height * scale.y);
+        }
+    }
+
+    /**
+     * Returns bounds indicating how much of current level one is able to see while not in pan mode (in pixels)
+     * @return Bounds indicating how much of current level one is able to see while not in pan mode (in pixels)
+     */
+    public Rectangle getGameplayBounds(){
+        return gameplayBounds;
+    }
+
+    /**
+     * Returns bounds indicating level size (in pixels)
+     * @return Bounds indicating level size (in pixels)
+     */
+    public Rectangle getLevelBounds(){
+        return levelBounds;
+    }
     /**
      * Sets to default or specified zoom
      * @param z true if we want to specify zoom, false if default zoom
@@ -160,7 +192,7 @@ public class Camera {
 //        float yDiff = Math.abs(deadY-catY)+50; //50 is leeway constant
 //        float centerX = (deadX+catX)/2;
 //        float centerY = (deadY+catY)/2;
-        updateCamera(deadX,deadY,true);
+        updateCamera(deadX, deadY,true, levelBounds);
 //        updateCamera(centerX,centerY,true);
 //        camera.zoom = Float.max(camera.zoom, Float.max(xDiff/viewportWidth, yDiff/viewportHeight));
     }

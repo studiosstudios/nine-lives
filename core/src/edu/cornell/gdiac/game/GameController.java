@@ -546,7 +546,8 @@ public class GameController implements Screen {
         actionController.setMobControllers(currLevel);
         if (currLevel.levelStates().size == 0) currLevel.saveState();
         canvas.getCamera().setLevelBounds(currLevel.bounds, scale, true);
-        canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, cameraGlide);
+        canvas.getCamera().setGameplayBounds(currLevel.bounds, scale, true);
+        canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, cameraGlide, canvas.getCamera().getGameplayBounds());
         currLevel.unpause();
         nextLevel.pause();
         prevLevel.pause();
@@ -691,7 +692,7 @@ public class GameController implements Screen {
         if(input.didPan()){
             gameState = GameState.PLAYER_PAN;
             //move camera
-            cam.updateCamera(cam.getX()+input.getCamHorizontal(),cam.getY()+ input.getCamVertical(),false);
+            cam.updateCamera(cam.getX()+input.getCamHorizontal(),cam.getY()+ input.getCamVertical(),false, cam.getLevelBounds());
         }
         else if(gameState == GameState.PLAYER_PAN){
             gameState = GameState.PLAY;
@@ -729,12 +730,12 @@ public class GameController implements Screen {
                     cam.switchBodyCam(nextDeadBody.getX() * scale.x, nextDeadBody.getY() * scale.y);
                 } else {
                     cam.setGlideMode("NORMAL");
-                    cam.updateCamera(x_pos, y_pos, true);
+                    cam.updateCamera(x_pos, y_pos, true, cam.getGameplayBounds());
                 }
             }
         }
         if(gameState == GameState.PAN) {
-            cam.updateCamera(panTarget.get(0).getXPos() * scale.x, panTarget.get(0).getYPos() * scale.y, true);
+            cam.updateCamera(panTarget.get(0).getXPos() * scale.x, panTarget.get(0).getYPos() * scale.y, true, cam.getLevelBounds());
             if (!cam.isGliding()) {
                 panTime += 1;
                 if (panTime == PAN_HOLD) {
@@ -756,7 +757,7 @@ public class GameController implements Screen {
                 yPos = currLevel.getdeadBodyArray().get(currLevel.getdeadBodyArray().size-1).getY()*scale.y;
             }
 
-            cam.updateCamera(xPos, yPos, true);
+            cam.updateCamera(xPos, yPos, true, cam.getGameplayBounds());
             if(respawnDelay == RESPAWN_DELAY){
                 respawnDelay = 0;
                 input.setDisableAll(false);

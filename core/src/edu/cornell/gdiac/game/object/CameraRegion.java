@@ -18,6 +18,8 @@ public class CameraRegion extends BoxObstacle {
     private static JsonValue objectConstants;
     /** Number of fixture colliding with this camera region */
     private int fixtureCount;
+    /** Whether camera should snap to this camera region */
+    private boolean snapRegion;
 
     /**
      * @param properties     String-Object map of properties for this object
@@ -37,6 +39,7 @@ public class CameraRegion extends BoxObstacle {
         float expectedWidth = getWidth() * zoom;
         float expectedHeight = getHeight() * zoom;
         relativeZoom = (boolean) properties.get("isZoomRelative");
+        snapRegion = (boolean) properties.get("shouldSnapRegion");
         if(relativeZoom)
             zoom = Math.min(expectedWidth*scale.x/GameCanvas.STANDARD_WIDTH, expectedHeight*scale.y/GameCanvas.STANDARD_HEIGHT);
     }
@@ -73,13 +76,21 @@ public class CameraRegion extends BoxObstacle {
      * @return bounds of CameraRegion as a Rectangle
      */
     public Rectangle getBounds(){
-        return new Rectangle(getX(),getY(),getWidth(),getHeight());
+        return new Rectangle(getX() - getDimension().x/2,getY()-getDimension().y/2,getWidth(),getHeight());
+    }
+
+    /**
+     * Returns if the camera should snap to this camera region
+     * @return snapRegion
+     */
+    public boolean shouldSnap(){
+        return snapRegion;
     }
 
     @Override
     public void drawDebug(GameCanvas canvas){
 //        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
 //        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
-        canvas.drawPhysics(shape, Color.PURPLE,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
+        canvas.drawPhysics(shape, Color.TEAL,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
     }
 }

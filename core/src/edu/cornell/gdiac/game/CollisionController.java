@@ -146,7 +146,11 @@ public class CollisionController implements ContactListener, ContactFilter {
                         if(!cameraRegions.contains((CameraRegion) bd2,true)){
                             cameraRegions.add((CameraRegion) bd2);
                         }
-                        camera.setDefaultZoom(maxCollidingCamRegion(cameraRegions).getZoom());
+                        CameraRegion relevantRegion = maxCollidingCamRegion(cameraRegions);
+                        camera.setDefaultZoom(relevantRegion.getZoom());
+                        if(relevantRegion.shouldSnap()){
+                            camera.setGameplayBounds(relevantRegion.getBounds(), relevantRegion.getDrawScale(), true);
+                        }
                     }
                 }
 
@@ -270,9 +274,17 @@ public class CollisionController implements ContactListener, ContactFilter {
                         if (cameraRegions.isEmpty()) {
                             if(level.getCat().isActive())
                                 camera.setDefaultZoom(Camera.CAMERA_ZOOM);
+                            camera.setGameplayBounds(camera.getLevelBounds(), level.getScale(), false);
                         }
                         else{
-                            camera.setDefaultZoom(maxCollidingCamRegion(cameraRegions).getZoom());
+                            CameraRegion relevantRegion = maxCollidingCamRegion(cameraRegions);
+                            camera.setDefaultZoom(relevantRegion.getZoom());
+                            if(relevantRegion.shouldSnap()){
+                                camera.setGameplayBounds(relevantRegion.getBounds(), relevantRegion.getDrawScale(), true);
+                            }
+                            else{
+                                camera.setGameplayBounds(camera.getLevelBounds(), relevantRegion.getDrawScale(), false);
+                            }
                         }
                     }
                 }

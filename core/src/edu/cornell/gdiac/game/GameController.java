@@ -634,7 +634,6 @@ public class GameController implements Screen {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt) {
-        System.out.println(gameState);
         if (collisionController.getReturn()) {
             setRet(true);
         }
@@ -683,7 +682,6 @@ public class GameController implements Screen {
      * Updates GameState and moves camera accordingly
      */
     public void updateCamera(){
-//        System.out.println(canvas.getCamera().getCamera().position);
         Camera cam = canvas.getCamera();
         InputController input = InputController.getInstance();
         //resetting automatically resets camera to cat
@@ -768,7 +766,6 @@ public class GameController implements Screen {
                 currLevel.getCat().setPosition(currLevel.getRespawnPos());
             }
         }
-//        System.out.println(canvas.getCamera().getCamera().zoom);
     }
     @Override
     public void render(float delta) {

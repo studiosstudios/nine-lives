@@ -61,8 +61,6 @@ public class Camera {
      * @param glide smoothed camera movement
      */
     public void updateCamera(float xPos, float yPos, boolean glide){
-//        System.out.println("GOAL:" + zoomGoal);
-//        System.out.println("cam_zoom:" + camera.zoom);
         if(Math.abs(camera.zoom - zoomGoal) > 0.01)
         {
             camera.zoom = camera.zoom < zoomGoal ? camera.zoom + 0.01f:camera.zoom - 0.01f;
@@ -137,7 +135,6 @@ public class Camera {
             float scaleX = levelBounds.width/viewportWidth;
             float scaleY = levelBounds.height/viewportHeight;
             zoomGoal = Float.min(scaleX,Float.min(scaleY, Float.min(1, zoom)));
-            System.out.println("this ran1");
 //            camera.zoom = Float.min(scaleX,Float.min(scaleY, Float.min(1, zoom)));
         }
         else{

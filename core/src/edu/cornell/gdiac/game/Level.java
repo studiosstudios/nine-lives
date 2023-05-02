@@ -105,8 +105,9 @@ public class Level {
     private Array<Joint> joints = new Array<>();
     private Array<Particle> spiritParticles = new Array<>();
 
-
+    /** Current RayHandler associated with the active world for convenience. */
     private RayHandler rayHandler;
+
 
     /**
      * Returns the bounding rectangle for the physics world
@@ -853,7 +854,6 @@ public class Level {
             JsonValue catJV = objects.get(0);
             readProperties(catJV, tileSize, levelHeight);
             cat = new Cat(propertiesMap, textureRegionAssetMap, scale);
-            //        (new PointLight(rayHandler, 100, Color.WHITE, 100, 150, 150)).attachToBody(cat.getBody());
             respawnPos = cat.getPosition();
             startRespawnPos = respawnPos;
             if (shouldPopulate) {
@@ -1009,6 +1009,7 @@ public class Level {
         assert inBounds(obj) : "Object is not in bounds";
         objects.add(obj);
         obj.activatePhysics(world);
+        obj.createLight(rayHandler);
         if (propertiesMap.containsKey("name")) {
             objectNames.put((String) propertiesMap.get("name"), obj);
         }

@@ -10,6 +10,7 @@
  */
 package edu.cornell.gdiac.game.object;
 
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -546,7 +547,6 @@ public class Cat extends CapsuleObstacle implements Movable {
                 tMap.get("cat").getRegionWidth()/scale.x*objectConstants.get("shrink").getFloat( 0 ),
                 tMap.get("cat").getRegionHeight()/scale.y*objectConstants.get("shrink").getFloat( 1 ),
                 Orientation.TOP);
-        System.out.println(getPosition());
         setDrawScale(scale);
         setDensity(objectConstants.getFloat("density", 0));
         setFriction(
@@ -667,6 +667,13 @@ public class Cat extends CapsuleObstacle implements Movable {
         sensorFixture.setUserData(name);
         sensorShapes.add(sensorShape);
         return sensorFixture;
+    }
+
+    public void createLight(RayHandler rayHandler) {
+        createPointLight(objectConstants.get("light"), rayHandler);
+        getLight().attachToBody(getBody());
+        getLight().setSoft(true);
+        getLight().setXray(true);
     }
 
     /**

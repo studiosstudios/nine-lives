@@ -138,67 +138,8 @@ public class GameController implements Screen {
     /** The color of the flash animation after resetting/undoing */
     private Color flashColor = new Color(1, 1, 1, 0);
 
-    /** RayHandler that takes care of Box2DLights */
+    /** RayHandler that takes care of Box2DLights. This MUST be associated with the active World at all times. */
     private RayHandler rayHandler;
-
-    private PointLight tempPointLight;
-
-
-    /**
-     * Creates a new game world with the default values.
-     * <br><br>
-     * The game world is scaled so that the screen coordinates do not agree
-     * with the Box2D coordinates.  The bounds are in terms of the Box2d
-     * world, not the screen.
-     */
-    protected GameController(int numLevels) {
-        this(new Vector2(0,DEFAULT_GRAVITY), new Vector2(DEFAULT_SCALE,DEFAULT_SCALE), numLevels);
-    }
-
-    /**
-     * Creates and initialize a new instance of a GameController
-     * <br><br>
-     * The game world is scaled so that the screen coordinates do not agree
-     * with the Box2D coordinates.  The bounds are in terms of the Box2D
-     * world, not the screen.
-     */
-    protected GameController(Vector2 gravity, Vector2 scale, int numLevels) {
-        this.scale = scale;
-        debug = false;
-        setRet(false);
-        world = new World(gravity, true);
-//        RayHandler.useDiffuseLight(true);
-//        rayHandler = new RayHandler(world);
-//        rayHandler.setAmbientLight(0.9f);
-//        rayHandler.setAmbientLight(0.35f, 0.35f, 0.35f, 0.01f);
-
-//        tempPointLight = new PointLight(rayHandler, 100, Color.WHITE, 200, 0, 0);
-
-        this.numLevels = numLevels;
-        levelNum = 1;
-        levels = new Level[3];
-        for (int i = 0; i < 3; i++){
-            levels[i] = new Level(world, scale, MAX_NUM_LIVES, rayHandler);
-        }
-        currLevelIndex = 1;
-
-        setLevels();
-        actionController = new ActionController(scale, volume);
-        actionController.setLevel(levels[currLevelIndex]);
-        collisionController = new CollisionController(actionController);
-        collisionController.setLevel(levels[currLevelIndex]);
-
-        gameState = GameState.PLAY;
-        panTime = 0;
-        respawnDelay = 0;
-
-        AssetDirectory internal = new AssetDirectory("jsons/loading.json");
-        internal.loadAssets();
-        internal.finishLoading();
-
-        hud = new HudStage(internal, true);
-        hud.lives = currLevel.getNumLives();
-    }
 
     /**
      * Points <code>currLevel</code>, <code>nextLevel</code> and <code>prevLevel</code> to the correct elements of the
@@ -326,6 +267,56 @@ public class GameController implements Screen {
         Door.setConstants(constants.get("doors"));
         Mob.setConstants(constants.get("mobs"));
         Goal.setConstants(constants.get("goal"));
+    }
+
+    /**
+     * Creates a new game world with the default values.
+     * <br><br>
+     * The game world is scaled so that the screen coordinates do not agree
+     * with the Box2D coordinates.  The bounds are in terms of the Box2d
+     * world, not the screen.
+     */
+    protected GameController(int numLevels) {
+        this(new Vector2(0,DEFAULT_GRAVITY), new Vector2(DEFAULT_SCALE,DEFAULT_SCALE), numLevels);
+    }
+
+    /**
+     * Creates and initialize a new instance of a GameController
+     * <br><br>
+     * The game world is scaled so that the screen coordinates do not agree
+     * with the Box2D coordinates.  The bounds are in terms of the Box2D
+     * world, not the screen.
+     */
+    protected GameController(Vector2 gravity, Vector2 scale, int numLevels) {
+        this.scale = scale;
+        debug = false;
+        setRet(false);
+        world = new World(gravity, true);
+
+        this.numLevels = numLevels;
+        levelNum = 1;
+        levels = new Level[3];
+        for (int i = 0; i < 3; i++){
+            levels[i] = new Level(world, scale, MAX_NUM_LIVES, rayHandler);
+        }
+        currLevelIndex = 1;
+
+        setLevels();
+        actionController = new ActionController(scale, volume);
+        actionController.setLevel(levels[currLevelIndex]);
+        collisionController = new CollisionController(actionController);
+        collisionController.setLevel(levels[currLevelIndex]);
+
+        gameState = GameState.PLAY;
+        panTime = 0;
+        respawnDelay = 0;
+
+        AssetDirectory internal = new AssetDirectory("jsons/loading.json");
+        internal.loadAssets();
+        internal.finishLoading();
+
+        hud = new HudStage(internal, true);
+        hud.lives = currLevel.getNumLives();
     }
 
     /**
@@ -512,7 +503,6 @@ public class GameController implements Screen {
      * properly dispose the level so that the level reset is clean.
      */
     protected void init(int levelNum) {
-        System.out.println("Executing init");
         this.levelNum = levelNum;
 
         prevLevel.dispose();
@@ -521,10 +511,11 @@ public class GameController implements Screen {
         Vector2 gravity = new Vector2( world.getGravity() );
         world.dispose();
         world = new World(gravity, true);
+        if (rayHandler != null) {
+            rayHandler.dispose();
+        }
         rayHandler = new RayHandler(world);
         rayHandler.setAmbientLight(0.8f);
-        tempPointLight = new PointLight(rayHandler, 100, Color.WHITE, 100, 48f, 48f);
-
 
         justRespawned = true;
         justReset = true;
@@ -578,8 +569,12 @@ public class GameController implements Screen {
      * Dispose of all (non-static) resources allocated to this mode.
      */
     public void dispose() {
+        prevLevel.dispose();
         currLevel.dispose();
+        nextLevel.dispose();
         world.dispose();
+        rayHandler.dispose();
+        rayHandler = null;
         scale  = null;
         canvas = null;
     }
@@ -806,33 +801,30 @@ public class GameController implements Screen {
         if (paused) { updateCamera(); }
         draw(delta);
         if (paused && stageController != null) { stageController.render(delta); }
-//        System.out.println("after:" +canvas.getCamera().getCamera().position);
-        rayHandler.setCombinedMatrix(canvas.getCamera().getCamera());
-//        OrthographicCamera c = canvas.getCamera().getCamera();
-//        canvas.getCamera().getCamera().update();
-//        System.out.println("Drawing in GameController:" +c.position+" "+c);
-//        rayHandler.setCombinedMatrix(c);
-//        rayHandler.setCombinedMatrix(
-//                c.combined.cpy(),
-//                c.position.x,
-//                c.position.y,
-//                c.viewportWidth,
-//                c.viewportHeight
-//        );
-//        Vector3 projected = c.unproject(new Vector3(400, 400, 0));
-//        Vector2 newPos = new Vector2(800, 800).sub(canvas.getCamera().getX(), canvas.getCamera().getY());
-//        tempPointLight.setPosition(newPos);
+        updateRayHandlerCombinedMatrix();
 
-//        System.out.println(c.position+" "+c); this should work idk why it doesnt work
-//        System.out.println(canvas.getCamera().getX() + " " + canvas.getCamera().getY());
-
-
-//        Viewport vp = canvas.getViewport();
-//        System.out.println(Math.round(Gdx.graphics.getBackBufferScale()));
-//        int backBufferScale = Math.round(Gdx.graphics.getBackBufferScale());
-//        rayHandler.useCustomViewport(vp.getScreenX() * backBufferScale, vp.getScreenY() * backBufferScale,
-//                                    vp.getScreenWidth() * backBufferScale, vp.getScreenHeight() * backBufferScale);
         rayHandler.updateAndRender();
+    }
+
+    /**
+     * Updates the RayHandler's combined matrix to properly reflect the camera's current position
+     * and viewport dimensions.
+     * <br>
+     * We need to do this because it is inconvenient to scale the position of box2dlights by our world
+     * scale every time they move, especially when they can be attached to bodies. Handling the scaling
+     * in the combined matrix takes care of the transformation for us for all lights.
+     */
+    private void updateRayHandlerCombinedMatrix() {
+        OrthographicCamera c = canvas.getCamera().getCamera();
+        Matrix4 combined = c.combined.cpy();
+        combined.scl(DEFAULT_SCALE);
+        rayHandler.setCombinedMatrix(
+                combined,
+                c.position.x / 32,
+                c.position.y / 32,
+                c.viewportWidth / 32,
+                c.viewportHeight / 32
+        );
     }
 
     /**

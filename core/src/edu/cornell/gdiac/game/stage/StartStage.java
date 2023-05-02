@@ -15,7 +15,7 @@ public class StartStage extends StageWrapper{
      */
     @Override
     public void createActors() {
-        Actor first = addActor(internal.getEntry("first", Texture.class), 0,0);
+        Actor first = addActor(internal.getEntry("splash-screen", Texture.class), 0,0);
         first.setScale(0.5f);
     }
 

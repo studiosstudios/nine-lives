@@ -54,10 +54,10 @@ public class Goal extends BoxObstacle
         setTextureScale(textureScale);
         int spriteWidth = 1024;
         int spriteHeight = 2048;
-        this.texture = tMap.get("goal_obj");
-        this.activeTexture = tMap.get("goal_obj");
-//        spriteFrames = TextureRegion.split(tMap.get("checkpoint_anim").getTexture(), spriteWidth, spriteHeight);
-//        activeSpriteFrames = TextureRegion.split(tMap.get("checkpoint_active_anim").getTexture(), spriteWidth, spriteHeight);
+        this.texture = tMap.get("goal");
+        this.activeTexture = tMap.get("goal");
+//        spriteFrames = TextureRegion.split(tMap.get("checkpoint-anim").getTexture(), spriteWidth, spriteHeight);
+//        activeSpriteFrames = TextureRegion.split(tMap.get("checkpoint-active-anim").getTexture(), spriteWidth, spriteHeight);
 //        float frameDuration = 0.1f;
 //
 //        animation = new Animation<>(frameDuration, spriteFrames[0]);

@@ -47,7 +47,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
         super();
 
 
-        this.flameTexture = tMap.get("flame_anim");
+        this.flameTexture = tMap.get("flame-anim");
 
         flameBase = new BoxObstacle(tMap.get("flamethrower").getRegionWidth()/drawScale.x*textureScale.x, tMap.get("flamethrower").getRegionHeight()/drawScale.y*textureScale.y);
         setDrawScale(drawScale);

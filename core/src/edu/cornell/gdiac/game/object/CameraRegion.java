@@ -9,14 +9,17 @@ import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
 import com.badlogic.gdx.math.Rectangle;
 
-/** NOT USED YET **/
 public class CameraRegion extends BoxObstacle {
-    /** Zoom percentage of camera after collision with this camera tile **/
+    /** Zoom percentage of camera after collision with this camera tile/Zoom percentage of camera relative to the camera region size **/
     private float zoom;
+    /** Whether zoom is relative to viewport or to camera region size*/
+    private boolean relativeZoom;
     /** Constants that are shared between all instances of this class */
     private static JsonValue objectConstants;
-    /** number of fixture colliding with this camera region */
+    /** Number of fixture colliding with this camera region */
     private int fixtureCount;
+    /** Whether the camera will snap to the bounds of this camera region */
+    private boolean shouldSnap;
 
     /**
      * @param properties     String-Object map of properties for this object
@@ -24,7 +27,8 @@ public class CameraRegion extends BoxObstacle {
      */
     public CameraRegion(ObjectMap<String, Object> properties, Vector2 scale){
         super((float)properties.get("width"), (float)properties.get("height"));
-        this.zoom = (float) properties.get("zoom");
+        zoom = (float) properties.get("zoom");
+//        this.shouldSnap = (boolean) properties.get("shouldSnap"); //TODO: LOOK INTO WHY THIS IS NULL
         setBodyType(BodyDef.BodyType.StaticBody); //lmao
         setSensor(true);
         setDrawScale(scale);
@@ -32,6 +36,11 @@ public class CameraRegion extends BoxObstacle {
         setY((float) properties.get("y") - getDimension().y/2);
         setName((String) properties.get("name"));
         fixtureCount = 0;
+        float expectedWidth = getWidth() * zoom;
+        float expectedHeight = getHeight() * zoom;
+        relativeZoom = (boolean) properties.get("isZoomRelative");
+        if(relativeZoom)
+            zoom = Math.min(expectedWidth*scale.x/GameCanvas.STANDARD_WIDTH, expectedHeight*scale.y/GameCanvas.STANDARD_HEIGHT);
     }
 
     /**

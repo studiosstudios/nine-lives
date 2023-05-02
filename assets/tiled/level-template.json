@@ -71,7 +71,12 @@
                         {
                          "name":"zoom",
                          "type":"float",
-                         "value":0.8
+                         "value":0.5
+                        },
+                        {
+                          "name": "isZoomRelative",
+                          "type": "bool",
+                          "value": false
                         }],
                  "rotation":0,
                  "type":"CameraRegion",
@@ -88,7 +93,12 @@
                         {
                          "name":"zoom",
                          "type":"float",
-                         "value":0.5
+                         "value":1
+                        },
+                        {
+                         "name": "isZoomRelative",
+                         "type": "bool",
+                         "value": true
                         }],
                  "rotation":0,
                  "type":"CameraRegion",

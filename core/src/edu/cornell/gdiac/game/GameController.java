@@ -634,6 +634,7 @@ public class GameController implements Screen {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt) {
+        System.out.println(gameState);
         if (collisionController.getReturn()) {
             setRet(true);
         }
@@ -682,6 +683,7 @@ public class GameController implements Screen {
      * Updates GameState and moves camera accordingly
      */
     public void updateCamera(){
+//        System.out.println(canvas.getCamera().getCamera().position);
         Camera cam = canvas.getCamera();
         InputController input = InputController.getInstance();
         //resetting automatically resets camera to cat
@@ -707,6 +709,7 @@ public class GameController implements Screen {
             }
         }
         if(gameState == GameState.PLAY){
+            currLevel.getCat().setActive(true);
             panTime = 0;
             respawnDelay = 0;
             undoTime++;
@@ -745,14 +748,16 @@ public class GameController implements Screen {
             cam.setZoom(true, 1.0f);
         }
         if(gameState == GameState.RESPAWN){
-            float xPos = currLevel.getCat().getPosition().x*scale.x;
-            float yPos = currLevel.getCat().getPosition().y*scale.y;
+
+            float xPos = currLevel.getRespawnPos().x*scale.x;
+            float yPos = currLevel.getRespawnPos().y*scale.y;
             input.setDisableAll(true);
             respawnDelay += 1;
             if(currLevel.getdeadBodyArray().size > 0 && respawnDelay < RESPAWN_DELAY/2){
                 xPos = currLevel.getdeadBodyArray().get(currLevel.getdeadBodyArray().size-1).getX()*scale.x;
                 yPos = currLevel.getdeadBodyArray().get(currLevel.getdeadBodyArray().size-1).getY()*scale.y;
             }
+
             cam.updateCamera(xPos, yPos, true);
             if(respawnDelay == RESPAWN_DELAY){
                 respawnDelay = 0;

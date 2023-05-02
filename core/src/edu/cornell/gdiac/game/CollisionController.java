@@ -258,6 +258,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                     }
 
                     if (bd2 instanceof CameraRegion) {
+
                         ((CameraRegion) bd2).removeFixture();
                         Array<CameraRegion> cameraRegions = cat.getCameraRegions();
                         for(int index = 0; index < cameraRegions.size; index++){
@@ -267,7 +268,8 @@ public class CollisionController implements ContactListener, ContactFilter {
                             break;
                         }
                         if (cameraRegions.isEmpty()) {
-                            camera.setDefaultZoom(Camera.CAMERA_ZOOM);
+                            if(level.getCat().isActive())
+                                camera.setDefaultZoom(Camera.CAMERA_ZOOM);
                         }
                         else{
                             camera.setDefaultZoom(maxCollidingCamRegion(cameraRegions).getZoom());

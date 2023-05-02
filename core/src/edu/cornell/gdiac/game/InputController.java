@@ -244,6 +244,11 @@ public class InputController {
 		return isClicked("debug");
 	}
 
+	/**
+	 * Returns true if player wants to pan the map
+	 *
+	 * @return true if the player wants to pan the map
+	 */
 	public boolean didPan() {
 		return pressedMap.get("pan");
 	}

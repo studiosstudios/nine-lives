@@ -31,7 +31,7 @@ public class Camera {
     private boolean isGliding;
     /** Default camera zoom when no other specified zoom */
     public static final float CAMERA_ZOOM = 0.6f;
-    /** Zoom Goal */
+    /** Zoom Goal: Can only be in increments of 0.01 */
     private float zoomGoal;
 
 
@@ -53,7 +53,6 @@ public class Camera {
         isGliding = false;
         cameraGlideRate = CAMERA_GLIDE_NORMAL;
     }
-
     /**
      * Focus determined by caller
      * Updates camera positioning based on focus's current position (in pixels)
@@ -62,11 +61,13 @@ public class Camera {
      * @param glide smoothed camera movement
      */
     public void updateCamera(float xPos, float yPos, boolean glide){
-        if(Math.abs(camera.zoom - zoomGoal) > 0.05)
+//        System.out.println("GOAL:" + zoomGoal);
+//        System.out.println("cam_zoom:" + camera.zoom);
+        if(Math.abs(camera.zoom - zoomGoal) > 0.01)
         {
-            camera.zoom = camera.zoom < zoomGoal ? camera.zoom + 0.05f:camera.zoom-0.05f;
+            camera.zoom = camera.zoom < zoomGoal ? camera.zoom + 0.01f:camera.zoom - 0.01f;
         }
-        else{
+        else {
             camera.zoom = zoomGoal;
         }
         float width_scaled = viewportWidth*camera.zoom; //width of viewport zoomed in
@@ -136,6 +137,7 @@ public class Camera {
             float scaleX = levelBounds.width/viewportWidth;
             float scaleY = levelBounds.height/viewportHeight;
             zoomGoal = Float.min(scaleX,Float.min(scaleY, Float.min(1, zoom)));
+            System.out.println("this ran1");
 //            camera.zoom = Float.min(scaleX,Float.min(scaleY, Float.min(1, zoom)));
         }
         else{

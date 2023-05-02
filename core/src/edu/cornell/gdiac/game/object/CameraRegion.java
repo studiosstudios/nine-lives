@@ -18,8 +18,6 @@ public class CameraRegion extends BoxObstacle {
     private static JsonValue objectConstants;
     /** Number of fixture colliding with this camera region */
     private int fixtureCount;
-    /** Whether the camera will snap to the bounds of this camera region */
-    private boolean shouldSnap;
 
     /**
      * @param properties     String-Object map of properties for this object

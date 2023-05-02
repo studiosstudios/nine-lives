@@ -707,7 +707,6 @@ public class GameController implements Screen {
             }
         }
         if(gameState == GameState.PLAY){
-            currLevel.getCat().setActive(true);
             panTime = 0;
             respawnDelay = 0;
             undoTime++;
@@ -719,6 +718,7 @@ public class GameController implements Screen {
                 gameState = GameState.RESPAWN;
             }
             else {
+                currLevel.getCat().setActive(true);
                 //zoom normal when in play state and not panning and not switching bodies
                 if (!input.holdSwitch() && !input.didPan()) {
                     cam.setZoom(false, -1f);
@@ -761,7 +761,6 @@ public class GameController implements Screen {
                 respawnDelay = 0;
                 input.setDisableAll(false);
                 gameState = GameState.PLAY;
-
                 currLevel.getCat().setActive(true);
                 currLevel.getCat().setPosition(currLevel.getRespawnPos());
             }

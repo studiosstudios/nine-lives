@@ -197,11 +197,10 @@ public class Cat extends CapsuleObstacle implements Movable {
      * Cache for internal force calculations
      */
     private ObjectSet<Fixture> groundFixtures;
-
     /**
      * The current spirit regions that the cat is inside
      */
-    private ObjectSet<SpiritRegion> spiritRegions;
+    private ObjectMap<String, Integer> spiritRegions;
     //endregion
     /*/////*/
 
@@ -336,7 +335,7 @@ public class Cat extends CapsuleObstacle implements Movable {
         if (value && !isGrounded) {
             setVY(0); // TODO: Cat bounces. Cat should not bounce (duplicates sounds and stuff). Setting restitutions to 0 does not seem to help; this temporary fixes it.
             onGroundedReset();
-            soundBuffer.add("metalLanding");
+            soundBuffer.add("metal-landing");
         }
         else if (!value) {
             setOrientation(Orientation.VERTICAL);
@@ -475,9 +474,24 @@ public class Cat extends CapsuleObstacle implements Movable {
         }
     }
 
-    public ObjectSet<SpiritRegion> getSpiritRegions() {
+    public ObjectMap<String, Integer> getSpiritRegions() {
         return spiritRegions;
     }
+
+    public void addSpiritRegion(SpiritRegion sr){
+        String color = sr.getColorString();
+        spiritRegions.put(color, spiritRegions.get(color, 0) + 1);
+    }
+
+    public void removeSpiritRegion(SpiritRegion sr){
+        String color = sr.getColorString();
+        if (!spiritRegions.containsKey(color) || spiritRegions.get(color) <= 1) {
+            spiritRegions.remove(color);
+        } else {
+            spiritRegions.put(color, spiritRegions.get(color) - 1);
+        }
+    }
+
     //endregion
     /*/////*/
 
@@ -550,22 +564,22 @@ public class Cat extends CapsuleObstacle implements Movable {
         leftSensorName = "catLeftSensor";
         sensorShapes = new Array<>();
         groundFixtures = new ObjectSet<>();
-        spiritRegions = new ObjectSet<>();
+        spiritRegions = new ObjectMap<>();
         soundBuffer = new HashSet<>();
 
         normalTexture = tMap.get("cat");
-        jumpTexture = tMap.get("jumpingCat");
+        jumpTexture = tMap.get("jump");
         sitTexture = tMap.get("sit");
         currentFrame = sitTexture;
 
-        walkAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("walk").getTexture(),2048,2048)[0]);
+        walkAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("walk-anim").getTexture(),2048,2048)[0]);
 
-        jumpAnimation = new Animation<>(0.025f, TextureRegion.split(tMap.get("jump_anim").getTexture(),2048,2048)[0]);
-        meowAnimation = new Animation<>(0.05f, TextureRegion.split(tMap.get("meow_anim").getTexture(),2048,2048)[0]);
+        jumpAnimation = new Animation<>(0.025f, TextureRegion.split(tMap.get("jump-anim").getTexture(),2048,2048)[0]);
+        meowAnimation = new Animation<>(0.05f, TextureRegion.split(tMap.get("meow-anim").getTexture(),2048,2048)[0]);
         meowAnimation.setPlayMode(Animation.PlayMode.REVERSED);
-        idleStandAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("idle_anim_stand").getTexture(),2048,2048)[0]);
+        idleStandAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("idle-stand-anim").getTexture(),2048,2048)[0]);
         idleStandAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-        idleAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("idle_anim").getTexture(),2048,2048)[0]);
+        idleAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("idle-sit-anim").getTexture(),2048,2048)[0]);
         idleAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
         walkAnimation.setPlayMode(Animation.PlayMode.LOOP);
 

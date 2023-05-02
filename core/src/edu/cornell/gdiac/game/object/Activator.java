@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.game.object;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -31,6 +32,8 @@ public abstract class Activator extends PolygonObstacle {
     /** How long the activator has been animating */
     private float animationTime;
     /** Shape of the sensor that presses this activator */
+    private Texture topTexture;
+    private TextureRegion bottomTexture;
     private PolygonShape sensorShape;
     /** The number of objects pressing on this activator */
     public int numPressing;
@@ -74,13 +77,13 @@ public abstract class Activator extends PolygonObstacle {
      * @param scale          Draw scale for drawing
      * @param textureScale   Texture scale for rescaling texture
      */
-    public Activator(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
+    public Activator(ObjectMap<String, Object> properties, String texture_name, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
         super(objectConstants.get("body_shape").asFloatArray());
-        setDrawScale(scale);
-        int spriteWidth = 32;
-        int spriteHeight = 32;
+        topTexture = tMap.get(texture_name).getTexture();
+        bottomTexture = tMap.get("button-base");
+        setTexture(bottomTexture);
         setTextureScale(textureScale);
-        spriteFrames = TextureRegion.split(tMap.get("button_anim").getTexture(), spriteWidth, spriteHeight);
+        spriteFrames = TextureRegion.split(tMap.get(texture_name).getTexture(), 2048,2048);
         float frameDuration = 0.2f;
         animation = new Animation<>(frameDuration, spriteFrames[0]);
         setBodyType(BodyDef.BodyType.StaticBody);
@@ -88,7 +91,6 @@ public abstract class Activator extends PolygonObstacle {
         animationTime = 0f;
 
         setDrawScale(scale);
-        setTexture(tMap.get("button"));
         setFixedRotation(true);
 
         id = (String) properties.get("id");
@@ -100,18 +102,20 @@ public abstract class Activator extends PolygonObstacle {
 
     @Override
     public void draw(GameCanvas canvas){
+        TextureRegion currentFrame;
         if(isPressed()){
-            animation.setPlayMode(Animation.PlayMode.REVERSED);
-            animationTime += Gdx.graphics.getDeltaTime();
-            TextureRegion currentFrame = animation.getKeyFrame(animationTime);
-            canvas.draw(currentFrame, getX()*drawScale.x,getY()*drawScale.x);
-        }
-        else {
             animation.setPlayMode(Animation.PlayMode.NORMAL);
             animationTime += Gdx.graphics.getDeltaTime();
-            TextureRegion currentFrame = animation.getKeyFrame(animationTime);
-            canvas.draw(currentFrame, getX()*drawScale.x,getY()*drawScale.x);
+            currentFrame = animation.getKeyFrame(animationTime);
         }
+        else {
+            animation.setPlayMode(Animation.PlayMode.REVERSED);
+            animationTime += Gdx.graphics.getDeltaTime();
+            currentFrame = animation.getKeyFrame(animationTime);
+        }
+        float x = getX()*drawScale.x-currentFrame.getRegionWidth()/drawScale.x/4;
+        canvas.draw(currentFrame, Color.WHITE, origin.x, origin.y, x, getY()*drawScale.y, 0, 1f/drawScale.x, 1f/drawScale.y);
+        canvas.draw(bottomTexture, Color.WHITE, origin.x, origin.y, x, (getY())*drawScale.y, 0, 1f/drawScale.x, 1f/drawScale.y);
     }
 
     /**

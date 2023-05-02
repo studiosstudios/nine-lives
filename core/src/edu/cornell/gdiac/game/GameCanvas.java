@@ -121,7 +121,7 @@ public class GameCanvas {
 		polyFactory = new PolyFactory();
 		pather = new SplinePather();
 		extruder = new PathExtruder();
-		region = new TextureRegion(new Texture("white.png"));
+		region = new TextureRegion(new Texture("shared/white.png"));
 		
 		// Set the projection matrix (for proper scaling)
 		camera = new Camera(STANDARD_WIDTH, STANDARD_HEIGHT, CAMERA_ZOOM);

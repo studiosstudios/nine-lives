@@ -27,7 +27,7 @@ public class Button extends Activator {
      * @param textureScale   Texture scale for rescaling texture
      */
     public Button(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
-        super(properties, tMap, scale, textureScale);
+        super(properties, "button-top", tMap,scale, textureScale);
     }
 
     /** For a button, active = isPressed() */

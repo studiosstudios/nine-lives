@@ -16,6 +16,7 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.game.object.*;
 
 import edu.cornell.gdiac.game.obstacle.*;
+import edu.cornell.gdiac.game.stage.HudStage;
 import edu.cornell.gdiac.util.ScreenListener;
 
 import java.util.HashMap;
@@ -112,9 +113,11 @@ public class GameController implements Screen {
     /** Ticks since the player has undone */
     private float undoTime;
     /** The max value of undoTime such that undoing will undo to the previous checkpoint and not the current checkpoint.*/
-    private static final float MAX_UNDO_TIME = 180f;
+    private static final float MAX_UNDO_TIME = 120f;
     public StageController stageController = null;
     public boolean paused = false;
+
+    public HudStage hud;
 
     /**
      * PLAY: User has all controls and is in game
@@ -122,14 +125,14 @@ public class GameController implements Screen {
      * PAN: Camera movement not controlled by player (e.g. when activator is pressed or at beginning of level)
      * RESPAWN: Camera focuses on dead body for half of RESPAWN_DELAY and focuses on newly respawned cat for half of RESPAWN_DELAY
      */
-    enum CameraGameState {
+    enum GameState {
         PLAY,
         PLAYER_PAN,
         PAN,
         RESPAWN
     }
     /** State of gameplay used for camera */
-    public static CameraGameState cameraGameState;
+    public static GameState gameState;
     /** If we have respawned in preUpdate(). Needed in postUpdate() for saving level state. */
     private boolean justRespawned;
     /** The color of the flash animation after resetting/undoing */
@@ -185,9 +188,16 @@ public class GameController implements Screen {
         collisionController = new CollisionController(actionController);
         collisionController.setLevel(levels[currLevelIndex]);
 
-        cameraGameState = CameraGameState.PLAY;
+        gameState = GameState.PLAY;
         panTime = 0;
         respawnDelay = 0;
+
+        AssetDirectory internal = new AssetDirectory("jsons/loading.json");
+        internal.loadAssets();
+        internal.finishLoading();
+
+        hud = new HudStage(internal, true);
+        hud.lives = currLevel.getNumLives();
     }
 
     /**
@@ -315,6 +325,7 @@ public class GameController implements Screen {
         Exit.setConstants(constants.get("exits"));
         Door.setConstants(constants.get("doors"));
         Mob.setConstants(constants.get("mobs"));
+        Goal.setConstants(constants.get("goal"));
     }
 
     /**
@@ -341,7 +352,7 @@ public class GameController implements Screen {
         nextLevel.dispose();
         if (levelNum < numLevels) {
             nextJV = tiledJSON(levelNum + 1);
-            nextLevel.populateTiled(nextJV, currLevel.bounds.x + currLevel.bounds.width, currLevel.bounds.y, currLevel.goalY, true);
+            nextLevel.populateTiled(nextJV, currLevel.bounds.x + currLevel.bounds.width, currLevel.bounds.y, levelNum + 1, currLevel.goalY, true);
         }
         initCurrLevel(true);
         collisionController.setDidChange(true);
@@ -371,7 +382,7 @@ public class GameController implements Screen {
         prevLevel.dispose();
         if (levelNum > 1) {
             prevJV = tiledJSON(levelNum - 1);
-            prevLevel.populateTiled(prevJV, currLevel.bounds.x, currLevel.bounds.y, currLevel.returnY, false);
+            prevLevel.populateTiled(prevJV, currLevel.bounds.x, currLevel.bounds.y, levelNum - 1, currLevel.returnY, false);
         }
 
         initCurrLevel(true);
@@ -391,6 +402,17 @@ public class GameController implements Screen {
      * <br><br>
      * This method extracts the asset variables from the given asset directory. It
      * should only be called after the asset directory is completed.
+     * <br><br>
+     * Whenever you add an asset to the game, you will need to:<br>
+     * 1. Place it in the correct location in the assets/ directory<br>
+     * 2. Add it to the assets.json file in the form of "file-name: file-path"<br>
+     * 3. Add "file-name" to the correct String array within this method to be accessible from the
+     *    corresponding map (For example, if its a sound asset, add it to the array preceding the soundAssetMap<br><br>
+     * Note the naming conventions that file names follow:<br>
+     * 1. Use hyphens<br>
+     * 2. For sprites that are for animations, affix their name with "-anim"<br>
+     * 3. For textures that serve as backgrounds, prefix their names with "bg-"<br>
+     * 4. Make sure to use the file name (with hyphens) for the assets.json key, and the texture map key as well<br>
      *
      * @param directory	Reference to global asset manager.
      */
@@ -401,19 +423,39 @@ public class GameController implements Screen {
         soundAssetMap = new HashMap<>();
         fontAssetMap = new HashMap<>();
 
-        String[] names = {"cat", "sit", "deadCat", "jumpingCat", "jump_anim", "walk", "button_anim",
-                "spikes", "button", "flamethrower", "flame", "laser", "checkpoint", "checkpointActive",
-                "checkpoint_anim", "checkpoint_active_anim", "checkpoint_base", "checkpoint_base_active",
-                "background", "flame_anim", "roboMob",
-                "spirit_anim", "spirit_photon", "spirit_photon_cat", "spirit_region",
-                "meow_anim", "idle_anim", "idle_anim_stand",
-                "metal_tileset", "steel","burnCat", "deadCat2"};
-
+        // List of textures we extract. These should be the SAME NAME as the keys in the assets.json.
+        // A couple naming conventions: use hyphens, affix animation sprites with "-anim".
+        String[] names = {
+                // CAT
+                "cat", "walk-anim", "jump", "jump-anim", "sit", "idle-sit-anim", "idle-stand-anim", "meow-anim",
+                "corpse", "corpse2", "corpse-burnt",
+                // SPIKES
+                "spikes",
+                // BUTTONS & SWITCHES
+                "button-base", "button-top", "switch-top",
+                // FLAMETHROWERS
+                "flamethrower", "flame", "flame-anim",
+                // LASERS
+                "laser",
+                // CHECKPOINTS
+                "checkpoint-anim", "checkpoint-active-anim", "checkpoint-base", "checkpoint-base-active",
+                // GOAL
+                "goal",
+                // ROBOT & MOBS
+                "robot", "robot-anim",
+                // SPIRIT BOUNDARIES
+                "spirit-anim", "spirit-photon", "spirit-photon-cat", "spirit-region",
+                // TILESETS
+                "metal-tileset", "climbable-tileset", "steel",
+                // DOORS & PLATFORMS
+                "door", "platform",
+                // BACKGROUNDS
+                "bg-lab",}; // Unsure if this is actually being used
         for (String n : names){
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
         }
 
-        names = new String[]{"jump", "dash", "metalLanding", "pew", "plop", "meow"};
+        names = new String[]{"jump", "dash", "metal-landing", "meow"};
         for (String n : names){
             soundAssetMap.put(n, directory.getEntry(n, Sound.class));
         }
@@ -426,7 +468,7 @@ public class GameController implements Screen {
         constants = directory.getEntry("constants", JsonValue.class);
         this.directory = directory;
 
-        background = textureRegionAssetMap.get("background").getTexture();
+        background = textureRegionAssetMap.get("bg-lab").getTexture();
 
         // Giving assets to levelController
         setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants);
@@ -436,8 +478,8 @@ public class GameController implements Screen {
         //Set controls
         InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
 
-//		InputController.getInstance().writeTo("inputLogs/recent.txt");
-//		InputController.getInstance().readFrom("inputLogs/recent.txt");
+//		InputController.getInstance().writeTo("debug-input/recent.txt");
+//		InputController.getInstance().readFrom("debug-input/recent.txt");
     }
 
     /**
@@ -449,11 +491,12 @@ public class GameController implements Screen {
      */
     public void respawn(boolean cameraMovement) {
         currLevel.setDied(false);
-        currLevel.getCat().setPosition(currLevel.getRespawnPos());
-        currLevel.getCat().setFacingRight(true);
+        currLevel.getCat().setActive(false);
+        currLevel.getCat().setFacingRight(currLevel.getCheckpoint() != null ? currLevel.getCheckpoint().facingRight() : true);
         currLevel.getCat().setJumpPressed(false);
         currLevel.getCat().setGrounded(true);
         currLevel.getCat().setLinearVelocity(Vector2.Zero);
+        currLevel.getCat().setPosition(currLevel.getRespawnPos());
         justRespawned = cameraMovement;
     }
 
@@ -499,14 +542,14 @@ public class GameController implements Screen {
         setRet(false);
 
         levelJV = tiledJSON(levelNum);
-        currLevel.populateTiled(levelJV);
+        currLevel.populateTiled(levelJV, levelNum);
         if (levelNum < numLevels) {
             nextJV = tiledJSON(levelNum + 1);
-            nextLevel.populateTiled(nextJV, currLevel.bounds.x + currLevel.bounds.width, currLevel.bounds.y, currLevel.goalY, true);
+            nextLevel.populateTiled(nextJV, currLevel.bounds.x + currLevel.bounds.width, currLevel.bounds.y, levelNum + 1, currLevel.goalY, true);
         }
         if (levelNum > 1) {
             prevJV = tiledJSON(levelNum - 1);
-            prevLevel.populateTiled(prevJV, currLevel.bounds.x, currLevel.bounds.y, currLevel.returnY, false);
+            prevLevel.populateTiled(prevJV, currLevel.bounds.x, currLevel.bounds.y, levelNum - 1, currLevel.returnY, false);
         }
 
         initCurrLevel(false);
@@ -617,6 +660,9 @@ public class GameController implements Screen {
         actionController.update(dt);
         flashColor.a -= flashColor.a/10;
         updateCamera();
+
+        hud.lives = currLevel.getNumLives();
+        hud.updateLives();
     }
 
 
@@ -654,22 +700,22 @@ public class GameController implements Screen {
     }
 
     /**
-     * Updates CameraGameState and moves camera accordingly
+     * Updates GameState and moves camera accordingly
      */
     public void updateCamera(){
         Camera cam = canvas.getCamera();
         InputController input = InputController.getInstance();
         //resetting automatically resets camera to cat
         if(justReset){
-            cameraGameState = CameraGameState.PLAY;
+            gameState = GameState.PLAY;
         }
         if(input.didPan()){
-            cameraGameState = CameraGameState.PLAYER_PAN;
+            gameState = GameState.PLAYER_PAN;
             //move camera
             cam.updateCamera(cam.getX()+input.getCamHorizontal(),cam.getY()+ input.getCamVertical(),false);
         }
-        else if(cameraGameState == CameraGameState.PLAYER_PAN){
-            cameraGameState = CameraGameState.PLAY;
+        else if(gameState == GameState.PLAYER_PAN){
+            gameState = GameState.PLAY;
         }
 
         for (Activator a : currLevel.getActivators()){
@@ -678,17 +724,19 @@ public class GameController implements Screen {
                 if(currLevel.getActivationRelations().containsKey(a.getID())){
                     panTarget = currLevel.getActivationRelations().get(a.getID());
                 }
-                cameraGameState = CameraGameState.PAN;
+                gameState = GameState.PAN;
             }
         }
-        if(cameraGameState == CameraGameState.PLAY){
+        if(gameState == GameState.PLAY){
             panTime = 0;
             respawnDelay = 0;
+            undoTime++;
+
             input.setDisableAll(false);
             float x_pos = currLevel.getCat().getPosition().x*scale.x;
             float y_pos = currLevel.getCat().getPosition().y*scale.y;
             if(justRespawned && !justReset) {
-                cameraGameState = CameraGameState.RESPAWN;
+                gameState = GameState.RESPAWN;
             }
             else {
                 //zoom normal when in play state and not panning and not switching bodies
@@ -705,19 +753,19 @@ public class GameController implements Screen {
                 }
             }
         }
-        if(cameraGameState == CameraGameState.PAN){
+        if(gameState == GameState.PAN){
             cam.updateCamera(panTarget.get(0).getXPos()*scale.x,panTarget.get(0).getYPos()*scale.y, true);
             if(!cam.isGliding()){
                 panTime += 1;
                 if(panTime == PAN_HOLD){
-                    cameraGameState = CameraGameState.PLAY;
+                    gameState = GameState.PLAY;
                 }
             }
         }
-        if(cameraGameState == CameraGameState.PLAYER_PAN){
+        if(gameState == GameState.PLAYER_PAN){
             cam.zoomOut(true);
         }
-        if(cameraGameState == CameraGameState.RESPAWN){
+        if(gameState == GameState.RESPAWN){
             float xPos = currLevel.getCat().getPosition().x*scale.x;
             float yPos = currLevel.getCat().getPosition().y*scale.y;
             input.setDisableAll(true);
@@ -730,7 +778,10 @@ public class GameController implements Screen {
             if(respawnDelay == RESPAWN_DELAY){
                 respawnDelay = 0;
                 input.setDisableAll(false);
-                cameraGameState = CameraGameState.PLAY;
+                gameState = GameState.PLAY;
+
+                currLevel.getCat().setActive(true);
+                currLevel.getCat().setPosition(currLevel.getRespawnPos());
             }
         }
     }
@@ -795,7 +846,7 @@ public class GameController implements Screen {
      */
     @Override
     public void resize(int width, int height) {
-
+        hud.getViewport().update(width, height, true);
     }
 
     /**
@@ -850,12 +901,13 @@ public class GameController implements Screen {
         canvas.applyViewport(false);
         canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight());
         if (true) { //TODO: only draw when necessary
-            prevLevel.draw(canvas);
-            nextLevel.draw(canvas);
+            prevLevel.draw(canvas, false);
+            nextLevel.draw(canvas, false);
         }
-        currLevel.draw(canvas);
+        currLevel.draw(canvas, gameState != GameState.RESPAWN);
         canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
         canvas.end();
+        hud.draw();
 
         if (debug) {
             canvas.beginDebug();
@@ -916,6 +968,10 @@ public class GameController implements Screen {
         } else {
             currLevel.resetCheckpoints();
         }
-        if (currLevel.getCheckpoint() != null) respawn(cameraMovement);
+        if (currLevel.getCheckpoint() != null) {
+            respawn(cameraMovement);
+            currLevel.getCat().setActive(true);
+        }
+        currLevel.getCat().setPosition(currLevel.getRespawnPos());
     }
 }

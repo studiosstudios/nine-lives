@@ -36,7 +36,7 @@ public class LevelSelectStage extends StageWrapper {
         super(internal, createActors);
     }
     public int getSelectedLevel() {
-        int l = (oneState == 1 && twoState == 0) ? 0 : 1;
+        int l = (oneState == 1 && twoState == 0) ? 1 : 2;
         return l;
     }
 
@@ -45,18 +45,18 @@ public class LevelSelectStage extends StageWrapper {
      */
     @Override
     public void createActors() {
-//        addActor(new Image(internal.getEntry("bgLab", Texture.class)));
-        Actor background = addActor(internal.getEntry("levelSelectBackground", Texture.class), 0, 0);
+//        addActor(new Image(internal.getEntry("bg-lab", Texture.class)));
+        Actor background = addActor(internal.getEntry("bg-level-select", Texture.class), 0, 0);
         background.setScale(0.5f);
         backButtonActor = addActor(internal.getEntry("back", Texture.class),940,buttonY-225);
         backButtonActor.setScale(0.5f);
         playButtonActor = addActor(internal.getEntry("play", Texture.class), 940, buttonY-175);
         playButtonActor.setScale(0.5f);
 
-        backCatpawActor = addActor(internal.getEntry("catpaw", Texture.class), buttonX+30, buttonY-225);
+        backCatpawActor = addActor(internal.getEntry("paw", Texture.class), buttonX+30, buttonY-225);
         backCatpawActor.setScale(0.5f);
         backCatpawActor.setVisible(false);
-        playCatpawActor = addActor(internal.getEntry("catpaw", Texture.class), buttonX+30, buttonY-175);
+        playCatpawActor = addActor(internal.getEntry("paw", Texture.class), buttonX+30, buttonY-175);
         playCatpawActor.setScale(0.5f);
         playCatpawActor.setVisible(false);
 

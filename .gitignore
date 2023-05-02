@@ -1,9 +1,15 @@
-/assets/inputLogs/*
+/assets/debug-input/*
 out/
+/desktop/out/
+
+## Level Editor
+/level-editor/**/*.json
+/level-editor/extensions/TiledExtension/config.txt
+/level-editor/*.tiled-session
 
 ## Java
 
-*.class
+# *.class
 *.war
 *.ear
 hs_err_pid*
@@ -126,7 +132,7 @@ gradle-app.setting
 /ios/build/
 
 ## OS Specific
-.DS_Store
+*.DS_Store
 Thumbs.db
 
 ## iOS

@@ -43,6 +43,7 @@ public class StageController implements Screen {
 	public boolean pause = false;
 	public boolean loading;
 	public boolean starting;
+	public boolean fromSelect;
 
 	/** The current stage being rendered on the screen */
 	private StageWrapper stage;
@@ -58,13 +59,6 @@ public class StageController implements Screen {
 	private LevelSelectStage levelSelectStage;
 	private LoadingStage loadingStage;
 	private StartStage startStage;
-
-	private float animationTime;
-	/** Background texture for start-up */
-	private boolean jump_animated;
-	private TextureRegion[][] spriteFrames;
-	private Animation<TextureRegion> animation;
-	private Texture jump_texture;
 
 	public GameController currLevel;
 	private int selectedLevel;
@@ -139,19 +133,13 @@ public class StageController implements Screen {
 		budget = millis;
 
 		// We need these files loaded immediately
-		internal = new AssetDirectory( "loading.json" );
+		internal = new AssetDirectory( "jsons/loading.json" );
 		internal.loadAssets();
 		internal.finishLoading();
 
-		// Load the next two images immediately.
-		jump_texture = internal.getEntry( "jump", Texture.class );
-		jump_animated = false;
-		int spriteWidth = 250;
-		int spriteHeight = 250;
-		spriteFrames = TextureRegion.split(jump_texture,spriteWidth, spriteHeight);
-		float frameDuration = 0.05f;
-		animation = new Animation<>(frameDuration, spriteFrames[0]);
-		animationTime = 0f;
+		if(!Save.exists()) {
+			Save.create();
+		}
 
 		mainMenuStage = new MainMenuStage(internal, true);
 		settingsStage = new SettingsStage(internal, true);
@@ -186,7 +174,7 @@ public class StageController implements Screen {
 	}
 
 	public void loadAssets() {
-		assets = new AssetDirectory("assets.json");
+		assets = new AssetDirectory("jsons/assets.json");
 		assets.loadAssets();
 		assets.finishLoading();
 	}
@@ -225,14 +213,10 @@ public class StageController implements Screen {
 			Gdx.gl.glClearColor(0, 0, 0, 1.0f);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		}
-		animation.setPlayMode(Animation.PlayMode.LOOP);
-		animationTime += Gdx.graphics.getDeltaTime();
-		TextureRegion currentFrame = animation.getKeyFrame(animationTime);
 		canvas.begin();
 		stage.getViewport().apply();
 		stage.act();
 		stage.draw();
-//		canvas.draw(jump_texture, Color.WHITE, 100,100,500,500);
 		canvas.end();
 	}
 
@@ -255,17 +239,24 @@ public class StageController implements Screen {
 			}
 			if (loading) {
 				loading = false;
-				try {
-					Thread.sleep(2000);
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
+//				try {
+//					Thread.sleep(1000);
+//				} catch (InterruptedException e) {
+//					Thread.currentThread().interrupt();
+//				}
+				if (fromSelect) {
+					fromSelect = false;
+					listener.exitScreen(this, 69);
+				} else {
+					fromSelect = false;
+					listener.exitScreen(this,0);
 				}
-				listener.exitScreen(this,0);
 			}
 
 			// We are ready, notify our listener
 			if (mainMenuStage.isPlay() && listener != null) {
 				loading = true;
+				fromSelect = false;
 				changeStage(loadingStage);
 				getStage().act();
 				getStage().draw();
@@ -277,13 +268,21 @@ public class StageController implements Screen {
 				mainMenuStage.setLevelSelectState(0);
 				changeStage(levelSelectStage);
 			} else if (settingsStage.isBack() || levelSelectStage.isBack()) {
+				if (settingsStage.isBack()) {
+					settingsStage.exit();
+				}
 				settingsStage.setBackButtonState(0);
 				levelSelectStage.setBackButtonState(0);
 				changeStage(mainMenuStage);
 			} else if (levelSelectStage.isPlay() && listener != null) {
+				loading = true;
+				fromSelect = true;
+				changeStage(loadingStage);
+				getStage().act();
+				getStage().draw();
 				levelSelectStage.setPlayButtonState(0);
 				selectedLevel = levelSelectStage.getSelectedLevel();
-				listener.exitScreen(this, 69);
+//				listener.exitScreen(this, 69);
 			} else if (pauseStage.isResume() && listener != null) {
 				pause = false;
 				pauseStage.setResumeButtonState(0);
@@ -295,6 +294,7 @@ public class StageController implements Screen {
 				pauseStage.currLevel = null;
 				mainMenuStage.createActors();
 				changeStage(mainMenuStage);
+				listener.exitScreen(this, 79);
 			} else if (mainMenuStage.isExit() && listener != null) {
 				listener.exitScreen(this, 99);
 			}

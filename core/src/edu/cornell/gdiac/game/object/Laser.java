@@ -47,7 +47,7 @@ public class Laser extends BoxObstacle implements Activatable{
         super(tMap.get("laser").getRegionWidth()/scale.x,
                 tMap.get("laser").getRegionHeight()/scale.y);
 
-        setBodyType(BodyDef.BodyType.StaticBody);
+        setBodyType(properties.containsKey("attachName") ? BodyDef.BodyType.DynamicBody : BodyDef.BodyType.StaticBody);
         setName("laser");
         setDrawScale(scale);
         setTexture(tMap.get("laser"));
@@ -57,26 +57,16 @@ public class Laser extends BoxObstacle implements Activatable{
         setFriction(objectConstants.getFloat("friction", 0));
         setDensity(objectConstants.getFloat("density", 0));
         setMass(objectConstants.getFloat("mass", 0));
-        setX((float) properties.get("x")+objectConstants.get("offset").getFloat(0));
-        setY((float) properties.get("y")+objectConstants.get("offset").getFloat(1));
+        dir = Direction.angleToDir((int) ((float) properties.get("rotation")));
+        Vector2 offset = new Vector2(objectConstants.get("offset").getFloat(0), objectConstants.get("offset").getFloat(1));
+        Direction.rotateVector(offset, dir);
+        setX((float) properties.get("x") + offset.x);
+        setY((float) properties.get("y") + offset.y);
         setAngle((float) ((float) properties.get("rotation") * Math.PI/180));
         setSensor(true);
         setFixedRotation(true);
-        dir = Direction.angleToDir((int) ((float) properties.get("rotation")));
-        switch (dir){
-            case UP:
-                beamOffset = new Vector2(objectConstants.get("beamOffset").getFloat(0), objectConstants.get("beamOffset").getFloat(1));
-                break;
-            case DOWN:
-                beamOffset = new Vector2(objectConstants.get("beamOffset").getFloat(0), -objectConstants.get("beamOffset").getFloat(1));
-                break;
-            case LEFT:
-                beamOffset = new Vector2(-objectConstants.get("beamOffset").getFloat(1), objectConstants.get("beamOffset").getFloat(0));
-                break;
-            case RIGHT:
-                beamOffset = new Vector2(objectConstants.get("beamOffset").getFloat(1), -objectConstants.get("beamOffset").getFloat(0));
-                break;
-        }
+        beamOffset = new Vector2(objectConstants.get("beamOffset").getFloat(0), objectConstants.get("beamOffset").getFloat(1));
+        Direction.rotateVector(beamOffset, dir);
         totalTime = 0;
         color = new Color(Color.RED);
         points = new Array<>();

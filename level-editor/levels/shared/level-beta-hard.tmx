@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="30" height="56" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="19" nextobjectid="154">
+ <editorsettings>
+  <export target="../../nine-lives/assets/tiled/level-beta-hard.json" format="json"/>
+ </editorsettings>
+ <properties>
+  <property name="biome" propertytype="biome" value="metal"/>
+ </properties>
+ <tileset firstgid="1" source="../../objects/objects.tsx"/>
+ <tileset firstgid="58" source=":/automap-tiles.tsx"/>
+ <tileset firstgid="63" source="../../tilesets/metal-walls.tsx"/>
+ <tileset firstgid="111" source="../../tilesets/climbables.tsx"/>
+ <layer id="17" name="metalWalls" width="30" height="56">
+  <data encoding="csv">
+76,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,78,
+88,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,90,
+88,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,90,
+88,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,90,
+88,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,90,
+88,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,90,
+88,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,90,
+95,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,
+90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,76,77,92,65,65,65,94,77,77,77,77,77,
+90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,90,0,0,0,88,89,89,89,89,89,
+90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,90,0,0,0,88,89,89,89,89,89,
+90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,90,0,0,0,88,89,89,89,89,89,
+90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,90,0,0,0,88,89,89,89,89,89,
+90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,90,0,0,0,88,89,89,89,89,89,
+90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,90,0,0,0,88,89,89,89,89,89,
+89,65,65,66,0,0,0,0,0,0,0,0,0,0,0,64,65,65,86,89,90,0,0,0,88,89,89,89,89,89,
+90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,100,101,102,0,0,0,100,101,96,89,89,89,
+90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,89,89,
+90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,89,89,
+90,0,0,0,0,64,65,65,66,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,89,89,
+90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,89,89,
+90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,76,77,77,77,77,77,77,77,77,108,89,89,89,
+90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,100,101,101,101,101,101,101,101,101,96,89,89,89,
+90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,89,89,
+90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,89,89,
+90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,65,65,65,65,65,65,103,101,96,89,
+90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,
+90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,
+107,77,78,0,0,0,64,65,65,66,0,0,0,0,64,65,65,65,65,65,65,65,65,65,65,65,94,77,108,89,
+89,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,89,89,
+89,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,89,89,
+89,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,89,89,
+101,101,105,65,65,65,66,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,100,101,101,96,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,
+77,77,77,77,77,77,77,77,78,0,0,0,0,0,75,0,0,0,0,0,75,0,0,0,0,0,76,77,77,108,
+89,89,89,89,89,89,89,89,90,0,0,0,0,0,87,0,0,0,0,0,87,0,0,0,0,0,88,89,89,89,
+89,89,89,89,89,89,89,89,90,0,0,0,0,0,87,0,0,0,0,0,87,0,0,0,0,0,88,89,89,89,
+89,89,89,89,89,89,89,89,90,0,0,0,0,0,87,0,0,0,0,0,87,0,0,0,0,0,88,89,89,89,
+89,89,89,89,89,89,89,89,90,0,0,0,0,0,87,0,0,0,0,0,87,0,0,0,0,0,88,89,89,89,
+89,89,89,89,89,89,89,89,90,0,0,0,0,0,99,0,0,0,0,0,99,0,0,0,0,0,88,89,89,89,
+89,89,89,89,89,89,89,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,89,89,
+89,89,89,89,89,89,89,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,89,89,
+89,89,89,89,89,89,89,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,89,89,
+89,89,89,89,89,89,89,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,89,89,
+89,89,89,89,89,89,89,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,89,89,
+89,89,89,89,89,89,89,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,89,89,
+89,89,89,89,89,89,89,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,89,89,
+89,89,89,89,89,89,89,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,89,89,
+89,89,95,101,101,101,96,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,89,89,
+89,89,90,0,0,0,88,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,89,89,
+89,89,90,0,0,0,88,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,89,89,
+89,89,107,77,77,77,108,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,89,89,
+89,89,89,89,89,89,89,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,89,89
+</data>
+ </layer>
+ <objectgroup id="2" name="cat">
+  <object id="1" gid="2" x="1024" y="36864" width="1024" height="1024"/>
+ </objectgroup>
+ <layer id="18" name="climbables" width="30" height="56">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,113,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,113,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,113,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,113,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,113,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,113,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,113,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,113,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="4" name="flamethrowers"/>
+ <objectgroup id="3" name="checkpoints">
+  <object id="30" gid="3" x="7168" y="28672" width="1024" height="2048"/>
+  <object id="90" gid="3" x="2048" y="15360" width="1024" height="2048"/>
+ </objectgroup>
+ <objectgroup id="6" name="lasers">
+  <object id="4" gid="5" x="25600" y="35840" width="1024" height="1024" rotation="270">
+   <properties>
+    <property name="activatorID" value="button1"/>
+    <property name="active" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="58" gid="5" x="25600" y="33792" width="1024" height="1024" rotation="270">
+   <properties>
+    <property name="activatorID" value="button1"/>
+    <property name="active" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="67" gid="5" x="25600" y="34816" width="1024" height="1024" rotation="270">
+   <properties>
+    <property name="activatorID" value="button1"/>
+    <property name="active" type="bool" value="false"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="7" name="mobs">
+  <object id="5" gid="6" x="20480" y="28672" width="1024" height="2048"/>
+  <object id="111" gid="6" x="4096" y="53248" width="1024" height="2048"/>
+ </objectgroup>
+ <objectgroup id="8" name="spikes"/>
+ <objectgroup id="15" name="activators">
+  <object id="20" gid="1" x="22528" y="29696" width="1024" height="1024">
+   <properties>
+    <property name="color" type="color" value="#ff00ff00"/>
+    <property name="id" value="button1"/>
+    <property name="shouldPan" type="bool" value="false"/>
+    <property name="type" propertytype="activators" value="button"/>
+   </properties>
+  </object>
+  <object id="59" gid="1" x="27648" y="36864" width="1024" height="1024">
+   <properties>
+    <property name="id" value="switch1"/>
+    <property name="shouldPan" type="bool" value="true"/>
+    <property name="type" propertytype="activators" value="switch"/>
+   </properties>
+  </object>
+  <object id="60" gid="1" x="16384" y="29696" width="1024" height="1024">
+   <properties>
+    <property name="color" type="color" value="#ffffff00"/>
+    <property name="id" value="button2"/>
+    <property name="shouldPan" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="71" gid="1" x="1024" y="29696" width="1024" height="1024">
+   <properties>
+    <property name="color" type="color" value="#ff0000ff"/>
+    <property name="id" value="button3"/>
+    <property name="shouldPan" type="bool" value="true"/>
+    <property name="type" propertytype="activators" value="switch"/>
+   </properties>
+  </object>
+  <object id="77" gid="1" x="8192" y="29696" width="1024" height="1024">
+   <properties>
+    <property name="color" type="color" value="#ff00ffff"/>
+    <property name="id" value="button4"/>
+    <property name="shouldPan" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="92" gid="1" x="3072" y="33792" width="1024" height="1024">
+   <properties>
+    <property name="color" type="color" value="#ffff0000"/>
+    <property name="id" value="button5"/>
+    <property name="shouldPan" type="bool" value="true"/>
+    <property name="type" propertytype="activators" value="switch"/>
+   </properties>
+  </object>
+  <object id="115" gid="1" x="5120" y="54272" width="1024" height="1024">
+   <properties>
+    <property name="id" value="topPlatform2"/>
+    <property name="type" propertytype="activators" value="button"/>
+   </properties>
+  </object>
+  <object id="116" gid="1" x="3072" y="54272" width="1024" height="1024">
+   <properties>
+    <property name="id" value="topPlatform1"/>
+    <property name="type" propertytype="activators" value="button"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="9" name="doors">
+  <object id="8" type="Door" x="19456" y="28672" width="1024" height="2048">
+   <properties>
+    <property name="activatorID" value="button2"/>
+   </properties>
+  </object>
+  <object id="61" type="Door" x="3072" y="30720" width="3072" height="1024">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+    <property name="closeAngle" type="int" value="90"/>
+    <property name="totalTicks" type="int" value="100"/>
+   </properties>
+  </object>
+  <object id="68" type="Door" x="9216" y="37888" width="5120" height="1024">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+    <property name="active" type="bool" value="false"/>
+    <property name="closeAngle" type="int" value="90"/>
+    <property name="totalTicks" type="int" value="100"/>
+   </properties>
+  </object>
+  <object id="69" type="Door" x="15360" y="37888" width="5120" height="1024">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+    <property name="active" type="bool" value="false"/>
+    <property name="closeAngle" type="int" value="90"/>
+    <property name="totalTicks" type="int" value="100"/>
+   </properties>
+  </object>
+  <object id="70" type="Door" x="21504" y="37888" width="5120" height="1024">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+    <property name="active" type="bool" value="false"/>
+    <property name="closeAngle" type="int" value="90"/>
+    <property name="totalTicks" type="int" value="100"/>
+   </properties>
+  </object>
+  <object id="91" type="Door" x="21504" y="13312" width="3072" height="1024">
+   <properties>
+    <property name="activatorID" value="button5"/>
+    <property name="closeAngle" type="int" value="90"/>
+    <property name="totalTicks" type="int" value="100"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="16" name="spiritRegions"/>
+ <objectgroup id="10" name="platforms">
+  <object id="10" type="Platform" x="25600" y="27648" width="1024" height="4096">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+    <property name="disp" type="class" propertytype="Vector2">
+     <properties>
+      <property name="x" type="float" value="0"/>
+      <property name="y" type="float" value="-4"/>
+     </properties>
+    </property>
+    <property name="speed" type="float" value="5"/>
+   </properties>
+  </object>
+  <object id="74" type="Platform" x="10240" y="30720" width="4096" height="1024">
+   <properties>
+    <property name="activatorID" value="button3"/>
+    <property name="disp" type="class" propertytype="Vector2">
+     <properties>
+      <property name="x" type="float" value="0"/>
+      <property name="y" type="float" value="8"/>
+     </properties>
+    </property>
+    <property name="speed" type="float" value="2"/>
+   </properties>
+  </object>
+  <object id="76" type="Platform" x="14336" y="24576" width="3072" height="1024">
+   <properties>
+    <property name="activatorID" value="button4"/>
+    <property name="disp" type="class" propertytype="Vector2">
+     <properties>
+      <property name="x" type="float" value="3"/>
+     </properties>
+    </property>
+    <property name="speed" type="float" value="3"/>
+   </properties>
+  </object>
+  <object id="135" type="Platform" x="5120" y="15360" width="2048" height="1024">
+   <properties>
+    <property name="activatorID" value="topPlatform2"/>
+    <property name="disp" type="class" propertytype="Vector2">
+     <properties>
+      <property name="x" type="float" value="7"/>
+     </properties>
+    </property>
+   </properties>
+  </object>
+  <object id="149" type="Platform" x="1024" y="18432" width="17408" height="1024">
+   <properties>
+    <property name="activatorID" value="button2"/>
+    <property name="disp" type="class" propertytype="Vector2">
+     <properties>
+      <property name="x" type="float" value="-16"/>
+     </properties>
+    </property>
+   </properties>
+  </object>
+  <object id="144" type="Platform" x="12288" y="13312" width="2048" height="1024">
+   <properties>
+    <property name="activatorID" value="topPlatform2"/>
+    <property name="damping" type="float" value="0.4"/>
+    <property name="disp" type="class" propertytype="Vector2">
+     <properties>
+      <property name="x" type="float" value="-7"/>
+     </properties>
+    </property>
+    <property name="speed" type="float" value="15"/>
+   </properties>
+  </object>
+  <object id="145" type="Platform" x="5120" y="11264" width="2048" height="1024">
+   <properties>
+    <property name="activatorID" value="topPlatform2"/>
+    <property name="damping" type="float" value="0.2"/>
+    <property name="disp" type="class" propertytype="Vector2">
+     <properties>
+      <property name="x" type="float" value="7"/>
+     </properties>
+    </property>
+    <property name="speed" type="float" value="15"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="12" name="wallsPoly">
+  <object id="96" x="0" y="37888">
+   <polygon points="0,0 0,12288 9216,12288 9216,0"/>
+  </object>
+  <object id="97" x="14336" y="37888">
+   <polygon points="0,0 0,6144 1024,6144 1024,0 0,0"/>
+  </object>
+  <object id="98" x="20480" y="37889">
+   <polygon points="0,0 0,6144 1024,6144 1024,0"/>
+  </object>
+  <object id="99" x="26624" y="37888">
+   <polygon points="0,0 0,19456 4096,19456 4096,-27648 -8192,-27648 -8192,-20480 -11264,-20480 -11264,-19456 -8192,-19456 -8192,-18432 -5120,-18432 -5120,-26624 -2048,-26624 -2048,-18432 0,-18432 0,-14336 -9216,-14336 -9216,-12288 0,-12288 0,-10240 -7168,-10240 -7168,-9216 2048,-9216 2048,-7168 -12288,-7168 -12288,-6144 0,-6144 0,-2048 3072,-2048 3072,0"/>
+  </object>
+  <object id="100" x="6144" y="30720">
+   <polygon points="0,0 0,1024 4096,1024 4096,0"/>
+  </object>
+  <object id="101" x="0" y="35840">
+   <polygon points="0,0 7168,0 7168,-1024 3072,-1024 3072,-5120 1024,-5120 1024,-17408 4096,-17408 4096,-18432 1024,-18432 1024,-27648 30720,-27648 30720,-35840 0,-35840"/>
+  </object>
+  <object id="102" x="5120" y="21504">
+   <polygon points="0,0 0,1024 4096,1024 4096,0"/>
+  </object>
+  <object id="110" x="0" y="20480">
+   <properties>
+    <property name="climbable" type="bool" value="true"/>
+   </properties>
+   <polygon points="0,0 0,8192 1024,8192 1024,0"/>
+  </object>
+  <object id="117" x="0" y="50176">
+   <polygon points="0,0 3072,0 3072,3072 3072,5120 6144,5120 6144,3072 6144,0 9216,0 9216,7168 0,7168"/>
+  </object>
+ </objectgroup>
+ <objectgroup id="13" name="mirrors"/>
+ <objectgroup id="14" name="boxes">
+  <object id="95" gid="2" x="22528" y="12288" width="1024" height="1024"/>
+ </objectgroup>
+ <objectgroup id="11" name="exits">
+  <object id="13" type="Exit" x="-1024" y="35840" width="1024" height="2048">
+   <properties>
+    <property name="type" propertytype="exitType" value="return"/>
+   </properties>
+  </object>
+  <object id="103" type="Exit" x="30720" y="8192" width="1024" height="2048"/>
+ </objectgroup>
+</map>

@@ -9,6 +9,10 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.Array;
+import com.crashinvaders.vfx.VfxManager;
+import com.crashinvaders.vfx.effects.*;
+import com.crashinvaders.vfx.effects.util.MixEffect;
+import com.crashinvaders.vfx.framebuffer.VfxFrameBufferQueue;
 import edu.cornell.gdiac.math.Path2;
 import edu.cornell.gdiac.math.PathExtruder;
 import edu.cornell.gdiac.math.PathFactory;
@@ -104,8 +108,14 @@ public class GameCanvas {
 	private Vector2 vertex;
 	/** Cache object to handle raw textures */
 	private TextureRegion holder;
-	private final float CAMERA_ZOOM = 0.6f;
-
+	private final float CAMERA_ZOOM = 2f;
+	protected VfxManager vfxManager;
+	private ChromaticAberrationEffect chromaticAberrationEffect;
+	private VignettingEffect vignettingEffect;
+	private WaterDistortionEffect waterDistortionEffect;
+	private BloomEffect bloomEffect;
+	private VfxFrameBufferQueue fbq;
+	private final int NUM_VFX_BUFFERS = 1;
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
 	 * <br><br>
@@ -135,6 +145,25 @@ public class GameCanvas {
 		local  = new Affine2();
 		global = new Matrix4();
 		vertex = new Vector2();
+
+		//vfx
+		vfxManager = new VfxManager(Pixmap.Format.RGBA8888);
+		chromaticAberrationEffect = new ChromaticAberrationEffect(10);
+		vfxManager.addEffect(chromaticAberrationEffect);
+		chromaticAberrationEffect.setMaxDistortion(0.2f);
+
+//		vignettingEffect = new VignettingEffect(false);
+//		vfxManager.addEffect(vignettingEffect);
+
+		bloomEffect = new BloomEffect();
+		bloomEffect.setThreshold(0.5f);
+		bloomEffect.setBlurAmount(100);
+		bloomEffect.setBloomIntensity(1f);
+		vfxManager.addEffect(bloomEffect);
+
+		fbq = new VfxFrameBufferQueue(Pixmap.Format.RGBA8888, NUM_VFX_BUFFERS);
+		fbq.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
 	}
 	/**
 	* Eliminate any resources that should be garbage collected manually.
@@ -147,6 +176,10 @@ public class GameCanvas {
 		spriteBatch.dispose();
 		spriteBatch = null;
 		debugRender.dispose();
+		vfxManager.dispose();
+		fbq.dispose();
+		chromaticAberrationEffect.dispose();
+		bloomEffect.dispose();
 		debugRender = null;
 		local  = null;
 		global = null;
@@ -302,7 +335,8 @@ public class GameCanvas {
 	 */
 	 public void resize() {
 		spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, getWidth(), getHeight());
-		 extendView.update(getWidth(), getHeight(), true);
+		vfxManager.resize(getWidth(), getHeight());
+		extendView.update(getWidth(), getHeight(), true);
 	}
 	
 	/**
@@ -399,14 +433,59 @@ public class GameCanvas {
 	 */
 	public void begin() {
 		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
+		vfxManager.update(Gdx.graphics.getDeltaTime());
 		spriteBatch.begin();
 		active = DrawPass.STANDARD;
+	}
+
+	public void beginVFX() {
+		vfxManager.cleanUpBuffers();
+		vfxManager.beginInputCapture();
+	}
+
+	/**
+	 * Applies the current VFXs to the rendering context and renders it to a frame buffer, which will be drawn when
+	 * end() is called. Restarts the canvas.
+	 */
+	public void applyVFX() {
+		spriteBatch.end();
+		vfxManager.endInputCapture();
+		vfxManager.applyEffects();
+		vfxManager.renderToFbo(fbq.changeToNext());
+		spriteBatch.begin();
+	}
+
+	public void setVFX(boolean vfx){
+		vfxManager.removeAllEffects();
+		if (vfx) {
+			vfxManager.addEffect(bloomEffect);
+			vfxManager.addEffect(chromaticAberrationEffect);
+		}
+	}
+
+	/**
+	 * Draws the saved frames from applying VFX. Will draw in the order they were applied.
+	 */
+	private void drawVFXFrameBuffers(){
+		for (int i = 0; i<NUM_VFX_BUFFERS; i++){
+			spriteBatch.draw(fbq.changeToNext().getTexture(), 0, 0, width, height, 0, 0, width, height, false, true);
+			System.out.println(fbq.getCurrent().getTexture());
+		}
+	}
+
+	/**
+	 * Flush the current drawings to the screen. This should be called if there are textures in the rendering context that you do
+	 * not want to apply a VFX to.
+	 */
+	public void flush() {
+		spriteBatch.flush();
 	}
 
 	/**
 	 * Ends a drawing sequence, flushing textures to the graphics card.
 	 */
 	public void end() {
+		drawVFXFrameBuffers();
 		spriteBatch.end();
 		active = DrawPass.INACTIVE;
 	}

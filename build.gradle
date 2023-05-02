@@ -65,6 +65,7 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         implementation files("../dependencies/soundlib.jar")
-        implementation 'com.google.code.gson:gson:2.10.1'
+        implementation 'com.crashinvaders.vfx:gdx-vfx-core:0.5.0'
+        implementation 'com.crashinvaders.vfx:gdx-vfx-effects:0.5.0'
     }
 }

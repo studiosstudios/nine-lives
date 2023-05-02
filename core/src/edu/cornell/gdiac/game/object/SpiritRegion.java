@@ -18,9 +18,9 @@ import java.util.Random;
 public class SpiritRegion extends BoxObstacle {
 
     /** Color of spirit region particles */
-    private Color particleColor;
+    private Color particleColor = new Color();
     /** Color of spirit region background */
-    private Color regionColor;
+    private Color regionColor = new Color();
     /** The frames of the spirit animation */
     private TextureRegion[][] spriteFrames;
     /** How long the flame has been animating */
@@ -56,6 +56,8 @@ public class SpiritRegion extends BoxObstacle {
     /** Size of particles to scale */
     public static final float PARTICLE_SIZE = 6f;
 
+    private static final int MAX_PARTICLES = 100;
+
     /** Collection of particle objects (MODEL) */
     private ObjectSet<Particle> particles;
     /** Texture image for the photon */
@@ -68,6 +70,8 @@ public class SpiritRegion extends BoxObstacle {
     private Random random;
 
 
+    public String getColorString(){ return regionColor.toString().substring(0, 6); }
+
     /**
      * Creates a new SpiritRegion Model.
      *
@@ -78,17 +82,17 @@ public class SpiritRegion extends BoxObstacle {
      */
     public SpiritRegion(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
         super((float) properties.get("width"), (float) properties.get("height"));
-        this.photonTexture = tMap.get("spirit_photon").getTexture();
-        this.regionTexture = tMap.get("spirit_region").getTexture();
+        this.photonTexture = tMap.get("spirit-photon").getTexture();
+        this.regionTexture = tMap.get("spirit-region").getTexture();
 
-        particleColor = (Color) properties.get("color", Color.RED);
+        particleColor.set((Color) properties.get("color", Color.RED));
         particleColor.a = PARTICLE_OPACITY_INACTIVE;
 
-        regionColor = (Color) properties.get("color", Color.RED);
+        regionColor.set((Color) properties.get("color", Color.RED));
         regionColor.a = REGION_OPACITY_INACTIVE;
 
         setTextureScale(textureScale);
-        setTexture(tMap.get("spirit_region"));
+        setTexture(tMap.get("spirit-region"));
         setDrawScale(scale);
         setTextureScale(textureScale);
         setSensor(true);
@@ -105,7 +109,7 @@ public class SpiritRegion extends BoxObstacle {
 //         PHOTON PARTICLES
         random = new Random();
         particles = new ObjectSet<Particle>();
-        int capacity = (int) width * (int) height * 2;
+        int capacity = Math.min((int) width * (int) height, MAX_PARTICLES);
         memory = new ParticlePool(capacity);
         for (int i = 0; i < capacity; i++){
             Particle item = addParticle();
@@ -113,6 +117,14 @@ public class SpiritRegion extends BoxObstacle {
             float high = item.getTop() * drawScale.y - PARTICLE_SIZE;
             item.setY(random.nextFloat()*(high-low)+low);
         }
+
+//        Particle item = addParticle();
+//        float low = item.getBottom() * drawScale.y;
+//        float high = item.getTop() * drawScale.y - PARTICLE_SIZE;
+//        item.setY(random.nextFloat()*(high-low)+low);
+
+
+
     }
 
     private Particle addParticle(){

@@ -1,5 +1,7 @@
 package edu.cornell.gdiac.util;
 
+import com.badlogic.gdx.math.Vector2;
+
 /** Helpful enum for lasers, mirrors, doors, or anything that has different
  * behaviour depending on its angle. */
 public enum Direction {UP, DOWN, LEFT, RIGHT;
@@ -24,6 +26,30 @@ public enum Direction {UP, DOWN, LEFT, RIGHT;
                 throw new IllegalArgumentException("Angle cannot be cast to Direction: " + angle);
         }
     }
+
+    /**
+     * Rotates a vector by a given Direction, where up is 0 degrees.
+     *
+     * @param vec    Vector to rotate
+     * @param dir    Direction to rotate by
+     */
+    public static void rotateVector(Vector2 vec, Direction dir) {
+        switch (dir) {
+            default:
+            case UP:
+                break;
+            case DOWN:
+                vec.scl(-1);
+                break;
+            case LEFT:
+                vec.set(-vec.y, -vec.x);
+                break;
+            case RIGHT:
+                vec.set(vec.y, -vec.x);
+                break;
+        }
+    }
+
 }
 
 

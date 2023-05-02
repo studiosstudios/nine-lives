@@ -3,6 +3,7 @@ package edu.cornell.gdiac.game;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.game.object.*;
@@ -11,6 +12,7 @@ import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.util.PooledList;
 
 import java.util.HashMap;
+import java.util.Random;
 /**
  * Represents a single level in our game
  * <br><br>
@@ -37,8 +39,13 @@ public class Level {
     private Exit returnExit;
     protected float returnY;
 
+    /** Reference to the goal object */
+    private Goal goal;
+
     /** Tiles of level */
     protected Tiles tiles;
+    /** Climbables of level */
+    protected Climbable climbables;
     /** All the objects in the world. */
     protected PooledList<Obstacle> objects  = new PooledList<>();
     /** Queue for adding objects */
@@ -86,8 +93,16 @@ public class Level {
     private Vector2 startRespawnPos;
     /** properties map cache */
     private ObjectMap<String, Object> propertiesMap = new ObjectMap<>();
-
     private Array<LevelState> levelStates;
+    private int levelNum;
+    /** map of names of the obstacles defined from Tiled JSON */
+    private ObjectMap<String, Obstacle> objectNames = new ObjectMap<>();
+    /** map of obstacle to name of obstacle to attach joint to */
+    private ObjectMap<Obstacle, String> objectJoints = new ObjectMap<>();
+    /** joints added between obstacles in this level */
+    private Array<Joint> joints = new Array<>();
+    private Array<Particle> spiritParticles = new Array<>();
+
 
     /**
      * Returns the bounding rectangle for the physics world
@@ -118,7 +133,6 @@ public class Level {
         return world;
     }
 
-
     /**
      * Returns a reference to the player cat
      *
@@ -127,6 +141,37 @@ public class Level {
     public Cat getCat() {
         return cat;
     }
+
+    /**
+     * Returns a reference to the current checkpoint
+     *
+     * @return a reference to the current checkpoint
+     */
+    public Checkpoint getCheckpoint() {return currCheckpoint;}
+
+    /**
+     * Returns a reference to the array of activators
+     *
+     * @return a reference to the activators
+     */
+    public Array<Activator> getActivators() { return activators; }
+
+    /**
+     * Returns a reference to the array of lasers
+     *
+     * @return a reference to the lasers
+     */
+    public Array<Laser> getLasers() { return lasers; }
+
+    /**
+     * Returns a reference to the goal object
+     *
+     * @return a reference to the goal
+     */
+    public Goal getGoal() { return goal; }
+
+    public Array<Particle> getSpiritParticles() { return spiritParticles; }
+
 
     /**
      * Sets the cat for this level. This is used for level switching.
@@ -143,17 +188,6 @@ public class Level {
      * Removes the cat from this level. This is used for level switching.
      */
     public void removeCat() { objects.remove(cat); cat = null; }
-
-    public Checkpoint getCheckpoint() {return currCheckpoint;}
-
-    /**
-     * Returns a reference to the array of activators
-     *
-     * @return a reference to the activators
-     */
-    public Array<Activator> getActivators() { return activators; }
-
-    public Array<Laser> getLasers() { return lasers; }
 
     /**
      * Returns a reference to the hashmap of activation relations
@@ -195,7 +229,7 @@ public class Level {
      *
      * @return a reference to the respawn position
      */
-    public Vector2 getRespawnPos() { return respawnPos; }
+    public Vector2 getRespawnPos() { return currCheckpoint == null ? respawnPos : currCheckpoint.getRespawnPosition(); }
 
     /**
      * Sets the respawn position
@@ -332,24 +366,31 @@ public class Level {
     }
 
     /**
+     * Sets goal active to be some value
+     * @param val to set active
+     */
+    public void setGoal(Boolean val) {
+        goal.setActive(val);
+    }
+
+    /**
      * Updates active checkpoints and cat respawning position
      *
      * @param c The most recent checkpoint the cat has come in contact with
      */
     public void updateCheckpoints(Checkpoint c, boolean shouldSave){
         if(currCheckpoint != null){
-            currCheckpoint.setCurrent(false);
+            currCheckpoint.setCurrent(false, true);
         }
         shouldSave = shouldSave && c != currCheckpoint;
         currCheckpoint = c;
-        currCheckpoint.setCurrent(true);
-        respawnPos = currCheckpoint.getRespawnPosition();
+        currCheckpoint.setCurrent(true, cat.isFacingRight());
         if (shouldSave) saveState();
     }
 
     public void resetCheckpoints(){
         if(currCheckpoint != null){
-            currCheckpoint.setCurrent(false);
+            currCheckpoint.setCurrent(false, true);
         }
         currCheckpoint = null;
         respawnPos = startRespawnPos;
@@ -369,13 +410,19 @@ public class Level {
         }
     }
 
+    private class InvalidTiledJSON extends RuntimeException {
+        private InvalidTiledJSON(String errorMessage) {
+            super("Error loading Tiled level " + levelNum + ": " + errorMessage);
+        }
+    }
+
     /**
      * Populates this level from data from a Tiled file.
      *
      * @param tiledMap Tiled Json
      */
-     public void populateTiled(JsonValue tiledMap){
-        populateTiled(tiledMap, 0, 0, returnY, null);
+     public void populateTiled(JsonValue tiledMap, int levelNum) {
+        populateTiled(tiledMap, 0, 0, levelNum, returnY, null);
     }
 
     /**
@@ -389,13 +436,21 @@ public class Level {
      * @param next        True if we are progressing from the previous level (i.e to the right),
      *                    null if we should ignore offsets
      */
-    public void populateTiled(JsonValue tiledMap, float xOffset, float yOffset, float prevExitY, Boolean next){
+    public void populateTiled(JsonValue tiledMap, float xOffset, float yOffset, int levelNum, float prevExitY, Boolean next) {
+
+        this.levelNum = levelNum;
+
+        if (tiledMap == null) throw new InvalidTiledJSON("missing Tiled JSON");
+
+        if (tiledMap.getBoolean("infinite")) throw new InvalidTiledJSON("map size cannot be infinite");
+
         world.setGravity( new Vector2(0,tiledMap.getFloat("gravity",-14.7f)) );
         activationRelations = new HashMap<>();
         levelStates = new Array<>();
 
         JsonValue layers = tiledMap.get("layers");
         JsonValue tileData = layers.get(0);
+        JsonValue climbableData = null;
 
         tileSize = tiledMap.getInt("tilewidth");
         int levelWidth = tiledMap.getInt("width");
@@ -409,6 +464,9 @@ public class Level {
                 if (layer.getString("name").equals("exits")){
                     loadExitPositions(layer, tileSize, levelHeight);
                 }
+            }
+            else if (layer.getString("name").equals("climbables")) {
+                climbableData = layer;
             }
         }
         if (next != null) {
@@ -424,27 +482,55 @@ public class Level {
         String biome = tiledMap.get("properties").get(0).getString("value");
 
         TextureRegion tileset = new TextureRegion();
+        TextureRegion tileset_climbable = new TextureRegion();
 
         int fID = 1;
+        int fID_climbable = 1;
         if (biome.equals("metal")) {
-            tileset = textureRegionAssetMap.get("metal_tileset");
+            tileset = textureRegionAssetMap.get("metal-tileset");
             for (JsonValue tilesetData : tiledMap.get("tilesets")){
                 if (tilesetData.getString("source").endsWith("metal-walls.tsx")){
                     fID = tilesetData.getInt("firstgid");
+                }
+                else if (tilesetData.getString("source").endsWith("climbables.tsx")){
+                    fID_climbable = tilesetData.getInt("firstgid");
                 }
             }
         }
         else if (biome.equals("forest")) {
             // TODO: change this in future
-            tileset = textureRegionAssetMap.get("metal_tileset");
+            tileset = textureRegionAssetMap.get("metal-tileset");
             for (JsonValue tilesetData : tiledMap.get("tilesets")){
                 if (tilesetData.getString("source").endsWith("metal-walls.tsx")){
                     fID = tilesetData.getInt("firstgid");
                 }
+                else if (tilesetData.getString("source").endsWith("climbables.tsx")){
+                    fID_climbable = tilesetData.getInt("firstgid");
+                }
             }
         }
+
         tiles = new Tiles(tileData, 1024, levelWidth, levelHeight, tileset, bounds, fID, new Vector2(1/32f, 1/32f));
+
+        if (climbableData != null) {
+            climbables = new Climbable(climbableData, 1024, levelWidth, levelHeight,
+                    textureRegionAssetMap.get("climbable-tileset"), bounds, fID_climbable, new Vector2(1/32f, 1/32f));
+        }
+
+        //make joints
+        for (Obstacle obj : objectJoints.keys()) {
+            WeldJointDef jointDef = new WeldJointDef();
+            jointDef.bodyA = obj.getBody();
+            jointDef.bodyB = objectNames.get(objectJoints.get(obj)).getBody();
+            jointDef.localAnchorB.set(jointDef.bodyB.getLocalPoint(jointDef.bodyA.getPosition()));
+            jointDef.collideConnected = false;
+            Joint joint = world.createJoint(jointDef);
+            joints.add(joint);
+        }
+
         if (cat != null) saveState();
+
+        propertiesMap.clear();
     }
 
     /**
@@ -488,6 +574,8 @@ public class Level {
                 populateExits(obstacleData, tileSize, levelHeight);
             } else if (name.equals("cameraRegions")) {
                 populateCameraRegions(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("goal")) {
+                populateGoal(obstacleData, tileSize, levelHeight);
             }
         }
     }
@@ -517,10 +605,9 @@ public class Level {
      */
     private void populatePlatforms(JsonValue data, int tileSize, int levelHeight){
         JsonValue objects = data.get("objects");
-        textureScaleCache.set(1, 1);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
-            Platform platform = new Platform(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
+            Platform platform = new Platform(propertiesMap, textureRegionAssetMap, scale, 128);
             loadTiledActivatable(platform);
         }
     }
@@ -583,7 +670,7 @@ public class Level {
      */
     private void populateSpikes(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
-        textureScaleCache.set(1/64f, 1/64f);
+        textureScaleCache.set(1/4f, 1/4f);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
             Spikes spikes = new Spikes(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
@@ -635,10 +722,10 @@ public class Level {
      */
     private void populateDoors(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
-        textureScaleCache.set(1, 1);
+        textureScaleCache.set(1/32f, 1/32f);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
-            Door door = new Door(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
+            Door door = new Door(propertiesMap, textureRegionAssetMap, scale, 128);
             loadTiledActivatable(door);
         }
     }
@@ -731,6 +818,16 @@ public class Level {
         }
     }
 
+    private void populateGoal(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        textureScaleCache.set(1/32f, 1/32f);
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize, levelHeight);
+            goal = new Goal(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
+            addObject(goal);
+        }
+    }
+
     /**
      * Populates the cameraRegions for this level.
      *
@@ -754,7 +851,8 @@ public class Level {
      * @param tileSize      Tile size in the Tiled JSON
      * @param levelHeight   Level height in Box2D units
      */
-        private void populateCat(JsonValue data, int tileSize, int levelHeight, boolean shouldPopulate){
+    private void populateCat(JsonValue data, int tileSize, int levelHeight, boolean shouldPopulate) {
+        try {
             JsonValue objects = data.get("objects");
             JsonValue catJV = objects.get(0);
             readProperties(catJV, tileSize, levelHeight);
@@ -766,7 +864,10 @@ public class Level {
             } else {
                 cat = null;
             }
+        } catch (NullPointerException e) {
+            throw new InvalidTiledJSON("level must contain a cat");
         }
+    }
 
     /**
      * Reads the properties array of an object in a Tiled JSON, and puts it into <code>propertiesMap</code>.
@@ -785,24 +886,12 @@ public class Level {
 
         //this is because tiled rotates about the top left corner
         float x, y;
-        switch ((int) angle) {
-            default:
-            case 0:
-                x = objectJV.getFloat("x");
-                y = objectJV.getFloat("y");
-                break;
-            case 90:
-                x = objectJV.getFloat("x");
-                y = objectJV.getFloat("y") - tileSize;
-                break;
-            case 180:
-                x = objectJV.getFloat("x") - tileSize;
-                y = objectJV.getFloat("y") - tileSize;
-                break;
-            case 270:
-                x = objectJV.getFloat("x") - tileSize;
-                y = objectJV.getFloat("y");
-                break;
+        if ((int) angle == 90) {
+            x = objectJV.getFloat("x");
+            y = objectJV.getFloat("y") - objectJV.getFloat("width");
+        } else {
+            x = objectJV.getFloat("x");
+            y = objectJV.getFloat("y");
         }
         x = x/tileSize + bounds.x;
         y = levelHeight - y/tileSize + bounds.y;
@@ -841,7 +930,9 @@ public class Level {
                     propertiesMap.put(name, property.getFloat("value"));
                     break;
                 case "color":
-                    propertiesMap.put(name, Color.valueOf(property.getString("value")));
+                    //tiles parses colors as ARGB >:(
+                    String color = property.getString("value");
+                    propertiesMap.put(name, Color.valueOf("#" + color.substring(3) + color.substring(1, 3)));
                     break;
                 case "class":
                     switch (property.getString("propertytype")){
@@ -851,11 +942,11 @@ public class Level {
                             propertiesMap.put(name, v);
                             break;
                         default:
-                            throw new IllegalArgumentException("unexpected class: " + property.getString("type"));
+                            throw new InvalidTiledJSON("unexpected class: " + property.getString("type"));
                     }
                     break;
                 default:
-                    throw new IllegalArgumentException("unexpected property type: " + property.getString("type"));
+                    throw new InvalidTiledJSON("unexpected property type: " + property.getString("type"));
             }
         }
     }
@@ -867,20 +958,29 @@ public class Level {
      * and sets the level to not completed and not failed.
      */
     public void dispose() {
+        for (Joint j : joints){
+            world.destroyJoint(j);
+        }
         for(Obstacle obj : objects) {
             obj.deactivatePhysics(world);
         }
         cat = null;
         addQueue.clear();
         objects.clear();
+        joints.clear();
         activators.clear();
         lasers.clear();
         deadBodyArray.clear();
         activatables.clear();
         mobArray.clear();
         spiritRegionArray.clear();
+        objectNames.clear();
+        objectJoints.clear();
         numLives = maxLives;
+        tiles = null;
         currCheckpoint = null;
+        climbables = null;
+        goal = null;
         setComplete(false);
         setFailure(false);
     }
@@ -912,6 +1012,12 @@ public class Level {
         assert inBounds(obj) : "Object is not in bounds";
         objects.add(obj);
         obj.activatePhysics(world);
+        if (propertiesMap.containsKey("name")) {
+            objectNames.put((String) propertiesMap.get("name"), obj);
+        }
+        if (propertiesMap.containsKey("attachName")) {
+            objectJoints.put(obj, (String) propertiesMap.get("attachName"));
+        }
     }
 
     /**
@@ -1009,8 +1115,9 @@ public class Level {
      * Draws the level to the given game canvas. Assumes <code>canvas.begin()</code> has already been called.
      *
      * @param canvas	the drawing context
+     * @param drawCat   if we should draw the cat
      */
-    public void draw(GameCanvas canvas) {
+    public void draw(GameCanvas canvas, boolean drawCat) {
 //        if (background != null) {
 //            //scales background with level size
 //            float scaleX = bounds.width/background.getWidth() * scale.x;
@@ -1026,12 +1133,14 @@ public class Level {
         //draw everything except cat, dead bodies and spirit region
         for(Obstacle obj : objects) {
             if (obj != cat && !(obj instanceof DeadBody) && !(obj instanceof SpiritRegion)
-                    && !(obj instanceof Wall && !(obj instanceof Platform)) && !(obj instanceof Activator) ){
+                    && !(obj instanceof Wall && !(obj instanceof Platform)) && !(obj instanceof Activator) ) {
                 obj.draw(canvas);
             }
         }
 
         if (tiles != null) tiles.draw(canvas);
+
+        if (climbables != null) climbables.draw(canvas);
 
         for (Activator a : activators) {
             a.draw(canvas);
@@ -1042,7 +1151,7 @@ public class Level {
         for (DeadBody db : deadBodyArray) {
             db.draw(canvas);
         }
-        if(cat != null && GameController.cameraGameState != GameController.CameraGameState.RESPAWN) {
+        if(cat != null && drawCat) {
             cat.draw(canvas);
         }
 
@@ -1050,8 +1159,16 @@ public class Level {
             s.draw(canvas);
         }
 
+        for (Particle spirit : spiritParticles) {
+            spirit.draw(canvas, textureRegionAssetMap.get("spirit-photon").getTexture());
+        }
+
         if (currCheckpoint != null) {
             currCheckpoint.drawBase(canvas);
+        }
+
+        if (goal != null) {
+            goal.draw(canvas);
         }
     }
 
@@ -1087,7 +1204,14 @@ public class Level {
      * */
     public void spawnDeadBody(){
         textureScaleCache.set(1/34f, 1/34f);
-        DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat2"),textureRegionAssetMap.get("burnCat"), scale, cat.getPosition(), textureScaleCache);
+        double rand = Math.random();
+        DeadBody deadBody;
+        if(rand <0.5){
+            deadBody = new DeadBody(textureRegionAssetMap.get("corpse2"),textureRegionAssetMap.get("corpse-burnt"), scale, cat.getPosition(), textureScaleCache);
+        }
+        else{
+            deadBody = new DeadBody(textureRegionAssetMap.get("corpse"),textureRegionAssetMap.get("corpse-burnt"), scale, cat.getPosition(), textureScaleCache);
+        }
         deadBody.setLinearVelocity(cat.getLinearVelocity());
         deadBody.setFacingRight(cat.isFacingRight());
         queueObject(deadBody);
@@ -1100,7 +1224,7 @@ public class Level {
      */
     public DeadBody loadDeadBodyState(ObjectMap<String, Object> state){
         textureScaleCache.set(1/34f, 1/34f);
-        DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("deadCat2"), textureRegionAssetMap.get("burnCat"),scale, Vector2.Zero, textureScaleCache);
+        DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("corpse2"), textureRegionAssetMap.get("corpse-burnt"),scale, Vector2.Zero, textureScaleCache);
         deadBody.loadState(state);
         addObject(deadBody);
         deadBodyArray.add(deadBody);
@@ -1124,7 +1248,7 @@ public class Level {
         float minDist = Float.MAX_VALUE;
         DeadBody nextdb = null;
         for (DeadBody db : deadBodyArray){
-            if (sharesElement(db.getSpiritRegions(), cat.getSpiritRegions())){
+            if (sharesKey(db.getSpiritRegions(), cat.getSpiritRegions())){
                 float dist = cat.getPosition().dst(db.getPosition());
                 if (dist < minDist){
                     minDist = dist;
@@ -1143,10 +1267,10 @@ public class Level {
      * @return    True if set 1 and set 2 share any element, or if both are empty.
      * @param <T> The type of elements in s1 and s2
      */
-    private <T> boolean sharesElement(ObjectSet<T> s1, ObjectSet<T> s2){
+    private <K, V> boolean sharesKey(ObjectMap<K, V> s1, ObjectMap<K, V> s2){
         if (s1.isEmpty() && s2.isEmpty()) return true;
-        for (T r : s1){
-            if (s2.contains(r)) return true;
+        for (K r : s1.keys()){
+            if (s2.containsKey(r)) return true;
         }
         return false;
     }

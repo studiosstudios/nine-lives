@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="29" height="17" tilewidth="1024" tileheight="1024" infinite="1" nextlayerid="21" nextobjectid="87">
+ <editorsettings>
+  <export target="../../nine-lives/assets/tiled/level-template.json" format="json"/>
+ </editorsettings>
+ <properties>
+  <property name="biome" propertytype="biome" value="metal"/>
+ </properties>
+ <tileset firstgid="1" source="../objects/objects.tsx"/>
+ <tileset firstgid="9" source="../tilesets/metal-walls.tsx"/>
+ <tileset firstgid="57" source="../tilesets/climbables.tsx"/>
+ <layer id="17" name="metalWalls" width="29" height="17">
+  <data encoding="csv">
+   <chunk x="0" y="0" width="16" height="16">
+22,23,23,23,23,23,23,23,23,23,23,23,23,23,38,11,
+34,35,35,35,35,35,35,35,35,35,35,35,35,35,36,0,
+34,35,35,35,35,35,35,35,35,35,35,35,35,35,36,0,
+46,47,47,47,47,47,47,47,47,47,47,47,47,47,51,11,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,22,24,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,34,36,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,34,36,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,34,36,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,34,36,0,0,
+22,23,23,23,23,23,23,23,23,23,23,23,54,53,23,23,
+34,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35
+</chunk>
+   <chunk x="16" y="0" width="16" height="16">
+11,11,11,11,11,11,11,11,40,23,23,23,24,0,0,0,
+0,0,0,0,0,0,0,0,34,35,35,35,36,0,0,0,
+0,0,0,0,0,0,0,0,34,35,35,35,36,0,0,0,
+11,11,11,11,11,11,11,11,49,47,47,47,48,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,10,11,11,11,11,12,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+23,24,0,0,0,0,0,0,22,23,23,23,24,0,0,0,
+35,53,23,23,23,23,23,23,54,35,35,35,36,0,0,0
+</chunk>
+   <chunk x="0" y="16" width="16" height="16">
+46,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</chunk>
+   <chunk x="16" y="16" width="16" height="16">
+47,47,47,47,47,47,47,47,47,47,47,47,48,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</chunk>
+  </data>
+ </layer>
+ <layer id="18" name="climbables" width="29" height="17">
+  <data encoding="csv">
+   <chunk x="0" y="0" width="16" height="16">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,57,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,57,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,57,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,57,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,57,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</chunk>
+  </data>
+ </layer>
+ <objectgroup id="19" name="cameraRegions">
+  <object id="64" type="CameraRegion" x="0" y="0" width="14336" height="17408">
+   <properties>
+    <property name="zoom" type="float" value="0.8"/>
+   </properties>
+  </object>
+  <object id="65" type="CameraRegion" x="14336" y="0" width="15360" height="17408">
+   <properties>
+    <property name="zoom" type="float" value="0.6"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="12" name="wallsPoly">
+  <object id="58" type="Wall" x="0" y="1024">
+   <polygon points="0,0 0,2048 0,3072 29696,3072 29696,-1024 24576,-1024 24576,2048 15360,2048 15360,-1024 0,-1024"/>
+  </object>
+  <object id="59" type="Wall" x="0" y="14336">
+   <polygon points="0,0 0,3072 29696,3072 29696,0 24576,0 24576,1024 18432,1024 18432,0 14336,0 14336,-5120 12288,-5120 12288,0"/>
+  </object>
+  <object id="60" type="Wall" x="18432" y="9216">
+   <polygon points="0,0 0,1024 6144,1024 6144,0"/>
+  </object>
+  <object id="62" type="Wall" x="15360" y="0">
+   <polygon points="0,0 0,1024 9216,1024 9216,0"/>
+  </object>
+  <object id="63" type="Wall" x="12288" y="9216">
+   <properties>
+    <property name="climbable" type="bool" value="true"/>
+   </properties>
+   <polygon points="0,0 1024,1024 1024,4096 0,5120"/>
+  </object>
+ </objectgroup>
+ <objectgroup id="16" name="spiritRegions">
+  <object id="49" type="SpiritRegion" x="14336" y="4096" width="15360" height="10240"/>
+ </objectgroup>
+ <objectgroup id="2" name="cat">
+  <object id="38" gid="2" x="1024" y="13312" width="1024" height="1024"/>
+ </objectgroup>
+ <objectgroup id="4" name="flamethrowers">
+  <object id="39" gid="4" x="7168" y="14336" width="1024" height="1024"/>
+ </objectgroup>
+ <objectgroup id="20" name="goal">
+  <object id="86" gid="8" x="27648" y="12288" width="1024" height="2048"/>
+ </objectgroup>
+ <objectgroup id="3" name="checkpoints">
+  <object id="66" type="Checkpoint" gid="3" x="3072" y="9216" width="1024" height="2048">
+   <properties>
+    <property name="attachName" value="platform1"/>
+   </properties>
+  </object>
+  <object id="67" gid="3" x="26624" y="9216" width="1024" height="2048" rotation="90"/>
+ </objectgroup>
+ <objectgroup id="6" name="lasers">
+  <object id="40" gid="5" x="15360" y="9216" width="1024" height="1024" rotation="90"/>
+  <object id="79" gid="5" x="4096" y="13312" width="1024" height="1024" rotation="90">
+   <properties>
+    <property name="attachName" value="box1"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="7" name="mobs">
+  <object id="31" gid="6" x="19456" y="1024" width="1024" height="2048"/>
+ </objectgroup>
+ <objectgroup id="8" name="spikes">
+  <object id="42" gid="7" x="19456" y="14336" width="1024" height="1024"/>
+  <object id="43" gid="7" x="18432" y="14336" width="1024" height="1024"/>
+  <object id="44" gid="7" x="20480" y="14336" width="1024" height="1024"/>
+  <object id="45" gid="7" x="21504" y="14336" width="1024" height="1024"/>
+  <object id="46" gid="7" x="22528" y="14336" width="1024" height="1024"/>
+  <object id="47" gid="7" x="23552" y="14336" width="1024" height="1024"/>
+ </objectgroup>
+ <objectgroup id="15" name="activators">
+  <object id="32" gid="1" x="20480" y="2048" width="1024" height="1024">
+   <properties>
+    <property name="id" value="switch1"/>
+    <property name="type" propertytype="activators" value="switch"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="9" name="doors">
+  <object id="53" type="Door" x="12288" y="4096" width="1024" height="5120">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="10" name="platforms">
+  <object id="51" name="platform1" type="Platform" x="3072" y="11264" width="4096" height="1024">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+    <property name="disp" type="class" propertytype="Vector2">
+     <properties>
+      <property name="x" type="float" value="5"/>
+     </properties>
+    </property>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="13" name="mirrors"/>
+ <objectgroup id="14" name="boxes">
+  <object id="73" name="box1" gid="2" x="2048" y="13312" width="1024" height="1024"/>
+ </objectgroup>
+ <objectgroup id="11" name="exits">
+  <object id="33" type="Exit" x="-1024" y="4096" width="1024" height="10240">
+   <properties>
+    <property name="type" propertytype="exitType" value="return"/>
+   </properties>
+  </object>
+  <object id="34" type="Exit" x="29696" y="4096" width="1024" height="10240"/>
+ </objectgroup>
+</map>

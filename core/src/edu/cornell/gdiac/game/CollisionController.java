@@ -122,20 +122,23 @@ public class CollisionController implements ContactListener, ContactFilter {
                     if (bd2 == level.getReturnExit() && !didChange) setReturn(true);
 
                     if (bd2 instanceof Spikes && fd2.equals(Spikes.pointyName) && fd1.equals(Cat.bodyName)) {
-                        actionController.die();
+                        actionController.die(true);
                     }
                     if (bd2 instanceof Flamethrower.Flame && fd2.equals(Flamethrower.flameSensorName)){
-                        actionController.die();
+                        actionController.die(true);
                     }
                     if (bd2 instanceof Checkpoint && ((Checkpoint) bd2).getSensorName().equals(fd2)){
                         level.updateCheckpoints(((Checkpoint) bd2), true);
                     }
                     if (bd2 instanceof Mob){
-//                    System.out.println("hit a mob");
-                        actionController.die();
+                        actionController.die(true);
                     }
                     if (bd2 instanceof SpiritRegion){
-                        cat.getSpiritRegions().add((SpiritRegion) bd2);
+                        cat.addSpiritRegion((SpiritRegion) bd2);
+                    }
+                    if (bd2 instanceof Goal) {
+                        //TODO: if not active then collect dead bodies with action controller
+                        actionController.recombineLives();
                     }
                     if (bd2 instanceof CameraRegion){
                         Array<CameraRegion> cameraRegions = cat.getCameraRegions();
@@ -161,7 +164,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                         db.setBurning(true);
                         db.addHazard();
                     } else if (bd2 instanceof SpiritRegion){
-                        db.getSpiritRegions().add((SpiritRegion) bd2);
+                        db.addSpiritRegion((SpiritRegion) bd2);
                     }
                 }
 
@@ -247,7 +250,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                     }
 
                     if (bd2 instanceof SpiritRegion){
-                        cat.getSpiritRegions().remove((SpiritRegion) bd2);
+                        cat.removeSpiritRegion((SpiritRegion) bd2);
                     }
 
                     if (bd2 instanceof Exit) {
@@ -284,7 +287,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                         db.removeHazard();
                     }
                     if (bd2 instanceof SpiritRegion){
-                        db.getSpiritRegions().remove((SpiritRegion) bd2);
+                        db.removeSpiritRegion((SpiritRegion) bd2);
                     }
                 }
 

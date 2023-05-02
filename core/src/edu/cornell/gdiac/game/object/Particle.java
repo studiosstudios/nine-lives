@@ -12,8 +12,11 @@
  */
 package edu.cornell.gdiac.game.object;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
+import edu.cornell.gdiac.game.GameCanvas;
 
 /**
  * Instances are a single particle.
@@ -148,4 +151,9 @@ public class Particle implements Pool.Poolable {
     public float getBottom() { return bottom; }
 
     public float getTop() { return top; }
+
+    public void draw(GameCanvas canvas, Texture texture) {
+        canvas.draw(texture, new Color(Color.WHITE), getX(),
+                getY(), 5f, 5f);
+    }
 }

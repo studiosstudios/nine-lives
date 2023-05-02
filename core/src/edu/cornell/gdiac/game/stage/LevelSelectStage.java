@@ -14,6 +14,8 @@ public class LevelSelectStage extends StageWrapper {
     private Actor selectedActor;
     private Actor backButtonActor;
     private Actor playButtonActor;
+    private Actor backCatpawActor;
+    private Actor playCatpawActor;
     private Actor oneActor;
     private Actor twoActor;
 //    private List<Actor> actorList = new ArrayList<>(2);
@@ -34,7 +36,7 @@ public class LevelSelectStage extends StageWrapper {
         super(internal, createActors);
     }
     public int getSelectedLevel() {
-        int l = (oneState == 1 && twoState == 0) ? 0 : 1;
+        int l = (oneState == 1 && twoState == 0) ? 1 : 2;
         return l;
     }
 
@@ -43,9 +45,24 @@ public class LevelSelectStage extends StageWrapper {
      */
     @Override
     public void createActors() {
-        addActor(new Image(internal.getEntry("bgLab", Texture.class)));
-        backButtonActor = addActor(internal.getEntry("back", Texture.class),this.getWidth()/2-350-15,buttonY-265);
-        playButtonActor = addActor(internal.getEntry("play", Texture.class), this.getWidth()/2+15, buttonY-265);
+//        addActor(new Image(internal.getEntry("bg-lab", Texture.class)));
+        Actor background = addActor(internal.getEntry("bg-level-select", Texture.class), 0, 0);
+        background.setScale(0.5f);
+        backButtonActor = addActor(internal.getEntry("back", Texture.class),940,buttonY-225);
+        backButtonActor.setScale(0.5f);
+        playButtonActor = addActor(internal.getEntry("play", Texture.class), 940, buttonY-175);
+        playButtonActor.setScale(0.5f);
+
+        backCatpawActor = addActor(internal.getEntry("paw", Texture.class), buttonX+30, buttonY-225);
+        backCatpawActor.setScale(0.5f);
+        backCatpawActor.setVisible(false);
+        playCatpawActor = addActor(internal.getEntry("paw", Texture.class), buttonX+30, buttonY-175);
+        playCatpawActor.setScale(0.5f);
+        playCatpawActor.setVisible(false);
+
+        backButtonActor.addListener(createCatpawListener(backButtonActor, backCatpawActor));
+        playButtonActor.addListener(createCatpawListener(playButtonActor, playCatpawActor));
+
         oneActor = addActor(internal.getEntry("one", Texture.class), xHalf-(18.5f*18)-5f, yHalf+(29*3));
         twoActor = addActor(internal.getEntry("two", Texture.class), xHalf-(22.5f*11), yHalf+(29*3));
     }

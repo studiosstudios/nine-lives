@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
+import edu.cornell.gdiac.util.Direction;
 
 import java.util.HashMap;
 
@@ -37,7 +38,13 @@ public class Checkpoint extends BoxObstacle
     /** Filmstrip of non-active checkpoint animation */
     private Animation<TextureRegion> animation;
     /** Filmstrip of active checkpoint animation */
-    private Animation<TextureRegion> active_animation;
+    private Animation<TextureRegion> activeAnimation;
+    /** if the player was facing right when getting this checkpoint */
+    private boolean facingRight;
+    /** direction of this checkpoint */
+    private Direction dir;
+    private Vector2 baseOffset;
+    private Vector2 respawnOffset;
 
     /**
      * Creates a new Checkpoint object.
@@ -54,31 +61,42 @@ public class Checkpoint extends BoxObstacle
         setTextureScale(textureScale);
         int spriteWidth = 1024;
         int spriteHeight = 2048;
-        this.baseTexture = tMap.get("checkpoint_base");
-        this.activeBaseTexture = tMap.get("checkpoint_base_active");
-        spriteFrames = TextureRegion.split(tMap.get("checkpoint_anim").getTexture(), spriteWidth, spriteHeight);
-        activeSpriteFrames = TextureRegion.split(tMap.get("checkpoint_active_anim").getTexture(), spriteWidth, spriteHeight);
+        this.baseTexture = tMap.get("checkpoint-base");
+        this.activeBaseTexture = tMap.get("checkpoint-base-active");
+        spriteFrames = TextureRegion.split(tMap.get("checkpoint-anim").getTexture(), spriteWidth, spriteHeight);
+        activeSpriteFrames = TextureRegion.split(tMap.get("checkpoint-active-anim").getTexture(), spriteWidth, spriteHeight);
         float frameDuration = 0.1f;
 
         animation = new Animation<>(frameDuration, spriteFrames[0]);
-        active_animation = new Animation<>(frameDuration, activeSpriteFrames[0]);
+        activeAnimation = new Animation<>(frameDuration, activeSpriteFrames[0]);
 
         animation.setPlayMode(Animation.PlayMode.LOOP);
         animationTime = 0f;
-        setAngle((float) properties.get("rotation"));
+        setAngle((float) ((float) properties.get("rotation") * Math.PI/180));
+        dir = Direction.angleToDir((int) ((float) properties.get("rotation")));
         setMass(0);
         setName("checkpoint");
         setDrawScale(scale);
         setSensor(true);
-        setX((float) properties.get("x") + objectConstants.get("offset").getFloat(0));
-        setY((float) properties.get("y") + objectConstants.get("offset").getFloat(1));
+
+        Vector2 offset = new Vector2(objectConstants.get("offset").getFloat(0), objectConstants.get("offset").getFloat(1));
+        Direction.rotateVector(offset, dir);
+        setX((float) properties.get("x") + offset.x);
+        setY((float) properties.get("y") + offset.y);
         setSensor(true);
-        setBodyType(BodyDef.BodyType.StaticBody);
+        setBodyType(properties.containsKey("attachName") ? BodyDef.BodyType.DynamicBody : BodyDef.BodyType.StaticBody);
         Vector2 solidCenter = new Vector2(0,0);
         sensorShape = new PolygonShape();
         sensorShape.setAsBox(getWidth() / 2 * objectConstants.getFloat("solid_width_scale"),
                 getHeight() / 2 * objectConstants.getFloat("solid_height_scale"),
                 solidCenter, 0.0f);
+
+
+        baseOffset = new Vector2(objectConstants.get("base_offset").getFloat(0), objectConstants.get("base_offset").getFloat(1));
+        Direction.rotateVector(baseOffset, dir);
+
+        respawnOffset = new Vector2(objectConstants.get("respawn_offset").getFloat(0),objectConstants.get("respawn_offset").getFloat(1));
+        Direction.rotateVector(respawnOffset, dir);
     }
 
     @Override
@@ -86,15 +104,17 @@ public class Checkpoint extends BoxObstacle
      * @return position of checkpoint base rather than checkpoint origin
      */
     public Vector2 getPosition(){
-        return new Vector2(getX()-objectConstants.get("base_offset").getFloat(0),getY()-objectConstants.get("base_offset").getFloat(1));
+        return super.getPosition().sub(baseOffset);
     }
 
     /**
      * @return respawn position of the cat for this checkpoint
      */
     public Vector2 getRespawnPosition(){
-        return getPosition().add(objectConstants.get("respawn_offset").getFloat(0),objectConstants.get("respawn_offset").getFloat(1));
+        return getPosition().add(respawnOffset);
     }
+
+    public boolean facingRight() { return facingRight; }
 
     /**
      * Creates the physics Body(s) for this object, adding them to the world.
@@ -120,16 +140,16 @@ public class Checkpoint extends BoxObstacle
     }
 
     /**
-     * @param b  whether we want the checkpoint to be active
+     * @param b               whether we want the checkpoint to be active
+     * @param facingRight     if the player was facing right when getting this checkpoint
      */
-    public void setCurrent(boolean b){
+    public void setCurrent(boolean b, boolean facingRight){
         current = b;
-        int currFrame = animation.getKeyFrameIndex(animation.getFrameDuration());
-
+        this.facingRight = facingRight;
         if (b) {
             animation.setPlayMode(Animation.PlayMode.LOOP);
         } else {
-            active_animation.setPlayMode(Animation.PlayMode.LOOP);
+            activeAnimation.setPlayMode(Animation.PlayMode.LOOP);
         }
     }
 
@@ -162,8 +182,8 @@ public class Checkpoint extends BoxObstacle
             setTexture(animation.getKeyFrame(animationTime));
             animation.setPlayMode(Animation.PlayMode.LOOP);
         } else {
-            setTexture(active_animation.getKeyFrame(animationTime));
-            active_animation.setPlayMode(Animation.PlayMode.LOOP);
+            setTexture(activeAnimation.getKeyFrame(animationTime));
+            activeAnimation.setPlayMode(Animation.PlayMode.LOOP);
         }
         super.draw(canvas);
     }
@@ -187,7 +207,7 @@ public class Checkpoint extends BoxObstacle
     public void loadState(ObjectMap<String, Object> state){
         super.loadState(state);
         Vector2 pos = (Vector2) state.get("position");
-        setX(pos.x + objectConstants.get("base_offset").getFloat(0));
-        setY(pos.y + objectConstants.get("base_offset").getFloat(1));
+        setX(pos.x + baseOffset.x);
+        setY(pos.y + baseOffset.y);
     }
 }

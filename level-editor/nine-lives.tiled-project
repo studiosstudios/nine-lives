@@ -1,0 +1,395 @@
+{
+    "automappingRulesFile": "./rules/rules.txt",
+    "commands": [
+    ],
+    "compatibilityVersion": 1100,
+    "extensionsPath": "extensions",
+    "folders": [
+        "."
+    ],
+    "propertyTypes": [
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 14,
+            "members": [
+                {
+                    "name": "color",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "id",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "shouldPan",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "type",
+                    "propertyType": "activators",
+                    "type": "string",
+                    "value": "button"
+                }
+            ],
+            "name": "Activator",
+            "type": "class",
+            "useAs": [
+                "property",
+                "object",
+                "tile"
+            ]
+        },
+        {
+            "id": 1,
+            "name": "activators",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "button",
+                "switch",
+                "timed switch"
+            ],
+            "valuesAsFlags": false
+        },
+        {
+            "id": 4,
+            "name": "biome",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "metal",
+                "forest"
+            ],
+            "valuesAsFlags": false
+        },
+        {
+            "color": "#ffa159a4",
+            "drawFill": true,
+            "id": 18,
+            "members": [
+                {
+                    "name": "zoom",
+                    "type": "float",
+                    "value": 0.6
+                }
+            ],
+            "name": "CameraRegion",
+            "type": "class",
+            "useAs": [
+                "object"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 19,
+            "members": [
+                {
+                    "name": "attachName",
+                    "type": "string",
+                    "value": ""
+                }
+            ],
+            "name": "Checkpoint",
+            "type": "class",
+            "useAs": [
+                "object",
+                "tile"
+            ]
+        },
+        {
+            "color": "#ffa45a19",
+            "drawFill": true,
+            "id": 7,
+            "members": [
+                {
+                    "name": "activatorID",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "active",
+                    "type": "bool",
+                    "value": true
+                },
+                {
+                    "name": "closeAngle",
+                    "type": "int",
+                    "value": 0
+                },
+                {
+                    "name": "totalTicks",
+                    "type": "int",
+                    "value": 60
+                }
+            ],
+            "name": "Door",
+            "type": "class",
+            "useAs": [
+                "object"
+            ]
+        },
+        {
+            "color": "#ff00ff00",
+            "drawFill": true,
+            "id": 9,
+            "members": [
+                {
+                    "name": "type",
+                    "propertyType": "exitType",
+                    "type": "string",
+                    "value": "goal"
+                }
+            ],
+            "name": "Exit",
+            "type": "class",
+            "useAs": [
+                "object"
+            ]
+        },
+        {
+            "id": 10,
+            "name": "exitType",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "goal",
+                "return"
+            ],
+            "valuesAsFlags": false
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 12,
+            "members": [
+                {
+                    "name": "activatorID",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "active",
+                    "type": "bool",
+                    "value": true
+                },
+                {
+                    "name": "attachName",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "baseSensor",
+                    "type": "bool",
+                    "value": false
+                }
+            ],
+            "name": "Flamethrower",
+            "type": "class",
+            "useAs": [
+                "object",
+                "tile"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 11,
+            "members": [
+                {
+                    "name": "activatorID",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "active",
+                    "type": "bool",
+                    "value": true
+                },
+                {
+                    "name": "attachName",
+                    "type": "string",
+                    "value": ""
+                }
+            ],
+            "name": "Laser",
+            "type": "class",
+            "useAs": [
+                "property",
+                "object",
+                "tile"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 16,
+            "members": [
+                {
+                    "name": "pushable",
+                    "type": "bool",
+                    "value": false
+                }
+            ],
+            "name": "Mirror",
+            "type": "class",
+            "useAs": [
+                "object",
+                "tile"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 15,
+            "members": [
+                {
+                    "name": "aggressive",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "facingRight",
+                    "type": "bool",
+                    "value": true
+                }
+            ],
+            "name": "Mob",
+            "type": "class",
+            "useAs": [
+                "object",
+                "tile"
+            ]
+        },
+        {
+            "color": "#ff000000",
+            "drawFill": true,
+            "id": 8,
+            "members": [
+                {
+                    "name": "activatorID",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "active",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "climbable",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "damping",
+                    "type": "float",
+                    "value": 0.1
+                },
+                {
+                    "name": "disp",
+                    "propertyType": "Vector2",
+                    "type": "class",
+                    "value": {
+                        "x": 1
+                    }
+                },
+                {
+                    "name": "speed",
+                    "type": "float",
+                    "value": 10
+                }
+            ],
+            "name": "Platform",
+            "type": "class",
+            "useAs": [
+                "object"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 13,
+            "members": [
+                {
+                    "name": "activatorID",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "active",
+                    "type": "bool",
+                    "value": true
+                }
+            ],
+            "name": "Spikes",
+            "type": "class",
+            "useAs": [
+                "object",
+                "tile"
+            ]
+        },
+        {
+            "color": "#ffff798b",
+            "drawFill": true,
+            "id": 6,
+            "members": [
+                {
+                    "name": "color",
+                    "type": "color",
+                    "value": "#ffff0000"
+                }
+            ],
+            "name": "SpiritRegion",
+            "type": "class",
+            "useAs": [
+                "object"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 5,
+            "members": [
+                {
+                    "name": "x",
+                    "type": "float",
+                    "value": 0
+                },
+                {
+                    "name": "y",
+                    "type": "float",
+                    "value": 0
+                }
+            ],
+            "name": "Vector2",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 17,
+            "members": [
+                {
+                    "name": "climbable",
+                    "type": "bool",
+                    "value": false
+                }
+            ],
+            "name": "Wall",
+            "type": "class",
+            "useAs": [
+                "property",
+                "object",
+                "tile"
+            ]
+        }
+    ]
+}

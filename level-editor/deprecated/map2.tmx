@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="44" height="19" tilewidth="32" tileheight="32" infinite="0" nextlayerid="13" nextobjectid="119">
+ <editorsettings>
+  <export target="../../nine-lives/assets/tiled/tiledLevel2.json" format="json"/>
+ </editorsettings>
+ <properties>
+  <property name="biome" propertytype="biome" value="metal"/>
+ </properties>
+ <tileset firstgid="1" source="wall-tileset.tsx"/>
+ <tileset firstgid="49" source="objects.tsx"/>
+ <layer id="1" name="metalWalls" width="44" height="19">
+  <data encoding="csv">
+3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,15,15,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,16,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,26,28,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,25,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,26,28,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,25,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,26,28,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,25,
+15,15,15,15,15,15,15,15,15,15,16,0,0,0,14,15,15,15,15,27,28,0,0,0,14,15,15,15,15,15,15,15,15,15,16,0,0,0,14,15,15,15,15,28,
+27,27,27,27,27,27,27,27,27,27,28,0,0,0,26,27,27,27,27,27,28,0,0,0,26,27,27,27,27,27,27,27,27,27,28,0,0,0,26,27,27,27,27,28,
+27,27,27,27,27,27,27,27,27,27,28,0,0,0,26,27,27,27,27,27,28,0,0,0,26,27,27,27,27,27,27,27,27,27,28,0,0,0,26,27,27,27,27,28,
+27,27,27,27,27,27,27,27,27,27,28,0,0,0,26,27,27,27,27,27,28,0,0,0,26,27,27,27,27,27,27,27,27,27,28,0,0,0,26,27,27,27,27,28,
+27,27,27,27,27,27,27,27,27,27,28,0,0,0,26,27,27,27,27,27,28,0,0,0,26,27,27,27,27,27,27,27,27,27,28,0,0,0,26,27,27,27,27,28,
+27,27,27,27,27,27,27,27,27,27,28,0,0,0,26,27,27,27,27,27,28,0,0,0,26,27,27,27,27,27,27,27,27,27,28,0,0,0,26,27,27,27,27,28,
+27,27,27,27,27,27,27,27,27,27,28,0,0,0,26,27,27,27,27,27,28,0,0,0,26,27,27,27,27,27,27,27,27,27,28,0,0,0,26,27,27,27,27,28,
+27,27,27,27,27,27,27,27,27,27,28,0,0,0,26,27,27,27,27,27,28,0,0,0,26,27,27,27,27,27,27,27,27,27,28,0,0,0,26,27,27,27,27,28,
+27,27,27,27,27,27,27,27,27,27,28,0,0,0,26,27,27,27,27,27,28,0,0,0,26,27,27,27,27,27,27,27,27,27,28,0,0,0,26,27,27,27,27,28,
+27,27,27,27,27,27,27,27,27,27,28,0,0,0,26,27,27,27,27,27,28,0,0,0,26,27,27,27,27,27,27,27,27,27,28,0,0,0,26,27,27,27,27,28,
+27,27,27,27,27,27,27,27,27,27,28,0,0,0,38,39,39,39,39,39,40,0,0,0,26,27,27,27,27,27,27,27,27,27,28,0,0,0,38,39,39,39,39,40,
+27,27,27,27,27,27,27,27,27,27,28,0,0,0,0,0,0,0,0,0,0,0,0,0,26,27,27,27,27,27,27,27,27,27,28,0,0,0,0,0,0,0,0,0,
+27,27,27,27,27,27,27,27,27,27,28,0,0,0,0,0,0,0,0,0,0,0,0,0,26,27,27,27,27,27,27,27,27,27,28,0,0,0,0,0,0,0,0,0,
+27,27,27,27,27,27,27,27,27,27,27,15,15,15,15,15,15,15,15,15,15,15,15,15,27,27,27,27,27,27,27,27,27,27,27,15,15,15,15,15,15,15,15,16,
+39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,40
+</data>
+ </layer>
+ <objectgroup id="12" name="exits">
+  <object id="116" type="Exit" x="-32" y="32" width="32" height="96">
+   <properties>
+    <property name="type" propertytype="exitType" value="return"/>
+   </properties>
+  </object>
+  <object id="118" type="Exit" x="1408" y="480" width="32" height="64"/>
+ </objectgroup>
+ <objectgroup id="10" name="checkpoints">
+  <object id="56" gid="53" x="768" y="64" width="32" height="64"/>
+ </objectgroup>
+ <objectgroup id="11" name="spiritRegions">
+  <object id="110" type="SpiritRegion" x="1120" y="480" width="288" height="64"/>
+ </objectgroup>
+ <objectgroup id="9" name="wallsPoly">
+  <object id="30" x="-192" y="-32">
+   <polygon points="192,32 192,64 800,64 800,160 640,160 640,224 640,224 640,512 864,512 864,32"/>
+  </object>
+  <object id="31" x="-192" y="224">
+   <polygon points="192,-96 544,-96 544,320 1600,320 1600,384 192,384"/>
+  </object>
+  <object id="107" x="768" y="128">
+   <polygon points="0,0 0,416 352,416 352,0"/>
+  </object>
+  <object id="108" x="672" y="32">
+   <polygon points="0,0 704,0 736,0 736,-32 0,-32"/>
+  </object>
+  <object id="109" x="1376" y="32">
+   <polygon points="0,0 0,96 -160,96 -160,448 32,448 32,0"/>
+  </object>
+  <object id="113" x="768" y="128">
+   <properties>
+    <property name="climbable" type="bool" value="true"/>
+   </properties>
+   <polygon points="0,0 32,32 32,384 0,416"/>
+  </object>
+ </objectgroup>
+ <objectgroup id="5" name="spikes">
+  <object id="53" gid="54" x="128" y="64" width="32" height="32" rotation="180"/>
+  <object id="54" gid="54" x="96" y="64" width="32" height="32" rotation="180"/>
+  <object id="59" gid="54" x="896" y="64" width="32" height="32" rotation="180"/>
+  <object id="60" gid="54" x="864" y="64" width="32" height="32" rotation="180"/>
+ </objectgroup>
+ <objectgroup id="6" name="flamethrowers"/>
+ <objectgroup id="2" name="doors">
+  <object id="1" type="Door" x="320" y="32" width="32" height="96">
+   <properties>
+    <property name="activatorID" value="button1"/>
+    <property name="totalTicks" type="int" value="15"/>
+   </properties>
+  </object>
+  <object id="3" type="Door" x="352" y="160" width="96" height="32">
+   <properties>
+    <property name="activatorID" value="button2"/>
+    <property name="closeAngle" type="int" value="90"/>
+    <property name="totalTicks" type="int" value="15"/>
+   </properties>
+  </object>
+  <object id="62" type="Door" x="1088" y="32" width="32" height="96">
+   <properties>
+    <property name="activatorID" value="button3"/>
+    <property name="totalTicks" type="int" value="15"/>
+   </properties>
+  </object>
+  <object id="63" type="Door" x="1120" y="160" width="96" height="32">
+   <properties>
+    <property name="activatorID" value="button4"/>
+    <property name="closeAngle" type="int" value="90"/>
+    <property name="totalTicks" type="int" value="15"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="3" name="lasers">
+  <object id="4" gid="58" x="384" y="192" width="32" height="32" rotation="90"/>
+  <object id="48" gid="58" x="384" y="128" width="32" height="32" rotation="90"/>
+  <object id="50" gid="58" x="384" y="224" width="32" height="32" rotation="90"/>
+  <object id="12" gid="58" x="384" y="256" width="32" height="32" rotation="90"/>
+  <object id="14" gid="58" x="384" y="288" width="32" height="32" rotation="90"/>
+  <object id="16" gid="58" x="384" y="320" width="32" height="32" rotation="90"/>
+  <object id="18" gid="58" x="384" y="352" width="32" height="32" rotation="90"/>
+  <object id="20" gid="58" x="384" y="384" width="32" height="32" rotation="90"/>
+  <object id="24" gid="58" x="384" y="416" width="32" height="32" rotation="90"/>
+  <object id="26" gid="58" x="384" y="448" width="32" height="32" rotation="90"/>
+  <object id="6" gid="58" x="416" y="224" width="32" height="32" rotation="270"/>
+  <object id="49" gid="58" x="416" y="160" width="32" height="32" rotation="270"/>
+  <object id="51" gid="58" x="416" y="256" width="32" height="32" rotation="270"/>
+  <object id="13" gid="58" x="416" y="288" width="32" height="32" rotation="270"/>
+  <object id="15" gid="58" x="416" y="320" width="32" height="32" rotation="270"/>
+  <object id="17" gid="58" x="416" y="352" width="32" height="32" rotation="270"/>
+  <object id="19" gid="58" x="416" y="384" width="32" height="32" rotation="270"/>
+  <object id="21" gid="58" x="416" y="416" width="32" height="32" rotation="270"/>
+  <object id="25" gid="58" x="416" y="448" width="32" height="32" rotation="270"/>
+  <object id="27" gid="58" x="416" y="480" width="32" height="32" rotation="270"/>
+  <object id="86" gid="58" x="1152" y="192" width="32" height="32" rotation="90"/>
+  <object id="87" gid="58" x="1152" y="128" width="32" height="32" rotation="90"/>
+  <object id="88" gid="58" x="1152" y="224" width="32" height="32" rotation="90"/>
+  <object id="94" gid="58" x="1152" y="256" width="32" height="32" rotation="90"/>
+  <object id="95" gid="58" x="1152" y="288" width="32" height="32" rotation="90"/>
+  <object id="114" gid="58" x="1152" y="320" width="32" height="32" rotation="90"/>
+  <object id="96" gid="58" x="1184" y="224" width="32" height="32" rotation="270"/>
+  <object id="97" gid="58" x="1184" y="160" width="32" height="32" rotation="270"/>
+  <object id="98" gid="58" x="1184" y="256" width="32" height="32" rotation="270"/>
+  <object id="104" gid="58" x="1184" y="288" width="32" height="32" rotation="270"/>
+  <object id="105" gid="58" x="1184" y="320" width="32" height="32" rotation="270"/>
+  <object id="115" gid="58" x="1184" y="352" width="32" height="32" rotation="270"/>
+ </objectgroup>
+ <objectgroup id="4" name="activators">
+  <object id="7" gid="49" x="192" y="96" width="32" height="32">
+   <properties>
+    <property name="id" value="button1"/>
+    <property name="type" propertytype="activators" value="button"/>
+   </properties>
+  </object>
+  <object id="8" gid="49" x="544" y="96" width="32" height="32">
+   <properties>
+    <property name="id" value="button2"/>
+    <property name="type" propertytype="activators" value="button"/>
+   </properties>
+  </object>
+  <object id="61" gid="49" x="960" y="96" width="32" height="32">
+   <properties>
+    <property name="id" value="button3"/>
+    <property name="type" propertytype="activators" value="button"/>
+   </properties>
+  </object>
+  <object id="106" gid="49" x="1312" y="96" width="32" height="32">
+   <properties>
+    <property name="id" value="button4"/>
+    <property name="type" propertytype="activators" value="button"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="8" name="cat">
+  <object id="55" gid="52" x="0" y="96" width="40" height="34"/>
+ </objectgroup>
+</map>

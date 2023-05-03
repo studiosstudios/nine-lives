@@ -26,6 +26,14 @@ public class Camera {
     private final float CAMERA_GLIDE_NORMAL = 0.075f;
     /** Rate at which camera glides towards dead body **/
     private final float CAMERA_GLIDE_SWITCH_BODY = 0.025f;
+    /** Rate at which camera glides on zoom change **/
+    private final float CAMERA_GLIDE_CHANGE_ZOOM = 0.5f;
+    /** Rate at which camera zooms normally **/
+    public static final float ZOOM_RATE_NORMAL = 0.01f;
+    /** Rate at which camera zooms on camera region collision **/
+    public static final float ZOOM_RATE_CAMERA_REGION = 0.005f;
+    /** Current rate at which camera zooms **/
+    private float zoomRate;
     private float cameraGlideRate;
     /** Default gameplay zoom (not necessarily CAMERA_ZOOM) **/
     private float defaultZoom;
@@ -48,6 +56,7 @@ public class Camera {
         camera.zoom = CAMERA_ZOOM;
         defaultZoom = camera.zoom;
         zoomGoal = camera.zoom;
+        zoomRate = ZOOM_RATE_NORMAL;
         this.viewportWidth = viewportWidth;
         this.viewportHeight = viewportHeight;
         x = camera.position.x;
@@ -64,12 +73,17 @@ public class Camera {
      * @param glide smoothed camera movement
      */
     public void updateCamera(float xPos, float yPos, boolean glide, Rectangle bounds){
-        if(Math.abs(camera.zoom - zoomGoal) > 0.01)
+        if(Math.abs(camera.zoom - zoomGoal) > zoomRate) //TODO: collisions slow down zoom
         {
-            camera.zoom = camera.zoom < zoomGoal ? camera.zoom + 0.01f : camera.zoom - 0.01f;
+            camera.zoom = camera.zoom < zoomGoal ? camera.zoom + zoomRate : camera.zoom - zoomRate;
         }
         else {
             camera.zoom = zoomGoal;
+            setZoomRate("NORMAL");
+            //After finishing a zoom, return rates back to normal (unless body switching)
+            if(cameraGlideRate != CAMERA_GLIDE_SWITCH_BODY){
+                setGlideMode("NORMAL");
+            }
         }
         float width_scaled = viewportWidth*camera.zoom; //width of viewport zoomed in
         if(xPos > bounds.width - width_scaled/2 + bounds.x){
@@ -241,7 +255,7 @@ public class Camera {
 
     /**
      * Sets camera glide rate based on different game mode/functionalities
-     * @param mode Either "SWITCH_BODY" or "NORMAL"
+     * @param mode Either "SWITCH_BODY" or "NORMAL" or "CHANGE_ZOOM"
      */
     public void setGlideMode(String mode){
         if(mode.equals("SWITCH_BODY")){
@@ -250,8 +264,44 @@ public class Camera {
         else if(mode.equals("NORMAL")){
             cameraGlideRate = CAMERA_GLIDE_NORMAL;
         }
+        else if(mode.equals("CHANGE_ZOOM")){
+            cameraGlideRate = CAMERA_GLIDE_CHANGE_ZOOM;
+        }
         else{
             System.out.println("rip setGlideMode lmao");
+        }
+    }
+    /**
+     * Gets mode name associated with camera glide rate
+     */
+    public String getGlideMode(){
+        if(cameraGlideRate == CAMERA_GLIDE_SWITCH_BODY){
+            return "SWITCH_BODY";
+        }
+        else if(cameraGlideRate == CAMERA_GLIDE_NORMAL){
+            return "NORMAL";
+        }
+        else if(cameraGlideRate == CAMERA_GLIDE_CHANGE_ZOOM){
+            return "CHANGE_ZOOM";
+        }
+        else{
+            return "sadge";
+        }
+    }
+
+    /**
+     * Sets camera zoom rate based on different game modes/functionalities
+     * @param mode Either "NORMAL" or "CAMERA_REGION"
+     */
+    public void setZoomRate(String mode){
+        if(mode.equals("NORMAL")){
+            zoomRate = ZOOM_RATE_NORMAL;
+        }
+        else if(mode.equals("CAMERA_REGION")){
+            zoomRate =ZOOM_RATE_CAMERA_REGION;
+        }
+        else{
+            System.out.println("oof");
         }
     }
 }

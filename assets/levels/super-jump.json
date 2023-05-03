@@ -106,7 +106,7 @@
                  "y":19456
                 }, 
                 {
-                 "height":17408,
+                 "height":16384,
                  "id":112,
                  "name":"cameraRegion2",
                  "properties":[
@@ -123,13 +123,13 @@
                         {
                          "name":"zoom",
                          "type":"float",
-                         "value":1.0
+                         "value":1
                         }],
                  "rotation":0,
                  "type":"CameraRegion",
                  "visible":true,
-                 "width":26624,
-                 "x":0,
+                 "width":25600,
+                 "x":1024,
                  "y":2048
                 }],
          "opacity":1,
@@ -563,7 +563,7 @@
          "y":0
         }],
  "nextlayerid":24,
- "nextobjectid":127,
+ "nextobjectid":135,
  "orientation":"orthogonal",
  "properties":[
         {

@@ -729,7 +729,8 @@ public class GameController implements Screen {
                     cam.setGlideMode("SWITCH_BODY");
                     cam.switchBodyCam(nextDeadBody.getX() * scale.x, nextDeadBody.getY() * scale.y);
                 } else {
-                    cam.setGlideMode("NORMAL");
+                    if(cam.getGlideMode() == "SWITCH_BODY")
+                        cam.setGlideMode("NORMAL");
                     cam.updateCamera(x_pos, y_pos, true, cam.getGameplayBounds());
                 }
             }

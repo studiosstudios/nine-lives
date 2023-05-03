@@ -148,6 +148,8 @@ public class CollisionController implements ContactListener, ContactFilter {
                         }
                         CameraRegion relevantRegion = maxCollidingCamRegion(cameraRegions);
                         camera.setDefaultZoom(relevantRegion.getZoom());
+                        camera.setGlideMode("CHANGE_ZOOM");
+                        camera.setZoomRate("CAMERA_REGION");
                         if(relevantRegion.shouldSnap()){
                             camera.setGameplayBounds(relevantRegion.getBounds(), relevantRegion.getDrawScale(), true);
                         }

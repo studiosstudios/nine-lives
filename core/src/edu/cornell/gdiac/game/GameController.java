@@ -161,6 +161,7 @@ public class GameController implements Screen {
      */
     public void setCanvas(GameCanvas canvas) {
         this.canvas = canvas;
+        collisionController.setCamera(canvas.getCamera());
     }
 
     /**
@@ -570,8 +571,9 @@ public class GameController implements Screen {
         actionController.setLevel(currLevel);
         actionController.setMobControllers(currLevel);
         if (currLevel.levelStates().size == 0) currLevel.saveState();
-        canvas.getCamera().setLevelBounds(currLevel.bounds, scale);
-        canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, cameraGlide);
+        canvas.getCamera().setLevelBounds(currLevel.bounds, scale, true);
+        canvas.getCamera().setGameplayBounds(currLevel.bounds, scale, true);
+        canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, cameraGlide, canvas.getCamera().getGameplayBounds());
         currLevel.unpause();
         nextLevel.pause();
         prevLevel.pause();
@@ -721,7 +723,7 @@ public class GameController implements Screen {
         if(input.didPan()){
             gameState = GameState.PLAYER_PAN;
             //move camera
-            cam.updateCamera(cam.getX()+input.getCamHorizontal(),cam.getY()+ input.getCamVertical(),false);
+            cam.updateCamera(cam.getX()+input.getCamHorizontal(),cam.getY()+ input.getCamVertical(),false, cam.getLevelBounds());
         }
         else if(gameState == GameState.PLAYER_PAN){
             gameState = GameState.PLAY;
@@ -748,47 +750,55 @@ public class GameController implements Screen {
                 gameState = GameState.RESPAWN;
             }
             else {
+                currLevel.getCat().setActive(true);
                 //zoom normal when in play state and not panning and not switching bodies
                 if (!input.holdSwitch() && !input.didPan()) {
-                    cam.zoomOut(false);
+                    cam.setZoom(false, -1f);
                 }
                 DeadBody nextDeadBody = currLevel.getNextBody();
                 if (input.holdSwitch() && nextDeadBody != null) {
                     cam.setGlideMode("SWITCH_BODY");
                     cam.switchBodyCam(nextDeadBody.getX() * scale.x, nextDeadBody.getY() * scale.y);
                 } else {
-                    cam.setGlideMode("NORMAL");
-                    cam.updateCamera(x_pos, y_pos, true);
+                    if(cam.getGlideMode() == "SWITCH_BODY")
+                        cam.setGlideMode("NORMAL");
+                    cam.updateCamera(x_pos, y_pos, true, cam.getGameplayBounds());
                 }
             }
+
+            /** Handles cat dying in cameraRegion and respawning in non-cameraRegion **/
+            if(currLevel.getCameraRegions().isEmpty() && currLevel.getCat().isActive()){
+                canvas.getCamera().setDefaultZoom(Camera.CAMERA_ZOOM);
+                cam.setGameplayBounds(cam.getLevelBounds(), currLevel.getScale(), false);
+            }
         }
-        if(gameState == GameState.PAN){
-            cam.updateCamera(panTarget.get(0).getXPos()*scale.x,panTarget.get(0).getYPos()*scale.y, true);
-            if(!cam.isGliding()){
+        if(gameState == GameState.PAN) {
+            cam.updateCamera(panTarget.get(0).getXPos() * scale.x, panTarget.get(0).getYPos() * scale.y, true, cam.getLevelBounds());
+            if (!cam.isGliding()) {
                 panTime += 1;
-                if(panTime == PAN_HOLD){
+                if (panTime == PAN_HOLD) {
                     gameState = GameState.PLAY;
                 }
             }
         }
         if(gameState == GameState.PLAYER_PAN){
-            cam.zoomOut(true);
+            cam.setZoom(true, 1.0f);
         }
         if(gameState == GameState.RESPAWN){
-            float xPos = currLevel.getCat().getPosition().x*scale.x;
-            float yPos = currLevel.getCat().getPosition().y*scale.y;
+
+            float xPos = currLevel.getRespawnPos().x*scale.x;
+            float yPos = currLevel.getRespawnPos().y*scale.y;
             input.setDisableAll(true);
             respawnDelay += 1;
             if(currLevel.getdeadBodyArray().size > 0 && respawnDelay < RESPAWN_DELAY/2){
                 xPos = currLevel.getdeadBodyArray().get(currLevel.getdeadBodyArray().size-1).getX()*scale.x;
                 yPos = currLevel.getdeadBodyArray().get(currLevel.getdeadBodyArray().size-1).getY()*scale.y;
             }
-            cam.updateCamera(xPos, yPos, true);
+            cam.updateCamera(xPos, yPos, true, cam.getGameplayBounds());
             if(respawnDelay == RESPAWN_DELAY){
                 respawnDelay = 0;
                 input.setDisableAll(false);
                 gameState = GameState.PLAY;
-
                 currLevel.getCat().setActive(true);
                 currLevel.getCat().setLightActive(true);
                 currLevel.getCat().setPosition(currLevel.getRespawnPos());

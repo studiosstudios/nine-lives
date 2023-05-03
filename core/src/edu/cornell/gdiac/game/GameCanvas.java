@@ -53,8 +53,8 @@ public class GameCanvas {
 		OPAQUE
 	}	
 
-	private final float STANDARD_WIDTH = 1024f;
-	private final float STANDARD_HEIGHT = 576f;
+	public static final float STANDARD_WIDTH = 1024f;
+	public static final float STANDARD_HEIGHT = 576f;
 	
 	/** Drawing context to handle textures AND POLYGONS as sprites */
 	private PolygonSpriteBatch spriteBatch;
@@ -102,7 +102,6 @@ public class GameCanvas {
 	private Vector2 vertex;
 	/** Cache object to handle raw textures */
 	private TextureRegion holder;
-	private final float CAMERA_ZOOM = 0.6f;
 
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
@@ -122,7 +121,7 @@ public class GameCanvas {
 		region = new TextureRegion(new Texture("shared/white.png"));
 		
 		// Set the projection matrix (for proper scaling)
-		camera = new Camera(STANDARD_WIDTH, STANDARD_HEIGHT, CAMERA_ZOOM);
+		camera = new Camera(STANDARD_WIDTH, STANDARD_HEIGHT);
 //		camera = new Camera(getWidth(), getHeight(), CAMERA_ZOOM);
 		viewport = new FitViewport(STANDARD_WIDTH, STANDARD_HEIGHT, camera.getCamera());
 //		viewport = new FitViewport(getWidth(), getHeight(), camera.getCamera());
@@ -1199,9 +1198,9 @@ public class GameCanvas {
 			Gdx.app.error("GameCanvas", "Cannot draw without active begin", new IllegalStateException());
 			return;
 		}
-		float xTranslate = camera.centerLevelTranslation().x;
-		float yTranslate = camera.centerLevelTranslation().y;
-		Path2 path = pathFactory.makeLine(xTranslate, yTranslate, (p2.x-p1.x)*sx+xTranslate, (p2.y-p1.y)*sy+yTranslate);
+//		float xTranslate = camera.centerLevelTranslation().x;
+//		float yTranslate = camera.centerLevelTranslation().y;
+		Path2 path = pathFactory.makeLine(0, 0, (p2.x-p1.x)*sx+0, (p2.y-p1.y)*sy+0);
 		extruder.set(path);
 		extruder.calculate(thickness);
 		spriteBatch.setColor(color);

@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.game.object.*;
 import edu.cornell.gdiac.game.obstacle.Obstacle;
 
@@ -15,6 +16,9 @@ public class CollisionController implements ContactListener, ContactFilter {
     private boolean shouldReturn;
     /** Whether the player just progressed to a new level */
     private boolean didChange;
+
+    /** Camera to set zoom for CameraRegions*/
+    private Camera camera;
 
     /**
      * Creates and initialize a new instance of a CollisionController
@@ -58,6 +62,14 @@ public class CollisionController implements ContactListener, ContactFilter {
      * @param value given to didNext
      */
     public void setDidChange(boolean value) { didChange = value; }
+
+    /**
+     * Set camera for current instance of collisionController
+     * @param camera camera for current canvas
+     */
+    public void setCamera(Camera camera){
+        this.camera = camera;
+    }
 
     /**
      * Callback method for the start of a collision
@@ -127,6 +139,20 @@ public class CollisionController implements ContactListener, ContactFilter {
                     if (bd2 instanceof Goal) {
                         //TODO: if not active then collect dead bodies with action controller
                         actionController.recombineLives();
+                    }
+                    if (bd2 instanceof CameraRegion){
+                        Array<CameraRegion> cameraRegions = level.getCameraRegions();
+                        ((CameraRegion) bd2).addFixture();
+                        if(!cameraRegions.contains((CameraRegion) bd2,true)){
+                            cameraRegions.add((CameraRegion) bd2);
+                        }
+                        CameraRegion relevantRegion = maxCollidingCamRegion(cameraRegions);
+                        camera.setDefaultZoom(relevantRegion.getZoom());
+                        camera.setGlideMode("CHANGE_ZOOM");
+                        camera.setZoomRate("CAMERA_REGION");
+                        if(relevantRegion.shouldSnap()){
+                            camera.setGameplayBounds(relevantRegion.getBounds(), relevantRegion.getDrawScale(), true);
+                        }
                     }
                 }
 
@@ -235,6 +261,33 @@ public class CollisionController implements ContactListener, ContactFilter {
 
                     if (bd2 instanceof Exit) {
                         didChange = false;
+                    }
+
+                    if (bd2 instanceof CameraRegion) {
+                        ((CameraRegion) bd2).removeFixture();
+                        Array<CameraRegion> cameraRegions = level.getCameraRegions();
+                        for(int index = 0; index < cameraRegions.size; index++){
+                            if(cameraRegions.get(index) == bd2 && cameraRegions.get(index).getFixtureCount() == 0){
+                                cameraRegions.removeIndex(index);
+                            }
+                            break;
+                        }
+                        if(level.getCameraRegions().isEmpty()){
+                            if(level.getCat().isActive()) {
+                                camera.setDefaultZoom(Camera.CAMERA_ZOOM);
+                                camera.setGameplayBounds(camera.getLevelBounds(), level.getScale(), false);
+                            }
+                        }
+                        else {
+                            CameraRegion relevantRegion = maxCollidingCamRegion(cameraRegions);
+                            camera.setDefaultZoom(relevantRegion.getZoom());
+                            if(relevantRegion.shouldSnap()){
+                                camera.setGameplayBounds(relevantRegion.getBounds(), relevantRegion.getDrawScale(), true);
+                            }
+                            else{
+                                camera.setGameplayBounds(camera.getLevelBounds(), relevantRegion.getDrawScale(), false);
+                            }
+                        }
                     }
                 }
 
@@ -349,5 +402,20 @@ public class CollisionController implements ContactListener, ContactFilter {
             e.printStackTrace();
         }
         return true;
+    }
+
+    /**
+     * Invariant: cameraRegions cannot be empty
+     * @param cameraRegions array of camera regions currently in contact with the cat
+     * @return camera region with colliding with most amount of cat fixtures
+     */
+    public CameraRegion maxCollidingCamRegion(Array<CameraRegion> cameraRegions){
+        CameraRegion maxCollisionsRegion = cameraRegions.get(0);
+        for(int i = 1; i < cameraRegions.size; i++){
+            if(cameraRegions.get(i).getFixtureCount() > maxCollisionsRegion.getFixtureCount()){
+                maxCollisionsRegion = cameraRegions.get(i);
+            }
+        }
+        return maxCollisionsRegion;
     }
 }

@@ -92,9 +92,9 @@ public class PushableBox extends BoxObstacle implements Movable {
     @Override
     public void drawDebug(GameCanvas canvas){
         super.drawDebug(canvas);
-        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
-        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
-        canvas.drawPhysics(sensorShape, Color.RED,getX() - xTranslate,getY() - yTranslate,getAngle(),drawScale.x,drawScale.y);
+//        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+//        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+        canvas.drawPhysics(sensorShape, Color.RED,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
     }
 
     public ObjectMap<String, Object> storeState(){

@@ -69,10 +69,12 @@ public class StageController implements Screen {
 	public GameController currLevel;
 	private int selectedLevel;
 
-	/** The hashmap for music */
-	private HashMap<String, AudioSource> musicAssetMap;
-	/** A queue to play music */
-	MusicQueue music;
+//	/** The hashmap for music */
+//	private HashMap<String, AudioSource> musicAssetMap;
+//	/** A queue to play music */
+//	MusicQueue music;
+
+	private AudioController audioController;
 
 	public int getSelectedLevel() { return selectedLevel; }
 	public void setSelectedLevel(int level) { selectedLevel = level; }
@@ -124,7 +126,7 @@ public class StageController implements Screen {
 	 * @param canvas 	The game canvas to draw to
 	 */
 	public StageController(String file, GameCanvas canvas) {
-		this(file, canvas, DEFAULT_BUDGET, false, false);
+		this(file, canvas, DEFAULT_BUDGET, false, false,  new AudioController());
 	}
 
 	/**
@@ -139,8 +141,9 @@ public class StageController implements Screen {
 	 * @param canvas 	The game canvas to draw to
 	 * @param millis 	The loading budget in milliseconds
 	 */
-	public StageController(String file, GameCanvas canvas, int millis, boolean start, boolean paused) {
+	public StageController(String file, GameCanvas canvas, int millis, boolean start, boolean paused, AudioController audioController) {
 		this.canvas  = canvas;
+		this.audioController = audioController;
 		budget = millis;
 
 		// We need these files loaded immediately
@@ -201,22 +204,21 @@ public class StageController implements Screen {
 //			musicAssetMap.put(n, assets.getEntry(n, AudioSource.class));
 //		}
 
-		AudioEngine engine = (AudioEngine)Gdx.audio;
-		music = engine.newMusicBuffer( false, 44100 );
-//		System.out.println("VOLUME");
-//		System.out.println(internal.get("volume", Float.class));
-//		Float volume = internal.get("defaults").getFloat("volume");
-//		System.out.println(volume);
-		// TODO: automate this with the volume constant in internal loading json
-		music.setVolume(0.3f);
-		music.addSource( internal.getEntry("bkg-intro", AudioSource.class) );
-		music.setLooping(true);
-		music.play();
+//		AudioEngine engine = (AudioEngine)Gdx.audio;
+//		music = engine.newMusicBuffer( false, 44100 );
+////		System.out.println("VOLUME");
+////		System.out.println(internal.get("volume", Float.class));
+////		Float volume = internal.get("defaults").getFloat("volume");
+////		System.out.println(volume);
+//		// TODO: automate this with the volume constant in internal loading json
+		audioController.setVolume(0.3f);
+		audioController.addMusic(internal.getEntry("bkg-intro", AudioSource.class));
+//		music.addSource( internal.getEntry("bkg-intro", AudioSource.class) );
+//		music.setLooping(true);
+//		music.play();
+		audioController.playMusic();
 	}
 
-	public MusicQueue getMusic() {
-		return music;
-	}
 	
 	/**
 	 * Update the status of this player mode.

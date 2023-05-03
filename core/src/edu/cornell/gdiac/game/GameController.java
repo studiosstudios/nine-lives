@@ -60,8 +60,8 @@ public class GameController implements Screen {
     private static final int MAX_NUM_LIVES = 9;
     /** The hashmap for texture regions */
     private HashMap<String, TextureRegion> textureRegionAssetMap;
-    /** The hashmap for sounds */
-    private HashMap<String, Sound> soundAssetMap;
+//    /** The hashmap for sounds */
+//    private HashMap<String, Sound> soundAssetMap;
 
     /** The hashmap for fonts */
     private HashMap<String, BitmapFont> fontAssetMap;
@@ -121,19 +121,21 @@ public class GameController implements Screen {
     public HudStage hud;
 
     // Music
-    /** List of sounds to play */
-    SoundEffect sounds[];
-    /** The sounds instances ids */
-    long soundIds[];
-    /** The current sound effect play */
-    int currentSound = 0;
+//    /** List of sounds to play */
+//    SoundEffect sounds[];
+//    /** The sounds instances ids */
+//    long soundIds[];
+//    /** The current sound effect play */
+//    int currentSound = 0;
+//
+//    /** List of music to play */
+//    AudioSource samples[];
+//    /** The current music sample to play */
+//    int currentSample = 0;
+//
+//    public MusicQueue music;
 
-    /** List of music to play */
-    AudioSource samples[];
-    /** The current music sample to play */
-    int currentSample = 0;
-
-    public MusicQueue music;
+    public AudioController audioController;
 
 
 
@@ -166,8 +168,8 @@ public class GameController implements Screen {
      * with the Box2D coordinates.  The bounds are in terms of the Box2d
      * world, not the screen.
      */
-    protected GameController(int numLevels) {
-        this(new Vector2(0,DEFAULT_GRAVITY), new Vector2(DEFAULT_SCALE,DEFAULT_SCALE), numLevels);
+    protected GameController(int numLevels, AudioController audiocontroller) {
+        this(new Vector2(0,DEFAULT_GRAVITY), new Vector2(DEFAULT_SCALE,DEFAULT_SCALE), numLevels, audiocontroller);
     }
 
     /**
@@ -177,7 +179,8 @@ public class GameController implements Screen {
      * with the Box2D coordinates.  The bounds are in terms of the Box2D
      * world, not the screen.
      */
-    protected GameController(Vector2 gravity, Vector2 scale, int numLevels) {
+    protected GameController(Vector2 gravity, Vector2 scale, int numLevels, AudioController audioController) {
+        this.audioController = audioController;
         this.scale = scale;
         debug = false;
         setRet(false);
@@ -192,7 +195,7 @@ public class GameController implements Screen {
         currLevelIndex = 1;
 
         setLevels();
-        actionController = new ActionController(scale, volume);
+        actionController = new ActionController(scale, audioController);
         actionController.setLevel(levels[currLevelIndex]);
         collisionController = new CollisionController(actionController);
         collisionController.setLevel(levels[currLevelIndex]);
@@ -293,22 +296,22 @@ public class GameController implements Screen {
      *
      * @param tMap the hashmap for Texture Regions
      * @param fMap the hashmap for Fonts
-     * @param sMap the hashmap for Sounds
      * @param constants the JSON value for constants
      */
     public void setAssets(HashMap<String, TextureRegion> tMap, HashMap<String, BitmapFont> fMap,
-                          HashMap<String, Sound> sMap, JsonValue constants){
+                          JsonValue constants){
         //for now levelcontroller will have access to these assets, but in the future we may see that it is unnecessary
         textureRegionAssetMap = tMap;
         fontAssetMap = fMap;
-        soundAssetMap = sMap;
+//        soundAssetMap = sMap;
         constantsJSON = constants;
         setConstants(constants);
         displayFont = fMap.get("retro");
 
         //send the relevant assets to classes that need them
-        actionController.setVolume(constantsJSON.get("defaults").getFloat("volume"));
-        actionController.setAssets(sMap);
+        audioController.setVolume(constantsJSON.get("defaults").getFloat("volume"));
+//        actionController.setVolume();
+//        actionController.setAssets(sMap);
         for (Level l : levels){
             l.setAssets(tMap);
         }
@@ -425,12 +428,11 @@ public class GameController implements Screen {
      *
      * @param directory	Reference to global asset manager.
      */
-    public void gatherAssets(AssetDirectory directory, MusicQueue musicq) {
+    public void gatherAssets(AssetDirectory directory) {
         // Allocate the tiles
         // Creating the hashmaps
         textureRegionAssetMap = new HashMap<>();
-        soundAssetMap = new HashMap<>();
-        this.music = musicq;
+//        soundAssetMap = new HashMap<>();
         fontAssetMap = new HashMap<>();
 
         // List of textures we extract. These should be the SAME NAME as the keys in the assets.json.
@@ -498,16 +500,20 @@ public class GameController implements Screen {
 //        currentSample = 0;
 
         names = new String[]{"jump", "dash", "metal-landing", "meow"};
-        for (String n : names){
-            soundAssetMap.put(n, directory.getEntry(n, SoundEffect.class));
-        }
+        audioController.createSoundEffectMap(directory, names);
+//        for (String n : names){
+//            soundAssetMap.put(n, directory.getEntry(n, SoundEffect.class));
+//        }
         names = new String[]{"bkg-level"};
         for (String n : names){
-            music.addSource(directory.getEntry(n, AudioSource.class));
+            audioController.addMusic(directory.getEntry(n, AudioSource.class));
+//            music.addSource(directory.getEntry(n, AudioSource.class));
         }
-        music.setVolume(0.3f);
-        music.advanceSource();
-//
+//        music.setVolume(0.3f);
+//        music.advanceSource();
+        audioController.setVolume(0.3f);
+        audioController.nextMusic();
+
 //        AudioEngine engine = (AudioEngine)Gdx.audio;
 //        music = engine.newMusicBuffer( false, 44100 );
 //        music.addSource( musicAssetMap.get("bkg-intro") );
@@ -525,8 +531,7 @@ public class GameController implements Screen {
 
         background = textureRegionAssetMap.get("bg-lab").getTexture();
 
-        // Giving assets to levelController
-        setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants);
+        setAssets(textureRegionAssetMap, fontAssetMap, constants);
         setJSON(tiledJSON(1));
         nextJV = tiledJSON(2);
 
@@ -876,7 +881,7 @@ public class GameController implements Screen {
      * Pausing happens when we switch game modes.
      */
     public void pause() {
-        music.pause();
+        audioController.pauseMusic();
         paused = true;
         actionController.pause();
     }
@@ -887,7 +892,7 @@ public class GameController implements Screen {
      * This is usually when it regains focus.
      */
     public void resume() {
-        music.play();
+        audioController.playMusic();
         paused = false;
         stageController = null;
     }

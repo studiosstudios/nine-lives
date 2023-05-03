@@ -22,6 +22,8 @@ public class NineLives extends Game implements ScreenListener {
 	private StageController menu;
 	/** The WorldController that contains all LevelControllers*/
 	private GameController controller;
+	/** The AudioController to control all sound effects and music */
+	private AudioController audioController;
 
 	private final int TOTAL_LEVELS = 6;
 
@@ -41,8 +43,8 @@ public class NineLives extends Game implements ScreenListener {
 	 */
 	public void create() {
 		canvas  = new GameCanvas();
-		menu = new StageController("jsons/assets.json", canvas, 1, true, false);
-
+		audioController = new AudioController();
+		menu = new StageController("jsons/assets.json", canvas, 1, true, false, audioController);
 		menu.setScreenListener(this);
 		setScreen(menu);
 	}
@@ -97,8 +99,8 @@ public class NineLives extends Game implements ScreenListener {
 	private void startGame(int numLevels, int startLevel){
 //		menu.getMusic().pause();
 		directory = menu.getAssets();
-		controller = new GameController(numLevels);
-		controller.gatherAssets(directory, menu.getMusic());
+		controller = new GameController(numLevels, audioController);
+		controller.gatherAssets(directory);
 		controller.setScreenListener(this);
 		controller.setCanvas(canvas);
 		controller.init(startLevel);
@@ -129,7 +131,7 @@ public class NineLives extends Game implements ScreenListener {
 			menu = null;
 		} else if (exitCode == GameController.EXIT_QUIT && screen == controller) {
 			// pause stage
-			menu = new StageController("jsons/assets.json", canvas, 1, false, true);
+			menu = new StageController("jsons/assets.json", canvas, 1, false, true, audioController);
 			menu.setScreenListener(this);
 			menu.pause = true;
 			menu.currLevel = controller;

@@ -19,7 +19,9 @@ public class CameraRegion extends BoxObstacle {
     /** Number of fixture colliding with this camera region */
     private int fixtureCount;
     /** Whether camera should snap to this camera region */
-    private boolean snapRegion;
+    private boolean shouldSnap;
+    /** Bounds to snap to */
+    private Rectangle snapBounds;
 
     /**
      * @param properties     String-Object map of properties for this object
@@ -36,10 +38,16 @@ public class CameraRegion extends BoxObstacle {
         setY((float) properties.get("y") - getDimension().y/2);
         setName((String) properties.get("name"));
         fixtureCount = 0;
-        float expectedWidth = getWidth() * zoom;
-        float expectedHeight = getHeight() * zoom;
+        shouldSnap = (boolean) properties.get("shouldSnap");
+        if((boolean) properties.get("snapCollisionArea")){
+            snapBounds = this.getBounds();
+        }
+        else{
+            snapBounds = new Rectangle((float) properties.get("bX"), (float) properties.get("bY"), (float) properties.get("bWidth"), (float) properties.get("bHeight"));
+        }
+        float expectedWidth = snapBounds.getWidth() * zoom;
+        float expectedHeight = snapBounds.getHeight() * zoom;
         relativeZoom = (boolean) properties.get("isZoomRelative");
-        snapRegion = (boolean) properties.get("shouldSnapRegion");
         if(relativeZoom)
             zoom = Math.min(expectedWidth*scale.x/GameCanvas.STANDARD_WIDTH, expectedHeight*scale.y/GameCanvas.STANDARD_HEIGHT);
     }
@@ -76,7 +84,12 @@ public class CameraRegion extends BoxObstacle {
      * @return bounds of CameraRegion as a Rectangle
      */
     public Rectangle getBounds(){
+        System.out.println(getHeight());
         return new Rectangle(getX() - getDimension().x/2,getY()-getDimension().y/2,getWidth(),getHeight());
+    }
+
+    public Rectangle getSnapBounds(){
+        return snapBounds;
     }
 
     /**
@@ -84,7 +97,7 @@ public class CameraRegion extends BoxObstacle {
      * @return snapRegion
      */
     public boolean shouldSnap(){
-        return snapRegion;
+        return shouldSnap;
     }
 
     @Override

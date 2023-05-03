@@ -837,19 +837,44 @@
                  "name":"cameraRegion1",
                  "properties":[
                         {
+                         "name":"bHeight",
+                         "type":"float",
+                         "value":0
+                        }, 
+                        {
+                         "name":"bWidth",
+                         "type":"float",
+                         "value":0
+                        }, 
+                        {
+                         "name":"bX",
+                         "type":"float",
+                         "value":0
+                        }, 
+                        {
+                         "name":"bY",
+                         "type":"float",
+                         "value":0
+                        }, 
+                        {
                          "name":"isZoomRelative",
                          "type":"bool",
                          "value":false
                         }, 
                         {
-                         "name":"shouldSnapRegion",
+                         "name":"shouldSnap",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"snapCollisionArea",
                          "type":"bool",
                          "value":false
                         }, 
                         {
                          "name":"zoom",
                          "type":"float",
-                         "value":0.85
+                         "value":0.8
                         }],
                  "rotation":0,
                  "type":"CameraRegion",
@@ -1103,7 +1128,7 @@
          "y":0
         }],
  "nextlayerid":20,
- "nextobjectid":90,
+ "nextobjectid":92,
  "orientation":"orthogonal",
  "properties":[
         {

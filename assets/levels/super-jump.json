@@ -79,17 +79,42 @@
          "name":"cameraRegions",
          "objects":[
                 {
-                 "height":5120,
+                 "height":6144,
                  "id":109,
                  "name":"cameraRegion1",
                  "properties":[
+                        {
+                         "name":"bHeight",
+                         "type":"float",
+                         "value":0
+                        }, 
+                        {
+                         "name":"bWidth",
+                         "type":"float",
+                         "value":0
+                        }, 
+                        {
+                         "name":"bX",
+                         "type":"float",
+                         "value":0
+                        }, 
+                        {
+                         "name":"bY",
+                         "type":"float",
+                         "value":0
+                        }, 
                         {
                          "name":"isZoomRelative",
                          "type":"bool",
                          "value":false
                         }, 
                         {
-                         "name":"shouldSnapRegion",
+                         "name":"shouldSnap",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"snapCollisionArea",
                          "type":"bool",
                          "value":false
                         }, 
@@ -103,7 +128,7 @@
                  "visible":true,
                  "width":4096,
                  "x":5120,
-                 "y":19456
+                 "y":18432
                 }, 
                 {
                  "height":16384,
@@ -111,14 +136,39 @@
                  "name":"cameraRegion2",
                  "properties":[
                         {
+                         "name":"bHeight",
+                         "type":"float",
+                         "value":16
+                        }, 
+                        {
+                         "name":"bWidth",
+                         "type":"float",
+                         "value":25
+                        }, 
+                        {
+                         "name":"bX",
+                         "type":"float",
+                         "value":1
+                        }, 
+                        {
+                         "name":"bY",
+                         "type":"float",
+                         "value":8
+                        }, 
+                        {
                          "name":"isZoomRelative",
                          "type":"bool",
                          "value":true
                         }, 
                         {
-                         "name":"shouldSnapRegion",
+                         "name":"shouldSnap",
                          "type":"bool",
                          "value":true
+                        }, 
+                        {
+                         "name":"snapCollisionArea",
+                         "type":"bool",
+                         "value":false
                         }, 
                         {
                          "name":"zoom",
@@ -128,9 +178,9 @@
                  "rotation":0,
                  "type":"CameraRegion",
                  "visible":true,
-                 "width":25600,
-                 "x":1024,
-                 "y":2048
+                 "width":12288,
+                 "x":14336,
+                 "y":1024
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -563,7 +613,7 @@
          "y":0
         }],
  "nextlayerid":24,
- "nextobjectid":135,
+ "nextobjectid":152,
  "orientation":"orthogonal",
  "properties":[
         {
@@ -578,7 +628,7 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"Kimmy\/Cornell_2022-2023\/GameDev\/nl-level-editor\/objects\/objects.tsx"
+         "source":"Cornell_2022-2023\/GameDev\/nl-level-editor\/objects\/objects.tsx"
         }, 
         {
          "firstgid":9,
@@ -586,7 +636,7 @@
         }, 
         {
          "firstgid":14,
-         "source":"Kimmy\/Cornell_2022-2023\/GameDev\/nl-level-editor\/tilesets\/metal-walls.tsx"
+         "source":"Cornell_2022-2023\/GameDev\/nl-level-editor\/tilesets\/metal-walls.tsx"
         }],
  "tilewidth":1024,
  "type":"map",

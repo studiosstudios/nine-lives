@@ -133,6 +133,8 @@ public class GameController implements Screen {
     /** The current music sample to play */
     int currentSample = 0;
 
+    public MusicQueue music;
+
 
 
 
@@ -423,11 +425,12 @@ public class GameController implements Screen {
      *
      * @param directory	Reference to global asset manager.
      */
-    public void gatherAssets(AssetDirectory directory, MusicQueue music) {
+    public void gatherAssets(AssetDirectory directory, MusicQueue musicq) {
         // Allocate the tiles
         // Creating the hashmaps
         textureRegionAssetMap = new HashMap<>();
         soundAssetMap = new HashMap<>();
+        this.music = musicq;
         fontAssetMap = new HashMap<>();
 
         // List of textures we extract. These should be the SAME NAME as the keys in the assets.json.
@@ -502,7 +505,7 @@ public class GameController implements Screen {
         for (String n : names){
             music.addSource(directory.getEntry(n, AudioSource.class));
         }
-        music.setVolume(0.5f);
+        music.setVolume(0.3f);
         music.advanceSource();
 //
 //        AudioEngine engine = (AudioEngine)Gdx.audio;
@@ -873,6 +876,7 @@ public class GameController implements Screen {
      * Pausing happens when we switch game modes.
      */
     public void pause() {
+        music.pause();
         paused = true;
         actionController.pause();
     }
@@ -883,6 +887,7 @@ public class GameController implements Screen {
      * This is usually when it regains focus.
      */
     public void resume() {
+        music.play();
         paused = false;
         stageController = null;
     }

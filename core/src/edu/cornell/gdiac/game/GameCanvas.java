@@ -10,9 +10,11 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.Array;
 import com.crashinvaders.vfx.VfxManager;
-import com.crashinvaders.vfx.effects.*;
+import com.crashinvaders.vfx.effects.ChainVfxEffect;
+import com.crashinvaders.vfx.effects.ChromaticAberrationEffect;
 import com.crashinvaders.vfx.effects.util.MixEffect;
 import com.crashinvaders.vfx.framebuffer.VfxFrameBufferQueue;
+import edu.cornell.gdiac.game.shaders.BloomEffect;
 import edu.cornell.gdiac.math.Path2;
 import edu.cornell.gdiac.math.PathExtruder;
 import edu.cornell.gdiac.math.PathFactory;
@@ -63,7 +65,7 @@ public class GameCanvas {
 	private final float STANDARD_HEIGHT = 576f;
 	
 	/** Drawing context to handle textures AND POLYGONS as sprites */
-	private PolygonSpriteBatch spriteBatch;
+	protected PolygonSpriteBatch spriteBatch;
 
 	/** Path rendering */
 	private PathFactory pathFactory;
@@ -109,10 +111,8 @@ public class GameCanvas {
 	/** Cache object to handle raw textures */
 	private TextureRegion holder;
 	private final float CAMERA_ZOOM = 0.6f;
-	protected VfxManager vfxManager;
+	private VfxManager vfxManager;
 	protected ChromaticAberrationEffect chromaticAberrationEffect;
-	private VignettingEffect vignettingEffect;
-	private WaterDistortionEffect waterDistortionEffect;
 	protected BloomEffect bloomEffect;
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
@@ -150,16 +150,11 @@ public class GameCanvas {
 		chromaticAberrationEffect = new ChromaticAberrationEffect(10);
 		chromaticAberrationEffect.setMaxDistortion(0.2f);
 
-//		vignettingEffect = new VignettingEffect(false);
-//		vfxManager.addEffect(vignettingEffect);
-
 		bloomEffect = new BloomEffect();
-		bloomEffect.setThreshold(0.5f);
-		bloomEffect.setBlurAmount(100);
-		bloomEffect.setBloomIntensity(1f);
+		bloomEffect.setBlursize(0.02f);
+		bloomEffect.setIntensity(0.5f);
 
-		vfxManager.addEffect(bloomEffect);
-		vfxManager.addEffect(chromaticAberrationEffect);
+		setBlendState(BlendState.ALPHA_BLEND);
 
 	}
 	/**
@@ -431,7 +426,6 @@ public class GameCanvas {
 		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
 		vfxManager.update(Gdx.graphics.getDeltaTime());
 		spriteBatch.begin();
-		setBlendState(BlendState.NO_PREMULT);
 		active = DrawPass.STANDARD;
 	}
 
@@ -442,9 +436,10 @@ public class GameCanvas {
 		spriteBatch.begin();
 	}
 
-	public void batchBegin(){spriteBatch.begin();}
+	public void batchBegin(){ spriteBatch.begin(); }
 
-	public void batchEnd(){spriteBatch.end();}
+	public void batchEnd(){ spriteBatch.end(); }
+
 	/**
 	 * Applies the current VFXs to the rendering context.
 	 */
@@ -454,8 +449,12 @@ public class GameCanvas {
 		vfxManager.update(Gdx.graphics.getDeltaTime());
 		vfxManager.applyEffects();
 		vfxManager.renderToScreen();
-		vfxManager.cleanUpBuffers(Color.RED);
+		vfxManager.cleanUpBuffers();
 	}
+
+	public void addEffect(ChainVfxEffect effect) { vfxManager.addEffect(effect); }
+
+	public void removeAllEffects() { vfxManager.removeAllEffects(); }
 
 	/**
 	 * Ends a drawing sequence, flushing textures to the graphics card.

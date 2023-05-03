@@ -1098,8 +1098,9 @@ public class Level {
      *
      * @param canvas	the drawing context
      * @param drawCat   if we should draw the cat
+     * @param vfx       if we should apply vfx
      */
-    public void draw(GameCanvas canvas, boolean drawCat) {
+    public void draw(GameCanvas canvas, boolean drawCat, boolean vfx) {
 //        if (background != null) {
 //            //scales background with level size
 //            float scaleX = bounds.width/background.getWidth() * scale.x;
@@ -1108,9 +1109,11 @@ public class Level {
 ////            canvas.draw(background, 0, 0);
 //        }
 
-        canvas.vfxManager.addEffect(canvas.chromaticAberrationEffect);
-        canvas.vfxManager.addEffect(canvas.bloomEffect);
-        canvas.beginVFX();
+        if (vfx) {
+            canvas.addEffect(canvas.chromaticAberrationEffect);
+            canvas.addEffect(canvas.bloomEffect);
+            canvas.beginVFX();
+        }
 
         for (Laser l : lasers){
             l.drawLaser(canvas);
@@ -1132,15 +1135,12 @@ public class Level {
             a.draw(canvas);
         }
 
-        canvas.endVFX();
-        canvas.vfxManager.removeAllEffects();
-//        canvas.setVFX(true);
-//        canvas.applyVFX();
+        if (vfx) {
+            canvas.endVFX();
+            canvas.removeAllEffects();
+            canvas.beginVFX();
+        }
 
-//        canvas.beginVFX();
-//        canvas.vfxManager.removeAllEffects();
-
-        canvas.beginVFX();
         spiritLine.draw(canvas);
 
         for (DeadBody db : deadBodyArray) {
@@ -1160,6 +1160,13 @@ public class Level {
             spirit.draw(canvas, textureRegionAssetMap.get("spirit-photon").getTexture());
         }
 
+        if (vfx) {
+            canvas.endVFX();
+            canvas.addEffect(canvas.chromaticAberrationEffect);
+            canvas.addEffect(canvas.bloomEffect);
+            canvas.beginVFX();
+        }
+
         if (currCheckpoint != null) {
             currCheckpoint.drawBase(canvas);
         }
@@ -1167,10 +1174,11 @@ public class Level {
         if (goal != null) {
             goal.draw(canvas);
         }
-        canvas.endVFX();
-        canvas.vfxManager.removeAllEffects();
-//        canvas.vfxManager.removeAllEffects();
 
+        if (vfx) {
+            canvas.endVFX();
+            canvas.removeAllEffects();
+        }
     }
 
     /**

@@ -113,8 +113,11 @@ public class GameController implements Screen {
     private static final float MAX_UNDO_TIME = 120f;
     public StageController stageController = null;
     public boolean paused = false;
-
     public HudStage hud;
+    private int spiritModeTicks;
+    private final static int MAX_SPIRIT_MODE_TICKS = 30;
+    private float effectSize;
+    private float effectMult;
 
     /**
      * PLAY: User has all controls and is in game
@@ -599,6 +602,17 @@ public class GameController implements Screen {
             return false;
         }
 
+        if (input.holdSwitch()) {
+            spiritModeTicks++;
+            updateVFX(true);
+        } else {
+            updateVFX(false);
+            spiritModeTicks = 0;
+        }
+
+        System.out.println(spiritModeTicks);
+        System.out.println(effectSize);
+
         if (currLevel.isFailure() || input.didReset()) {
             if (currLevel.isFailure()) flashColor.set(1, 0, 0, 1);
             reset();
@@ -675,6 +689,28 @@ public class GameController implements Screen {
             undoTime = 0;
             flashColor.set(1, 1, 1, 1);
         }
+    }
+
+    /**
+     *
+     */
+    private void updateVFX(boolean increasing){
+
+        if (!increasing) {
+            effectSize += -effectSize/10f;
+            if (effectSize - 0.01f < 0) effectSize = 0;
+        } else {
+            if (spiritModeTicks <= MAX_SPIRIT_MODE_TICKS) {
+                effectSize = (float) Math.sin(Math.PI * (double) (spiritModeTicks / 2f / MAX_SPIRIT_MODE_TICKS));
+            } else {
+                effectSize =  (0.8f + 0.2f * (float) Math.cos(0.03 * (spiritModeTicks - MAX_SPIRIT_MODE_TICKS)));
+            }
+        }
+
+        canvas.bloomEffect.setIntensity(0.05f*effectSize);
+        canvas.bloomEffect.setBlursize(0.02f*effectSize);
+        canvas.chromaticAberrationEffect.setMaxDistortion(0.35f*effectSize);
+
     }
 
     /**
@@ -846,21 +882,27 @@ public class GameController implements Screen {
      * @param dt	Number of seconds since last animation frame
      */
     public void draw(float dt) {
-        canvas.clear();
 
+        boolean vfx = effectSize > 0;
+
+        canvas.clear();
         canvas.begin();
         canvas.applyViewport();
+
         canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight());
+
+        if (vfx) canvas.batchEnd();
+
 //        if (true) { //TODO: only draw when necessary
 //            prevLevel.draw(canvas, false);
 //            nextLevel.draw(canvas, false);
 //        }
-        canvas.batchEnd();
-        currLevel.draw(canvas, gameState != GameState.RESPAWN);
-//        canvas.batchBegin();
+        currLevel.draw(canvas, gameState != GameState.RESPAWN, vfx);
+
+        if (vfx) canvas.batchBegin();
 //        canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
-//        canvas.end();
-//        hud.draw();
+        canvas.end();
+        hud.draw();
 
         if (debug) {
             canvas.beginDebug();

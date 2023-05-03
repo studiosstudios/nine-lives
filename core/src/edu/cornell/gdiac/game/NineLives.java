@@ -23,7 +23,7 @@ public class NineLives extends Game implements ScreenListener {
 	/** The WorldController that contains all LevelControllers*/
 	private GameController controller;
 
-	private final int TOTAL_LEVELS = 6;
+	private final int TOTAL_LEVELS = 7;
 
 	/**
 	 * Creates a new game from the configuration settings.

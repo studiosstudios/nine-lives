@@ -116,8 +116,9 @@ public class GameController implements Screen {
     private static final float MAX_UNDO_TIME = 120f;
     public StageController stageController = null;
     public boolean paused = false;
-
     public HudStage hud;
+    /** only not null if quick launched from Tiled */
+    private JsonValue quickLaunchLevel;
 
     /**
      * PLAY: User has all controls and is in game
@@ -137,7 +138,6 @@ public class GameController implements Screen {
     private boolean justRespawned;
     /** The color of the flash animation after resetting/undoing */
     private Color flashColor = new Color(1, 1, 1, 0);
-
     /** RayHandler that takes care of Box2DLights. This MUST be associated with the active World at all times. */
     private RayHandler rayHandler;
 
@@ -281,6 +281,19 @@ public class GameController implements Screen {
     }
 
     /**
+     * Creates a new game world with the default values.
+     * <br><br>
+     * The game world is scaled so that the screen coordinates do not agree
+     * with the Box2D coordinates.  The bounds are in terms of the Box2d
+     * world, not the screen.
+     */
+    protected GameController(String filepath) {
+        this(new Vector2(0,DEFAULT_GRAVITY), new Vector2(DEFAULT_SCALE,DEFAULT_SCALE), 1);
+        JsonReader json = new JsonReader();
+        quickLaunchLevel = json.parse(Gdx.files.internal(filepath));
+    }
+
+    /**
      * Creates and initialize a new instance of a GameController
      * <br><br>
      * The game world is scaled so that the screen coordinates do not agree
@@ -386,7 +399,9 @@ public class GameController implements Screen {
      * @param levelNum the number associated with the level to be loaded in
      * @return JSON of the level
      */
-    private JsonValue tiledJSON(int levelNum){ return directory.getEntry("tiledLevel" + levelNum, JsonValue.class); }
+    private JsonValue tiledJSON(int levelNum){
+        return quickLaunchLevel == null ? directory.getEntry("tiledLevel" + levelNum, JsonValue.class) : quickLaunchLevel;
+    }
 
     /**
      * Gather the assets for this controller.

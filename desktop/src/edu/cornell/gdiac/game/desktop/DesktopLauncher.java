@@ -3,6 +3,12 @@ package edu.cornell.gdiac.game.desktop;
 import edu.cornell.gdiac.backend.GDXApp;
 import edu.cornell.gdiac.backend.GDXAppSettings;
 import edu.cornell.gdiac.game.NineLives;
+import javax.swing.*;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Scanner;
 
 /**
  * The main class of the game.
@@ -13,6 +19,8 @@ import edu.cornell.gdiac.game.NineLives;
  */
 public class DesktopLauncher {
 	public static boolean FULLSCREEN = false;
+	private static boolean quickLaunchingFromTiled;
+	private static String quickLaunchFilepath;
 
 	/**
 	 * Classic main method that all Java programmers know.
@@ -22,12 +30,19 @@ public class DesktopLauncher {
 	 * 
 	 * @param arg Command line arguments
 	 */
-	public static void main (String[] arg) {
+	public static void main (String[] arg) throws Exception {
+
+		// Detect presence of argument, this is a filepath, used when quick launching from Tiled
+		if (arg.length > 0) {
+			quickLaunchingFromTiled = true;
+			quickLaunchFilepath = arg[0];
+		}
+
 		GDXAppSettings config = new GDXAppSettings();
 		config.title = "9 Lives";
 		config.width  = 1024;
 		config.height = 576;
 		config.fullscreen = FULLSCREEN;
-		new GDXApp(new NineLives(), config);
+		new GDXApp(new NineLives(quickLaunchingFromTiled, quickLaunchFilepath), config);
 	}
 }

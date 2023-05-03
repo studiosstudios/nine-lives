@@ -55,6 +55,7 @@ public class Camera {
         isGliding = false;
         cameraGlideRate = CAMERA_GLIDE_NORMAL;
     }
+
     /**
      * Focus determined by caller
      * Updates camera positioning based on focus's current position (in pixels)
@@ -163,6 +164,7 @@ public class Camera {
      * @param zoom the value to zoom the camera to
      */
     public void setZoom(boolean z, float zoom){
+//        System.out.println(zoom);
         if(z){
             float scaleX = levelBounds.width/viewportWidth;
             float scaleY = levelBounds.height/viewportHeight;

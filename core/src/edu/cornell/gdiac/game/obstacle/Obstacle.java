@@ -17,6 +17,7 @@
  */
 package edu.cornell.gdiac.game.obstacle;
 
+import box2dLight.ConeLight;
 import box2dLight.Light;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
@@ -401,14 +402,27 @@ public abstract class Obstacle {
 	 * 	  offset
 	 * 	}
 	 * <br>
-	 * @param objectConstants valid JSON of object constants corresponding to this obstacle
+	 * @param lightData valid JSON of object constants corresponding to this obstacle
 	 * @param rayHandler Ray handler currently associated with the active world
 	 */
 	public void createPointLight(JsonValue lightData, RayHandler rayHandler) {
 		float xOffset = lightData.get("offset").getFloat(0), yOffset = lightData.get("offset").getFloat(1);
 		light = new PointLight(rayHandler, 100, Color.valueOf(lightData.getString("color")), lightData.getFloat("distance"), xOffset, yOffset);
 	}
-	
+
+	public void createConeLight(JsonValue lightData, RayHandler rayHandler) {
+		float xOffset = lightData.get("offset").getFloat(0), yOffset = lightData.get("offset").getFloat(1);
+		light = new ConeLight(
+				rayHandler,
+				100,
+				Color.valueOf(lightData.getString("color")),
+				lightData.getFloat("distance"),
+				xOffset,
+				yOffset,
+				lightData.getFloat("directionDegree"),
+				lightData.getFloat("coneDegree"));
+	}
+
 	/**
 	 * Returns true if the body is active
 	 *

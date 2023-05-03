@@ -1,5 +1,7 @@
 package edu.cornell.gdiac.game.object;
 
+import box2dLight.ConeLight;
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -68,6 +70,8 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
         flameBase.setY((float) properties.get("y") + offset.y);
         flameBase.setSensor((boolean) properties.get("baseSensor", false));
 
+
+
         flameOffset = new Vector2(objectConstants.get("flame_offset").getFloat(0)*(float)Math.cos(angle)-
                 objectConstants.get("flame_offset").getFloat(1)*(float)Math.sin(angle),
                 objectConstants.get("flame_offset").getFloat(1)*(float)Math.cos(angle)-
@@ -118,6 +122,14 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
             deactivated(world);
         }
         return true;
+    }
+
+    public void createLight(RayHandler rayHandler) {
+        createConeLight(objectConstants.get("light"), rayHandler);
+        System.out.println(flameBase.getAngle());
+        ((ConeLight) getLight()).attachToBody(flameBase.getBody(), 0, 0, 90);
+        getLight().setXray(true);
+        getLight().setSoft(true);
     }
 
     /** Turns on flames */

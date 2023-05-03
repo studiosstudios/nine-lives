@@ -514,7 +514,7 @@ public class GameController implements Screen {
             rayHandler.dispose();
         }
         rayHandler = new RayHandler(world);
-        rayHandler.setAmbientLight(0.8f);
+        rayHandler.setAmbientLight(0.7f);
 
         justRespawned = true;
         justReset = true;

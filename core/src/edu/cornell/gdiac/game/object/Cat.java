@@ -679,6 +679,10 @@ public class Cat extends CapsuleObstacle implements Movable {
         return sensorFixture;
     }
 
+    /**
+     * Creates PointLight for Cat with soft and xray true
+     * @param rayHandler Ray Handler associated with the currently active box2d world
+     */
     public void createLight(RayHandler rayHandler) {
         createPointLight(objectConstants.get("light"), rayHandler);
         getLight().attachToBody(getBody());

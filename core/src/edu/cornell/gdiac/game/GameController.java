@@ -799,11 +799,15 @@ public class GameController implements Screen {
             }
         }
         if (paused) { updateCamera(); }
+        // Main game draw
         draw(delta);
-        if (paused && stageController != null) { stageController.render(delta); }
-        updateRayHandlerCombinedMatrix();
 
+        // box2dlights draw
+        updateRayHandlerCombinedMatrix();
         rayHandler.updateAndRender();
+
+        // Pause menu draw
+        if (paused && stageController != null) { stageController.render(delta); }
     }
 
     /**

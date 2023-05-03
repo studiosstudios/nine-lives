@@ -455,7 +455,7 @@ public class GameController implements Screen {
                 // DOORS & PLATFORMS
                 "door", "platform",
                 // BACKGROUNDS
-                "bg-lab",}; // Unsure if this is actually being used
+                "bg-lab"}; // Unsure if this is actually being used
         for (String n : names){
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
         }
@@ -474,9 +474,6 @@ public class GameController implements Screen {
         this.directory = directory;
 
         background = textureRegionAssetMap.get("bg-lab").getTexture();
-
-        // Sounds
-
 
         // Giving assets to levelController
         setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants);

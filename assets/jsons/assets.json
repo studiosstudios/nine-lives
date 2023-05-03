@@ -64,9 +64,9 @@
         "tiledLevel6": "levels/party-room.json"
     },
     "sounds" : {
-        "jump" : "cat/jump-CELESTE.wav",
-        "dash" : "cat/dash-CELESTE.wav",
-        "metal-landing" : "cat/metal-landing-CELESTE.wav",
-        "meow" : "cat//meow.mp3"
+        "jump" : "sounds/jump-CELESTE.wav",
+        "dash" : "sounds/dash-CELESTE.wav",
+        "metal-landing" : "sounds/metal-landing-CELESTE.wav",
+        "meow" : "sounds/meow.mp3"
     }
 }

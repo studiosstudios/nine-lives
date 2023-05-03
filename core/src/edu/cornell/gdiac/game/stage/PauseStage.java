@@ -32,13 +32,14 @@ public class PauseStage extends StageWrapper {
      */
     @Override
     public void createActors() {
-//        addActor(new Image(internal.getEntry("bg-pause", Texture.class)));
         Actor background = addActor(internal.getEntry("bg-pause", Texture.class),0, 0);
         background.setScale(0.5f);
-        resumeButtonActor = addActor(internal.getEntry("resume", Texture.class), 468,buttonY-50);
+        resumeButtonActor = addActor(internal.getEntry("resume", Texture.class), 0,buttonY-50);
         resumeButtonActor.setScale(0.5f);
-        mainMenuActor = addActor(internal.getEntry("main-menu", Texture.class), 447, buttonY-100);
+        resumeButtonActor.setX(xHalf-resumeButtonActor.getWidth()/4);
+        mainMenuActor = addActor(internal.getEntry("main-menu", Texture.class), 0, buttonY-100);
         mainMenuActor.setScale(0.5f);
+        mainMenuActor.setX(xHalf-mainMenuActor.getWidth()/4);
 
         resumeButtonActor.addListener(createHoverListener(resumeButtonActor));
         mainMenuActor.addListener(createHoverListener(mainMenuActor));

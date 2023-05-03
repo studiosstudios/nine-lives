@@ -1,5 +1,7 @@
 package edu.cornell.gdiac.game;
 
+import box2dLight.PointLight;
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -9,6 +11,7 @@ import com.badlogic.gdx.audio.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.game.object.*;
 
@@ -113,8 +116,9 @@ public class GameController implements Screen {
     private static final float MAX_UNDO_TIME = 120f;
     public StageController stageController = null;
     public boolean paused = false;
-
     public HudStage hud;
+    /** only not null if quick launched from Tiled */
+    private JsonValue quickLaunchLevel;
 
     /**
      * PLAY: User has all controls and is in game
@@ -134,57 +138,8 @@ public class GameController implements Screen {
     private boolean justRespawned;
     /** The color of the flash animation after resetting/undoing */
     private Color flashColor = new Color(1, 1, 1, 0);
-
-
-    /**
-     * Creates a new game world with the default values.
-     * <br><br>
-     * The game world is scaled so that the screen coordinates do not agree
-     * with the Box2D coordinates.  The bounds are in terms of the Box2d
-     * world, not the screen.
-     */
-    protected GameController(int numLevels) {
-        this(new Vector2(0,DEFAULT_GRAVITY), new Vector2(DEFAULT_SCALE,DEFAULT_SCALE), numLevels);
-    }
-
-    /**
-     * Creates and initialize a new instance of a GameController
-     * <br><br>
-     * The game world is scaled so that the screen coordinates do not agree
-     * with the Box2D coordinates.  The bounds are in terms of the Box2D
-     * world, not the screen.
-     */
-    protected GameController(Vector2 gravity, Vector2 scale, int numLevels) {
-        this.scale = scale;
-        debug = false;
-        setRet(false);
-        world = new World(gravity, true);
-
-        this.numLevels = numLevels;
-        levelNum = 1;
-        levels = new Level[3];
-        for (int i = 0; i < 3; i++){
-            levels[i] = new Level(world, scale, MAX_NUM_LIVES);
-        }
-        currLevelIndex = 1;
-
-        setLevels();
-        actionController = new ActionController(scale, volume);
-        actionController.setLevel(levels[currLevelIndex]);
-        collisionController = new CollisionController(actionController);
-        collisionController.setLevel(levels[currLevelIndex]);
-
-        gameState = GameState.PLAY;
-        panTime = 0;
-        respawnDelay = 0;
-
-        AssetDirectory internal = new AssetDirectory("jsons/loading.json");
-        internal.loadAssets();
-        internal.finishLoading();
-
-        hud = new HudStage(internal, true);
-        hud.lives = currLevel.getNumLives();
-    }
+    /** RayHandler that takes care of Box2DLights. This MUST be associated with the active World at all times. */
+    private RayHandler rayHandler;
 
     /**
      * Points <code>currLevel</code>, <code>nextLevel</code> and <code>prevLevel</code> to the correct elements of the
@@ -316,6 +271,69 @@ public class GameController implements Screen {
     }
 
     /**
+     * Creates a new game world with the default values.
+     * <br><br>
+     * The game world is scaled so that the screen coordinates do not agree
+     * with the Box2D coordinates.  The bounds are in terms of the Box2d
+     * world, not the screen.
+     */
+    protected GameController(int numLevels) {
+        this(new Vector2(0,DEFAULT_GRAVITY), new Vector2(DEFAULT_SCALE,DEFAULT_SCALE), numLevels);
+    }
+
+    /**
+     * Creates a new game world with the default values.
+     * <br><br>
+     * The game world is scaled so that the screen coordinates do not agree
+     * with the Box2D coordinates.  The bounds are in terms of the Box2d
+     * world, not the screen.
+     */
+    protected GameController(String filepath) {
+        this(new Vector2(0,DEFAULT_GRAVITY), new Vector2(DEFAULT_SCALE,DEFAULT_SCALE), 1);
+        JsonReader json = new JsonReader();
+        quickLaunchLevel = json.parse(Gdx.files.internal(filepath));
+    }
+
+    /**
+     * Creates and initialize a new instance of a GameController
+     * <br><br>
+     * The game world is scaled so that the screen coordinates do not agree
+     * with the Box2D coordinates.  The bounds are in terms of the Box2D
+     * world, not the screen.
+     */
+    protected GameController(Vector2 gravity, Vector2 scale, int numLevels) {
+        this.scale = scale;
+        debug = false;
+        setRet(false);
+        world = new World(gravity, true);
+
+        this.numLevels = numLevels;
+        levelNum = 1;
+        levels = new Level[3];
+        for (int i = 0; i < 3; i++){
+            levels[i] = new Level(world, scale, MAX_NUM_LIVES, rayHandler);
+        }
+        currLevelIndex = 1;
+
+        setLevels();
+        actionController = new ActionController(scale, volume);
+        actionController.setLevel(levels[currLevelIndex]);
+        collisionController = new CollisionController(actionController);
+        collisionController.setLevel(levels[currLevelIndex]);
+
+        gameState = GameState.PLAY;
+        panTime = 0;
+        respawnDelay = 0;
+
+        AssetDirectory internal = new AssetDirectory("jsons/loading.json");
+        internal.loadAssets();
+        internal.finishLoading();
+
+        hud = new HudStage(internal, true);
+        hud.lives = currLevel.getNumLives();
+    }
+
+    /**
      * Steps the level
      * <br><br>
      * The previous level is set to the current level<br>
@@ -382,7 +400,9 @@ public class GameController implements Screen {
      * @param levelNum the number associated with the level to be loaded in
      * @return JSON of the level
      */
-    private JsonValue tiledJSON(int levelNum){ return directory.getEntry("tiledLevel" + levelNum, JsonValue.class); }
+    private JsonValue tiledJSON(int levelNum){
+        return quickLaunchLevel == null ? directory.getEntry("tiledLevel" + levelNum, JsonValue.class) : quickLaunchLevel;
+    }
 
     /**
      * Gather the assets for this controller.
@@ -478,12 +498,11 @@ public class GameController implements Screen {
      */
     public void respawn(boolean cameraMovement) {
         currLevel.setDied(false);
-        currLevel.getCat().setActive(false);
-        currLevel.getCat().setFacingRight(currLevel.getCheckpoint() != null ? currLevel.getCheckpoint().facingRight() : true);
-        currLevel.getCat().setJumpPressed(false);
-        currLevel.getCat().setGrounded(true);
-        currLevel.getCat().setLinearVelocity(Vector2.Zero);
-        currLevel.getCat().setPosition(currLevel.getRespawnPos());
+        Cat cat = currLevel.getCat();
+        cat.reset();
+        cat.setActive(false);
+        cat.setFacingRight(currLevel.getCheckpoint() != null ? currLevel.getCheckpoint().facingRight() : true);
+        cat.setPosition(currLevel.getRespawnPos());
         justRespawned = cameraMovement;
     }
 
@@ -499,7 +518,6 @@ public class GameController implements Screen {
      * properly dispose the level so that the level reset is clean.
      */
     protected void init(int levelNum) {
-
         this.levelNum = levelNum;
 
         prevLevel.dispose();
@@ -508,6 +526,11 @@ public class GameController implements Screen {
         Vector2 gravity = new Vector2( world.getGravity() );
         world.dispose();
         world = new World(gravity, true);
+        if (rayHandler != null) {
+            rayHandler.dispose();
+        }
+        rayHandler = new RayHandler(world);
+        rayHandler.setAmbientLight(0.8f);
 
         justRespawned = true;
         justReset = true;
@@ -516,6 +539,9 @@ public class GameController implements Screen {
         prevLevel.setWorld(world);
         currLevel.setWorld(world);
         nextLevel.setWorld(world);
+        prevLevel.setRayHandler(rayHandler);
+        currLevel.setRayHandler(rayHandler);
+        nextLevel.setRayHandler(rayHandler);
         world.setContactListener(collisionController);
         world.setContactFilter(collisionController);
         collisionController.setReturn(false);
@@ -559,8 +585,12 @@ public class GameController implements Screen {
      * Dispose of all (non-static) resources allocated to this mode.
      */
     public void dispose() {
+        prevLevel.dispose();
         currLevel.dispose();
+        nextLevel.dispose();
         world.dispose();
+        rayHandler.dispose();
+        rayHandler = null;
         scale  = null;
         canvas = null;
     }
@@ -645,6 +675,7 @@ public class GameController implements Screen {
         hud.lives = currLevel.getNumLives();
         hud.updateLives();
     }
+
 
     /**
      * Processes physics
@@ -769,6 +800,7 @@ public class GameController implements Screen {
                 input.setDisableAll(false);
                 gameState = GameState.PLAY;
                 currLevel.getCat().setActive(true);
+                currLevel.getCat().setLightActive(true);
                 currLevel.getCat().setPosition(currLevel.getRespawnPos());
             }
         }
@@ -784,6 +816,7 @@ public class GameController implements Screen {
 //				Thread.currentThread().interrupt();
 //			}
 //		}
+//        System.out.println("before:" + canvas.getCamera().getCamera().position);
         if (!paused) {
             if (preUpdate(delta)) {
                 update(delta); // This is the one that must be defined.
@@ -791,9 +824,36 @@ public class GameController implements Screen {
             }
         }
         if (paused) { updateCamera(); }
+        // Main game draw
         draw(delta);
-        if (paused && stageController != null) { stageController.render(delta); }
 
+        // box2dlights draw
+        updateRayHandlerCombinedMatrix();
+        rayHandler.updateAndRender();
+
+        // Pause menu draw
+        if (paused && stageController != null) { stageController.render(delta); }
+    }
+
+    /**
+     * Updates the RayHandler's combined matrix to properly reflect the camera's current position
+     * and viewport dimensions.
+     * <br>
+     * We need to do this because it is inconvenient to scale the position of box2dlights by our world
+     * scale every time they move, especially when they can be attached to bodies. Handling the scaling
+     * in the combined matrix takes care of the transformation for us for all lights.
+     */
+    private void updateRayHandlerCombinedMatrix() {
+        OrthographicCamera c = canvas.getCamera().getCamera();
+        Matrix4 combined = c.combined.cpy();
+        combined.scl(DEFAULT_SCALE);
+        rayHandler.setCombinedMatrix(
+                combined,
+                c.position.x / 32,
+                c.position.y / 32,
+                c.viewportWidth / 32,
+                c.viewportHeight / 32
+        );
     }
 
     /**
@@ -859,7 +919,7 @@ public class GameController implements Screen {
         canvas.clear();
 
         canvas.begin();
-        canvas.applyViewport();
+        canvas.applyViewport(false);
         canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight());
         if (true) { //TODO: only draw when necessary
             prevLevel.draw(canvas, false);

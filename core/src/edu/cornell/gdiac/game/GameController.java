@@ -10,6 +10,9 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.audio.AudioSource;
+import edu.cornell.gdiac.audio.MusicQueue;
+import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.game.object.*;
 
 import edu.cornell.gdiac.game.obstacle.*;
@@ -113,8 +116,24 @@ public class GameController implements Screen {
     private static final float MAX_UNDO_TIME = 120f;
     public StageController stageController = null;
     public boolean paused = false;
-
     public HudStage hud;
+
+    /** List of sounds to play */
+    SoundEffect sounds[];
+    /** The sounds instances ids */
+    long soundIds[];
+    /** The current sound effect play */
+    int currentSound = 0;
+
+    /** List of music to play */
+    AudioSource samples[];
+    /** The current music sample to play */
+    int currentSample = 0;
+
+    /** A queue to play music */
+    MusicQueue music;
+
+
 
     /**
      * PLAY: User has all controls and is in game
@@ -455,6 +474,9 @@ public class GameController implements Screen {
         this.directory = directory;
 
         background = textureRegionAssetMap.get("bg-lab").getTexture();
+
+        // Sounds
+
 
         // Giving assets to levelController
         setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants);

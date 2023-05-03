@@ -63,10 +63,14 @@
         "tiledLevel5": "levels/level-beta-hard.json",
         "tiledLevel6": "levels/party-room.json"
     },
-    "sounds" : {
+    "soundfx" : {
         "jump" : "sounds/jump-CELESTE.wav",
         "dash" : "sounds/dash-CELESTE.wav",
         "metal-landing" : "sounds/metal-landing-CELESTE.wav",
         "meow" : "sounds/meow.mp3"
-    }
+    },
+   "samples": {
+        "bkg-intro": "sounds/bkg-intro.ogg",
+        "bkg-level": "sounds/bkg-level.ogg"
+   }
 }

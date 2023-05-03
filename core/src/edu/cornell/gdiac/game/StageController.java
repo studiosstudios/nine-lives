@@ -5,9 +5,15 @@ import com.badlogic.gdx.graphics.*;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.*;
+import edu.cornell.gdiac.audio.AudioEngine;
+import edu.cornell.gdiac.audio.AudioSource;
+import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.game.stage.*;
 import edu.cornell.gdiac.util.*;
+
+import java.util.HashMap;
 
 /**
  * Class that provides a loading screen for the state of the game.
@@ -62,6 +68,11 @@ public class StageController implements Screen {
 
 	public GameController currLevel;
 	private int selectedLevel;
+
+	/** The hashmap for music */
+	private HashMap<String, AudioSource> musicAssetMap;
+	/** A queue to play music */
+	MusicQueue music;
 
 	public int getSelectedLevel() { return selectedLevel; }
 	public void setSelectedLevel(int level) { selectedLevel = level; }
@@ -137,6 +148,8 @@ public class StageController implements Screen {
 		internal.loadAssets();
 		internal.finishLoading();
 
+		startMusic();
+
 		if(!Save.exists()) {
 			Save.create();
 		}
@@ -163,8 +176,9 @@ public class StageController implements Screen {
 		assets = new AssetDirectory( file );
 		assets.loadAssets();
 		active = true;
+
 	}
-	
+
 	/**
 	 * Called when this screen should release all resources.
 	 */
@@ -177,6 +191,31 @@ public class StageController implements Screen {
 		assets = new AssetDirectory("jsons/assets.json");
 		assets.loadAssets();
 		assets.finishLoading();
+	}
+
+	public void startMusic() {
+//		musicAssetMap = new HashMap<>();
+//
+//		String[] names = new String[]{"bkg-intro", "bkg-level"};
+//		for (String n : names){
+//			musicAssetMap.put(n, assets.getEntry(n, AudioSource.class));
+//		}
+
+		AudioEngine engine = (AudioEngine)Gdx.audio;
+		music = engine.newMusicBuffer( false, 44100 );
+//		System.out.println("VOLUME");
+//		System.out.println(internal.get("volume", Float.class));
+//		Float volume = internal.get("defaults").getFloat("volume");
+//		System.out.println(volume);
+		// TODO: automate this with the volume constant in internal loading json
+		music.setVolume(0.5f);
+		music.addSource( internal.getEntry("bkg-intro", AudioSource.class) );
+		music.setLooping(true);
+		music.play();
+	}
+
+	public MusicQueue getMusic() {
+		return music;
 	}
 	
 	/**

@@ -95,9 +95,10 @@ public class NineLives extends Game implements ScreenListener {
 	 * @param startLevel  starting level number
 	 */
 	private void startGame(int numLevels, int startLevel){
+//		menu.getMusic().pause();
 		directory = menu.getAssets();
 		controller = new GameController(numLevels);
-		controller.gatherAssets(directory);
+		controller.gatherAssets(directory, menu.getMusic());
 		controller.setScreenListener(this);
 		controller.setCanvas(canvas);
 		controller.init(startLevel);

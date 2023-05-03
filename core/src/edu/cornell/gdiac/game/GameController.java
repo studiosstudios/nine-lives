@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.audio.AudioEngine;
 import edu.cornell.gdiac.audio.AudioSource;
 import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.audio.SoundEffect;
@@ -61,6 +62,7 @@ public class GameController implements Screen {
     private HashMap<String, TextureRegion> textureRegionAssetMap;
     /** The hashmap for sounds */
     private HashMap<String, Sound> soundAssetMap;
+
     /** The hashmap for fonts */
     private HashMap<String, BitmapFont> fontAssetMap;
     /** The JSON value constants */
@@ -118,6 +120,7 @@ public class GameController implements Screen {
     public boolean paused = false;
     public HudStage hud;
 
+    // Music
     /** List of sounds to play */
     SoundEffect sounds[];
     /** The sounds instances ids */
@@ -130,8 +133,7 @@ public class GameController implements Screen {
     /** The current music sample to play */
     int currentSample = 0;
 
-    /** A queue to play music */
-    MusicQueue music;
+
 
 
 
@@ -421,7 +423,7 @@ public class GameController implements Screen {
      *
      * @param directory	Reference to global asset manager.
      */
-    public void gatherAssets(AssetDirectory directory) {
+    public void gatherAssets(AssetDirectory directory, MusicQueue music) {
         // Allocate the tiles
         // Creating the hashmaps
         textureRegionAssetMap = new HashMap<>();
@@ -460,10 +462,55 @@ public class GameController implements Screen {
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
         }
 
+        // Get the sounds
+//        int numSFX = 2;
+////        names = new String[]{"jump", "dash", "metal-landing", "meow"};
+//        names = new String[]{"jump", "dash"};
+//
+//        sounds = new SoundEffect[numSFX];
+//        soundIds = new long[numSFX];
+//
+//        for (int i = 0; i < numSFX; i++) {
+//            sounds[i] = directory.getEntry( names[i], SoundEffect.class );
+//            soundIds[i] = -1;
+//        }
+
+//        sounds[0] = directory.getEntry( "jump", SoundEffect.class );
+//        sounds[1] = directory.getEntry( "dash", SoundEffect.class );
+//
+//        soundIds[0] = -1;
+//        soundIds[1] = -1;
+//        currentSound = 1;
+
+//        int numSamples = 2;
+//        samples = new AudioSource[numSamples];
+//        names = new String[]{"bkg-intro", "bkg-level"};
+//
+//        for (int i = 0; i < numSamples; i++) {
+//            samples[i] = directory.getEntry( names[i], AudioSource.class );
+//        }
+
+//        samples[0] = directory.getEntry( "bkg-intro", AudioSource.class );
+//        samples[1] = directory.getEntry( "bkg-level", AudioSource.class );
+//        currentSample = 0;
+
         names = new String[]{"jump", "dash", "metal-landing", "meow"};
         for (String n : names){
-            soundAssetMap.put(n, directory.getEntry(n, Sound.class));
+            soundAssetMap.put(n, directory.getEntry(n, SoundEffect.class));
         }
+        names = new String[]{"bkg-level"};
+        for (String n : names){
+            music.addSource(directory.getEntry(n, AudioSource.class));
+        }
+        music.setVolume(0.5f);
+        music.advanceSource();
+//
+//        AudioEngine engine = (AudioEngine)Gdx.audio;
+//        music = engine.newMusicBuffer( false, 44100 );
+//        music.addSource( musicAssetMap.get("bkg-intro") );
+//        music.addSource( musicAssetMap.get("bkg-level") );
+//        music.play();
+
 
         names = new String[]{"retro"};
         for (String n : names){

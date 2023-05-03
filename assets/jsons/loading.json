@@ -26,10 +26,16 @@
         "slider-empty": "ui/settings/slider-empty.png",
         "slider-full": "ui/settings/slider-full.png"
 	},
-  "fonts": {
-    "chewy": {
-      "file": "fonts/chewy.ttf",
-      "size": 36
+    "fonts": {
+        "chewy": {
+            "file": "fonts/chewy.ttf",
+            "size": 36
+        }
+    },
+    "samples": {
+        "bkg-intro": "sounds/bkg-intro.ogg"
+    },
+    "defaults": {
+       "volume": "0.1"
     }
-  }
 }

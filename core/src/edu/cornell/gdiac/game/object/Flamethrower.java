@@ -125,9 +125,8 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
     }
 
     public void createLight(RayHandler rayHandler) {
-        createConeLight(objectConstants.get("light"), rayHandler);
-        System.out.println(flameBase.getAngle());
-        ((ConeLight) getLight()).attachToBody(flameBase.getBody(), 0, 0, 90);
+        createPointLight(objectConstants.get("light"), rayHandler);
+        getLight().attachToBody(flame.getBody());
         getLight().setXray(true);
         getLight().setSoft(true);
     }

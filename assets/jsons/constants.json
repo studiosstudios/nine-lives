@@ -39,8 +39,8 @@
     "mass": 1,
     "sensor_shape" : [-0.3, -0.6, 0.3, -0.6, 0.3, 0.9, -0.3, 0.9],
     "light": {
-      "distance": 3,
-      "color": "ff0000ff",
+      "distance": 2.5,
+      "color": "#ff00008c",
       "offset": [0, 0],
       "directionDegree": 0,
       "coneDegree": 20

@@ -9,6 +9,14 @@ import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
 import com.badlogic.gdx.math.Rectangle;
 
+/**
+ * The CameraRegion is composed of two rectangles, a collision rectangle and a non-collision rectangle.
+ *
+ * When you collide with a collision rectangle, the camera will snap to the non-collision rectangle (indicated by
+ * snapBounds). You can toggle whether you want the camera to snap at all (shouldSnap), and if so, if it should snap to
+ * the collision region or another specified rectangle of your choice.
+ */
+
 public class CameraRegion extends BoxObstacle {
     /** Zoom percentage of camera after collision with this camera tile/Zoom percentage of camera relative to the camera region size **/
     private float zoom;
@@ -18,17 +26,18 @@ public class CameraRegion extends BoxObstacle {
     private static JsonValue objectConstants;
     /** Number of fixture colliding with this camera region */
     private int fixtureCount;
-    /** Whether camera should snap to this camera region */
-    private boolean snapRegion;
+    /** Whether camera should snap to snapBounds */
+    private boolean shouldSnap;
+    /** Bounds the camera will snap to if shouldSnap is true */
+    private Rectangle snapBounds;
 
     /**
      * @param properties     String-Object map of properties for this object
      * @param scale World scale
      */
-    public CameraRegion(ObjectMap<String, Object> properties, Vector2 scale){
+    public CameraRegion(ObjectMap<String, Object> properties, Vector2 scale, Rectangle bounds){
         super((float)properties.get("width"), (float)properties.get("height"));
         zoom = (float) properties.get("zoom");
-//        this.shouldSnap = (boolean) properties.get("shouldSnap"); //TODO: LOOK INTO WHY THIS IS NULL
         setBodyType(BodyDef.BodyType.StaticBody); //lmao
         setSensor(true);
         setDrawScale(scale);
@@ -36,10 +45,16 @@ public class CameraRegion extends BoxObstacle {
         setY((float) properties.get("y") - getDimension().y/2);
         setName((String) properties.get("name"));
         fixtureCount = 0;
-        float expectedWidth = getWidth() * zoom;
-        float expectedHeight = getHeight() * zoom;
+        shouldSnap = (boolean) properties.get("shouldSnap");
+        if((boolean) properties.get("snapCollisionArea")){
+            snapBounds = this.getBounds();
+        }
+        else{
+            snapBounds = new Rectangle((float) properties.get("bX") + bounds.x, (float) properties.get("bY") + bounds.y, (float) properties.get("bWidth"), (float) properties.get("bHeight"));
+        }
+        float expectedWidth = snapBounds.getWidth() * zoom;
+        float expectedHeight = snapBounds.getHeight() * zoom;
         relativeZoom = (boolean) properties.get("isZoomRelative");
-        snapRegion = (boolean) properties.get("shouldSnapRegion");
         if(relativeZoom)
             zoom = Math.min(expectedWidth*scale.x/GameCanvas.STANDARD_WIDTH, expectedHeight*scale.y/GameCanvas.STANDARD_HEIGHT);
     }
@@ -52,18 +67,19 @@ public class CameraRegion extends BoxObstacle {
     }
 
     /**
-     * Add one to fixture count
+     * Add one to number of fixtures colliding with this camera region
      */
     public void addFixture(){
         fixtureCount += 1;
     }
 
     /**
-     * Subtract one from fixture count
+     * Subtract one from number of fixtures colliding with this camera region
      */
     public void removeFixture(){
         fixtureCount -= 1;
     }
+
     /**
      * @return the zoom percentage of camera after collision with this camera tile
      */
@@ -72,11 +88,19 @@ public class CameraRegion extends BoxObstacle {
     }
 
     /**
-     * gets bounds of CameraRegion
-     * @return bounds of CameraRegion as a Rectangle
+     * Gets bounds of CameraRegion (the collision part)
+     * @return bounds of CameraRegion as a Rectangle (the collision part)
      */
     public Rectangle getBounds(){
         return new Rectangle(getX() - getDimension().x/2,getY()-getDimension().y/2,getWidth(),getHeight());
+    }
+
+    /**
+     * Gets bounds the camera will snap to (the non-collision part)
+     * @return bounds the camera will snap to (the non-collision part)
+     */
+    public Rectangle getSnapBounds(){
+        return snapBounds;
     }
 
     /**
@@ -84,7 +108,7 @@ public class CameraRegion extends BoxObstacle {
      * @return snapRegion
      */
     public boolean shouldSnap(){
-        return snapRegion;
+        return shouldSnap;
     }
 
     @Override

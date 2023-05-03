@@ -466,7 +466,7 @@ public class GameCanvas {
 		
 		// Unlike Lab 1, we can shortcut without a master drawing method
     		spriteBatch.setColor(tint);
-		spriteBatch.draw(image, x + camera.centerLevelTranslation().x,  y + camera.centerLevelTranslation().y, width, height);
+		spriteBatch.draw(image, x,  y, width, height);
 	}
 	
 	/**
@@ -584,10 +584,8 @@ public class GameCanvas {
 			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
 			return;
 		}
-		x = x + camera.centerLevelTranslation().x;
-		y = y + camera.centerLevelTranslation().y;
 		// Unlike Lab 1, we can shortcut without a master drawing method
-    		spriteBatch.setColor(Color.WHITE);
+		spriteBatch.setColor(Color.WHITE);
 		spriteBatch.draw(region, x,  y);
 	}
 
@@ -681,8 +679,6 @@ public class GameCanvas {
 			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
 			return;
 		}
-		x = x + camera.centerLevelTranslation().x;
-		y = y + camera.centerLevelTranslation().y;
 
 		// BUG: The draw command for texture regions does not work properly.
 		// There is a workaround, but it will break if the bug is fixed.
@@ -853,8 +849,6 @@ public class GameCanvas {
 			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
 			return;
 		}
-		x = x + camera.centerLevelTranslation().x;
-		y = y + camera.centerLevelTranslation().y;
 		TextureRegion bounds = region.getRegion();
 		spriteBatch.setColor(tint);
 		spriteBatch.draw(region, x, y, ox, oy, 
@@ -1258,7 +1252,7 @@ public class GameCanvas {
 		extruder.set(splinePath);
 		extruder.calculate(thickness);
 		spriteBatch.setColor(color);
-		spriteBatch.draw(extruder.getPolygon().makePolyRegion(region), camera.centerLevelTranslation().x, camera.centerLevelTranslation().y);
+		spriteBatch.draw(extruder.getPolygon().makePolyRegion(region), 0, 0);
 	}
 
 	private float[] getPoints(Array<Vector2> points, float sx, float sy){

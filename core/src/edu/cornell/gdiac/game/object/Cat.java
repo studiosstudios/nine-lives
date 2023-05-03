@@ -24,6 +24,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.game.*;
+import edu.cornell.gdiac.game.Camera;
 import edu.cornell.gdiac.game.obstacle.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -383,6 +384,7 @@ public class Cat extends CapsuleObstacle implements Movable {
         failedSwitchTicks = FAILED_SWITCH_TICKS;
         state = State.MOVING;
         currentFrame = normalTexture;
+        facingRight = true;
     }
 
 
@@ -499,7 +501,6 @@ public class Cat extends CapsuleObstacle implements Movable {
             this.facingRight = facingRight;
         }
     }
-
     public ObjectMap<String, Integer> getSpiritRegions() {
         return spiritRegions;
     }
@@ -980,10 +981,9 @@ public class Cat extends CapsuleObstacle implements Movable {
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
         for (PolygonShape shape : sensorShapes) {
-            float xTranslate = (canvas.getCamera().getX() - canvas.getWidth() / 2) / drawScale.x;
-            float yTranslate = (canvas.getCamera().getY() - canvas.getHeight() / 2) / drawScale.y;
-            canvas.drawPhysics(shape, Color.RED, getX() - xTranslate, getY() - yTranslate,
-                    getAngle(), drawScale.x, drawScale.y);
+//            float xTranslate = (canvas.getCamera().getX() - canvas.getWidth() / 2) / drawScale.x;
+//            float yTranslate = (canvas.getCamera().getY() - canvas.getHeight() / 2) / drawScale.y;
+            canvas.drawPhysics(shape, Color.RED, getX(), getY(), getAngle(), drawScale.x, drawScale.y);
         }
         debugPrint();
 

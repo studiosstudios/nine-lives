@@ -43,7 +43,7 @@ public class HudStage extends StageWrapper {
      *
      */
     public void createActors() {
-        Actor bar = addActor(internal.getEntry("bar", Texture.class), 0, STANDARD_HEIGHT-36);
+        Actor bar = addActor(internal.getEntry("bar", Texture.class), 5, STANDARD_HEIGHT-36);
         bar.setScale(0.5f);
 
         nine = addActor(internal.getEntry("bell", Texture.class), 26, STANDARD_HEIGHT-25);

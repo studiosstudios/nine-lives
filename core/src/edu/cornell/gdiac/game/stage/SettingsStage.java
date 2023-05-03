@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.game.Save;
 
@@ -20,7 +21,7 @@ public class SettingsStage extends StageWrapper {
     private TextureRegionDrawable sliderTextureBefore;
     private Slider volumeSlider;
     private Actor backButtonActor;
-    private Actor backCatpawActor;
+//    private Actor backCatpawActor;
     private Actor catpaw1Actor;
     private Actor catpaw2Actor;
     /** State to keep track of whether the main menu button has been clicked */
@@ -43,24 +44,25 @@ public class SettingsStage extends StageWrapper {
     @Override
     public void createActors() {
         table = new Table();
-        BitmapFont font = internal.getEntry("chewy", BitmapFont.class);
+//        BitmapFont font = internal.getEntry("chewy", BitmapFont.class);
         Texture knob = internal.getEntry("paw", Texture.class);
         Texture slider = internal.getEntry("slider-empty", Texture.class);
         Texture before = internal.getEntry("slider-full", Texture.class);
         sliderTexture = new TextureRegionDrawable(new TextureRegion(slider));
         sliderKnobTexture = new TextureRegionDrawable(new TextureRegion(knob));
         sliderTextureBefore = new TextureRegionDrawable(new TextureRegion(before));
-//        addActor(new Image(internal.getEntry("bg-settings", Texture.class)));
         Actor background = addActor(internal.getEntry("bg-settings", Texture.class), 0, 0);
         background.setScale(0.5f);
-        backButtonActor = addActor(internal.getEntry("back", Texture.class),32,buttonY-225);
+        backButtonActor = addActor(internal.getEntry("back", Texture.class),32,40);
         backButtonActor.setScale(0.5f);
 
-        backCatpawActor = addActor(internal.getEntry("paw", Texture.class), 332, buttonY-225);
-        backCatpawActor.setScale(0.5f);
-        backCatpawActor.setVisible(false);
+        backButtonActor.addListener(createHoverListener(backButtonActor));
 
-        backButtonActor.addListener(createCatpawListener(backButtonActor, backCatpawActor));
+//        backCatpawActor = addActor(internal.getEntry("paw", Texture.class), 332, buttonY-225);
+//        backCatpawActor.setScale(0.5f);
+//        backCatpawActor.setVisible(false);
+//
+//        backButtonActor.addListener(createCatpawListener(backButtonActor, backCatpawActor));
 
 //        catpaw1Actor = addActor(internal.getEntry("paw", Texture.class), 332, 370);
 //        catpaw1Actor.setScale(0.5f);
@@ -74,7 +76,7 @@ public class SettingsStage extends StageWrapper {
         Slider.SliderStyle sliderStyle = new Slider.SliderStyle(sliderTexture, sliderKnobTexture);
         sliderStyle.knobBefore = sliderTextureBefore;
 
-        Label.LabelStyle labelStyle = new Label.LabelStyle(font, Color.WHITE);
+//        Label.LabelStyle labelStyle = new Label.LabelStyle(font, Color.WHITE);
 
         volumeSlider = new Slider(0, 1, 0.05f, false, sliderStyle);
         volumeSlider.sizeBy(1.5f,1);
@@ -92,10 +94,14 @@ public class SettingsStage extends StageWrapper {
 
         Label volumeLabel = new Label("Volume", labelStyle);
 
+        Label playGame = new Label("play game", labelStyle);
+
         table.row();
         table.add(volumeLabel).pad(50, 20, 10, 0);
         table.row();
         table.add(volumeSlider).width(350).pad(0,20,35,0);
+        table.row();
+        table.add(playGame).pad(0,20,10,0);
 
         for (Cell cell: table.getCells()) {
             cell.align(Align.left);

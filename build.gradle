@@ -51,7 +51,7 @@ project(":desktop") {
         api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
         implementation files("../dependencies/soundlib.jar")
-
+        implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
     }
 }
 
@@ -67,5 +67,6 @@ project(":core") {
         implementation "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
         implementation files("../dependencies/soundlib.jar")
         implementation 'com.google.code.gson:gson:2.10.1'
+        implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
     }
 }

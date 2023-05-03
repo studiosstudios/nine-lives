@@ -1,24 +1,34 @@
 package edu.cornell.gdiac.game.stage;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.assets.AssetDirectory;
 
 public class MainMenuStage extends StageWrapper{
+    private Table table;
     private Actor playButtonActor;
     private Actor levelSelectActor;
     private Actor settingsActor;
     private Actor exitButtonActor;
-    private Actor playCatpawActor;
-    private Actor levelCatpawActor;
-    private Actor settingsCatpawActor;
-    private Actor exitCatpawActor;
+//    private Array<Actor> buttonArray;
+//    private Actor playCatpawActor;
+//    private Actor levelCatpawActor;
+//    private Actor settingsCatpawActor;
+//    private Actor exitCatpawActor;
     private int playButtonState;
     private int levelSelectState;
     private int settingsState;
     private int exitButtonState;
+//    private Array<Integer> stateArray;
+    private int selected;
 
     public int getPlayButtonState() { return playButtonState; }
     public void setPlayButtonState(int state) { playButtonState = state; }
@@ -36,6 +46,12 @@ public class MainMenuStage extends StageWrapper{
 
     public MainMenuStage(AssetDirectory internal, boolean createActors) {
         super(internal, createActors);
+//        selected = 0;
+//        stateArray = new Array<>();
+//        stateArray.add(playButtonState);
+//        stateArray.add(levelSelectState);
+//        stateArray.add(settingsState);
+//        stateArray.add(exitButtonState);
     }
 
     /**
@@ -45,33 +61,59 @@ public class MainMenuStage extends StageWrapper{
     public void createActors() {
         Actor backgroundActor = addActor(internal.getEntry("background", Texture.class), 0,0);
         backgroundActor.setScale(0.5f);
+//        table = new Table();
+//        table.setFillParent(true);
+//        table.setPosition(100,100);
+//        addActor(table);
+//        Label playGame = new Label("play game", labelStyle);
+//        Label levelSelect = new Label("level select", labelStyle);
+//        Label settings = new Label("settings", labelStyle);
+//        Label exitGame = new Label("exit game", labelStyle);
+//        table.row();
+//        table.add(playGame);
+//        table.row();
+//        table.add(levelSelect);
+//        table.row();
+//        table.add(settings);
+//        table.row();
+//        table.add(exitGame);
 //        addActor(internal.getEntry("main-menu-cat", Texture.class),-50,-65);
-        playButtonActor = addActor(internal.getEntry("play-game", Texture.class),buttonX+15+250, buttonY+25);
+        playButtonActor = addActor(internal.getEntry("play-game", Texture.class),buttonX+215, buttonY);
         playButtonActor.setScale(0.5f);
-        levelSelectActor = addActor(internal.getEntry("level-select", Texture.class),buttonX+15+250-18, buttonY-25);
+        levelSelectActor = addActor(internal.getEntry("level-select", Texture.class),buttonX+215-19, buttonY-50-10);
         levelSelectActor.setScale(0.5f);
-        settingsActor = addActor(internal.getEntry("settings", Texture.class),buttonX+15+250+29, buttonY-75-16);
+        settingsActor = addActor(internal.getEntry("settings", Texture.class),buttonX+215+28, buttonY-100-20);
         settingsActor.setScale(0.5f);
-        exitButtonActor = addActor(internal.getEntry("exit", Texture.class),buttonX+15+250+6, buttonY-75-16-50);
+        exitButtonActor = addActor(internal.getEntry("exit", Texture.class),buttonX+215+6.5f, buttonY-150-30);
         exitButtonActor.setScale(0.5f);
 
-        playCatpawActor = addActor(internal.getEntry("paw", Texture.class), buttonX+30, buttonY+25);
-        playCatpawActor.setScale(0.5f);
-        playCatpawActor.setVisible(false);
-        levelCatpawActor = addActor(internal.getEntry("paw", Texture.class), buttonX+30, buttonY-25-4);
-        levelCatpawActor.setScale(0.5f);
-        levelCatpawActor.setVisible(false);
-        settingsCatpawActor = addActor(internal.getEntry("paw", Texture.class), buttonX+30, buttonY-75-12);
-        settingsCatpawActor.setScale(0.5f);
-        settingsCatpawActor.setVisible(false);
-        exitCatpawActor = addActor(internal.getEntry("paw", Texture.class), buttonX+30, buttonY-75-16-50);
-        exitCatpawActor.setScale(0.5f);
-        exitCatpawActor.setVisible(false);
+//        buttonArray = new Array<>();
+//        playCatpawActor = addActor(internal.getEntry("paw", Texture.class), buttonX+30, buttonY+25);
+//        playCatpawActor.setScale(0.5f);
+//        playCatpawActor.setVisible(false);
+//        levelCatpawActor = addActor(internal.getEntry("paw", Texture.class), buttonX+30, buttonY-25-4);
+//        levelCatpawActor.setScale(0.5f);
+//        levelCatpawActor.setVisible(false);
+//        settingsCatpawActor = addActor(internal.getEntry("paw", Texture.class), buttonX+30, buttonY-75-12);
+//        settingsCatpawActor.setScale(0.5f);
+//        settingsCatpawActor.setVisible(false);
+//        exitCatpawActor = addActor(internal.getEntry("paw", Texture.class), buttonX+30, buttonY-75-16-50);
+//        exitCatpawActor.setScale(0.5f);
+//        exitCatpawActor.setVisible(false);
 
-        playButtonActor.addListener(createCatpawListener(playButtonActor, playCatpawActor));
-        levelSelectActor.addListener(createCatpawListener(levelSelectActor,levelCatpawActor));
-        settingsActor.addListener(createCatpawListener(settingsActor,settingsCatpawActor));
-        exitButtonActor.addListener(createCatpawListener(exitButtonActor,exitCatpawActor));
+//        buttonArray.add(playButtonActor);
+//        buttonArray.add(levelSelectActor);
+//        buttonArray.add(settingsActor);
+//        buttonArray.add(exitButtonActor);
+//
+//        playButtonActor.addListener(createCatpawListener(playButtonActor, playCatpawActor));
+//        levelSelectActor.addListener(createCatpawListener(levelSelectActor,levelCatpawActor));
+//        settingsActor.addListener(createCatpawListener(settingsActor,settingsCatpawActor));
+//        exitButtonActor.addListener(createCatpawListener(exitButtonActor,exitCatpawActor));
+        playButtonActor.addListener(createHoverListener(playButtonActor));
+        levelSelectActor.addListener(createHoverListener(levelSelectActor));
+        settingsActor.addListener(createHoverListener(settingsActor));
+        exitButtonActor.addListener(createHoverListener(exitButtonActor));
     }
 
     /**
@@ -86,18 +128,23 @@ public class MainMenuStage extends StageWrapper{
     public boolean listenerTouchDown(InputEvent event, float x, float y, int pointer, int button) {
         Actor actor = event.getListenerActor();
         if (actor == playButtonActor) {
+//            selected = 0;
             playButtonState = 1;
             playButtonActor.setColor(Color.LIGHT_GRAY);
         } else if (actor == levelSelectActor) {
+//            selected = 1;
             levelSelectState = 1;
             levelSelectActor.setColor(Color.LIGHT_GRAY);
         } else if (actor == settingsActor) {
+//            selected = 2;
             settingsState = 1;
             settingsActor.setColor(Color.LIGHT_GRAY);
         } else if (actor == exitButtonActor) {
+//            selected = 3;
             exitButtonState = 1;
             exitButtonActor.setColor(Color.LIGHT_GRAY);
         }
+//        updateSelected(selected);
         return true;
     }
 
@@ -124,4 +171,28 @@ public class MainMenuStage extends StageWrapper{
             exitButtonActor.setColor(Color.WHITE);
         }
     }
+
+//    @Override
+//    public boolean keyDown(int keyCode) {
+//        if (keyCode == Input.Keys.UP) {
+//            if (selected <= 3 && selected > 0) {
+//                selected--;
+//            }
+//        } else if (keyCode == Input.Keys.DOWN) {
+//            if (selected >= 0 && selected < 3) {
+//                selected++;
+//            }
+//        }
+//        updateSelected(selected);
+//        return super.keyDown(keyCode);
+//    }
+
+//    public void updateSelected(int index) {
+//        for (int i = 0; i > 4; i++) {
+//            stateArray.set(i, 0);
+//            buttonArray.get(i).setColor(Color.WHITE);
+//        }
+//        stateArray.set(index, 1);
+//        buttonArray.get(index).setColor(Color.LIGHT_GRAY);
+//    }
 }

@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.*;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.math.Path2;
@@ -14,8 +14,6 @@ import edu.cornell.gdiac.math.PathExtruder;
 import edu.cornell.gdiac.math.PathFactory;
 import edu.cornell.gdiac.math.PolyFactory;
 import edu.cornell.gdiac.math.*;
-
-import java.util.ArrayList;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
@@ -89,7 +87,7 @@ public class GameCanvas {
 	private Camera camera;
 
 	/** ExtendViewport, used during gameplay */
-	private Viewport extendView;
+	private Viewport viewport;
 
 	/** Value to cache window width (if we are currently full screen) */
 	int width;
@@ -125,8 +123,10 @@ public class GameCanvas {
 		
 		// Set the projection matrix (for proper scaling)
 		camera = new Camera(STANDARD_WIDTH, STANDARD_HEIGHT, CAMERA_ZOOM);
-		extendView = new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT, camera.getCamera());
-		extendView.apply(true);
+//		camera = new Camera(getWidth(), getHeight(), CAMERA_ZOOM);
+		viewport = new FitViewport(STANDARD_WIDTH, STANDARD_HEIGHT, camera.getCamera());
+//		viewport = new FitViewport(getWidth(), getHeight(), camera.getCamera());
+		viewport.apply(true);
 		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
 		debugRender.setProjectionMatrix(camera.getCamera().combined);
 
@@ -274,7 +274,7 @@ public class GameCanvas {
 	 * This method raises an IllegalStateException if called while drawing is
 	 * active (e.g. in-between a begin-end pair).
 	 *
-	 * @param value Whether this canvas should change to fullscreen.
+//	 * @param value Whether this canvas should change to fullscreen.
 	 * @param desktop 	 Whether to use the current desktop resolution
 	 */	 
 	public void setFullscreen(boolean fullscreen, boolean desktop) {
@@ -291,7 +291,11 @@ public class GameCanvas {
 
 	/** Activates the ExtendViewport for drawing to canvas */
 	public void applyViewport(boolean centered) {
-		extendView.apply(centered);
+		viewport.apply(centered);
+	}
+
+	public Viewport getViewport() {
+		return viewport;
 	}
 
 	/**
@@ -302,7 +306,7 @@ public class GameCanvas {
 	 */
 	 public void resize() {
 		spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, getWidth(), getHeight());
-		 extendView.update(getWidth(), getHeight(), true);
+		 viewport.update(getWidth(), getHeight(), true);
 	}
 	
 	/**
@@ -348,10 +352,6 @@ public class GameCanvas {
 		blend = state;
 	}
 
-	public Viewport getViewport() {
-		return extendView;
-	}
-	
 	/**
 	 * Clear the screen, so we can start a new animation frame
 	 */
@@ -404,6 +404,7 @@ public class GameCanvas {
 	public void begin() {
 		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
 		spriteBatch.begin();
+		viewport.apply();
 		active = DrawPass.STANDARD;
 	}
 

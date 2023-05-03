@@ -85,6 +85,7 @@ public class NineLives extends Game implements ScreenListener {
 	 * @param height The new height in pixels
 	 */
 	public void resize(int width, int height) {
+		Gdx.gl.glViewport(0, 0, width, height);
 		canvas.resize();
 		super.resize(width,height);
 	}

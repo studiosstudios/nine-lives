@@ -1,10 +1,15 @@
 package edu.cornell.gdiac.game.stage;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 
 public abstract class StageWrapper extends Stage {
@@ -21,10 +26,24 @@ public abstract class StageWrapper extends Stage {
     public int yHalf;
     /** y-coordinate for top button */
     public int buttonY;
+    static BitmapFont font;
+    static Label.LabelStyle labelStyle;
 
     public StageWrapper(AssetDirectory internal, boolean createActors) {
         super(new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT));
         this.internal = internal;
+        FreeTypeFontGenerator.setMaxTextureSize(2048);
+        FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("shared/preahvihear.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 40; //24
+        parameter.genMipMaps = true;
+        parameter.minFilter = Texture.TextureFilter.Linear;
+        parameter.magFilter = Texture.TextureFilter.Linear;
+        font = gen.generateFont(parameter);
+        gen.dispose();
+//        font = internal.getEntry("chewy", BitmapFont.class);
+//        font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        labelStyle = new Label.LabelStyle(font, Color.WHITE);
         buttonX = (int)(3f/5 * STANDARD_WIDTH);
         buttonY = (int)(1f/2 * STANDARD_HEIGHT);
         xHalf = (int) (1f/2 * STANDARD_WIDTH);
@@ -36,6 +55,7 @@ public abstract class StageWrapper extends Stage {
 
     public void draw() {
         super.getViewport().apply();
+//        update();
         super.act();
         super.draw();
     }
@@ -47,6 +67,8 @@ public abstract class StageWrapper extends Stage {
         super.addActor(actor);
         return actor;
     }
+
+    public void update(float delta) {}
 
     abstract public void createActors();
 

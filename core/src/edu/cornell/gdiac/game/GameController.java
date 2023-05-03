@@ -851,15 +851,16 @@ public class GameController implements Screen {
         canvas.begin();
         canvas.applyViewport();
         canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight());
-        canvas.flush();
 //        if (true) { //TODO: only draw when necessary
 //            prevLevel.draw(canvas, false);
 //            nextLevel.draw(canvas, false);
 //        }
+        canvas.batchEnd();
         currLevel.draw(canvas, gameState != GameState.RESPAWN);
-        canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
-        canvas.end();
-        hud.draw();
+//        canvas.batchBegin();
+//        canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
+//        canvas.end();
+//        hud.draw();
 
         if (debug) {
             canvas.beginDebug();

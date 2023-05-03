@@ -1108,6 +1108,8 @@ public class Level {
 ////            canvas.draw(background, 0, 0);
 //        }
 
+        canvas.vfxManager.addEffect(canvas.chromaticAberrationEffect);
+        canvas.vfxManager.addEffect(canvas.bloomEffect);
         canvas.beginVFX();
 
         for (Laser l : lasers){
@@ -1130,14 +1132,21 @@ public class Level {
             a.draw(canvas);
         }
 
+        canvas.endVFX();
+        canvas.vfxManager.removeAllEffects();
 //        canvas.setVFX(true);
 //        canvas.applyVFX();
 
+//        canvas.beginVFX();
+//        canvas.vfxManager.removeAllEffects();
+
+        canvas.beginVFX();
         spiritLine.draw(canvas);
 
         for (DeadBody db : deadBodyArray) {
             db.draw(canvas);
         }
+
         if(cat != null && drawCat) {
             cat.draw(canvas);
         }
@@ -1151,12 +1160,6 @@ public class Level {
             spirit.draw(canvas, textureRegionAssetMap.get("spirit-photon").getTexture());
         }
 
-//        canvas.setVFX(false);
-//        canvas.applyVFX();
-
-//        canvas.vfxManager.beginInputCapture();
-
-
         if (currCheckpoint != null) {
             currCheckpoint.drawBase(canvas);
         }
@@ -1164,9 +1167,10 @@ public class Level {
         if (goal != null) {
             goal.draw(canvas);
         }
+        canvas.endVFX();
+        canvas.vfxManager.removeAllEffects();
+//        canvas.vfxManager.removeAllEffects();
 
-//        canvas.setVFX(true);
-        canvas.applyVFX();
     }
 
     /**

@@ -385,6 +385,13 @@ public abstract class Obstacle {
 	public void setLight(Light l) { light = l;}
 
 	/**
+	 * Sets the current light associated with this obstacle to active, if such light exists
+	 *
+	 * @param active Whether the current light should be active
+	 */
+	public void setLightActive(boolean active) { if (light != null) light.setActive(active); }
+
+	/**
 	 * Creates a box2dlight PointLight given a valid objectConstants and rayHandler
 	 * <br><br>
 	 * The objectConstants should contain the following fields:<br>

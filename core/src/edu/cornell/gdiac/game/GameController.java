@@ -482,12 +482,11 @@ public class GameController implements Screen {
      */
     public void respawn(boolean cameraMovement) {
         currLevel.setDied(false);
-        currLevel.getCat().setActive(false);
-        currLevel.getCat().setFacingRight(currLevel.getCheckpoint() != null ? currLevel.getCheckpoint().facingRight() : true);
-        currLevel.getCat().setJumpPressed(false);
-        currLevel.getCat().setGrounded(true);
-        currLevel.getCat().setLinearVelocity(Vector2.Zero);
-        currLevel.getCat().setPosition(currLevel.getRespawnPos());
+        Cat cat = currLevel.getCat();
+        cat.reset();
+        cat.setActive(false);
+        cat.setFacingRight(currLevel.getCheckpoint() != null ? currLevel.getCheckpoint().facingRight() : true);
+        cat.setPosition(currLevel.getRespawnPos());
         justRespawned = cameraMovement;
     }
 
@@ -776,6 +775,7 @@ public class GameController implements Screen {
                 gameState = GameState.PLAY;
 
                 currLevel.getCat().setActive(true);
+                currLevel.getCat().setLightActive(true);
                 currLevel.getCat().setPosition(currLevel.getRespawnPos());
             }
         }

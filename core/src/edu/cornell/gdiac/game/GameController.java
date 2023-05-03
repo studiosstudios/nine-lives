@@ -733,6 +733,11 @@ public class GameController implements Screen {
                     cam.updateCamera(x_pos, y_pos, true, cam.getGameplayBounds());
                 }
             }
+
+            /** Handles cat dying in cameraRegion and respawning in non-cameraRegion **/
+            if(currLevel.getCameraRegions().isEmpty() && currLevel.getCat().isActive()){
+                canvas.getCamera().setDefaultZoom(Camera.CAMERA_ZOOM);
+            }
         }
         if(gameState == GameState.PAN) {
             cam.updateCamera(panTarget.get(0).getXPos() * scale.x, panTarget.get(0).getYPos() * scale.y, true, cam.getLevelBounds());

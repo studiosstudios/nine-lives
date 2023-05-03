@@ -141,7 +141,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                         actionController.recombineLives();
                     }
                     if (bd2 instanceof CameraRegion){
-                        Array<CameraRegion> cameraRegions = cat.getCameraRegions();
+                        Array<CameraRegion> cameraRegions = level.getCameraRegions();
                         ((CameraRegion) bd2).addFixture();
                         if(!cameraRegions.contains((CameraRegion) bd2,true)){
                             cameraRegions.add((CameraRegion) bd2);
@@ -262,21 +262,20 @@ public class CollisionController implements ContactListener, ContactFilter {
                     }
 
                     if (bd2 instanceof CameraRegion) {
-
                         ((CameraRegion) bd2).removeFixture();
-                        Array<CameraRegion> cameraRegions = cat.getCameraRegions();
+                        Array<CameraRegion> cameraRegions = level.getCameraRegions();
                         for(int index = 0; index < cameraRegions.size; index++){
                             if(cameraRegions.get(index) == bd2 && cameraRegions.get(index).getFixtureCount() == 0){
                                 cameraRegions.removeIndex(index);
                             }
                             break;
                         }
-                        if (cameraRegions.isEmpty()) {
+                        if(level.getCameraRegions().isEmpty()){
                             if(level.getCat().isActive())
                                 camera.setDefaultZoom(Camera.CAMERA_ZOOM);
                             camera.setGameplayBounds(camera.getLevelBounds(), level.getScale(), false);
                         }
-                        else{
+                        else {
                             CameraRegion relevantRegion = maxCollidingCamRegion(cameraRegions);
                             camera.setDefaultZoom(relevantRegion.getZoom());
                             if(relevantRegion.shouldSnap()){

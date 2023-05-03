@@ -139,11 +139,6 @@ public class Cat extends CapsuleObstacle implements Movable {
      */
     private boolean isClimbing;
 
-    /**
-     * Camera regions we are currently in contact with
-     */
-    private Array<CameraRegion> cameraRegions;
-
     private int dashTimer = 0;
     private final Vector2 dashCache = new Vector2();
     private int wallJumpTimer = 0;
@@ -479,13 +474,6 @@ public class Cat extends CapsuleObstacle implements Movable {
             this.facingRight = facingRight;
         }
     }
-
-    /**
-     * @return cameraRegion colliding with most amount of fixtures
-     */
-    public Array<CameraRegion> getCameraRegions(){
-        return cameraRegions;
-    }
     public ObjectMap<String, Integer> getSpiritRegions() {
         return spiritRegions;
     }
@@ -575,7 +563,6 @@ public class Cat extends CapsuleObstacle implements Movable {
         leftSensorName = "catLeftSensor";
         sensorShapes = new Array<>();
         groundFixtures = new ObjectSet<>();
-        cameraRegions = new Array<>();
         spiritRegions = new ObjectMap<>();
         soundBuffer = new HashSet<>();
 

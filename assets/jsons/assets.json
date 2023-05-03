@@ -56,7 +56,7 @@
         "controls": "jsons/controls.json",
         "tiledSuperJump": "levels/super-jump.json",
         "tiledLevelTutorial": "levels/tiledLevelTutorial1.json",
-        "tiledLevel1": "levels/dev/level-template.json",
+        "tiledLevel1": "levels/spikes-deaths-easy.json",
         "tiledLevel2": "levels/level-beta-med1.json",
         "tiledLevel3": "levels/body-switching-chain-medium.json",
         "tiledLevel4": "levels/super-jump.json",

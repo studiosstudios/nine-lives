@@ -1,5 +1,7 @@
 package edu.cornell.gdiac.game;
 
+import box2dLight.PointLight;
+import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
@@ -102,6 +104,9 @@ public class Level {
     /** joints added between obstacles in this level */
     private Array<Joint> joints = new Array<>();
     private Array<Particle> spiritParticles = new Array<>();
+
+    /** Current RayHandler associated with the active world for convenience. */
+    private RayHandler rayHandler;
 
 
     /**
@@ -279,6 +284,15 @@ public class Level {
     public void setWorld(World world) { this.world = world; }
 
     /**
+     * Sets the level's ray handler for Box2DLights
+     * <br>
+     * Note that currently a new Ray Handler does not do anything unless the world's objects are
+     * created with their associated lights linked to the new ray handler.
+     * @param rayHandler new ray handler that this world should use
+     */
+    public void setRayHandler(RayHandler rayHandler) { this.rayHandler = rayHandler; }
+
+    /**
      * Sets whether the player died in the level
      *
      * @param died the value to set died to
@@ -333,11 +347,12 @@ public class Level {
      * @param scale Drawing scale
      * @param numLives Number of lives
      */
-    public Level(World world, Vector2 scale, int numLives) {
+    public Level(World world, Vector2 scale, int numLives, RayHandler rayHandler) {
         this.world  = world;
         this.bounds = new Rectangle();
         this.scale = scale;
         this.numLives = numLives;
+        this.rayHandler = rayHandler;
         maxLives = numLives;
         complete = false;
         failed = false;
@@ -994,6 +1009,7 @@ public class Level {
         assert inBounds(obj) : "Object is not in bounds";
         objects.add(obj);
         obj.activatePhysics(world);
+        obj.createLight(rayHandler);
         if (propertiesMap.containsKey("name")) {
             objectNames.put((String) propertiesMap.get("name"), obj);
         }

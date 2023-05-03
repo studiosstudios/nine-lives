@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="32" height="15" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="23" nextobjectid="69">
+ <editorsettings>
+  <export target="../nine-lives/assets/tiled/spikes-testing.json" format="json"/>
+ </editorsettings>
+ <properties>
+  <property name="biome" propertytype="biome" value="metal"/>
+ </properties>
+ <tileset firstgid="1" source="../../objects/objects.tsx"/>
+ <tileset firstgid="58" source=":/automap-tiles.tsx"/>
+ <tileset firstgid="63" source="../../tilesets/metal-walls.tsx"/>
+ <layer id="17" name="metalWalls" width="32" height="15">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,65,65,66,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,76,77,78,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,90,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,90,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,89,90,0,0,0,0,0,0,0,0,0,0,0,
+76,77,77,77,78,0,0,0,0,0,0,0,76,77,77,77,77,77,108,89,107,77,77,77,77,77,77,77,77,77,77,78,
+88,89,89,89,107,77,77,77,77,77,77,77,108,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,90,
+88,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,90,
+100,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,102
+</data>
+ </layer>
+ <objectgroup id="2" name="cat">
+  <object id="1" gid="2" x="0" y="10240" width="1024" height="1024"/>
+ </objectgroup>
+ <objectgroup id="4" name="flamethrowers"/>
+ <objectgroup id="3" name="checkpoints">
+  <object id="59" gid="3" x="25600" y="4096" width="1024" height="2048"/>
+  <object id="60" gid="3" x="12288" y="9216" width="1024" height="2048"/>
+  <object id="61" gid="3" x="28672" y="4096" width="1024" height="2048"/>
+ </objectgroup>
+ <objectgroup id="6" name="lasers"/>
+ <objectgroup id="7" name="mobs"/>
+ <objectgroup id="8" name="spikes">
+  <object id="31" gid="7" x="5120" y="11264" width="1024" height="1024">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+   </properties>
+  </object>
+  <object id="32" gid="7" x="6144" y="11264" width="1024" height="1024">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+   </properties>
+  </object>
+  <object id="33" gid="7" x="7168" y="11264" width="1024" height="1024">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+   </properties>
+  </object>
+  <object id="34" gid="7" x="8192" y="11264" width="1024" height="1024">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+   </properties>
+  </object>
+  <object id="35" gid="7" x="9216" y="11264" width="1024" height="1024">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+   </properties>
+  </object>
+  <object id="36" gid="7" x="17408" y="10240" width="1024" height="1024" rotation="270">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+   </properties>
+  </object>
+  <object id="41" gid="7" x="22528" y="9216" width="1024" height="1024" rotation="90">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+   </properties>
+  </object>
+  <object id="37" gid="7" x="17408" y="9216" width="1024" height="1024" rotation="270">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+   </properties>
+  </object>
+  <object id="42" gid="7" x="22528" y="8192" width="1024" height="1024" rotation="90">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+   </properties>
+  </object>
+  <object id="39" gid="7" x="17408" y="11264" width="1024" height="1024" rotation="270">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+   </properties>
+  </object>
+  <object id="40" gid="7" x="22528" y="10240" width="1024" height="1024" rotation="90">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+   </properties>
+  </object>
+  <object id="44" gid="7" x="27648" y="8192" width="1024" height="1024" rotation="180">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+   </properties>
+  </object>
+  <object id="45" gid="7" x="26624" y="8192" width="1024" height="1024" rotation="180">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+   </properties>
+  </object>
+  <object id="46" gid="7" x="28672" y="8192" width="1024" height="1024" rotation="180">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+   </properties>
+  </object>
+  <object id="47" gid="7" x="29696" y="8192" width="1024" height="1024" rotation="180">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="15" name="activators">
+  <object id="48" gid="1" x="19456" y="6144" width="1024" height="1024">
+   <properties>
+    <property name="id" value="switch1"/>
+    <property name="type" propertytype="activators" value="switch"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="9" name="doors"/>
+ <objectgroup id="16" name="spiritRegions"/>
+ <objectgroup id="10" name="platforms"/>
+ <objectgroup id="12" name="wallsPoly">
+  <object id="56" x="0" y="11264">
+   <polygon points="0,0 5120,0 5120,1024 12288,1024 12288,0 18432,0 18432,-4096 21504,-4096 21504,0 32768,0 32768,4096 0,4096"/>
+  </object>
+  <object id="57" x="25600" y="6144">
+   <polygon points="0,0 0,1024 4096,1024 4096,0"/>
+  </object>
+ </objectgroup>
+ <objectgroup id="13" name="mirrors"/>
+ <objectgroup id="14" name="boxes"/>
+ <objectgroup id="11" name="exits">
+  <object id="50" type="Exit" x="-1024" y="6144" width="1024" height="5120">
+   <properties>
+    <property name="type" propertytype="exitType" value="return"/>
+   </properties>
+  </object>
+  <object id="51" type="Exit" x="32768" y="5120" width="1024" height="6144"/>
+ </objectgroup>
+</map>

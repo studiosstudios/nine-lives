@@ -10,6 +10,7 @@
  */
 package edu.cornell.gdiac.game.object;
 
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -23,6 +24,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.game.*;
+import edu.cornell.gdiac.game.Camera;
 import edu.cornell.gdiac.game.obstacle.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -349,16 +351,42 @@ public class Cat extends CapsuleObstacle implements Movable {
     /**
      * Utility function that "resets" field relating to when the cat becomes grounded, such as
      * regaining the ability to dash. This has been factored out to decouple the cases where we
-     * might want to reset some abilities even if the cat has not strictly become grounded.
+     * might want to reset some abilities even if the cat has not strictly become grounded. That
+     * means the cat should not be set to grounded here.
      */
     public void onGroundedReset() {
         canDash = true;
         dashTimer = 0;
-        jumpTime = 0;
-        meowTime = 0;
         jumpMovement = jumpForce;
         setOrientation(Orientation.TOP);
     }
+
+    /**
+     * Utility function that fully resets the cat to a neutral state. That is, as if the cat is:
+     * - grounded
+     * - has no dash shadows
+     * - state == Move
+     * Centralizes the logic of resetting the cat.
+     */
+    public void reset() {
+        onGroundedReset();
+        setGravityScale(2);
+        setLinearVelocity(Vector2.Zero);
+        dashShadowQueue.clear();
+        isGrounded = true;
+        jumpPressed = false;
+        canDash = true;
+        isMeowing = false;
+        stationaryTime = 0;
+        jumpTime = 0;
+        meowTime = 0;
+        walkTime = 0;
+        failedSwitchTicks = FAILED_SWITCH_TICKS;
+        state = State.MOVING;
+        currentFrame = normalTexture;
+        facingRight = true;
+    }
+
 
     /**
      * Whether the cat is currently climbing
@@ -473,7 +501,6 @@ public class Cat extends CapsuleObstacle implements Movable {
             this.facingRight = facingRight;
         }
     }
-
     public ObjectMap<String, Integer> getSpiritRegions() {
         return spiritRegions;
     }
@@ -569,10 +596,8 @@ public class Cat extends CapsuleObstacle implements Movable {
         normalTexture = tMap.get("cat");
         jumpTexture = tMap.get("jump");
         sitTexture = tMap.get("sit");
-        currentFrame = sitTexture;
 
         walkAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("walk-anim").getTexture(),2048,2048)[0]);
-
         jumpAnimation = new Animation<>(0.025f, TextureRegion.split(tMap.get("jump-anim").getTexture(),2048,2048)[0]);
         meowAnimation = new Animation<>(0.05f, TextureRegion.split(tMap.get("meow-anim").getTexture(),2048,2048)[0]);
         meowAnimation.setPlayMode(Animation.PlayMode.REVERSED);
@@ -582,21 +607,8 @@ public class Cat extends CapsuleObstacle implements Movable {
         idleAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
         walkAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
-        jumpTime = 0f;
-        meowTime = 0f;
-        walkTime = 0f;
-        stationaryTime = 0f;
-        failedSwitchTicks = FAILED_SWITCH_TICKS;
-
         // Gameplay attributes
-        state = State.MOVING;
-        setGravityScale(2f);
-        onGroundedReset();
-        isGrounded = true; // We set this to true in constructor to prevent the grounded sound from playing on spawn
-        canDash = true;
-        jumpPressed = false;
-        isMeowing = false;
-        facingRight = true;
+        reset();
         setName("cat");
     }
 
@@ -666,6 +678,13 @@ public class Cat extends CapsuleObstacle implements Movable {
         sensorFixture.setUserData(name);
         sensorShapes.add(sensorShape);
         return sensorFixture;
+    }
+
+    public void createLight(RayHandler rayHandler) {
+        createPointLight(objectConstants.get("light"), rayHandler);
+        getLight().attachToBody(getBody());
+        getLight().setSoft(true);
+        getLight().setXray(true);
     }
 
     /**
@@ -958,14 +977,14 @@ public class Cat extends CapsuleObstacle implements Movable {
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
         for (PolygonShape shape : sensorShapes) {
-            float xTranslate = (canvas.getCamera().getX() - canvas.getWidth() / 2) / drawScale.x;
-            float yTranslate = (canvas.getCamera().getY() - canvas.getHeight() / 2) / drawScale.y;
-            canvas.drawPhysics(shape, Color.RED, getX() - xTranslate, getY() - yTranslate,
-                    getAngle(), drawScale.x, drawScale.y);
+//            float xTranslate = (canvas.getCamera().getX() - canvas.getWidth() / 2) / drawScale.x;
+//            float yTranslate = (canvas.getCamera().getY() - canvas.getHeight() / 2) / drawScale.y;
+            canvas.drawPhysics(shape, Color.RED, getX(), getY(), getAngle(), drawScale.x, drawScale.y);
         }
         debugPrint();
 
     }
+
 
     public void debugPrint() {
 //        System.out.println("STATE: "+state);

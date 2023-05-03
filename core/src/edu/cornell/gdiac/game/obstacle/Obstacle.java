@@ -17,10 +17,15 @@
  */
 package edu.cornell.gdiac.game.obstacle;
 
+import box2dLight.Light;
+import box2dLight.PointLight;
+import box2dLight.RayHandler;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.*;  // For GameCanvas
 
@@ -79,6 +84,8 @@ public abstract class Obstacle {
 	protected Vector2 relativeVelocity = new Vector2();
 	/** Hashmap to store data if this obstacle is paused. */
 	private ObjectMap<String, Object> pausedState;
+	/** box2dlight associated with this object */
+	private Light light;
 
 	/// BodyDef Methods
 	/**
@@ -363,6 +370,43 @@ public abstract class Obstacle {
 	 */
 	public void setAngularVelocity(float value) {
 		bodyinfo.angularVelocity = value;
+	}
+
+	/**
+	 * @return the light associated with this obstacle (may be null)
+	 */
+	public Light getLight() { return light; }
+
+	/**
+	 * Sets the box2dlight associated with this obstacle
+	 *
+	 * @param l the box2dlight to associate with this obstacle
+	 */
+	public void setLight(Light l) { light = l;}
+
+	/**
+	 * Sets the current light associated with this obstacle to active, if such light exists
+	 *
+	 * @param active Whether the current light should be active
+	 */
+	public void setLightActive(boolean active) { if (light != null) light.setActive(active); }
+
+	/**
+	 * Creates a box2dlight PointLight given a valid objectConstants and rayHandler
+	 * <br><br>
+	 * The objectConstants should contain the following fields:<br>
+	 * 	light: {
+	 * 	  distance,
+	 * 	  color,
+	 * 	  offset
+	 * 	}
+	 * <br>
+	 * @param objectConstants valid JSON of object constants corresponding to this obstacle
+	 * @param rayHandler Ray handler currently associated with the active world
+	 */
+	public void createPointLight(JsonValue lightData, RayHandler rayHandler) {
+		float xOffset = lightData.get("offset").getFloat(0), yOffset = lightData.get("offset").getFloat(1);
+		light = new PointLight(rayHandler, 100, Color.valueOf(lightData.getString("color")), lightData.getFloat("distance"), xOffset, yOffset);
 	}
 	
 	/**
@@ -1128,6 +1172,14 @@ public abstract class Obstacle {
 	 * @param world Box2D world that stores body
 	 */
 	public abstract void deactivatePhysics(World world);
+
+	/**
+	 * TODO: Make this abstract
+	 * Creates the appropriate light for this object, be it a PointLight or ConeLight, with
+	 * appropriate setting (XRay, soft, etc)
+	 * @param rayHandler Ray Handler associated with the currently active box2d world
+	 */
+	public void createLight(RayHandler rayHandler) {}
 
 	/**
 	 * Updates the object's physics state (NOT GAME LOGIC).

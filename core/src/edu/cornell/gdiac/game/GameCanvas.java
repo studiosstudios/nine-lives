@@ -290,8 +290,8 @@ public class GameCanvas {
 	}
 
 	/** Activates the ExtendViewport for drawing to canvas */
-	public void applyViewport() {
-		extendView.apply(true);
+	public void applyViewport(boolean centered) {
+		extendView.apply(centered);
 	}
 
 	/**
@@ -346,6 +346,10 @@ public class GameCanvas {
 			break;
 		}
 		blend = state;
+	}
+
+	public Viewport getViewport() {
+		return extendView;
 	}
 	
 	/**

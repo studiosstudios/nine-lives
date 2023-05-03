@@ -479,6 +479,7 @@ public class ActionController {
             level.setDied(true);
             // decrement lives
             level.setNumLives(level.getNumLives()-1);
+            level.getCat().setLightActive(false);
             // 0 lives
             if (level.getNumLives() <= 0) {
                 level.resetLives();

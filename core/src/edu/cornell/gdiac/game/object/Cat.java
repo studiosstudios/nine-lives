@@ -384,6 +384,7 @@ public class Cat extends CapsuleObstacle implements Movable {
         failedSwitchTicks = FAILED_SWITCH_TICKS;
         state = State.MOVING;
         currentFrame = normalTexture;
+        facingRight = true;
     }
 
 

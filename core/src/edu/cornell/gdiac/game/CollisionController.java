@@ -141,8 +141,6 @@ public class CollisionController implements ContactListener, ContactFilter {
                         actionController.recombineLives();
                     }
                     if (bd2 instanceof CameraRegion){
-                        System.out.println("collision with camera region");
-                        System.out.println(bd2.isAwake());
                         Array<CameraRegion> cameraRegions = level.getCameraRegions();
                         ((CameraRegion) bd2).addFixture();
                         if(!cameraRegions.contains((CameraRegion) bd2,true)){

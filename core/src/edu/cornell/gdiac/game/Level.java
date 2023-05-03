@@ -1003,6 +1003,9 @@ public class Level {
     public void pause(){
         for (Obstacle obj : objects) {
             obj.pause();
+            if(obj instanceof CameraRegion){
+                obj.setActive(false);
+            }
         }
     }
 
@@ -1012,6 +1015,9 @@ public class Level {
     public void unpause(){
         for (Obstacle obj : objects) {
             obj.unpause();
+            if(obj instanceof CameraRegion){
+                obj.setActive(true);
+            }
         }
     }
 

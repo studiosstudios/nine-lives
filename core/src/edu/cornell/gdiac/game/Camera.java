@@ -29,9 +29,9 @@ public class Camera {
     /** Rate at which camera glides on zoom change **/
     private final float CAMERA_GLIDE_CHANGE_ZOOM = 0.5f;
     /** Rate at which camera zooms normally **/
-    public static final float ZOOM_RATE_NORMAL = 0.01f;
+    private final float ZOOM_RATE_NORMAL = 0.01f;
     /** Rate at which camera zooms on camera region collision **/
-    public static final float ZOOM_RATE_CAMERA_REGION = 0.005f;
+    private final float ZOOM_RATE_CAMERA_REGION = 0.005f;
     /** Current rate at which camera zooms **/
     private float zoomRate;
     private float cameraGlideRate;
@@ -216,25 +216,6 @@ public class Camera {
     }
 
     /**
-     * Determines at how much at an offset to draw when level bounds smaller than viewport and entire level needs to be
-     * drawn at an offset
-     */
-    public Vector2 centerLevelTranslation(){
-//        float levelHeight = levelBounds.height / camera.zoom;
-//        float levelWidth = levelBounds.width / camera.zoom;
-//        float xVal = 0;
-//        float yVal = 0;
-//        if(levelWidth < viewportWidth){
-//            xVal = (viewportWidth - levelWidth)/1.4f;
-//        }
-//        if(levelHeight < viewportHeight){
-//            yVal = (viewportHeight - levelHeight)/1.4f;
-//        }
-//        return new Vector2(xVal, yVal);
-        return new Vector2(0,0);
-    }
-
-    /**
      * @return x-coordinate of camera position
      */
     public float getX(){
@@ -273,6 +254,7 @@ public class Camera {
             System.out.println("rip setGlideMode lmao");
         }
     }
+
     /**
      * Gets mode name associated with camera glide rate
      */
@@ -300,7 +282,7 @@ public class Camera {
             zoomRate = ZOOM_RATE_NORMAL;
         }
         else if(mode.equals("CAMERA_REGION")){
-            zoomRate =ZOOM_RATE_CAMERA_REGION;
+            zoomRate = ZOOM_RATE_CAMERA_REGION;
         }
         else{
             System.out.println("oof");

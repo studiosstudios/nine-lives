@@ -22,8 +22,9 @@ public class NineLives extends Game implements ScreenListener {
 	private StageController menu;
 	/** The WorldController that contains all LevelControllers*/
 	private GameController controller;
-
 	private final int TOTAL_LEVELS = 7;
+	private boolean quickLaunchFromTiled;
+	private String filepath;
 
 	/**
 	 * Creates a new game from the configuration settings.
@@ -31,7 +32,10 @@ public class NineLives extends Game implements ScreenListener {
 	 * This method configures the asset manager, but does not load any assets
 	 * or assign any screen.
 	 */
-	public NineLives() { }
+	public NineLives(boolean quickLaunchFromTiled, String filepath) {
+		this.quickLaunchFromTiled = quickLaunchFromTiled;
+		this.filepath = filepath;
+	}
 
 	/**
 	 * Called when the Application is first created.
@@ -85,6 +89,7 @@ public class NineLives extends Game implements ScreenListener {
 	 * @param height The new height in pixels
 	 */
 	public void resize(int width, int height) {
+		Gdx.gl.glViewport(0, 0, width, height);
 		canvas.resize();
 		super.resize(width,height);
 	}
@@ -96,11 +101,15 @@ public class NineLives extends Game implements ScreenListener {
 	 */
 	private void startGame(int numLevels, int startLevel){
 		directory = menu.getAssets();
-		controller = new GameController(numLevels);
+		if (quickLaunchFromTiled) {
+			controller = new GameController(filepath);
+		} else {
+			controller = new GameController(numLevels);
+		}
 		controller.gatherAssets(directory);
-		controller.setScreenListener(this);
 		controller.setCanvas(canvas);
-		controller.init(startLevel);
+		controller.init(quickLaunchFromTiled ? 1 : startLevel);
+		controller.setScreenListener(this);
 		setScreen(controller);
 		menu.dispose();
 		menu = null;

@@ -244,6 +244,11 @@ public class InputController {
 		return isClicked("debug");
 	}
 
+	/**
+	 * Returns true if player wants to pan the map
+	 *
+	 * @return true if the player wants to pan the map
+	 */
 	public boolean didPan() {
 		return pressedMap.get("pan");
 	}
@@ -347,16 +352,16 @@ public class InputController {
 		}
 		else {
 			if (pressedMap.get("right")) {
-				camHorizontal += 4.0f;
+				camHorizontal += 8f;
 			}
 			if (pressedMap.get("left")) {
-				camHorizontal -= 4.0f;
+				camHorizontal -= 8f;
 			}
 			if (pressedMap.get("up")) {
-				camVertical += 4.0f;
+				camVertical += 8f;
 			}
 			if (pressedMap.get("down")) {
-				camVertical -= 4.0f;
+				camVertical -= 8f;
 			}
 		}
 		if (writeFile != null){

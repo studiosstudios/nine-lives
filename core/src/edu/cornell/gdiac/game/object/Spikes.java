@@ -216,12 +216,12 @@ public class Spikes extends BoxObstacle implements Activatable {
      */
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
-        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
-        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+//        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+//        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
         if (activated) {
 //            System.out.println(drawScale);
             for (PolygonShape shape : fixtureShapes) {
-                canvas.drawPhysics(shape, Color.RED, getX() - xTranslate, getY() - yTranslate,
+                canvas.drawPhysics(shape, Color.RED, getX(), getY(),
                         getAngle(), drawScale.x, drawScale.y);
             }
         }

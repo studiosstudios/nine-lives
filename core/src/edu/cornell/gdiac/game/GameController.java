@@ -116,8 +116,9 @@ public class GameController implements Screen {
     private static final float MAX_UNDO_TIME = 120f;
     public StageController stageController = null;
     public boolean paused = false;
-
     public HudStage hud;
+    /** only not null if quick launched from Tiled */
+    private JsonValue quickLaunchLevel;
 
     /**
      * PLAY: User has all controls and is in game
@@ -137,7 +138,6 @@ public class GameController implements Screen {
     private boolean justRespawned;
     /** The color of the flash animation after resetting/undoing */
     private Color flashColor = new Color(1, 1, 1, 0);
-
     /** RayHandler that takes care of Box2DLights. This MUST be associated with the active World at all times. */
     private RayHandler rayHandler;
 
@@ -161,6 +161,7 @@ public class GameController implements Screen {
      */
     public void setCanvas(GameCanvas canvas) {
         this.canvas = canvas;
+        collisionController.setCamera(canvas.getCamera());
     }
 
     /**
@@ -281,6 +282,19 @@ public class GameController implements Screen {
     }
 
     /**
+     * Creates a new game world with the default values.
+     * <br><br>
+     * The game world is scaled so that the screen coordinates do not agree
+     * with the Box2D coordinates.  The bounds are in terms of the Box2d
+     * world, not the screen.
+     */
+    protected GameController(String filepath) {
+        this(new Vector2(0,DEFAULT_GRAVITY), new Vector2(DEFAULT_SCALE,DEFAULT_SCALE), 1);
+        JsonReader json = new JsonReader();
+        quickLaunchLevel = json.parse(Gdx.files.internal(filepath));
+    }
+
+    /**
      * Creates and initialize a new instance of a GameController
      * <br><br>
      * The game world is scaled so that the screen coordinates do not agree
@@ -386,7 +400,9 @@ public class GameController implements Screen {
      * @param levelNum the number associated with the level to be loaded in
      * @return JSON of the level
      */
-    private JsonValue tiledJSON(int levelNum){ return directory.getEntry("tiledLevel" + levelNum, JsonValue.class); }
+    private JsonValue tiledJSON(int levelNum){
+        return quickLaunchLevel == null ? directory.getEntry("tiledLevel" + levelNum, JsonValue.class) : quickLaunchLevel;
+    }
 
     /**
      * Gather the assets for this controller.
@@ -555,8 +571,9 @@ public class GameController implements Screen {
         actionController.setLevel(currLevel);
         actionController.setMobControllers(currLevel);
         if (currLevel.levelStates().size == 0) currLevel.saveState();
-        canvas.getCamera().setLevelBounds(currLevel.bounds, scale);
-        canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, cameraGlide);
+        canvas.getCamera().setLevelBounds(currLevel.bounds, scale, true);
+        canvas.getCamera().setGameplayBounds(currLevel.bounds, scale, true);
+        canvas.getCamera().updateCamera(currLevel.getCat().getPosition().x*scale.x, currLevel.getCat().getPosition().y*scale.y, cameraGlide, canvas.getCamera().getGameplayBounds());
         currLevel.unpause();
         nextLevel.pause();
         prevLevel.pause();
@@ -706,7 +723,7 @@ public class GameController implements Screen {
         if(input.didPan()){
             gameState = GameState.PLAYER_PAN;
             //move camera
-            cam.updateCamera(cam.getX()+input.getCamHorizontal(),cam.getY()+ input.getCamVertical(),false);
+            cam.updateCamera(cam.getX()+input.getCamHorizontal(),cam.getY()+ input.getCamVertical(),false, cam.getLevelBounds());
         }
         else if(gameState == GameState.PLAYER_PAN){
             gameState = GameState.PLAY;
@@ -733,47 +750,55 @@ public class GameController implements Screen {
                 gameState = GameState.RESPAWN;
             }
             else {
+                currLevel.getCat().setActive(true);
                 //zoom normal when in play state and not panning and not switching bodies
                 if (!input.holdSwitch() && !input.didPan()) {
-                    cam.zoomOut(false);
+                    cam.setZoom(false, -1f);
                 }
                 DeadBody nextDeadBody = currLevel.getNextBody();
                 if (input.holdSwitch() && nextDeadBody != null) {
                     cam.setGlideMode("SWITCH_BODY");
                     cam.switchBodyCam(nextDeadBody.getX() * scale.x, nextDeadBody.getY() * scale.y);
                 } else {
-                    cam.setGlideMode("NORMAL");
-                    cam.updateCamera(x_pos, y_pos, true);
+                    if(cam.getGlideMode() == "SWITCH_BODY")
+                        cam.setGlideMode("NORMAL");
+                    cam.updateCamera(x_pos, y_pos, true, cam.getGameplayBounds());
                 }
             }
+
+            /** Handles cat dying in cameraRegion and respawning in non-cameraRegion **/
+            if(currLevel.getCameraRegions().isEmpty() && currLevel.getCat().isActive()){
+                canvas.getCamera().setDefaultZoom(Camera.CAMERA_ZOOM);
+                cam.setGameplayBounds(cam.getLevelBounds(), currLevel.getScale(), false);
+            }
         }
-        if(gameState == GameState.PAN){
-            cam.updateCamera(panTarget.get(0).getXPos()*scale.x,panTarget.get(0).getYPos()*scale.y, true);
-            if(!cam.isGliding()){
+        if(gameState == GameState.PAN) {
+            cam.updateCamera(panTarget.get(0).getXPos() * scale.x, panTarget.get(0).getYPos() * scale.y, true, cam.getLevelBounds());
+            if (!cam.isGliding()) {
                 panTime += 1;
-                if(panTime == PAN_HOLD){
+                if (panTime == PAN_HOLD) {
                     gameState = GameState.PLAY;
                 }
             }
         }
         if(gameState == GameState.PLAYER_PAN){
-            cam.zoomOut(true);
+            cam.setZoom(true, 1.0f);
         }
         if(gameState == GameState.RESPAWN){
-            float xPos = currLevel.getCat().getPosition().x*scale.x;
-            float yPos = currLevel.getCat().getPosition().y*scale.y;
+
+            float xPos = currLevel.getRespawnPos().x*scale.x;
+            float yPos = currLevel.getRespawnPos().y*scale.y;
             input.setDisableAll(true);
             respawnDelay += 1;
             if(currLevel.getdeadBodyArray().size > 0 && respawnDelay < RESPAWN_DELAY/2){
                 xPos = currLevel.getdeadBodyArray().get(currLevel.getdeadBodyArray().size-1).getX()*scale.x;
                 yPos = currLevel.getdeadBodyArray().get(currLevel.getdeadBodyArray().size-1).getY()*scale.y;
             }
-            cam.updateCamera(xPos, yPos, true);
+            cam.updateCamera(xPos, yPos, true, cam.getGameplayBounds());
             if(respawnDelay == RESPAWN_DELAY){
                 respawnDelay = 0;
                 input.setDisableAll(false);
                 gameState = GameState.PLAY;
-
                 currLevel.getCat().setActive(true);
                 currLevel.getCat().setLightActive(true);
                 currLevel.getCat().setPosition(currLevel.getRespawnPos());

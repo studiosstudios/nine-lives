@@ -80,6 +80,10 @@ public class Level {
     private Checkpoint currCheckpoint;
     private final Array<Laser> lasers;
     private final Array<SpiritRegion> spiritRegionArray;
+    /**
+     * Camera regions we are currently in contact with
+     */
+    private Array<CameraRegion> cameraRegions;
     /** The respawn position of the player */
     private Vector2 respawnPos;
 
@@ -145,6 +149,13 @@ public class Level {
      */
     public Cat getCat() {
         return cat;
+    }
+
+    /**
+     * @return cameraRegion colliding with most amount of fixtures
+     */
+    public Array<CameraRegion> getCameraRegions(){
+        return cameraRegions;
     }
 
     /**
@@ -364,6 +375,7 @@ public class Level {
         lasers = new Array<>();
         mobArray = new Array<>();
         spiritRegionArray = new Array<>();
+        cameraRegions = new Array<>();
         activationRelations = new HashMap<>();
         spiritMode = false;
         spiritLine = new SpiritLine(Color.WHITE, Color.CYAN, scale);
@@ -587,6 +599,8 @@ public class Level {
                 populateCat(obstacleData, tileSize, levelHeight, populateCat);
             } else if (name.equals("exits")) {
                 populateExits(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("cameraRegions")) {
+                populateCameraRegions(obstacleData, tileSize, levelHeight);
             } else if (name.equals("goal")) {
                 populateGoal(obstacleData, tileSize, levelHeight);
             }
@@ -842,13 +856,29 @@ public class Level {
     }
 
     /**
+     * Populates the cameraRegions for this level.
+     *
+     * @param data          Tiled JSON data for all exits
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
+    private void populateCameraRegions(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize, levelHeight);
+            CameraRegion cameraRegion = new CameraRegion(propertiesMap, scale, bounds);
+            addObject(cameraRegion);
+        }
+    }
+
+    /**
      * Populates the cat for this level.
      *
      * @param data          Tiled JSON data for the cat
      * @param tileSize      Tile size in the Tiled JSON
      * @param levelHeight   Level height in Box2D units
      */
-    private void populateCat(JsonValue data, int tileSize, int levelHeight, boolean shouldPopulate){
+    private void populateCat(JsonValue data, int tileSize, int levelHeight, boolean shouldPopulate) {
         try {
             JsonValue objects = data.get("objects");
             JsonValue catJV = objects.get(0);
@@ -861,7 +891,7 @@ public class Level {
             } else {
                 cat = null;
             }
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             throw new InvalidTiledJSON("level must contain a cat");
         }
     }
@@ -988,6 +1018,9 @@ public class Level {
     public void pause(){
         for (Obstacle obj : objects) {
             obj.pause();
+            if(obj instanceof CameraRegion){
+                obj.setActive(false);
+            }
         }
     }
 
@@ -997,6 +1030,9 @@ public class Level {
     public void unpause(){
         for (Obstacle obj : objects) {
             obj.unpause();
+            if(obj instanceof CameraRegion){
+                obj.setActive(true);
+            }
         }
     }
 
@@ -1178,18 +1214,18 @@ public class Level {
     public void drawDebug(GameCanvas canvas){
         //draw grid
         Color lineColor = new Color(0.8f, 0.8f, 0.8f, 1);
-        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/scale.x;
-        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/scale.y;
-        for (int x = 0; x < bounds.width; x++) {
-            Vector2 p1 = new Vector2(x-xTranslate, 0-yTranslate);
-            Vector2 p2 = new Vector2(x-xTranslate, bounds.height-yTranslate);
-            canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
-        }
-        for (int y = 0; y < bounds.height; y++) {
-            Vector2 p1 = new Vector2(0-xTranslate, y-yTranslate);
-            Vector2 p2 = new Vector2(bounds.width-xTranslate, y-yTranslate);
-            canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
-        }
+//        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/scale.x;
+//        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/scale.y;
+//        for (int x = 0; x < bounds.width; x++) {
+//            Vector2 p1 = new Vector2(x, 0);
+//            Vector2 p2 = new Vector2(x, bounds.height);
+//            canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
+//        }
+//        for (int y = 0; y < bounds.height; y++) {
+//            Vector2 p1 = new Vector2(0, y);
+//            Vector2 p2 = new Vector2(bounds.width, y);
+//            canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
+//        }
         for (Obstacle obj : objects) {
             obj.drawDebug(canvas);
         }
@@ -1263,7 +1299,6 @@ public class Level {
      * @param s1  Set 1
      * @param s2  Set 2
      * @return    True if set 1 and set 2 share any element, or if both are empty.
-     * @param <T> The type of elements in s1 and s2
      */
     private <K, V> boolean sharesKey(ObjectMap<K, V> s1, ObjectMap<K, V> s2){
         if (s1.isEmpty() && s2.isEmpty()) return true;

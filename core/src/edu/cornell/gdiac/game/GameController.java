@@ -117,8 +117,11 @@ public class GameController implements Screen {
     public StageController stageController = null;
     public boolean paused = false;
     public HudStage hud;
+    /** Number of frames in spirit mode. */
     private int spiritModeTicks;
+    /** Number of frames required for VFX effects to reach maximum strength. */
     private final static int MAX_SPIRIT_MODE_TICKS = 30;
+    /** Strength of VFX effects - always between 0 and 1. */
     private float effectSize;
     /** only not null if quick launched from Tiled */
     private JsonValue quickLaunchLevel;
@@ -723,15 +726,16 @@ public class GameController implements Screen {
 
     /**
      * Updates parameters for the vfx depending on how long the player has been in spirit mode.
+     *
+     * @param increasing    true if effect strength should increase
+     * @param justPressed   if the switch button was just pressed
+     * @param dt            time since last frame
      */
     private void updateVFX(boolean increasing, boolean justPressed, float dt){
 
         if (justPressed) {
             canvas.shockwaveEffect.setTime(0);
-            Vector2 catPixelPos = currLevel.getCat().getPosition().scl(scale);
-            catPixelPos = canvas.projectRatio(currLevel.getCat().getPosition().scl(scale));
-            System.out.println(catPixelPos);
-            canvas.shockwaveEffect.setCenter(catPixelPos);
+            canvas.shockwaveEffect.setCenter(canvas.projectRatio(currLevel.getCat().getPosition().scl(scale)));
         }
 
         if (!increasing) {
@@ -965,8 +969,6 @@ public class GameController implements Screen {
         canvas.begin();
         canvas.applyViewport(false);
         canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight());
-
-        if (vfx) canvas.batchEnd();
 
         if (true) { //TODO: only draw when necessary
             prevLevel.draw(canvas, false, vfx);

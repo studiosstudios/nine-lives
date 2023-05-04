@@ -110,10 +110,13 @@ public class GameCanvas {
 	/** Cache object to handle raw textures */
 	private TextureRegion holder;
 	private final float CAMERA_ZOOM = 0.6f;
+	/** VfxManager for applying VFXs */
 	private VfxManager vfxManager;
+	/** Chromatic aberration - blurs, warps and rgb color distorts towards edge of screen */
 	protected ChromaticAberrationEffect chromaticAberrationEffect;
+	/** Bloom effect - makes white objects glow more */
 	protected BloomEffect bloomEffect;
-
+	/** Shockwave effect */
 	protected ShockwaveEffect shockwaveEffect;
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
@@ -330,9 +333,11 @@ public class GameCanvas {
 	 * weird scaling issues.
 	 */
 	 public void resize() {
-		spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, getWidth(), getHeight());
-		 if (width != 0 && height != 0)vfxManager.resize(getWidth(), getHeight());
-		viewport.update(getWidth(), getHeight(), true);
+		 width = getWidth();
+		 height = getHeight();
+		 spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
+		 if (getWidth() != 0 && getHeight() != 0) vfxManager.resize(width, height);
+		 viewport.update(width, height, true);
 	}
 	
 	/**
@@ -435,6 +440,10 @@ public class GameCanvas {
 		active = DrawPass.STANDARD;
 	}
 
+	/**
+	 * Clears VFX buffer and begins input capture. Ends the spritebatch rendering context if it is currently active,
+	 * then begins it again.
+	 */
 	public void beginVFX() {
 		if (spriteBatch.isDrawing()) spriteBatch.end();
 		vfxManager.cleanUpBuffers();
@@ -442,25 +451,42 @@ public class GameCanvas {
 		spriteBatch.begin();
 	}
 
+	/**
+	 * Sets up the spritebatch for drawing. This should only be used if you want to draw textures without VFX
+	 * after calling <code>endVFX()</code> - if you want to begin drawing at a drawing loop you should call <code>begin()</code>.
+	 */
 	public void batchBegin(){ spriteBatch.begin(); }
 
-	public void batchEnd(){ spriteBatch.end(); }
-
 	/**
-	 * Applies the current VFXs to the rendering context.
+	 * Applies the current VFXs to the rendering context. Ends the rendering context, so
 	 */
 	public void endVFX() {
 		spriteBatch.end();
 		vfxManager.endInputCapture();
 		vfxManager.applyEffects();
 		vfxManager.renderToScreen(viewport.getScreenX(), viewport.getScreenY(), viewport.getScreenWidth(),  viewport.getScreenHeight());
-		vfxManager.cleanUpBuffers();
 	}
 
+	/**
+	 * Adds an effect to the vfxManager.
+	 *
+	 * @param effect   Effect to add
+	 */
 	public void addEffect(ChainVfxEffect effect) { vfxManager.addEffect(effect); }
 
+	/**
+	 * Removes all t from the vfxManager.
+	 */
 	public void removeAllEffects() { vfxManager.removeAllEffects(); }
 
+	/**
+	 * Projects a vector in world units into pixel units, then returns the ratio of its position with respect to
+	 * the screen dimensions. This is specifically used by the shockwave shader effect to get the position of the
+	 * shockwave center.
+	 *
+	 * @param vec  Vector to project
+	 * @return     Ratio of projected vector to screen dimensions
+	 */
 	public Vector2 projectRatio(Vector2 vec) {
 		Vector3 proj3 = camera.getCamera().project(new Vector3(vec.x, vec.y, 0),
 				viewport.getScreenX(), viewport.getScreenY(),

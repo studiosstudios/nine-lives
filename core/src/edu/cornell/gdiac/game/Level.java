@@ -1153,13 +1153,6 @@ public class Level {
      * @param vfx       if we should apply vfx
      */
     public void draw(GameCanvas canvas, boolean drawCat, boolean vfx) {
-//        if (background != null) {
-//            //scales background with level size
-//            float scaleX = bounds.width/background.getWidth() * scale.x;
-//            float scaleY = bounds.height/background.getHeight() * scale.y;
-//            canvas.draw(background, Color.WHITE, bounds.x * scale.x, bounds.y * scale.y, background.getWidth()*Float.max(scaleX,scaleY), background.getHeight()*Float.max(scaleX,scaleY));
-////            canvas.draw(background, 0, 0);
-//        }
 
         if (vfx) {
             canvas.addEffect(canvas.shockwaveEffect);

@@ -19,7 +19,9 @@ public class AudioController {
     /** The hashmap for music */
     private HashMap<String, AudioSource> musicAssetMap;
     /** A queue to play music */
-    MusicQueue music;
+    MusicQueue levelMusic;
+    MusicQueue stageMusic;
+    private AudioSource previousMusic;
 
 
     public AudioController() {
@@ -27,24 +29,33 @@ public class AudioController {
         musicAssetMap = new HashMap<>();
 
         AudioEngine engine = (AudioEngine) Gdx.audio;
-        music = engine.newMusicBuffer( false, 44100 );
+        levelMusic = engine.newMusicBuffer( false, 44100 );
+        stageMusic = engine.newMusicBuffer( false, 44100 );
+
         // TODO: automate this with the volume constant in internal loading json
-        music.setVolume(0.3f);
+        levelMusic.setVolume(0.3f);
+        stageMusic.setVolume(0.3f);
 //        music.addSource( internal.getEntry("bkg-intro", AudioSource.class) );
-        music.setLooping(true);
+        levelMusic.setLooping(true);
+        stageMusic.setLooping(true);
 //        music.play();
     }
 
     public void setVolume(float val) {
-        music.setVolume(val);
+        levelMusic.setVolume(val);
+        stageMusic.setVolume(val);
 //        for (HashMap.Entry<String, Sound> entry : soundAssetMap.entrySet()) {
 //            Sound sound = entry.getValue();
 //            sound.setVolume(val);
 //        }
     }
 
-    public void addMusic(AudioSource audio) {
-        music.addSource(audio);
+    public void addMusicToLevel(AudioSource audio) {
+        levelMusic.addSource(audio);
+    }
+
+    public void addMusicToStage(AudioSource audio) {
+        stageMusic.addSource(audio);
     }
 
     public void createSoundEffectMap(AssetDirectory directory, String[] names) {
@@ -56,24 +67,28 @@ public class AudioController {
     public void createMusicMap(AssetDirectory directory, String[] names) {
         for (String n : names){
             musicAssetMap.put(n, directory.getEntry(n, AudioSource.class));
-            music.addSource(directory.getEntry(n, AudioSource.class));
+            levelMusic.addSource(directory.getEntry(n, AudioSource.class));
         }
     }
 
     public void playLab() {
-        music.setSource(1, musicAssetMap.get("bkg-lab"));
+        levelMusic.setSource(1, musicAssetMap.get("bkg-lab"));
     }
 
     public void playForest() {
-        music.setSource(2, musicAssetMap.get("bkg-forest"));
+        levelMusic.setSource(2, musicAssetMap.get("bkg-forest"));
     }
 
-    public void playMusic() {
-        music.play();
+    public void playLevelMusic() {
+        levelMusic.play();
     }
 
-    public void playMusic(String musicName) {
-        music.setSource( 1,musicAssetMap.get(musicName));
+    public void playStageMusic() {
+        stageMusic.play();
+    }
+
+    public void playLevelMusic(String musicName) {
+        levelMusic.setSource( 1,musicAssetMap.get(musicName));
     }
 
     public void playSoundEffect(String soundName) {
@@ -81,16 +96,39 @@ public class AudioController {
         soundAssetMap.get(soundName).play();
     }
 
-    public void pauseMusic() {
-        music.pause();
+    public void pauseLevelMusic() {
+        levelMusic.pause();
     }
 
-    public MusicQueue getMusic() {
-        return music;
+    public void pauseStageMusic() {
+        stageMusic.pause();
     }
 
-    public void nextMusic() {
-        music.advanceSource();
+//    public void menuMusic() {
+//        previousMusic  = music.getCurrent();
+//        music.setSource(0, musicAssetMap.get("bkg-intro"));
+//    }
+
+    public MusicQueue getLevelMusic() {
+        return levelMusic;
+    }
+
+    public MusicQueue getStageMusic() {
+        return stageMusic;
+    }
+//
+//    public void resumeMusic() {
+//        if (previousMusic != null) {
+//            music.setSource(1, previousMusic);
+//        }
+//    }
+
+    public void nextLevelMusic() {
+        levelMusic.advanceSource();
+    }
+
+    public void nextStageMusic() {
+        stageMusic.advanceSource();
     }
 
 }

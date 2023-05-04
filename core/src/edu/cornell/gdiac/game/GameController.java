@@ -494,7 +494,8 @@ public class GameController implements Screen {
 //        music.setVolume(0.3f);
 //        music.advanceSource();
         audioController.setVolume(0.3f);
-        audioController.nextMusic();
+        audioController.playLevelMusic();
+//        audioController.nextLevelMusic();
 
 //        AudioEngine engine = (AudioEngine)Gdx.audio;
 //        music = engine.newMusicBuffer( false, 44100 );
@@ -869,7 +870,8 @@ public class GameController implements Screen {
      * Pausing happens when we switch game modes.
      */
     public void pause() {
-        audioController.pauseMusic();
+        audioController.pauseLevelMusic();
+        audioController.playStageMusic();
         paused = true;
         actionController.pause();
     }
@@ -880,7 +882,8 @@ public class GameController implements Screen {
      * This is usually when it regains focus.
      */
     public void resume() {
-        audioController.playMusic();
+        audioController.pauseStageMusic();
+        audioController.playLevelMusic();
         paused = false;
         stageController = null;
     }

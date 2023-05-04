@@ -212,11 +212,11 @@ public class StageController implements Screen {
 ////		System.out.println(volume);
 //		// TODO: automate this with the volume constant in internal loading json
 		audioController.setVolume(0.3f);
-		audioController.addMusic(internal.getEntry("bkg-intro", AudioSource.class));
+		audioController.addMusicToStage(internal.getEntry("bkg-intro", AudioSource.class));
 //		music.addSource( internal.getEntry("bkg-intro", AudioSource.class) );
 //		music.setLooping(true);
 //		music.play();
-		audioController.playMusic();
+		audioController.playStageMusic();
 	}
 
 	

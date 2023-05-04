@@ -50,7 +50,7 @@ public class AudioController {
     }
 
     public void playSoundEffect(String soundName) {
-        System.out.println("playing sound " + soundName);
+//        System.out.println("playing sound " + soundName);
         soundAssetMap.get(soundName).play();
     }
 

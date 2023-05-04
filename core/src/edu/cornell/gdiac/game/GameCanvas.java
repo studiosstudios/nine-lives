@@ -331,7 +331,7 @@ public class GameCanvas {
 	 */
 	 public void resize() {
 		spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, getWidth(), getHeight());
-		vfxManager.resize(getWidth(), getHeight());
+		 if (width != 0 && height != 0)vfxManager.resize(getWidth(), getHeight());
 		viewport.update(getWidth(), getHeight(), true);
 	}
 	
@@ -429,7 +429,7 @@ public class GameCanvas {
 	 */
 	public void begin() {
 		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
-		vfxManager.update(Gdx.graphics.getDeltaTime());
+//		vfxManager.update(Gdx.graphics.getDeltaTime());
 		spriteBatch.begin();
 		viewport.apply();
 		active = DrawPass.STANDARD;
@@ -452,7 +452,6 @@ public class GameCanvas {
 	public void endVFX() {
 		spriteBatch.end();
 		vfxManager.endInputCapture();
-		vfxManager.update(Gdx.graphics.getDeltaTime());
 		vfxManager.applyEffects();
 		vfxManager.renderToScreen(viewport.getScreenX(), viewport.getScreenY(), viewport.getScreenWidth(),  viewport.getScreenHeight());
 		vfxManager.cleanUpBuffers();
@@ -461,6 +460,13 @@ public class GameCanvas {
 	public void addEffect(ChainVfxEffect effect) { vfxManager.addEffect(effect); }
 
 	public void removeAllEffects() { vfxManager.removeAllEffects(); }
+
+	public Vector2 projectRatio(Vector2 vec) {
+		Vector3 proj3 = camera.getCamera().project(new Vector3(vec.x, vec.y, 0),
+				viewport.getScreenX(), viewport.getScreenY(),
+				viewport.getScreenWidth(), viewport.getScreenHeight());
+		return vec.set(proj3.x/getWidth(), proj3.y/getHeight());
+	}
 
 	/**
 	 * Ends a drawing sequence, flushing textures to the graphics card.

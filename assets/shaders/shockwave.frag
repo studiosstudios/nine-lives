@@ -23,7 +23,7 @@ void main()
     if ( (distance <= (u_time + shockParams.z)) && (distance >= (u_time - shockParams.z)) ) {
         float diff = (distance - u_time);
         float powDiff = 0.0;
-        if(distance>0){
+        if(distance>0.05){
             powDiff = 1.0 - pow(abs(diff*shockParams.x), shockParams.y);
         }
         float diffTime = diff  * powDiff;

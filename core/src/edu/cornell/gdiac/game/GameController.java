@@ -636,9 +636,9 @@ public class GameController implements Screen {
 
         if (input.holdSwitch()) {
             spiritModeTicks++;
-            updateVFX(true);
+            updateVFX(true, input.switchPressed(), dt);
         } else {
-            updateVFX(false);
+            updateVFX(false, false, dt);
             spiritModeTicks = 0;
         }
 
@@ -724,26 +724,28 @@ public class GameController implements Screen {
     /**
      * Updates parameters for the vfx depending on how long the player has been in spirit mode.
      */
-    private void updateVFX(boolean increasing){
+    private void updateVFX(boolean increasing, boolean justPressed, float dt){
+
+        if (justPressed) {
+            canvas.shockwaveEffect.setTime(0);
+            Vector2 catPixelPos = currLevel.getCat().getPosition().scl(scale);
+            catPixelPos = canvas.projectRatio(currLevel.getCat().getPosition().scl(scale));
+            System.out.println(catPixelPos);
+            canvas.shockwaveEffect.setCenter(catPixelPos);
+        }
 
         if (!increasing) {
             effectSize += -effectSize/10f;
             if (effectSize - 0.05f < 0) effectSize = 0;
-            canvas.shockwaveEffect.setTime(0);
-            Vector2 catPixelPos = currLevel.getCat().getPosition().scl(scale).scl(1f/canvas.getWidth(), 1f/canvas.getHeight());
-            System.out.println(catPixelPos);
-            System.out.println(canvas.shockwaveEffect.getTime());
-//            canvas.getCamera().getCamera().invProjectionView;
-            canvas.shockwaveEffect.setCenter(catPixelPos);
         } else {
             if (spiritModeTicks <= MAX_SPIRIT_MODE_TICKS) {
                 effectSize = (float) Math.sin(Math.PI * (double) (spiritModeTicks / 2f / MAX_SPIRIT_MODE_TICKS));
             } else {
                 effectSize =  (0.8f + 0.2f * (float) Math.cos(0.03 * (spiritModeTicks - MAX_SPIRIT_MODE_TICKS)));
             }
-            canvas.shockwaveEffect.setTime(spiritModeTicks/60f);
         }
 
+        canvas.shockwaveEffect.setTime(canvas.shockwaveEffect.getTime() + dt);
         canvas.bloomEffect.setIntensity(0.05f*effectSize);
         canvas.bloomEffect.setBlursize(0.02f*effectSize);
         canvas.chromaticAberrationEffect.setMaxDistortion(0.35f*effectSize);

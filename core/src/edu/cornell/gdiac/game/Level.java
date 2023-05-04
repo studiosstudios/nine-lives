@@ -1162,7 +1162,7 @@ public class Level {
 //        }
 
         if (vfx) {
-//            canvas.addEffect(canvas.shockwaveEffect);
+            canvas.addEffect(canvas.shockwaveEffect);
             canvas.addEffect(canvas.chromaticAberrationEffect);
 //            canvas.addEffect(canvas.bloomEffect);
             canvas.beginVFX();
@@ -1215,7 +1215,7 @@ public class Level {
 
         if (vfx) {
             canvas.endVFX();
-//            canvas.addEffect(canvas.shockwaveEffect);
+            canvas.addEffect(canvas.shockwaveEffect);
             canvas.addEffect(canvas.chromaticAberrationEffect);
 //            canvas.addEffect(canvas.bloomEffect);
             canvas.beginVFX();

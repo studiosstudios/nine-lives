@@ -48,8 +48,8 @@ public class AudioController {
         levelMusic.setVolume(0.3f);
         stageMusic.setVolume(0.3f);
 
-        levelMusic.setLooping(true);
-        stageMusic.setLooping(true);
+        levelMusic.setLoopBehavior(true);
+        stageMusic.setLoopBehavior(true);
     }
 
     /**

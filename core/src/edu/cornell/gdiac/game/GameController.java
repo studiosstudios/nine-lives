@@ -119,26 +119,7 @@ public class GameController implements Screen {
     public StageController stageController = null;
     public boolean paused = false;
     public HudStage hud;
-
-    // Music
-//    /** List of sounds to play */
-//    SoundEffect sounds[];
-//    /** The sounds instances ids */
-//    long soundIds[];
-//    /** The current sound effect play */
-//    int currentSound = 0;
-//
-//    /** List of music to play */
-//    AudioSource samples[];
-//    /** The current music sample to play */
-//    int currentSample = 0;
-//
-//    public MusicQueue music;
-
     public AudioController audioController;
-
-
-
 
 
     /**
@@ -424,7 +405,7 @@ public class GameController implements Screen {
      * 1. Use hyphens<br>
      * 2. For sprites that are for animations, affix their name with "-anim"<br>
      * 3. For textures that serve as backgrounds, prefix their names with "bg-"<br>
-     * 4. Make sure to use the file name (with hyphens) for the assets.json key, and the texture map key as well<br>
+     * 4. Make sure to use the file name (with h yphens) for the assets.json key, and the texture map key as well<br>
      *
      * @param directory	Reference to global asset manager.
      */
@@ -504,11 +485,12 @@ public class GameController implements Screen {
 //        for (String n : names){
 //            soundAssetMap.put(n, directory.getEntry(n, SoundEffect.class));
 //        }
-        names = new String[]{"bkg-level"};
-        for (String n : names){
-            audioController.addMusic(directory.getEntry(n, AudioSource.class));
-//            music.addSource(directory.getEntry(n, AudioSource.class));
-        }
+        names = new String[]{"bkg-lab", "bkg-forest"};
+        audioController.createMusicMap(directory, names);
+//        for (String n : names){
+//            audioController.addMusic(directory.getEntry(n, AudioSource.class));
+////            music.addSource(directory.getEntry(n, AudioSource.class));
+//        }
 //        music.setVolume(0.3f);
 //        music.advanceSource();
         audioController.setVolume(0.3f);
@@ -606,6 +588,12 @@ public class GameController implements Screen {
         }
 
         initCurrLevel(false);
+
+        if (currLevel.getBiome().equals("forest")) {
+            audioController.playForest();
+        } else {
+            audioController.playLab();
+        }
     }
 
     /**

@@ -1,12 +1,14 @@
 package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.AudioEngine;
 import edu.cornell.gdiac.audio.AudioSource;
 import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.audio.SoundEffect;
+import edu.cornell.gdiac.util.PooledList;
 
 import java.util.HashMap;
 
@@ -33,7 +35,13 @@ public class AudioController {
 //        music.play();
     }
 
-    public void setVolume(float val) { music.setVolume(val); }
+    public void setVolume(float val) {
+        music.setVolume(val);
+//        for (HashMap.Entry<String, Sound> entry : soundAssetMap.entrySet()) {
+//            Sound sound = entry.getValue();
+//            sound.setVolume(val);
+//        }
+    }
 
     public void addMusic(AudioSource audio) {
         music.addSource(audio);
@@ -45,8 +53,27 @@ public class AudioController {
         }
     }
 
+    public void createMusicMap(AssetDirectory directory, String[] names) {
+        for (String n : names){
+            musicAssetMap.put(n, directory.getEntry(n, AudioSource.class));
+            music.addSource(directory.getEntry(n, AudioSource.class));
+        }
+    }
+
+    public void playLab() {
+        music.setSource(1, musicAssetMap.get("bkg-lab"));
+    }
+
+    public void playForest() {
+        music.setSource(2, musicAssetMap.get("bkg-forest"));
+    }
+
     public void playMusic() {
         music.play();
+    }
+
+    public void playMusic(String musicName) {
+        music.setSource( 1,musicAssetMap.get(musicName));
     }
 
     public void playSoundEffect(String soundName) {

@@ -102,6 +102,7 @@ public class Level {
     /** joints added between obstacles in this level */
     private Array<Joint> joints = new Array<>();
     private Array<Particle> spiritParticles = new Array<>();
+    private String biome;
 
 
     /**
@@ -171,6 +172,8 @@ public class Level {
     public Goal getGoal() { return goal; }
 
     public Array<Particle> getSpiritParticles() { return spiritParticles; }
+
+    public String getBiome() { return biome; }
 
 
     /**
@@ -479,7 +482,7 @@ public class Level {
         }
 
         populateObstacles(obstacleData, tileSize, levelHeight, next == null);
-        String biome = tiledMap.get("properties").get(0).getString("value");
+        biome = tiledMap.get("properties").get(0).getString("value");
 
         TextureRegion tileset = new TextureRegion();
         TextureRegion tileset_climbable = new TextureRegion();
@@ -1247,7 +1250,6 @@ public class Level {
      * @param s1  Set 1
      * @param s2  Set 2
      * @return    True if set 1 and set 2 share any element, or if both are empty.
-     * @param <T> The type of elements in s1 and s2
      */
     private <K, V> boolean sharesKey(ObjectMap<K, V> s1, ObjectMap<K, V> s2){
         if (s1.isEmpty() && s2.isEmpty()) return true;

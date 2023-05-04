@@ -153,6 +153,7 @@ public class Particle implements Pool.Poolable {
     public float getTop() { return top; }
 
     public void draw(GameCanvas canvas, Texture texture) {
+        System.out.println("drawing a photon");
         canvas.draw(texture, new Color(Color.WHITE), getX(),
                 getY(), 5f, 5f);
     }

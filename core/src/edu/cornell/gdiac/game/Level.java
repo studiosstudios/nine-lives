@@ -317,16 +317,16 @@ public class Level {
      */
     public boolean getDied() { return died; }
 
+    public Exit getGoalExit() { return goalExit; }
+
+    public Exit getReturnExit() { return returnExit; }
+
     /**
      * Returns a reference to the number of lives the player has remaining in this level
      *
      * @return a reference to number of lives
      */
     public int getNumLives() { return numLives; }
-
-    public Exit getGoalExit() { return goalExit; }
-
-    public Exit getReturnExit() { return returnExit; }
 
     /**
      * Sets the number of lives in this level
@@ -1194,6 +1194,7 @@ public class Level {
         }
 
         for (Particle spirit : spiritParticles) {
+            System.out.println("calling spirit draw. . .");
             spirit.draw(canvas, textureRegionAssetMap.get("spirit-photon").getTexture());
         }
 

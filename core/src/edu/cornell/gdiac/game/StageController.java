@@ -125,8 +125,8 @@ public class StageController implements Screen {
 	 * @param file  	The asset directory to load in the background
 	 * @param canvas 	The game canvas to draw to
 	 */
-	public StageController(String file, GameCanvas canvas) {
-		this(file, canvas, DEFAULT_BUDGET, false, false,  new AudioController());
+	public StageController(String file, GameCanvas canvas, AudioController audioController) {
+		this(file, canvas, DEFAULT_BUDGET, false, false,  audioController);
 	}
 
 	/**
@@ -197,26 +197,11 @@ public class StageController implements Screen {
 	}
 
 	public void startMusic() {
-//		musicAssetMap = new HashMap<>();
-//
-//		String[] names = new String[]{"bkg-intro", "bkg-level"};
-//		for (String n : names){
-//			musicAssetMap.put(n, assets.getEntry(n, AudioSource.class));
-//		}
-
-//		AudioEngine engine = (AudioEngine)Gdx.audio;
-//		music = engine.newMusicBuffer( false, 44100 );
-////		System.out.println("VOLUME");
-////		System.out.println(internal.get("volume", Float.class));
-////		Float volume = internal.get("defaults").getFloat("volume");
-////		System.out.println(volume);
 //		// TODO: automate this with the volume constant in internal loading json
 		audioController.setVolume(0.3f);
-		audioController.addMusic(internal.getEntry("bkg-intro", AudioSource.class));
-//		music.addSource( internal.getEntry("bkg-intro", AudioSource.class) );
-//		music.setLooping(true);
-//		music.play();
-		audioController.playMusic();
+		audioController.addStageMusic(internal.getEntry("bkg-intro", AudioSource.class));
+
+		audioController.playStageMusic();
 	}
 
 	
@@ -275,10 +260,12 @@ public class StageController implements Screen {
 			if (!pause && startStage != null) { update(delta); }
 			draw();
 			if (pause) {
+				audioController.playStageMusic();
 				pauseStage.currLevel = this.currLevel;
 //				changeStage(pauseStage);
 			}
 			if (loading) {
+				audioController.pauseStageMusic();
 				loading = false;
 //				try {
 //					Thread.sleep(1000);
@@ -325,6 +312,7 @@ public class StageController implements Screen {
 				selectedLevel = levelSelectStage.getSelectedLevel();
 //				listener.exitScreen(this, 69);
 			} else if (pauseStage.isResume() && listener != null) {
+				audioController.pauseStageMusic();
 				pause = false;
 				pauseStage.setResumeButtonState(0);
 				pauseStage.currLevel = null;

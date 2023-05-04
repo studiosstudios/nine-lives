@@ -487,6 +487,8 @@ public class GameController implements Screen {
 //        }
         names = new String[]{"bkg-lab", "bkg-forest"};
         audioController.createMusicMap(directory, names);
+//        audioController.addStageMusic(directory.getEntry("bkg-intro", AudioSource.class));
+//        audioController.getStageMusic().advanceSource();
 //        for (String n : names){
 //            audioController.addMusic(directory.getEntry(n, AudioSource.class));
 ////            music.addSource(directory.getEntry(n, AudioSource.class));
@@ -494,7 +496,7 @@ public class GameController implements Screen {
 //        music.setVolume(0.3f);
 //        music.advanceSource();
         audioController.setVolume(0.3f);
-        audioController.nextMusic();
+        audioController.playLevelMusic();
 
 //        AudioEngine engine = (AudioEngine)Gdx.audio;
 //        music = engine.newMusicBuffer( false, 44100 );
@@ -589,11 +591,11 @@ public class GameController implements Screen {
 
         initCurrLevel(false);
 
-        if (currLevel.getBiome().equals("forest")) {
-            audioController.playForest();
-        } else {
-            audioController.playLab();
-        }
+//        if (currLevel.getBiome().equals("forest")) {
+//            audioController.playForest();
+//        } else {
+//            audioController.playLab();
+//        }
     }
 
     /**
@@ -869,7 +871,8 @@ public class GameController implements Screen {
      * Pausing happens when we switch game modes.
      */
     public void pause() {
-        audioController.pauseMusic();
+        audioController.pauseLevelMusic();
+//        audioController.playStageMusic();
         paused = true;
         actionController.pause();
     }
@@ -880,7 +883,8 @@ public class GameController implements Screen {
      * This is usually when it regains focus.
      */
     public void resume() {
-        audioController.playMusic();
+//        audioController.pauseStageMusic();
+        audioController.playLevelMusic();
         paused = false;
         stageController = null;
     }

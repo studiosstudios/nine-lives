@@ -498,13 +498,6 @@ public class GameController implements Screen {
         audioController.setVolume(0.3f);
         audioController.playLevelMusic();
 
-//        AudioEngine engine = (AudioEngine)Gdx.audio;
-//        music = engine.newMusicBuffer( false, 44100 );
-//        music.addSource( musicAssetMap.get("bkg-intro") );
-//        music.addSource( musicAssetMap.get("bkg-level") );
-//        music.play();
-
-
         names = new String[]{"retro"};
         for (String n : names){
             fontAssetMap.put(n, directory.getEntry(n, BitmapFont.class));
@@ -872,7 +865,6 @@ public class GameController implements Screen {
      */
     public void pause() {
         audioController.pauseLevelMusic();
-//        audioController.playStageMusic();
         paused = true;
         actionController.pause();
     }
@@ -883,7 +875,6 @@ public class GameController implements Screen {
      * This is usually when it regains focus.
      */
     public void resume() {
-//        audioController.pauseStageMusic();
         audioController.playLevelMusic();
         paused = false;
         stageController = null;

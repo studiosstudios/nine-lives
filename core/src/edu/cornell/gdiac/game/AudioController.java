@@ -14,28 +14,35 @@ import java.util.HashMap;
 
 public class AudioController {
 
-    /** The hashmap for sounds */
+    /**
+     * The hashmap for sounds
+     */
     private HashMap<String, Sound> levelSoundMap;
-    /** The hashmap for music */
+    /**
+     * The hashmap for music
+     */
     private HashMap<String, AudioSource> levelMusicMap;
-    /** A queue to play level music */
+    /**
+     * A queue to play level music
+     */
     MusicQueue levelMusic;
-    /** A queue to play stage music */
+    /**
+     * A queue to play stage music
+     */
     MusicQueue stageMusic;
 
     /**
      * Creates a new Audio Controller
-     *
+     * <p>
      * Creates the audio engine and music queues for level and stage music
-     *
      */
     public AudioController() {
         levelSoundMap = new HashMap<>();
         levelMusicMap = new HashMap<>();
 
         AudioEngine engine = (AudioEngine) Gdx.audio;
-        levelMusic = engine.newMusicBuffer( false, 44100 );
-        stageMusic = engine.newMusicBuffer( false, 44100 );
+        levelMusic = engine.newMusicBuffer(false, 44100);
+        stageMusic = engine.newMusicBuffer(false, 44100);
 
         // TODO: automate this with the volume constant in internal loading json
         levelMusic.setVolume(0.3f);
@@ -82,10 +89,10 @@ public class AudioController {
      * Gathers the sound effects and puts them into the sound asset map
      *
      * @param directory which holds the asset data
-     * @param names of all the sound effects to add
+     * @param names     of all the sound effects to add
      */
     public void createSoundEffectMap(AssetDirectory directory, String[] names) {
-        for (String n : names){
+        for (String n : names) {
             levelSoundMap.put(n, directory.getEntry(n, SoundEffect.class));
         }
     }
@@ -94,10 +101,10 @@ public class AudioController {
      * Gathers the level music and puts them into the music asset map
      *
      * @param directory which holds the asset data
-     * @param names of all the level music to add
+     * @param names     of all the level music to add
      */
     public void createMusicMap(AssetDirectory directory, String[] names) {
-        for (String n : names){
+        for (String n : names) {
             levelMusicMap.put(n, directory.getEntry(n, AudioSource.class));
             levelMusic.addSource(directory.getEntry(n, AudioSource.class));
         }
@@ -130,7 +137,7 @@ public class AudioController {
      * @param musicName the name of the music to play
      */
     public void playLevelMusic(String musicName) {
-        levelMusic.setSource( 1, levelMusicMap.get(musicName));
+        levelMusic.setSource(1, levelMusicMap.get(musicName));
     }
 
     /**
@@ -181,9 +188,9 @@ public class AudioController {
     public MusicQueue getStageMusic() {
         return stageMusic;
     }
+
     /**
      * Resets the level music queue to the beginning of the queue
-     *
      */
     public void resetLevelMusic() {
         levelMusic.reset();
@@ -191,7 +198,6 @@ public class AudioController {
 
     /**
      * Resets the stage music queue to the beginning of the queue
-     *
      */
     public void resetStageMusic() {
         stageMusic.reset();
@@ -210,5 +216,4 @@ public class AudioController {
     public void nextStageMusic() {
         stageMusic.advanceSource();
     }
-
 }

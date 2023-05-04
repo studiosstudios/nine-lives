@@ -174,7 +174,6 @@ public class ActionController {
 
             for (String soundName : cat.getSoundBuffer()) {
                 audioController.playSoundEffect(soundName);
-//                soundAssetMap.get(soundName).play();
             }
             cat.getSoundBuffer().clear();
         }

@@ -120,7 +120,6 @@ public class GameController implements Screen {
     private int spiritModeTicks;
     private final static int MAX_SPIRIT_MODE_TICKS = 30;
     private float effectSize;
-    private float effectMult;
     /** only not null if quick launched from Tiled */
     private JsonValue quickLaunchLevel;
 
@@ -643,9 +642,6 @@ public class GameController implements Screen {
             spiritModeTicks = 0;
         }
 
-        System.out.println(spiritModeTicks);
-        System.out.println(effectSize);
-
         if (currLevel.isFailure() || input.didReset()) {
             if (currLevel.isFailure()) flashColor.set(1, 0, 0, 1);
             reset();
@@ -726,19 +722,26 @@ public class GameController implements Screen {
     }
 
     /**
-     *
+     * Updates parameters for the vfx depending on how long the player has been in spirit mode.
      */
     private void updateVFX(boolean increasing){
 
         if (!increasing) {
             effectSize += -effectSize/10f;
-            if (effectSize - 0.01f < 0) effectSize = 0;
+            if (effectSize - 0.05f < 0) effectSize = 0;
+            canvas.shockwaveEffect.setTime(0);
+            Vector2 catPixelPos = currLevel.getCat().getPosition().scl(scale).scl(1f/canvas.getWidth(), 1f/canvas.getHeight());
+            System.out.println(catPixelPos);
+            System.out.println(canvas.shockwaveEffect.getTime());
+//            canvas.getCamera().getCamera().invProjectionView;
+            canvas.shockwaveEffect.setCenter(catPixelPos);
         } else {
             if (spiritModeTicks <= MAX_SPIRIT_MODE_TICKS) {
                 effectSize = (float) Math.sin(Math.PI * (double) (spiritModeTicks / 2f / MAX_SPIRIT_MODE_TICKS));
             } else {
                 effectSize =  (0.8f + 0.2f * (float) Math.cos(0.03 * (spiritModeTicks - MAX_SPIRIT_MODE_TICKS)));
             }
+            canvas.shockwaveEffect.setTime(spiritModeTicks/60f);
         }
 
         canvas.bloomEffect.setIntensity(0.05f*effectSize);
@@ -963,14 +966,14 @@ public class GameController implements Screen {
 
         if (vfx) canvas.batchEnd();
 
-//        if (true) { //TODO: only draw when necessary
-//            prevLevel.draw(canvas, false);
-//            nextLevel.draw(canvas, false);
-//        }
+        if (true) { //TODO: only draw when necessary
+            prevLevel.draw(canvas, false, vfx);
+            nextLevel.draw(canvas, false, vfx);
+        }
         currLevel.draw(canvas, gameState != GameState.RESPAWN, vfx);
 
         if (vfx) canvas.batchBegin();
-//        canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
+        canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
         canvas.end();
         hud.draw();
 

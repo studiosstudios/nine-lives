@@ -15,6 +15,7 @@ import com.crashinvaders.vfx.effects.ChromaticAberrationEffect;
 import com.crashinvaders.vfx.effects.util.MixEffect;
 import com.crashinvaders.vfx.framebuffer.VfxFrameBufferQueue;
 import edu.cornell.gdiac.game.shaders.BloomEffect;
+import edu.cornell.gdiac.game.shaders.ShockwaveEffect;
 import edu.cornell.gdiac.math.Path2;
 import edu.cornell.gdiac.math.PathExtruder;
 import edu.cornell.gdiac.math.PathFactory;
@@ -112,6 +113,8 @@ public class GameCanvas {
 	private VfxManager vfxManager;
 	protected ChromaticAberrationEffect chromaticAberrationEffect;
 	protected BloomEffect bloomEffect;
+
+	protected ShockwaveEffect shockwaveEffect;
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
 	 * <br><br>
@@ -147,14 +150,12 @@ public class GameCanvas {
 		//vfx
 		vfxManager = new VfxManager(Pixmap.Format.RGBA8888);
 		vfxManager.setBlendingEnabled(true);
-		chromaticAberrationEffect = new ChromaticAberrationEffect(10);
-		chromaticAberrationEffect.setMaxDistortion(0.2f);
+		chromaticAberrationEffect = new ChromaticAberrationEffect(3);
 
 		bloomEffect = new BloomEffect();
-		bloomEffect.setBlursize(0.02f);
-		bloomEffect.setIntensity(0.5f);
+		shockwaveEffect = new ShockwaveEffect();
 
-		setBlendState(BlendState.ALPHA_BLEND);
+		setBlendState(BlendState.NO_PREMULT);
 
 	}
 	/**
@@ -453,7 +454,7 @@ public class GameCanvas {
 		vfxManager.endInputCapture();
 		vfxManager.update(Gdx.graphics.getDeltaTime());
 		vfxManager.applyEffects();
-		vfxManager.renderToScreen();
+		vfxManager.renderToScreen(viewport.getScreenX(), viewport.getScreenY(), viewport.getScreenWidth(),  viewport.getScreenHeight());
 		vfxManager.cleanUpBuffers();
 	}
 

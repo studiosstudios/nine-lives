@@ -152,9 +152,9 @@ public class Particle implements Pool.Poolable {
 
     public float getTop() { return top; }
 
-    public void draw(GameCanvas canvas, Texture texture) {
+    public void draw(GameCanvas canvas, Texture texture, Vector2 drawScale, Vector2 textureScale) {
         System.out.println("drawing a photon");
-        canvas.draw(texture, new Color(Color.WHITE), getX(),
-                getY(), 5f, 5f);
+        canvas.draw(texture, new Color(Color.WHITE), getX()*drawScale.x,
+                getY()*drawScale.y, textureScale.x, textureScale.y);
     }
 }

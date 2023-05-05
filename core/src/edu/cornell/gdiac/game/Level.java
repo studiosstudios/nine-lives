@@ -188,6 +188,8 @@ public class Level {
 
     public Array<Particle> getSpiritParticles() { return spiritParticles; }
 
+    public void addSpiritParticle(Particle p) { spiritParticles.add(p); }
+
 
     /**
      * Sets the cat for this level. This is used for level switching.
@@ -1195,7 +1197,7 @@ public class Level {
 
         for (Particle spirit : spiritParticles) {
             System.out.println("calling spirit draw. . .");
-            spirit.draw(canvas, textureRegionAssetMap.get("spirit-photon").getTexture());
+            spirit.draw(canvas, textureRegionAssetMap.get("spirit-photon").getTexture(), new Vector2(32f, 32f), new Vector2(20f, 20f));
         }
 
         if (currCheckpoint != null) {

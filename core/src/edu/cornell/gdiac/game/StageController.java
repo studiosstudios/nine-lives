@@ -202,6 +202,8 @@ public class StageController implements Screen {
 
 	public void startMusic() {
 //		// TODO: automate this with the volume constant in internal loading json
+		// audioController.setVolume(internal.get("defaults").getFloat("volume"));
+
 		audioController.setVolume(0.3f);
 		audioController.addStageMusic(internal.getEntry("bkg-intro", AudioSource.class));
 
@@ -296,6 +298,10 @@ public class StageController implements Screen {
 				getStage().draw();
 //				listener.exitScreen(this, 0);
 			} else if (mainMenuStage.isSettings()) {
+				//TODO: laggy for some reason
+				if (Save.exists()) {
+					audioController.setVolume(Save.getVolume());
+				}
 				mainMenuStage.setSettingsState(0);
 				changeStage(settingsStage);
 			} else if (mainMenuStage.isLevelSelect()) {

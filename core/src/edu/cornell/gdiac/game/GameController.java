@@ -246,7 +246,7 @@ public class GameController implements Screen {
         displayFont = fMap.get("retro");
 
         //send the relevant assets to classes that need them
-        audioController.setVolume(constantsJSON.get("defaults").getFloat("volume"));
+//        audioController.setVolume(constantsJSON.get("defaults").getFloat("volume"));
 //        actionController.setVolume();
 //        actionController.setAssets(sMap);
         for (Level l : levels){

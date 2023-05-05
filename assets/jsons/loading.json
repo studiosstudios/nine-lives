@@ -36,6 +36,6 @@
         "bkg-intro": "sounds/bkg-intro.ogg"
     },
     "defaults": {
-       "volume": "0.1"
+       "volume": 0.3
     }
 }

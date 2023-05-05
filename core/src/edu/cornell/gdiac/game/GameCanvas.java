@@ -458,6 +458,7 @@ public class GameCanvas {
         spriteBatch.setColor(Color.WHITE);
 		spriteBatch.setProjectionMatrix(IDENTITY);
 		spriteBatch.draw(frameBuffer.getColorBufferTexture(), -1, 1, 2, -2); // i have no idea why these numbers work
+		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
 	}
 
 	public void setShader(ShaderProgram shader) { spriteBatch.setShader(shader); }

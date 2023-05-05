@@ -134,10 +134,16 @@ public class Laser extends BoxObstacle implements Activatable{
 
     public void drawLaser(GameCanvas canvas){
         if (activated) {
-            for (ChainLight l : lights) {
-                l.updateChain();
-            }
             if (points.size > 1) {
+                for (ChainLight l : lights) {
+                    // In levels where a wall "blocks" the laser beam, the light can still show up through
+                    // the blocking wall. My fix for it now is to just compare the raycasted points of the
+                    // laser, and if their distance is too small (0.8 in this case), we just set the light
+                    // color to transparent to avoid drawing it. We don't change light.setActive() here bc
+                    // it's different when the laser is actually deactivated vs just blocked.
+                    if (points.size == 2 && points.get(0).cpy().sub(points.get(1)).len() < 0.8) l.setColor(Color.CLEAR);
+                    else { l.updateChain(); l.setColor(color); }
+                }
                 canvas.drawFactoryPath(points, thickness, color, drawScale.x, drawScale.y);
                 canvas.drawFactoryPath(points, thickness*0.3f, Color.WHITE, drawScale.x, drawScale.y);
             }

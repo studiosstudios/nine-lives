@@ -8,8 +8,10 @@ import edu.cornell.gdiac.audio.AudioEngine;
 import edu.cornell.gdiac.audio.AudioSource;
 import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.audio.SoundEffect;
+import edu.cornell.gdiac.game.object.DeadBody;
 import edu.cornell.gdiac.util.PooledList;
 
+import java.lang.reflect.Array;
 import java.util.HashMap;
 
 public class AudioController {
@@ -22,6 +24,8 @@ public class AudioController {
      * The hashmap for music
      */
     private HashMap<String, AudioSource> levelMusicMap;
+
+
     /**
      * A queue to play level music
      */
@@ -30,6 +34,7 @@ public class AudioController {
      * A queue to play stage music
      */
     MusicQueue stageMusic;
+    String currMusic = "";
 
     /**
      * Creates a new Audio Controller
@@ -69,6 +74,10 @@ public class AudioController {
 //            Sound sound = entry.getValue();
 //            sound.setVolume(val);
 //        }
+    }
+
+    public String getCurrMusic() {
+        return currMusic;
     }
 
     /**
@@ -118,14 +127,20 @@ public class AudioController {
      * Plays the lab music
      */
     public void playLab() {
-        levelMusic.setSource(1, levelMusicMap.get("bkg-lab"));
+        for (int i = 0; i < levelMusicMap.size(); i++) {
+            levelMusic.setSource(i, levelMusicMap.get("bkg-lab"));
+        }
+        currMusic = "lab";
     }
 
     /**
      * Plays the forest music
      */
     public void playForest() {
-        levelMusic.setSource(2, levelMusicMap.get("bkg-forest"));
+        for (int i = 0; i < levelMusicMap.size(); i++) {
+            levelMusic.setSource(1, levelMusicMap.get("bkg-forest"));
+        }
+        currMusic = "forest";
     }
 
     /**
@@ -149,6 +164,7 @@ public class AudioController {
      */
     public void playStageMusic() {
         stageMusic.play();
+        currMusic = "stage";
     }
 
     /**

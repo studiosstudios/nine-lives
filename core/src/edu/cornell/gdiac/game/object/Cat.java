@@ -934,7 +934,6 @@ public class Cat extends CapsuleObstacle implements Movable {
             else {
                 currentFrame = jumpTexture;
             }
-
             // Ideally, we don't set these to 0 all the time in the update methods, but otherwise it will grow unbounded
             // An easy optimization will be to set them in the state changes for the movement system
             // But that slightly couples animation logic with movement logic, so we can push that off for now -CJ
@@ -952,6 +951,7 @@ public class Cat extends CapsuleObstacle implements Movable {
         }
         // SITTING
         else if (state == State.MOVING && horizontalMovement == 0 && verticalMovement == 0) {
+            jumpTime = 0;
             stationaryTime += delta;
             if (stationaryTime < 5) {
                 currentFrame = idleStandAnimation.getKeyFrame(stationaryTime);

@@ -8,15 +8,15 @@ precision PRECISION int;
 
 uniform sampler2D u_texture; // 0
 varying vec2 v_texCoords;
-
+varying PRECISION vec4 v_color;
 uniform float u_greyscale;
 
 void main() {
 
-    vec4 color = texture2D(u_texture,v_texCoords);
+    vec4 color = v_color * texture2D(u_texture,v_texCoords);
     float grey = dot(color.xyz, vec3(0.2126, 0.7152, 0.0722));
+    vec3 out_col = mix(color.xyz, vec3(grey), u_greyscale);
 
+    gl_FragColor = vec4(out_col * color.a, color.a);
 
-
-    gl_FragColor = vec4(mix(color.xyz, vec3(grey), u_greyscale), color.a);
 }

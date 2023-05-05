@@ -1180,6 +1180,14 @@ public class Level {
         if (vfx) {canvas.setShader(null);}
 
 
+        for (SpiritRegion s : spiritRegionArray) {
+            s.draw(canvas);
+        }
+
+        for (Particle spirit : spiritParticles) {
+            spirit.draw(canvas, textureRegionAssetMap.get("spirit-photon").getTexture());
+        }
+
         spiritLine.draw(canvas);
 
         for (DeadBody db : deadBodyArray) {
@@ -1197,15 +1205,6 @@ public class Level {
 
         if(cat != null && drawCat) {
             cat.draw(canvas);
-        }
-
-
-        for (SpiritRegion s : spiritRegionArray) {
-            s.draw(canvas);
-        }
-
-        for (Particle spirit : spiritParticles) {
-            spirit.draw(canvas, textureRegionAssetMap.get("spirit-photon").getTexture());
         }
 
         if (vfx) canvas.setGreyscaleShader(effectSize);

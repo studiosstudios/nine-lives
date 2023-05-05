@@ -18,12 +18,14 @@ public class PortalEffect extends ShaderVfxEffect implements ChainVfxEffect {
     private static final String U_RADIUS = "u_radius";
     private static final String U_EDGECOLOR = "u_edgeColor";
     private static final String U_BGCOLOR = "u_bgColor";
+    private static final String U_GREYSCALE = "u_greyscale";
     private Color edgeColor = new Color();
     private Color bgColor = new Color();
     private float time;
     private float thickness;
     private float radius = 1f;
     private float alpha = 1f;
+    private float greyscale;
     public boolean shouldBind = true;
 
     public PortalEffect() {
@@ -56,6 +58,17 @@ public class PortalEffect extends ShaderVfxEffect implements ChainVfxEffect {
             setUniform(U_RADIUS, radius);
         } else {
             program.setUniformf(U_RADIUS, radius);
+        }
+    }
+
+    public float getGreyscale() { return greyscale; }
+
+    public void setGreyscale(float greyscale) {
+        this.greyscale = greyscale;
+        if (shouldBind) {
+            setUniform(U_GREYSCALE, greyscale);
+        } else {
+            program.setUniformf(U_GREYSCALE, greyscale);
         }
     }
 
@@ -115,4 +128,3 @@ public class PortalEffect extends ShaderVfxEffect implements ChainVfxEffect {
         renderShader(context, dst);
     }
 }
-

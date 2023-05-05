@@ -752,6 +752,7 @@ public class GameController implements Screen {
         canvas.shockwaveEffect.setTime(canvas.shockwaveEffect.getTime() + dt);
         canvas.portalEffect.setTime(canvas.portalEffect.getTime() + dt);
         canvas.portalEffect.setRadius(1.6f -  0.4f * effectSize);
+        canvas.portalEffect.setGreyscale(effectSize);
         canvas.bloomEffect.setIntensity(0.05f*effectSize);
         canvas.bloomEffect.setBlursize(0.02f*effectSize);
         canvas.chromaticAberrationEffect.setMaxDistortion(0.35f*effectSize);
@@ -970,11 +971,18 @@ public class GameController implements Screen {
         canvas.clear();
         canvas.begin();
         canvas.applyViewport(false);
+        if (vfx) {
+//            canvas.addEffect(canvas.shockwaveEffect);
+            canvas.addEffect(canvas.portalEffect);
+//            canvas.addEffect(canvas.chromaticAberrationEffect);
+//            canvas.addEffect(canvas.bloomEffect);
+            canvas.beginVFX();
+        }
         canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight());
 
         if (true) { //TODO: only draw when necessary
-            prevLevel.draw(canvas, false, vfx);
-            nextLevel.draw(canvas, false, vfx);
+//            prevLevel.draw(canvas, false, vfx);
+//            nextLevel.draw(canvas, false, vfx);
         }
         currLevel.draw(canvas, gameState != GameState.RESPAWN, vfx);
 

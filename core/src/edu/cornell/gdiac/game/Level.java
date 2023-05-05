@@ -1154,13 +1154,13 @@ public class Level {
      */
     public void draw(GameCanvas canvas, boolean drawCat, boolean vfx) {
 
-        if (vfx) {
-//            canvas.addEffect(canvas.shockwaveEffect);
-            canvas.addEffect(canvas.portalEffect);
-//            canvas.addEffect(canvas.chromaticAberrationEffect);
-//            canvas.addEffect(canvas.bloomEffect);
-            canvas.beginVFX();
-        }
+//        if (vfx) {
+////            canvas.addEffect(canvas.shockwaveEffect);
+//            canvas.addEffect(canvas.portalEffect);
+////            canvas.addEffect(canvas.chromaticAberrationEffect);
+////            canvas.addEffect(canvas.bloomEffect);
+//            canvas.beginVFX();
+//        }
 
         for (Laser l : lasers){
             l.drawLaser(canvas);

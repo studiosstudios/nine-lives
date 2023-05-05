@@ -29,6 +29,8 @@ public class AudioController {
      * A queue to play level music
      */
     private MusicQueue levelMusic;
+    private MusicQueue labMusic;
+    private MusicQueue forestMusic;
     /**
      * A queue to play stage music
      */
@@ -36,7 +38,6 @@ public class AudioController {
     private String currMusic = "";
     private int forestStart = 0;
     private int pos;
-
 
 
     /**
@@ -51,6 +52,10 @@ public class AudioController {
         AudioEngine engine = (AudioEngine) Gdx.audio;
         levelMusic = engine.newMusicBuffer(false, 44100);
         stageMusic = engine.newMusicBuffer(false, 44100);
+        labMusic = engine.newMusicBuffer(false, 44100);
+        forestMusic = engine.newMusicBuffer(false, 44100);
+
+        levelMusic = labMusic;
 
         // TODO: automate this with the volume constant in internal loading json
         levelMusic.setVolume(0.3f);
@@ -62,8 +67,8 @@ public class AudioController {
     public void setLooping() {
         levelMusic.setLooping(true);
         stageMusic.setLooping(true);
-        levelMusic.setLoopBehavior(true);
-        stageMusic.setLoopBehavior(true);
+//        levelMusic.setLoopBehavior(true);
+//        stageMusic.setLoopBehavior(true);
     }
 
     /**
@@ -125,9 +130,11 @@ public class AudioController {
         for (int i = 0; i < names.length; i++) {
             if (names[i].contains("forest") && forestStart == 0) {
                 forestStart = i;
+                forestMusic.addSource(directory.getEntry(names[i], AudioSource.class));
+            } else {
+                labMusic.addSource(directory.getEntry(names[i], AudioSource.class));
             }
             levelMusicMap.put(names[i], directory.getEntry(names[i], AudioSource.class));
-            levelMusic.addSource(directory.getEntry(names[i], AudioSource.class));
         }
     }
 
@@ -138,15 +145,19 @@ public class AudioController {
 //        for (int i = 0; i < levelMusicMap.size(); i++) {
 //            levelMusic.setSource(i, levelMusicMap.get("bkg-lab"));
 //        }
-        levelMusic.reset();
-        currMusic = "lab";
+        levelMusic.pause();
+        levelMusic = labMusic;
+//        levelMusic.reset();
+        currMusic = "metal";
     }
 
     /**
      * Plays the forest music
      */
     public void playForest() {
-        levelMusic.jumpToSource(forestStart);
+        levelMusic.pause();
+        levelMusic = forestMusic;
+//        levelMusic.jumpToSource(forestStart);
 //        for (int i = 0; i < levelMusicMap.size(); i++) {
 //            levelMusic.setSource(1, levelMusicMap.get("bkg-forest"));
 //        }

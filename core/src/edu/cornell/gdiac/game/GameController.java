@@ -572,10 +572,10 @@ public class GameController implements Screen {
 
         initCurrLevel(false);
 
-        if (audioController.getCurrMusic().equals("lab") && currLevel.getBiome().equals("forest")) {
+        if (audioController.getCurrMusic().equals("metal") && currLevel.getBiome().equals("forest")) {
             audioController.playForest();
         }
-        else if (audioController.getCurrMusic().equals("forest") && currLevel.getBiome().equals("lab")) {
+        else if (audioController.getCurrMusic().equals("forest") && currLevel.getBiome().equals("metal")) {
             audioController.playLab();
         }
     }

@@ -25,16 +25,19 @@ public class AudioController {
      */
     private HashMap<String, AudioSource> levelMusicMap;
 
-
     /**
      * A queue to play level music
      */
-    MusicQueue levelMusic;
+    private MusicQueue levelMusic;
     /**
      * A queue to play stage music
      */
-    MusicQueue stageMusic;
-    String currMusic = "";
+    private MusicQueue stageMusic;
+    private String currMusic = "";
+    private int forestStart = 0;
+    private int pos;
+
+
 
     /**
      * Creates a new Audio Controller
@@ -57,6 +60,8 @@ public class AudioController {
     }
 
     public void setLooping() {
+        levelMusic.setLooping(true);
+        stageMusic.setLooping(true);
         levelMusic.setLoopBehavior(true);
         stageMusic.setLoopBehavior(true);
     }
@@ -117,9 +122,12 @@ public class AudioController {
      * @param names     of all the level music to add
      */
     public void createMusicMap(AssetDirectory directory, String[] names) {
-        for (String n : names) {
-            levelMusicMap.put(n, directory.getEntry(n, AudioSource.class));
-            levelMusic.addSource(directory.getEntry(n, AudioSource.class));
+        for (int i = 0; i < names.length; i++) {
+            if (names[i].contains("forest") && forestStart == 0) {
+                forestStart = i;
+            }
+            levelMusicMap.put(names[i], directory.getEntry(names[i], AudioSource.class));
+            levelMusic.addSource(directory.getEntry(names[i], AudioSource.class));
         }
     }
 
@@ -127,9 +135,10 @@ public class AudioController {
      * Plays the lab music
      */
     public void playLab() {
-        for (int i = 0; i < levelMusicMap.size(); i++) {
-            levelMusic.setSource(i, levelMusicMap.get("bkg-lab"));
-        }
+//        for (int i = 0; i < levelMusicMap.size(); i++) {
+//            levelMusic.setSource(i, levelMusicMap.get("bkg-lab"));
+//        }
+        levelMusic.reset();
         currMusic = "lab";
     }
 
@@ -137,9 +146,10 @@ public class AudioController {
      * Plays the forest music
      */
     public void playForest() {
-        for (int i = 0; i < levelMusicMap.size(); i++) {
-            levelMusic.setSource(1, levelMusicMap.get("bkg-forest"));
-        }
+        levelMusic.jumpToSource(forestStart);
+//        for (int i = 0; i < levelMusicMap.size(); i++) {
+//            levelMusic.setSource(1, levelMusicMap.get("bkg-forest"));
+//        }
         currMusic = "forest";
     }
 
@@ -230,6 +240,10 @@ public class AudioController {
         levelMusic.advanceSource();
         setLooping();
     }
+
+//    public void prevLevelMusic() {
+//        levelMusic.
+//    }
 
     /**
      * Advances the stage music queue to the next AudioSource

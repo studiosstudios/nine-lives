@@ -477,7 +477,8 @@ public class GameController implements Screen {
         audioController.createMusicMap(directory, names);
 
 //        audioController.setVolume(0.3f);
-        audioController.playLab();
+//        audioController.playLab();
+        audioController.playLevelMusic();
 
         names = new String[]{"retro"};
         for (String n : names){

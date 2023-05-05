@@ -1,5 +1,5 @@
 {
-    "automappingRulesFile": "./rules/rules.txt",
+    "automappingRulesFile": "rules/rules.txt",
     "commands": [
     ],
     "compatibilityVersion": 1100,
@@ -222,6 +222,29 @@
                 "property",
                 "object",
                 "tile"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 20,
+            "members": [
+                {
+                    "name": "activatorID",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "active",
+                    "type": "bool",
+                    "value": false
+                }
+            ],
+            "name": "Light",
+            "type": "class",
+            "useAs": [
+                "property",
+                "object"
             ]
         },
         {

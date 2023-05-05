@@ -57,7 +57,7 @@
         "tiledSuperJump": "levels/super-jump.json",
         "tiledLevelTutorial": "levels/tiledLevelTutorial1.json",
 //        "tiledLevel1": "levels/spikes-deaths-easy.json",
-              "tiledLevel1": "levels/cj-level.json",
+              "tiledLevel1": "levels/lights.json",
         "tiledLevel2": "levels/level-beta-med1.json",
         "tiledLevel3": "levels/body-switching-chain-medium.json",
         "tiledLevel4": "levels/super-jump.json",

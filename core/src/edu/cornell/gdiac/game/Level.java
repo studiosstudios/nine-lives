@@ -595,6 +595,8 @@ public class Level {
                 populateBoxes(obstacleData, tileSize, levelHeight);
             } else if (name.equals("mirrors")) {
                 populateMirrors(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("lights")) {
+                System.out.println("Light");
             } else if (name.equals("cat")) {
                 populateCat(obstacleData, tileSize, levelHeight, populateCat);
             } else if (name.equals("exits")) {

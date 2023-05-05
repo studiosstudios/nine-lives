@@ -17,6 +17,7 @@
  */
 package edu.cornell.gdiac.game.obstacle;
 
+import box2dLight.ChainLight;
 import box2dLight.ConeLight;
 import box2dLight.Light;
 import box2dLight.PointLight;
@@ -379,6 +380,11 @@ public abstract class Obstacle {
 	public Light getLight() { return light; }
 
 	/**
+	 * @return The box2dlight associated with this obstacle, casted as a ChainLight
+	 */
+	public ChainLight getLightAsChain() { return (ChainLight) light; }
+
+	/**
 	 * Sets the box2dlight associated with this obstacle
 	 *
 	 * @param l the box2dlight to associate with this obstacle
@@ -400,6 +406,7 @@ public abstract class Obstacle {
 	 * 	  distance,
 	 * 	  color,
 	 * 	  offset
+	 * 	  OPTIONAL: activated_color (for objects that might be "activated", like buttons or checkpoints)
 	 * 	}
 	 * <br>
 	 * @param lightData valid JSON of object constants corresponding to this obstacle
@@ -410,6 +417,21 @@ public abstract class Obstacle {
 		light = new PointLight(rayHandler, 100, Color.valueOf(lightData.getString("color")), lightData.getFloat("distance"), xOffset, yOffset);
 	}
 
+	/**
+	 * Creates a box2dlight ConeLight given a valid objectConstants and rayHandler
+	 * <br><br>
+	 * The objectConstants should contain the following fields:<br>
+	 * 	light: {
+	 *	  distance
+	 *        color
+	 *        offset
+	 *        directionDegree
+	 *        coneDegree
+	 * 	}
+	 * <br>
+	 * @param lightData valid JSON of object constants corresponding to this obstacle
+	 * @param rayHandler Ray handler currently associated with the active world
+	 */
 	public void createConeLight(JsonValue lightData, RayHandler rayHandler) {
 		float xOffset = lightData.get("offset").getFloat(0), yOffset = lightData.get("offset").getFloat(1);
 		light = new ConeLight(
@@ -421,6 +443,69 @@ public abstract class Obstacle {
 				yOffset,
 				lightData.getFloat("directionDegree"),
 				lightData.getFloat("coneDegree"));
+	}
+
+	/**
+	 * Creates a box2dlight Chainlight given a valid objectConstants and rayHandler
+	 * <br><br>
+	 * The objectConstants should contain the following fields:<br>
+	 * 	light: {
+	 *	  distance
+	 *        color
+	 *        direction
+	 * 	}
+	 * <br>
+	 * @param lightData valid JSON of object constants corresponding to this obstacle
+	 * @param rayHandler Ray handler currently associated with the active world
+	 */
+	public void createChainLight(JsonValue lightData, RayHandler rayHandler) {
+		createChainLight(lightData, rayHandler, new float[0]);
+	}
+
+	/**
+	 * Creates a box2dlight Chainlight given a valid objectConstants and rayHandler
+	 * <br><br>
+	 * The objectConstants should contain the following fields:<br>
+	 * 	light: {
+	 *	  distance
+	 *        color
+	 *        direction
+	 * 	}
+	 * <br>
+	 * @param lightData valid JSON of object constants corresponding to this obstacle
+	 * @param rayHandler Ray handler currently associated with the active world
+	 * @param vertices Vertices defining the ChainLight
+	 */
+	public void createChainLight(JsonValue lightData, RayHandler rayHandler, float[] vertices) {
+		light = new ChainLight(
+				rayHandler,
+				100,
+				Color.valueOf(lightData.getString("color")),
+				lightData.getFloat("distance"),
+				lightData.getInt("direction"),
+				vertices);
+	}
+
+	/**
+	 * Creates a box2dlight Chainlight given a valid objectConstants and rayHandler
+	 * <br><br>
+	 * The objectConstants should contain the following fields:<br>
+	 * 	light: {
+	 *	  distance
+	 *        color
+	 * 	}
+	 * <br>
+	 * @param lightData valid JSON of object constants corresponding to this obstacle
+	 * @param rayHandler Ray handler currently associated with the active world
+	 * @param direction Direction this ChainLight should emit light
+	 */
+	public void createChainLight(JsonValue lightData, RayHandler rayHandler, int direction) {
+		light = new ChainLight(
+				rayHandler,
+				100,
+				Color.valueOf(lightData.getString("color")),
+				lightData.getFloat("distance"),
+				direction);
 	}
 
 	/**

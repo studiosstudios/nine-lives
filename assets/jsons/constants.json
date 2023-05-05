@@ -52,7 +52,12 @@
     "thickness": 3,
     "friction": 0.4,
     "density": 1,
-    "mass": 1
+    "mass": 1,
+    "light": {
+      "distance": 1,
+      "color": "#ff00008c",
+      "direction": 0
+    }
   },
   "checkpoint": {
     "base_offset": [0, 1],

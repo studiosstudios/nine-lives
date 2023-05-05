@@ -1155,8 +1155,9 @@ public class Level {
     public void draw(GameCanvas canvas, boolean drawCat, boolean vfx) {
 
         if (vfx) {
-            canvas.addEffect(canvas.shockwaveEffect);
-            canvas.addEffect(canvas.chromaticAberrationEffect);
+//            canvas.addEffect(canvas.shockwaveEffect);
+            canvas.addEffect(canvas.portalEffect);
+//            canvas.addEffect(canvas.chromaticAberrationEffect);
 //            canvas.addEffect(canvas.bloomEffect);
             canvas.beginVFX();
         }
@@ -1181,11 +1182,11 @@ public class Level {
             a.draw(canvas);
         }
 
-        if (vfx) {
-            canvas.endVFX();
-            canvas.removeAllEffects();
-            canvas.beginVFX();
-        }
+//        if (vfx) {
+//            canvas.endVFX();
+//            canvas.removeAllEffects();
+//            canvas.beginVFX();
+//        }
 
         spiritLine.draw(canvas);
 
@@ -1206,13 +1207,13 @@ public class Level {
             spirit.draw(canvas, textureRegionAssetMap.get("spirit-photon").getTexture());
         }
 
-        if (vfx) {
-            canvas.endVFX();
-            canvas.addEffect(canvas.shockwaveEffect);
-            canvas.addEffect(canvas.chromaticAberrationEffect);
-//            canvas.addEffect(canvas.bloomEffect);
-            canvas.beginVFX();
-        }
+//        if (vfx) {
+//            canvas.endVFX();
+//            canvas.addEffect(canvas.shockwaveEffect);
+////            canvas.addEffect(canvas.chromaticAberrationEffect);
+////            canvas.addEffect(canvas.bloomEffect);
+//            canvas.beginVFX();
+//        }
 
         if (currCheckpoint != null) {
             currCheckpoint.drawBase(canvas);

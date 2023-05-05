@@ -13,8 +13,10 @@ import com.crashinvaders.vfx.VfxManager;
 import com.crashinvaders.vfx.effects.ChainVfxEffect;
 import com.crashinvaders.vfx.effects.ChromaticAberrationEffect;
 import com.crashinvaders.vfx.effects.util.MixEffect;
+import com.crashinvaders.vfx.framebuffer.VfxFrameBuffer;
 import com.crashinvaders.vfx.framebuffer.VfxFrameBufferQueue;
 import edu.cornell.gdiac.game.shaders.BloomEffect;
+import edu.cornell.gdiac.game.shaders.PortalEffect;
 import edu.cornell.gdiac.game.shaders.ShockwaveEffect;
 import edu.cornell.gdiac.math.Path2;
 import edu.cornell.gdiac.math.PathExtruder;
@@ -118,6 +120,8 @@ public class GameCanvas {
 	protected BloomEffect bloomEffect;
 	/** Shockwave effect */
 	protected ShockwaveEffect shockwaveEffect;
+	/** Portal effect */
+	protected PortalEffect portalEffect;
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
 	 * <br><br>
@@ -157,6 +161,15 @@ public class GameCanvas {
 
 		bloomEffect = new BloomEffect();
 		shockwaveEffect = new ShockwaveEffect();
+		portalEffect = new PortalEffect();
+
+		portalEffect.shouldBind = false;
+		portalEffect.setRadius(1.2f);
+		portalEffect.setThickness(0.005f);
+		portalEffect.setBgColor(new Color(0, 1, 0, 1));
+		portalEffect.setEdgeColor(new Color(0.3f, 1, 0.3f, 1));
+		portalEffect.rebind();
+		portalEffect.shouldBind = true;
 
 		setBlendState(BlendState.NO_PREMULT);
 
@@ -175,6 +188,13 @@ public class GameCanvas {
 		vfxManager.dispose();
 		chromaticAberrationEffect.dispose();
 		bloomEffect.dispose();
+		shockwaveEffect.dispose();
+		portalEffect.dispose();
+		portalEffect = null;
+		vfxManager = null;
+		chromaticAberrationEffect = null;
+		shockwaveEffect = null;
+		bloomEffect = null;
 		debugRender = null;
 		local  = null;
 		global = null;
@@ -458,7 +478,8 @@ public class GameCanvas {
 	public void batchBegin(){ spriteBatch.begin(); }
 
 	/**
-	 * Applies the current VFXs to the rendering context. Ends the rendering context, so
+	 * Applies the current VFXs to the rendering context. Ends the rendering context, so you will need to call beginVFX()
+	 * or batchBegin() to continuing drawing after.
 	 */
 	public void endVFX() {
 		spriteBatch.end();
@@ -475,7 +496,7 @@ public class GameCanvas {
 	public void addEffect(ChainVfxEffect effect) { vfxManager.addEffect(effect); }
 
 	/**
-	 * Removes all t from the vfxManager.
+	 * Removes all effects from the vfxManager.
 	 */
 	public void removeAllEffects() { vfxManager.removeAllEffects(); }
 

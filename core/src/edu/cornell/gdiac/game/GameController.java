@@ -745,11 +745,13 @@ public class GameController implements Screen {
             if (spiritModeTicks <= MAX_SPIRIT_MODE_TICKS) {
                 effectSize = (float) Math.sin(Math.PI * (double) (spiritModeTicks / 2f / MAX_SPIRIT_MODE_TICKS));
             } else {
-                effectSize =  (0.8f + 0.2f * (float) Math.cos(0.03 * (spiritModeTicks - MAX_SPIRIT_MODE_TICKS)));
+                effectSize =  (0.9f + 0.1f * (float) Math.cos(0.03 * (spiritModeTicks - MAX_SPIRIT_MODE_TICKS)));
             }
         }
 
         canvas.shockwaveEffect.setTime(canvas.shockwaveEffect.getTime() + dt);
+        canvas.portalEffect.setTime(canvas.portalEffect.getTime() + dt);
+        canvas.portalEffect.setRadius(1.6f -  0.4f * effectSize);
         canvas.bloomEffect.setIntensity(0.05f*effectSize);
         canvas.bloomEffect.setBlursize(0.02f*effectSize);
         canvas.chromaticAberrationEffect.setMaxDistortion(0.35f*effectSize);

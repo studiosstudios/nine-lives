@@ -25,6 +25,8 @@
       "climb-anim": "cat/climbing-anim.png",
       "meow-anim": "cat/meow-anim.png",
       "trans-anim": "cat/transition-anim.png",
+      "trans2-anim": "cat/jump-stand-trans.png",
+      "jump-mid": "cat/jump-mid-anim.png",
       "corpse": "obstacles/corpse/corpse.png",
       "corpse2" : "obstacles/corpse/corpse2.png",
       "corpse-burnt": "cat/corpse-burnt.png",

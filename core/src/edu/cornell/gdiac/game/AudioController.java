@@ -48,6 +48,10 @@ public class AudioController {
         levelMusic.setVolume(0.3f);
         stageMusic.setVolume(0.3f);
 
+        setLooping();
+    }
+
+    public void setLooping() {
         levelMusic.setLoopBehavior(true);
         stageMusic.setLoopBehavior(true);
     }
@@ -208,6 +212,7 @@ public class AudioController {
      */
     public void nextLevelMusic() {
         levelMusic.advanceSource();
+        setLooping();
     }
 
     /**
@@ -215,5 +220,6 @@ public class AudioController {
      */
     public void nextStageMusic() {
         stageMusic.advanceSource();
+        setLooping();
     }
 }

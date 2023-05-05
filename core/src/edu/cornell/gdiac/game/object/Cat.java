@@ -917,6 +917,14 @@ public class Cat extends CapsuleObstacle implements Movable {
 
             stationaryTime = 0;
         }
+        // CLIMBING
+        else if (state == State.CLIMBING) {
+            if(verticalMovement != 0) {
+                climbTime += delta;
+            }
+            currentFrame = climbAnimation.getKeyFrame(climbTime);
+            stationaryTime = 0;
+        }
         // JUMPING (or in the air, such as falling from a platform)
         else if (!isGrounded()) {
             jumpTime += delta;
@@ -933,14 +941,6 @@ public class Cat extends CapsuleObstacle implements Movable {
             walkTime = 0;
             stationaryTime = 0;
             climbTime = 0;
-        }
-        // CLIMBING
-        else if (state == State.CLIMBING) {
-            if(verticalMovement != 0) {
-                climbTime += delta;
-            }
-            currentFrame = climbAnimation.getKeyFrame(climbTime);
-            stationaryTime = 0;
         }
         // MEOWING
         else if ((isMeowing && state == State.MOVING) || meowTime != 0) {

@@ -22,6 +22,7 @@
       "sit": "cat/sit.png",
       "idle-sit-anim": "cat/idle-sit-anim.png",
       "idle-stand-anim": "cat/idle-stand-anim.png",
+      "climb-anim": "cat/climbing-anim.png",
       "meow-anim": "cat/meow-anim.png",
       "trans-anim": "cat/transition-anim.png",
       "corpse": "obstacles/corpse/corpse.png",
@@ -62,7 +63,7 @@
         "tiledLevel3": "levels/body-switching-chain-medium.json",
         "tiledLevel4": "levels/super-jump.json",
         "tiledLevel5": "levels/level-beta-hard.json",
-        "tiledLevel6": "levels/party-room.json",
+        "tiledLevel6": "levels/party-room.json"
     },
     "sounds" : {
         "jump" : "cat/jump-CELESTE.wav",

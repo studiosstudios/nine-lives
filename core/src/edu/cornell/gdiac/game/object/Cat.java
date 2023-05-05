@@ -217,9 +217,11 @@ public class Cat extends CapsuleObstacle implements Movable {
     private Animation<TextureRegion> idleAnimation;
     private Animation<TextureRegion> idleStandAnimation;
     private Animation<TextureRegion> transAnimation;
+    private Animation<TextureRegion> climbAnimation;
     private float jumpTime;
     private float meowTime;
     private float walkTime;
+    private float climbTime;
     private TextureRegion normalTexture;
     private TextureRegion jumpTexture;
     private TextureRegion sitTexture;
@@ -382,6 +384,7 @@ public class Cat extends CapsuleObstacle implements Movable {
         jumpTime = 0;
         meowTime = 0;
         walkTime = 0;
+        climbTime = 0;
         failedSwitchTicks = FAILED_SWITCH_TICKS;
         state = State.MOVING;
         currentFrame = normalTexture;
@@ -604,10 +607,12 @@ public class Cat extends CapsuleObstacle implements Movable {
         transAnimation = new Animation<>(0.08f, TextureRegion.split(tMap.get("trans-anim").getTexture(),2048,2048)[0]);
         idleAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("idle-sit-anim").getTexture(),2048,2048)[0]);
         idleStandAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("idle-stand-anim").getTexture(),2048,2048)[0]);
+        climbAnimation = new Animation<>(0.05f, TextureRegion.split(tMap.get("climb-anim").getTexture(),2048,2048)[0]);
         meowAnimation.setPlayMode(Animation.PlayMode.REVERSED);
         idleStandAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
         idleAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
         walkAnimation.setPlayMode(Animation.PlayMode.LOOP);
+        climbAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 //        transAnimation.setPlayMode(Animation.PlayMode.NORMAL);
 
         // Gameplay attributes
@@ -927,6 +932,15 @@ public class Cat extends CapsuleObstacle implements Movable {
             // But that slightly couples animation logic with movement logic, so we can push that off for now -CJ
             walkTime = 0;
             stationaryTime = 0;
+            climbTime = 0;
+        }
+        // CLIMBING
+        else if (state == State.CLIMBING) {
+            if(verticalMovement != 0) {
+                climbTime += delta;
+            }
+            currentFrame = climbAnimation.getKeyFrame(climbTime);
+            stationaryTime = 0;
         }
         // MEOWING
         else if ((isMeowing && state == State.MOVING) || meowTime != 0) {
@@ -935,10 +949,6 @@ public class Cat extends CapsuleObstacle implements Movable {
             if (meowTime >= (0.6)){
                 meowTime = 0;
             }
-        }
-        // CLIMBING
-        else if (state == State.CLIMBING) {
-
         }
         // SITTING
         else if (state == State.MOVING && horizontalMovement == 0 && verticalMovement == 0) {

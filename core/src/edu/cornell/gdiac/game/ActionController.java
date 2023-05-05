@@ -496,9 +496,10 @@ public class ActionController {
     }
 
     public void recombineLives() {
-//        level.resetLives();
+//        System.out.println("recombineLives");
+//        System.out.println(level.getdeadBodyArray());
         if (level.getSpiritParticles().size == 0) {
-            System.out.println("recombining lives. . .");
+//            System.out.println("recombining lives. . .");
 
             while (level.getdeadBodyArray().size != 0) {
                 for (DeadBody body: level.getdeadBodyArray()) {
@@ -509,7 +510,6 @@ public class ActionController {
                     System.out.println("added spirit");
                     level.removeDeadBody(body);
                 }
-//            moveSpirits();
             }
         }
     }
@@ -517,8 +517,8 @@ public class ActionController {
 
     public void moveSpirits() {
         if (level.getSpiritParticles().size != 0) {
-            System.out.println("moving spirits. . .");
-            System.out.println(level.getSpiritParticles().size);
+//            System.out.println("moving spirits. . .");
+//            System.out.println(level.getSpiritParticles().size);
             for (Particle spirit : level.getSpiritParticles()) {
                 float x = level.getCat().getX() - spirit.getX();
                 float y = level.getCat().getY() - spirit.getY();
@@ -535,7 +535,7 @@ public class ActionController {
                 }
             }
         }
-        System.out.println("done moving spirits.");
+//        System.out.println("done moving spirits.");
     }
 
     /**

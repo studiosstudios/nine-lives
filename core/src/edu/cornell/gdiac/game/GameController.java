@@ -19,6 +19,7 @@ import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.game.stage.HudStage;
 import edu.cornell.gdiac.util.ScreenListener;
 
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.util.HashMap;
 
 /**
@@ -361,6 +362,8 @@ public class GameController implements Screen {
         }
         initCurrLevel(true);
         collisionController.setDidChange(true);
+//        collisionController.setLevel(levels[currLevelIndex]);
+//        actionController.setLevel(levels[currLevelIndex]);
     }
 
     /**
@@ -392,6 +395,8 @@ public class GameController implements Screen {
 
         initCurrLevel(true);
         collisionController.setDidChange(true);
+//        collisionController.setLevel(levels[currLevelIndex]);
+//        actionController.setLevel(levels[currLevelIndex]);
     }
 
     /**
@@ -568,6 +573,9 @@ public class GameController implements Screen {
      */
     private void initCurrLevel(boolean cameraGlide){
         collisionController.setLevel(currLevel);
+        System.out.println("initCurrLevel");
+        System.out.println(currLevel.getGoal());
+
         actionController.setLevel(currLevel);
         actionController.setMobControllers(currLevel);
         if (currLevel.levelStates().size == 0) currLevel.saveState();
@@ -644,10 +652,12 @@ public class GameController implements Screen {
             return false;
         }  else if (input.didNext() && levelNum < numLevels) {
             pause();
+//            nextLevel();
             init(levelNum + 1);
             return false;
         }  else if (input.didPrev() && levelNum > 1) {
             pause();
+//            prevLevel();
             init(levelNum - 1);
             return false;
         }
@@ -665,6 +675,7 @@ public class GameController implements Screen {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt) {
+//        System.out.println(currLevel.getGoal());
         if (collisionController.getReturn()) {
             setRet(true);
         }

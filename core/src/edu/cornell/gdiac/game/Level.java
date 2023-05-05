@@ -1240,6 +1240,7 @@ public class Level {
      * Spawns a dead body at the location of the cat
      * */
     public void spawnDeadBody(){
+        System.out.println("spawned dead body");
         textureScaleCache.set(1/34f, 1/34f);
         double rand = Math.random();
         DeadBody deadBody;

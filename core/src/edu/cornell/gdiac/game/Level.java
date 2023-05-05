@@ -112,6 +112,8 @@ public class Level {
     /** Current RayHandler associated with the active world for convenience. */
     private RayHandler rayHandler;
 
+    private DeadBody nextBody;
+
 
     /**
      * Returns the bounding rectangle for the physics world
@@ -378,7 +380,7 @@ public class Level {
         cameraRegions = new Array<>();
         activationRelations = new HashMap<>();
         spiritMode = false;
-        spiritLine = new SpiritLine(Color.WHITE, Color.CYAN, scale);
+        spiritLine = new SpiritLine(Color.WHITE, Color.WHITE, scale);
     }
 
     /**
@@ -1181,8 +1183,17 @@ public class Level {
         spiritLine.draw(canvas);
 
         for (DeadBody db : deadBodyArray) {
+            if (vfx) {
+                if (db == nextBody){
+                    canvas.setShader(null);
+                } else {
+                    canvas.setGreyscaleShader(effectSize);
+                }
+            }
             db.draw(canvas);
         }
+
+        if (vfx) {canvas.setShader(null);}
 
         if(cat != null && drawCat) {
             cat.draw(canvas);
@@ -1292,6 +1303,7 @@ public class Level {
                 }
             }
         }
+        nextBody = nextdb;
         return nextdb;
     }
 

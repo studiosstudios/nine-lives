@@ -232,6 +232,8 @@ public class Cat extends CapsuleObstacle implements Movable {
     private Queue<DashShadow> dashShadowQueue = new Queue<>();
     private Color dashColor = new Color(0.68f, 0.85f, 0.9f, 1f);
     private TextureRegion currentFrame;
+    /** Used in getSpiritRegionColor() */
+    private Color colorCache = new Color();
     //endregion
     /*/////*/
 
@@ -503,6 +505,22 @@ public class Cat extends CapsuleObstacle implements Movable {
     }
     public ObjectMap<String, Integer> getSpiritRegions() {
         return spiritRegions;
+    }
+
+    public Color getSpiritRegionColor() {
+        if (spiritRegions.size == 0) { return Color.WHITE; }
+        float r = 0;
+        float b = 0;
+        float g = 0;
+        for (String hex : spiritRegions.keys()){
+            r += Integer.parseInt(hex.substring(0, 2), 16) / 255f;
+            g += Integer.parseInt(hex.substring(2, 4), 16) / 255f;
+            b += Integer.parseInt(hex.substring(4, 6), 16) / 255f;
+        }
+        r /= spiritRegions.size;
+        g /= spiritRegions.size;
+        b /= spiritRegions.size;
+        return colorCache.set(r, g, b, 1);
     }
 
     public void addSpiritRegion(SpiritRegion sr){

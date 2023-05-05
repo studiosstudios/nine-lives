@@ -124,6 +124,8 @@ public class GameController implements Screen {
     /** only not null if quick launched from Tiled */
     private JsonValue quickLaunchLevel;
 
+    private Color spiritModeColor = new Color(1, 1, 1, 1);
+
     /**
      * PLAY: User has all controls and is in game
      * PLAYER_PAN: Camera zooms out and player is free to pan around the level (all other gameplay controls stripped from user)
@@ -681,6 +683,8 @@ public class GameController implements Screen {
             setRet(true);
         }
         actionController.update(dt);
+
+        currLevel.getSpiritLine().setOuterColor(spiritModeColor);
         flashColor.a -= flashColor.a/10;
         updateCamera();
 
@@ -741,6 +745,11 @@ public class GameController implements Screen {
                 effectSize =  (0.9f + 0.1f * (float) Math.cos(0.03 * (spiritModeTicks - MAX_SPIRIT_MODE_TICKS)));
             }
         }
+
+        Color targetColor = currLevel.getCat().getSpiritRegionColor();
+        spiritModeColor.r += (targetColor.r - spiritModeColor.r) * 0.05f;
+        spiritModeColor.g += (targetColor.g - spiritModeColor.g) * 0.05f;
+        spiritModeColor.b += (targetColor.b - spiritModeColor.b) * 0.05f;
 
     }
 
@@ -960,18 +969,17 @@ public class GameController implements Screen {
         canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight());
 
         if (true) { //TODO: only draw when necessary
-//            prevLevel.draw(canvas, false, vfx);
-//            nextLevel.draw(canvas, false, vfx);
+            prevLevel.draw(canvas, false, vfx, effectSize);
+            nextLevel.draw(canvas, false, vfx, effectSize);
         }
         currLevel.draw(canvas, gameState != GameState.RESPAWN, vfx, effectSize);
         if (vfx) {
             canvas.setSpiritModeShader(1.8f - 0.6f * effectSize, 0.3f,
-                    Color.GREEN, Color.GREEN, spiritModeTicks/60f);
+                    spiritModeColor, spiritModeColor, spiritModeTicks/60f);
         }
         canvas.endFrameBuffer();
         canvas.setShader(null);
 
-//        if (vfx) canvas.batchBegin();
         canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
 
         canvas.end();

@@ -329,14 +329,14 @@ public class DeadBody extends CapsuleObstacle implements Movable {
      */
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
-        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
-        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+//        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+//        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
         for (Shape shape : sensorShapes) {
             if (shape instanceof PolygonShape) {
-                canvas.drawPhysics((PolygonShape) shape, Color.RED, getX() - xTranslate, getY() - yTranslate,
+                canvas.drawPhysics((PolygonShape) shape, Color.RED, getX(), getY(),
                         getAngle(), drawScale.x, drawScale.y);
             } else if (shape instanceof CircleShape) {
-                canvas.drawPhysics((CircleShape) shape, Color.RED, getX() - xTranslate, getY() - yTranslate, drawScale.x, drawScale.y);
+                canvas.drawPhysics((CircleShape) shape, Color.RED, getX(), getY(), drawScale.x, drawScale.y);
             }
         }
     }

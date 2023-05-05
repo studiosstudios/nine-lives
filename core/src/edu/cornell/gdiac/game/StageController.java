@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.*;
 import edu.cornell.gdiac.audio.AudioEngine;
 import edu.cornell.gdiac.audio.AudioSource;
@@ -158,10 +159,13 @@ public class StageController implements Screen {
 		}
 
 		mainMenuStage = new MainMenuStage(internal, true);
+//		mainMenuStage.setViewport(canvas.getViewport());
 		settingsStage = new SettingsStage(internal, true);
+//		settingsStage.setViewport(canvas.getViewport());
 		pauseStage = new PauseStage(internal, true);
 		levelSelectStage = new LevelSelectStage(internal, true);
 		loadingStage = new LoadingStage(internal, true);
+//		canvas.getViewport().apply(true);
 
 		if (start) {
 			starting = true;
@@ -215,6 +219,7 @@ public class StageController implements Screen {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	private void update(float delta) {
+		stage.update(delta);
 		if (starting) {
 			if(!assets.isFinished()) {
 				assets.update(budget);
@@ -257,7 +262,8 @@ public class StageController implements Screen {
 	 */
 	public void render(float delta) {
 		if (active) {
-			if (!pause && startStage != null) { update(delta); }
+//			if (!pause && startStage != null) { update(delta); }
+			update(delta);
 			draw();
 			if (pause) {
 				audioController.playStageMusic();

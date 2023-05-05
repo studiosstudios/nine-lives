@@ -24,8 +24,9 @@ public class NineLives extends Game implements ScreenListener {
 	private GameController controller;
 	/** The AudioController to control all sound effects and music */
 	private AudioController audioController;
-
 	private final int TOTAL_LEVELS = 6;
+	private boolean quickLaunchFromTiled;
+	private String filepath;
 
 	/**
 	 * Creates a new game from the configuration settings.
@@ -33,7 +34,10 @@ public class NineLives extends Game implements ScreenListener {
 	 * This method configures the asset manager, but does not load any assets
 	 * or assign any screen.
 	 */
-	public NineLives() { }
+	public NineLives(boolean quickLaunchFromTiled, String filepath) {
+		this.quickLaunchFromTiled = quickLaunchFromTiled;
+		this.filepath = filepath;
+	}
 
 	/**
 	 * Called when the Application is first created.
@@ -87,6 +91,7 @@ public class NineLives extends Game implements ScreenListener {
 	 * @param height The new height in pixels
 	 */
 	public void resize(int width, int height) {
+		Gdx.gl.glViewport(0, 0, width, height);
 		canvas.resize();
 		super.resize(width,height);
 	}
@@ -98,11 +103,15 @@ public class NineLives extends Game implements ScreenListener {
 	 */
 	private void startGame(int numLevels, int startLevel){
 		directory = menu.getAssets();
-		controller = new GameController(numLevels, audioController);
+		if (quickLaunchFromTiled) {
+			controller = new GameController(filepath, audioController);
+		} else {
+			controller = new GameController(numLevels, audioController);
+		}
 		controller.gatherAssets(directory);
-		controller.setScreenListener(this);
 		controller.setCanvas(canvas);
-		controller.init(startLevel);
+		controller.init(quickLaunchFromTiled ? 1 : startLevel);
+		controller.setScreenListener(this);
 		setScreen(controller);
 		menu.dispose();
 		menu = null;

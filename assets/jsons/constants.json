@@ -129,6 +129,11 @@
     "side_sensor": {
       "shrink" : 0.6,
       "width": 0.05
+    },
+    "light": {
+      "distance": 3,
+      "color": "#ffff008c",
+      "offset": [0, 0]
     }
   },
   "exits": {

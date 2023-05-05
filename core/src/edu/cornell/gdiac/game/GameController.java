@@ -966,7 +966,7 @@ public class GameController implements Screen {
         canvas.beginFrameBuffer();
         canvas.applyViewport(false);
         if (vfx) { canvas.setGreyscaleShader(effectSize); }
-        canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight());
+        canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2f, canvas.getCamera().getY()  - canvas.getHeight()/2f, canvas.getWidth(), canvas.getHeight());
 
         if (true) { //TODO: only draw when necessary
             prevLevel.draw(canvas, false, vfx, effectSize);
@@ -980,7 +980,7 @@ public class GameController implements Screen {
         canvas.endFrameBuffer();
         canvas.setShader(null);
 
-        canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
+        canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2f, canvas.getCamera().getY()  - canvas.getHeight()/2f, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
 
         canvas.end();
         hud.draw();

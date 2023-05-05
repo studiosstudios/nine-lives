@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -119,7 +120,7 @@ public class GameCanvas {
 	protected ShaderProgram spiritModeShader;
 	protected ShaderProgram greyscaleShader;
 	private FrameBuffer frameBuffer;
-	private Matrix4 IDENTITY = new Matrix4();
+	private final Matrix4 IDENTITY = new Matrix4();
 
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
@@ -161,6 +162,8 @@ public class GameCanvas {
 				Gdx.files.internal("shaders/greyscale.frag").readString());
 
 		frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, (int) STANDARD_WIDTH, (int) STANDARD_HEIGHT, false);
+
+		System.out.println(Gdx.graphics.getDensity());
 
 		setBlendState(BlendState.NO_PREMULT);
 

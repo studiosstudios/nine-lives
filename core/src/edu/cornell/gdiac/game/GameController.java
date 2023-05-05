@@ -751,7 +751,7 @@ public class GameController implements Screen {
 
         canvas.shockwaveEffect.setTime(canvas.shockwaveEffect.getTime() + dt);
         canvas.portalEffect.setTime(canvas.portalEffect.getTime() + dt);
-        canvas.portalEffect.setRadius(1.6f -  0.4f * effectSize);
+        canvas.portalEffect.setRadius(2f - 0.6f * effectSize);
         canvas.portalEffect.setGreyscale(effectSize);
         canvas.bloomEffect.setIntensity(0.05f*effectSize);
         canvas.bloomEffect.setBlursize(0.02f*effectSize);

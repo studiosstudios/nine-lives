@@ -164,8 +164,8 @@ public class GameCanvas {
 		portalEffect = new PortalEffect();
 
 		portalEffect.shouldBind = false;
-		portalEffect.setRadius(1.2f);
-		portalEffect.setThickness(0.005f);
+		portalEffect.setRadius(1.4f);
+		portalEffect.setThickness(0.7f);
 		portalEffect.setBgColor(new Color(0, 1, 0, 1));
 		portalEffect.setEdgeColor(new Color(0.3f, 1, 0.3f, 1));
 		portalEffect.rebind();

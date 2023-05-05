@@ -72,6 +72,41 @@
             "id": 18,
             "members": [
                 {
+                    "name": "bHeight",
+                    "type": "float",
+                    "value": 0
+                },
+                {
+                    "name": "bWidth",
+                    "type": "float",
+                    "value": 0
+                },
+                {
+                    "name": "bX",
+                    "type": "float",
+                    "value": 0
+                },
+                {
+                    "name": "bY",
+                    "type": "float",
+                    "value": 0
+                },
+                {
+                    "name": "isZoomRelative",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "shouldSnap",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "snapCollisionArea",
+                    "type": "bool",
+                    "value": false
+                },
+                {
                     "name": "zoom",
                     "type": "float",
                     "value": 0.6
@@ -222,29 +257,6 @@
                 "property",
                 "object",
                 "tile"
-            ]
-        },
-        {
-            "color": "#ffa0a0a4",
-            "drawFill": true,
-            "id": 20,
-            "members": [
-                {
-                    "name": "activatorID",
-                    "type": "string",
-                    "value": ""
-                },
-                {
-                    "name": "active",
-                    "type": "bool",
-                    "value": false
-                }
-            ],
-            "name": "Light",
-            "type": "class",
-            "useAs": [
-                "property",
-                "object"
             ]
         },
         {

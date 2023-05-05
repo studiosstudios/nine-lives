@@ -868,7 +868,7 @@ public class Level {
         JsonValue objects = data.get("objects");
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
-            CameraRegion cameraRegion = new CameraRegion(propertiesMap, scale);
+            CameraRegion cameraRegion = new CameraRegion(propertiesMap, scale, bounds);
             addObject(cameraRegion);
         }
     }

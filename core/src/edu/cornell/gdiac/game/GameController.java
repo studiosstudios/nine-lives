@@ -530,7 +530,8 @@ public class GameController implements Screen {
             rayHandler.dispose();
         }
         rayHandler = new RayHandler(world);
-        rayHandler.setAmbientLight(0.7f);
+        rayHandler.setAmbientLight(0.1f);
+//        rayHandler.setShadows(true);
 
         justRespawned = true;
         justReset = true;
@@ -831,7 +832,8 @@ public class GameController implements Screen {
         updateRayHandlerCombinedMatrix();
         rayHandler.updateAndRender();
 
-        // Pause menu draw
+        // Menu draw
+        hud.draw();
         if (paused && stageController != null) { stageController.render(delta); }
     }
 
@@ -928,7 +930,6 @@ public class GameController implements Screen {
         currLevel.draw(canvas, gameState != GameState.RESPAWN);
         canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
         canvas.end();
-        hud.draw();
 
         if (debug) {
             canvas.beginDebug();

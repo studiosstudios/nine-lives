@@ -59,7 +59,13 @@
     "respawn_offset": [0, 0.5],
     "offset": [0.5, -1],
     "solid_height_scale": 0.5,
-    "solid_width_scale": 1
+    "solid_width_scale": 1,
+    "light": {
+      "distance": 2.5,
+      "color": "#0000ffaa",
+      "activated_color": "#ffff00aa",
+      "offset": [0, 0]
+    }
   },
   "goal": {
     "base_offset": [0, 1],
@@ -139,7 +145,8 @@
     },
     "light": {
       "distance": 3,
-      "color": "#ffff008c",
+//      "color": "#ffff008c",
+      "color": "#ffff00aa",
       "offset": [0, 0]
     }
   },

@@ -435,7 +435,7 @@ public class GameController implements Screen {
         String[] names = {
                 // CAT
                 "cat", "walk-anim", "jump", "jump-anim", "sit", "idle-sit-anim", "idle-stand-anim", "meow-anim",
-                "corpse", "corpse2", "corpse-burnt",
+                "trans-anim","climb-anim","corpse", "corpse2", "corpse-burnt",
                 // SPIKES
                 "spikes",
                 // BUTTONS & SWITCHES

@@ -1,17 +1,15 @@
 package edu.cornell.gdiac.game;
 
-import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.audio.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.game.object.*;
 
@@ -733,11 +731,6 @@ public class GameController implements Screen {
      */
     private void updateVFX(boolean increasing, boolean justPressed, float dt){
 
-        if (justPressed) {
-            canvas.shockwaveEffect.setTime(0);
-            canvas.shockwaveEffect.setCenter(canvas.projectRatio(currLevel.getCat().getPosition().scl(scale)));
-        }
-
         if (!increasing) {
             effectSize += -effectSize/10f;
             if (effectSize - 0.05f < 0) effectSize = 0;
@@ -748,14 +741,6 @@ public class GameController implements Screen {
                 effectSize =  (0.9f + 0.1f * (float) Math.cos(0.03 * (spiritModeTicks - MAX_SPIRIT_MODE_TICKS)));
             }
         }
-
-        canvas.shockwaveEffect.setTime(canvas.shockwaveEffect.getTime() + dt);
-        canvas.portalEffect.setTime(canvas.portalEffect.getTime() + dt);
-        canvas.portalEffect.setRadius(2f - 0.6f * effectSize);
-        canvas.portalEffect.setGreyscale(effectSize);
-        canvas.bloomEffect.setIntensity(0.05f*effectSize);
-        canvas.bloomEffect.setBlursize(0.02f*effectSize);
-        canvas.chromaticAberrationEffect.setMaxDistortion(0.35f*effectSize);
 
     }
 
@@ -969,25 +954,26 @@ public class GameController implements Screen {
         boolean vfx = effectSize > 0;
 
         canvas.clear();
-        canvas.begin();
+        canvas.beginFrameBuffer();
         canvas.applyViewport(false);
-        if (vfx) {
-//            canvas.addEffect(canvas.shockwaveEffect);
-            canvas.addEffect(canvas.portalEffect);
-//            canvas.addEffect(canvas.chromaticAberrationEffect);
-//            canvas.addEffect(canvas.bloomEffect);
-            canvas.beginVFX();
-        }
+        if (vfx) { canvas.setGreyscaleShader(effectSize); }
         canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight());
 
         if (true) { //TODO: only draw when necessary
 //            prevLevel.draw(canvas, false, vfx);
 //            nextLevel.draw(canvas, false, vfx);
         }
-        currLevel.draw(canvas, gameState != GameState.RESPAWN, vfx);
+        currLevel.draw(canvas, gameState != GameState.RESPAWN, vfx, effectSize);
+        if (vfx) {
+            canvas.setSpiritModeShader(1.8f - 0.6f * effectSize, 0.3f,
+                    Color.GREEN, Color.GREEN, spiritModeTicks/60f);
+        }
+        canvas.endFrameBuffer();
+        canvas.setShader(null);
 
-        if (vfx) canvas.batchBegin();
+//        if (vfx) canvas.batchBegin();
         canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
+
         canvas.end();
         hud.draw();
 

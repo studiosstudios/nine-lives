@@ -1148,19 +1148,12 @@ public class Level {
     /**
      * Draws the level to the given game canvas. Assumes <code>canvas.begin()</code> has already been called.
      *
-     * @param canvas	the drawing context
-     * @param drawCat   if we should draw the cat
-     * @param vfx       if we should apply vfx
+     * @param canvas	  the drawing context
+     * @param drawCat     if we should draw the cat
+     * @param vfx         if we should apply vfx
+     * @param effectSize  amount of vfx to apply (0-1)
      */
-    public void draw(GameCanvas canvas, boolean drawCat, boolean vfx) {
-
-//        if (vfx) {
-////            canvas.addEffect(canvas.shockwaveEffect);
-//            canvas.addEffect(canvas.portalEffect);
-////            canvas.addEffect(canvas.chromaticAberrationEffect);
-////            canvas.addEffect(canvas.bloomEffect);
-//            canvas.beginVFX();
-//        }
+    public void draw(GameCanvas canvas, boolean drawCat, boolean vfx, float effectSize) {
 
         for (Laser l : lasers){
             l.drawLaser(canvas);
@@ -1182,11 +1175,8 @@ public class Level {
             a.draw(canvas);
         }
 
-//        if (vfx) {
-//            canvas.endVFX();
-//            canvas.removeAllEffects();
-//            canvas.beginVFX();
-//        }
+        if (vfx) {canvas.setShader(null);}
+
 
         spiritLine.draw(canvas);
 
@@ -1207,13 +1197,7 @@ public class Level {
             spirit.draw(canvas, textureRegionAssetMap.get("spirit-photon").getTexture());
         }
 
-//        if (vfx) {
-//            canvas.endVFX();
-//            canvas.addEffect(canvas.shockwaveEffect);
-////            canvas.addEffect(canvas.chromaticAberrationEffect);
-////            canvas.addEffect(canvas.bloomEffect);
-//            canvas.beginVFX();
-//        }
+        if (vfx) canvas.setGreyscaleShader(effectSize);
 
         if (currCheckpoint != null) {
             currCheckpoint.drawBase(canvas);
@@ -1221,11 +1205,6 @@ public class Level {
 
         if (goal != null) {
             goal.draw(canvas);
-        }
-
-        if (vfx) {
-            canvas.endVFX();
-            canvas.removeAllEffects();
         }
     }
 

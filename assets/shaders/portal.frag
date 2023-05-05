@@ -9,13 +9,12 @@ precision PRECISION int;
 float PI = 3.1415;
 
 
-uniform sampler2D u_texture0; // 0
+uniform sampler2D u_texture; // 0
 uniform float u_time; // effect elapsed time
 uniform float u_thickness;
 uniform float u_radius;
 uniform vec4 u_edgeColor;
 uniform vec4 u_bgColor;
-uniform float u_greyscale;
 
 varying vec2 v_texCoords;
 
@@ -41,9 +40,9 @@ void main( )
     float res = smoothstep(targetVal-u_thickness, targetVal+u_thickness, d);
 
     vec4 col;
-    vec4 portalColor = texture2D(u_texture0,uvOrig);
-    float portalGrey = dot(portalColor.xyz, vec3(0.2126, 0.7152, 0.0722));
-    portalColor = vec4(mix(portalColor, vec3(portalGrey), u_greyscale), portalColor.a);
+    vec4 portalColor = texture2D(u_texture,uvOrig);
+    //    float portalGrey = dot(portalColor.xyz, vec3(0.2126, 0.7152, 0.0722));
+    //    portalColor = vec4(mix(portalColor, vec3(portalGrey), u_greyscale), portalColor.a);
 
     float edgeDist = smoothstep(targetVal-u_thickness,targetVal+u_thickness, d);
     col = mix(portalColor, u_bgColor, res);

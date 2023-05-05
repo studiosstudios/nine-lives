@@ -112,16 +112,15 @@ public class GameCanvas {
 	/** Cache object to handle raw textures */
 	private TextureRegion holder;
 	private final float CAMERA_ZOOM = 0.6f;
-	/** VfxManager for applying VFXs */
-	private VfxManager vfxManager;
-	/** Chromatic aberration - blurs, warps and rgb color distorts towards edge of screen */
-	protected ChromaticAberrationEffect chromaticAberrationEffect;
-	/** Bloom effect - makes white objects glow more */
-	protected BloomEffect bloomEffect;
 	/** Shockwave effect */
 	protected ShockwaveEffect shockwaveEffect;
 	/** Portal effect */
 	protected PortalEffect portalEffect;
+	protected ShaderProgram spiritModeShader;
+	protected ShaderProgram greyscaleShader;
+	private FrameBuffer frameBuffer;
+	private Matrix4 IDENTITY = new Matrix4();
+
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
 	 * <br><br>
@@ -154,22 +153,14 @@ public class GameCanvas {
 		global = new Matrix4();
 		vertex = new Vector2();
 
-		//vfx
-		vfxManager = new VfxManager(Pixmap.Format.RGBA8888);
-		vfxManager.setBlendingEnabled(true);
-		chromaticAberrationEffect = new ChromaticAberrationEffect(3);
+		//shaders
+		ShaderProgram.pedantic =false;
+		spiritModeShader = new ShaderProgram(spriteBatch.getShader().getVertexShaderSource(),
+				Gdx.files.internal("shaders/portal.frag").readString());
+		greyscaleShader = new ShaderProgram(spriteBatch.getShader().getVertexShaderSource(),
+				Gdx.files.internal("shaders/greyscale.frag").readString());
 
-		bloomEffect = new BloomEffect();
-		shockwaveEffect = new ShockwaveEffect();
-		portalEffect = new PortalEffect();
-
-		portalEffect.shouldBind = false;
-		portalEffect.setRadius(1.4f);
-		portalEffect.setThickness(0.7f);
-		portalEffect.setBgColor(new Color(0, 1, 0, 1));
-		portalEffect.setEdgeColor(new Color(0.3f, 1, 0.3f, 1));
-		portalEffect.rebind();
-		portalEffect.shouldBind = true;
+		frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, (int) STANDARD_WIDTH, (int) STANDARD_HEIGHT, false);
 
 		setBlendState(BlendState.NO_PREMULT);
 
@@ -185,17 +176,9 @@ public class GameCanvas {
 		spriteBatch.dispose();
 		spriteBatch = null;
 		debugRender.dispose();
-		vfxManager.dispose();
-		chromaticAberrationEffect.dispose();
-		bloomEffect.dispose();
-		shockwaveEffect.dispose();
-		portalEffect.dispose();
-		portalEffect = null;
-		vfxManager = null;
-		chromaticAberrationEffect = null;
-		shockwaveEffect = null;
-		bloomEffect = null;
+		frameBuffer.dispose();
 		debugRender = null;
+		frameBuffer = null;
 		local  = null;
 		global = null;
 		vertex = null;
@@ -356,7 +339,11 @@ public class GameCanvas {
 		 width = getWidth();
 		 height = getHeight();
 		 spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
-		 if (getWidth() != 0 && getHeight() != 0) vfxManager.resize(width, height);
+
+		 if (getWidth() != 0 && getHeight() != 0) {
+			 frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false); //not sure if this is necessary
+		 }
+
 		 viewport.update(width, height, true);
 	}
 	
@@ -460,15 +447,33 @@ public class GameCanvas {
 		active = DrawPass.STANDARD;
 	}
 
-	/**
-	 * Clears VFX buffer and begins input capture. Ends the spritebatch rendering context if it is currently active,
-	 * then begins it again.
-	 */
-	public void beginVFX() {
-		if (spriteBatch.isDrawing()) spriteBatch.end();
-		vfxManager.cleanUpBuffers();
-		vfxManager.beginInputCapture();
-		spriteBatch.begin();
+	public void beginFrameBuffer(){
+		begin();
+		frameBuffer.begin();
+	}
+
+	public void endFrameBuffer() {
+		spriteBatch.flush();
+		frameBuffer.end();
+        spriteBatch.setColor(Color.WHITE);
+		spriteBatch.setProjectionMatrix(IDENTITY);
+		spriteBatch.draw(frameBuffer.getColorBufferTexture(), -1, 1, 2, -2); // i have no idea why these numbers work
+	}
+
+	public void setShader(ShaderProgram shader) { spriteBatch.setShader(shader); }
+
+	public void setSpiritModeShader(float radius, float thickness, Color bgColor, Color edgeColor, float time) {
+		spriteBatch.setShader(spiritModeShader);
+		spiritModeShader.setUniformf("u_radius", radius);
+		spiritModeShader.setUniformf("u_thickness", thickness);
+		spiritModeShader.setUniformf("u_bgColor", bgColor);
+		spiritModeShader.setUniformf("u_edgeColor", edgeColor);
+		spiritModeShader.setUniformf("u_time", time);
+	}
+
+	public void setGreyscaleShader(float greyScale) {
+		spriteBatch.setShader(greyscaleShader);
+		greyscaleShader.setUniformf("u_greyscale", greyScale);
 	}
 
 	/**
@@ -476,29 +481,6 @@ public class GameCanvas {
 	 * after calling <code>endVFX()</code> - if you want to begin drawing at a drawing loop you should call <code>begin()</code>.
 	 */
 	public void batchBegin(){ spriteBatch.begin(); }
-
-	/**
-	 * Applies the current VFXs to the rendering context. Ends the rendering context, so you will need to call beginVFX()
-	 * or batchBegin() to continuing drawing after.
-	 */
-	public void endVFX() {
-		spriteBatch.end();
-		vfxManager.endInputCapture();
-		vfxManager.applyEffects();
-		vfxManager.renderToScreen(viewport.getScreenX(), viewport.getScreenY(), viewport.getScreenWidth(),  viewport.getScreenHeight());
-	}
-
-	/**
-	 * Adds an effect to the vfxManager.
-	 *
-	 * @param effect   Effect to add
-	 */
-	public void addEffect(ChainVfxEffect effect) { vfxManager.addEffect(effect); }
-
-	/**
-	 * Removes all effects from the vfxManager.
-	 */
-	public void removeAllEffects() { vfxManager.removeAllEffects(); }
 
 	/**
 	 * Projects a vector in world units into pixel units, then returns the ratio of its position with respect to

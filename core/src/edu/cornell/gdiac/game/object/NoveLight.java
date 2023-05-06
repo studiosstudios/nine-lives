@@ -19,10 +19,12 @@ import edu.cornell.gdiac.util.Direction;
 import java.util.HashMap;
 
 public class NoveLight extends BoxObstacle implements Activatable {
+    public enum LightType { CEILING, WALL };
     /** Constants that are shared between all instances of this class*/
     protected static JsonValue objectConstants;
     private boolean activated;
     private boolean initialActivation;
+    private LightType type;
 
 
     /**
@@ -34,20 +36,20 @@ public class NoveLight extends BoxObstacle implements Activatable {
      * @param textureScale   Texture scale for rescaling texture
      */
     public NoveLight(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
-        super(tMap.get("ceiling-light").getRegionWidth() / scale.x * textureScale.x,
-                tMap.get("ceiling-light").getRegionHeight() / scale.y * textureScale.y);
+        super(1, 1); // Width and height of this obstacle won't actually matter, as it cannot be collidable
 
+        type = properties.get("type", "ceiling").equals("ceiling") ? LightType.CEILING : LightType.WALL;
         setBodyType(BodyDef.BodyType.StaticBody);
         setName("lights");
         setDrawScale(scale);
-        setTexture(tMap.get("ceiling-light"));
+        setTexture(type == LightType.CEILING ? tMap.get("ceiling-light") : tMap.get("wall-light"));
         setTextureScale(textureScale);
 
         setRestitution(objectConstants.getFloat("restitution", 0));
         setFriction(objectConstants.getFloat("friction", 0));
         setDensity(objectConstants.getFloat("density", 0));
         setMass(objectConstants.getFloat("mass", 0));
-        Vector2 offset = new Vector2(objectConstants.get("offset").getFloat(0), objectConstants.get("offset").getFloat(1));
+        Vector2 offset = new Vector2(objectConstants.get((String)properties.get("type", "ceiling")).get("offset").getFloat(0), objectConstants.get((String)properties.get("type", "ceiling")).get("offset").getFloat(1));
         setX((float) properties.get("x") + offset.x);
         setY((float) properties.get("y") + offset.y);
         setFixedRotation(true);
@@ -59,12 +61,14 @@ public class NoveLight extends BoxObstacle implements Activatable {
      * @param rayHandler Ray Handler associated with the currently active box2d world
      */
     public void createLight(RayHandler rayHandler) {
-        createPointLight(objectConstants.get("light"), rayHandler);
+        // I assume that all ceiling lights and all wall lights will look the same, so we draw constants.json.
+        // We can instead draw from the level tiled instead, and can be done if needed
+        JsonValue lightConstants = objectConstants.get(type == LightType.CEILING ? "ceiling" : "wall");
+        createPointLight(lightConstants.get("light"), rayHandler);
         getLight().setSoft(true);
         getLight().setXray(true);
-        Vector2 offset = new Vector2(objectConstants.get("light").get("offset").getFloat(0),objectConstants.get("light").get("offset").getFloat(1));
+        Vector2 offset = new Vector2(lightConstants.get("offset").getFloat(0),lightConstants.get("offset").getFloat(1));
         getLight().setPosition(getBody().getPosition().cpy().add(offset));
-        System.out.println(getLight().getPosition());
     }
 
     @Override

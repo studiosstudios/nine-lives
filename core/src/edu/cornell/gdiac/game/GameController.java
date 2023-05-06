@@ -978,7 +978,7 @@ public class GameController implements Screen {
                     spiritModeColor, spiritModeColor, spiritModeTicks/60f);
         }
         canvas.endFrameBuffer();
-        canvas.setShader(null);
+        if (vfx) canvas.setShader(null);
 
         canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2f, canvas.getCamera().getY()  - canvas.getHeight()/2f, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
 

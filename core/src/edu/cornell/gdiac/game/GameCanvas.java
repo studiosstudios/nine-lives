@@ -1,7 +1,6 @@
 package edu.cornell.gdiac.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -10,15 +9,6 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.Array;
-import com.crashinvaders.vfx.VfxManager;
-import com.crashinvaders.vfx.effects.ChainVfxEffect;
-import com.crashinvaders.vfx.effects.ChromaticAberrationEffect;
-import com.crashinvaders.vfx.effects.util.MixEffect;
-import com.crashinvaders.vfx.framebuffer.VfxFrameBuffer;
-import com.crashinvaders.vfx.framebuffer.VfxFrameBufferQueue;
-import edu.cornell.gdiac.game.shaders.BloomEffect;
-import edu.cornell.gdiac.game.shaders.PortalEffect;
-import edu.cornell.gdiac.game.shaders.ShockwaveEffect;
 import edu.cornell.gdiac.math.Path2;
 import edu.cornell.gdiac.math.PathExtruder;
 import edu.cornell.gdiac.math.PathFactory;
@@ -113,10 +103,6 @@ public class GameCanvas {
 	/** Cache object to handle raw textures */
 	private TextureRegion holder;
 	private final float CAMERA_ZOOM = 0.6f;
-	/** Shockwave effect */
-	protected ShockwaveEffect shockwaveEffect;
-	/** Portal effect */
-	protected PortalEffect portalEffect;
 	protected ShaderProgram spiritModeShader;
 	protected ShaderProgram greyscaleShader;
 	private FrameBuffer frameBuffer;
@@ -163,7 +149,6 @@ public class GameCanvas {
 
 		frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, (int) STANDARD_WIDTH, (int) STANDARD_HEIGHT, false);
 
-		System.out.println(Gdx.graphics.getDensity());
 
 		setBlendState(BlendState.NO_PREMULT);
 
@@ -261,7 +246,7 @@ public class GameCanvas {
 
 	/**
 	 * Changes the width and height of this canvas
-	 * <br><br>
+ef	 * <br><br>
 	 * This method raises an IllegalStateException if called while drawing is
 	 * active (e.g. in-between a begin-end pair).
 	 *
@@ -453,14 +438,18 @@ public class GameCanvas {
 	public void beginFrameBuffer(){
 		begin();
 		frameBuffer.begin();
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	}
 
 	public void endFrameBuffer() {
+		System.out.println(Gdx.graphics.getDensity() * 160f);
 		spriteBatch.flush();
 		frameBuffer.end();
         spriteBatch.setColor(Color.WHITE);
-		spriteBatch.setProjectionMatrix(IDENTITY);
-		spriteBatch.draw(frameBuffer.getColorBufferTexture(), -1, 1, 2, -2); // i have no idea why these numbers work
+		spriteBatch.setProjectionMatrix((new Matrix4(IDENTITY)));
+//		draw(new TextureRegion(frameBuffer.getColorBufferTexture()), Color.WHITE, camera.getX() - getWidth()/2f, camera.getY()  - getHeight()/2f,
+//				getWidth(), getHeight());
+		spriteBatch.draw(frameBuffer.getColorBufferTexture(), -1, -1, 2f, 2f, 0, 0, width, height, false, true);
 		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
 	}
 

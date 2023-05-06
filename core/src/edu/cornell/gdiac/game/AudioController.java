@@ -50,7 +50,7 @@ public class AudioController {
         levelMusicMap = new HashMap<>();
 
         AudioEngine engine = (AudioEngine) Gdx.audio;
-        levelMusic = engine.newMusicBuffer(false, 44100);
+//        levelMusic = engine.newMusicBuffer(false, 44100);
         stageMusic = engine.newMusicBuffer(false, 44100);
         labMusic = engine.newMusicBuffer(false, 44100);
         forestMusic = engine.newMusicBuffer(false, 44100);
@@ -58,8 +58,9 @@ public class AudioController {
         levelMusic = labMusic;
 
         // TODO: automate this with the volume constant in internal loading json
-        levelMusic.setVolume(0.3f);
-        stageMusic.setVolume(0.3f);
+        setVolume(0.3f);
+//        levelMusic.setVolume(0.3f);
+//        stageMusic.setVolume(0.3f);
 
         setLooping();
     }

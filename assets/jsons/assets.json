@@ -55,14 +55,14 @@
       "steel": "obstacles/shared/steel.png",
       "bg-lab": "world/backgrounds/bg-lab.png",
       // Decor
-      "tutorial-burn": "decor/tutorial-burn.png",
-      "tutorial-camera": "decor/tutorial-camera.png",
-      "tutorial-checkpoint": "decor/tutorial-checkpoint.png",
-      "tutorial-dash": "decor/tutorial-dash.png",
-      "tutorial-pause": "decor/tutorial-pause.png",
-      "tutorial-spike": "decor/tutorial-spike.png",
-      "tutorial-switch": "decor/tutorial-switch.png",
-      "tutorial-walk-jump": "decor/tutorial-walk-jump.png"
+      "tutorial-burn": "world/decor/tutorial-burn.png",
+      "tutorial-camera": "world/decor/tutorial-camera.png",
+      "tutorial-checkpoint": "world/decor/tutorial-checkpoint.png",
+      "tutorial-dash": "world/decor/tutorial-dash.png",
+      "tutorial-pause": "world/decor/tutorial-pause.png",
+      "tutorial-spike": "world/decor/tutorial-spike.png",
+      "tutorial-switch": "world/decor/tutorial-switch.png",
+      "tutorial-walk-jump": "world/decor/tutorial-walk-jump.png"
     },
     "jsons"  : {
         "constants": "jsons/constants.json",

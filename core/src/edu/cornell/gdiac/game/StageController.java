@@ -161,6 +161,7 @@ public class StageController implements Screen {
 		mainMenuStage = new MainMenuStage(internal, true);
 //		mainMenuStage.setViewport(canvas.getViewport());
 		settingsStage = new SettingsStage(internal, true);
+		settingsStage.setAudioController(audioController);
 //		settingsStage.setViewport(canvas.getViewport());
 		pauseStage = new PauseStage(internal, true);
 		levelSelectStage = new LevelSelectStage(internal, true);
@@ -298,10 +299,6 @@ public class StageController implements Screen {
 				getStage().draw();
 //				listener.exitScreen(this, 0);
 			} else if (mainMenuStage.isSettings()) {
-				//TODO: laggy for some reason
-				if (Save.exists()) {
-					audioController.setVolume(Save.getVolume());
-				}
 				mainMenuStage.setSettingsState(0);
 				changeStage(settingsStage);
 			} else if (mainMenuStage.isLevelSelect()) {

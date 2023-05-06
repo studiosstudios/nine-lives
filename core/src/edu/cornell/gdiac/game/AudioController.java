@@ -69,7 +69,7 @@ public class AudioController {
         levelMusic.setLooping(true);
         stageMusic.setLooping(true);
 //        levelMusic.setLoopBehavior(true);
-//        stageMusic.setLoopBehavior(true);
+        stageMusic.setLoopBehavior(true);
     }
 
     /**

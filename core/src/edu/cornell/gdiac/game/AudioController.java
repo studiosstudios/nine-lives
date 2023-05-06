@@ -38,6 +38,7 @@ public class AudioController {
     private String currMusic = "";
     private int forestStart = 0;
     private int pos;
+    private float prevVolume = -1;
 
 
     /**
@@ -57,8 +58,12 @@ public class AudioController {
 
         levelMusic = labMusic;
 
-        // TODO: automate this with the volume constant in internal loading json
-        setVolume(0.3f);
+        if (prevVolume == -1) {
+            // TODO: automate this with the volume constant in internal loading json
+            setVolume(0.3f);
+        } else {
+            setVolume(prevVolume);
+        }
 //        levelMusic.setVolume(0.3f);
 //        stageMusic.setVolume(0.3f);
 
@@ -85,6 +90,7 @@ public class AudioController {
 //            Sound sound = entry.getValue();
 //            sound.setVolume(val);
 //        }
+        prevVolume = val;
     }
 
     public String getCurrMusic() {

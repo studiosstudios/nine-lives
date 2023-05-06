@@ -125,19 +125,6 @@ public class Goal extends BoxObstacle
 //        }
 //    }
 
-    /**
-     * @return true if the goal is active
-     */
-    public boolean isActive(){
-        return active;
-    }
-
-    /**
-     * Set whether the goal is active or not
-     * @param val to set active
-     */
-    public void setActive(Boolean val) { active = val; }
-
     @Override
     public void draw(GameCanvas canvas) {
         if (active) {

@@ -207,7 +207,7 @@ public class StageController implements Screen {
 //		// TODO: automate this with the volume constant in internal loading json
 		// audioController.setVolume(internal.get("defaults").getFloat("volume"));
 
-		audioController.setVolume(0.3f);
+//		audioController.setVolume(0.3f);
 		audioController.addStageMusic(internal.getEntry("bkg-intro", AudioSource.class));
 
 		audioController.playStageMusic();

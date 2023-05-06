@@ -64,9 +64,6 @@ public class AudioController {
         } else {
             setVolume(prevVolume);
         }
-//        levelMusic.setVolume(0.3f);
-//        stageMusic.setVolume(0.3f);
-
         setLooping();
     }
 

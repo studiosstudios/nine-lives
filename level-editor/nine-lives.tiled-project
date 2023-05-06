@@ -15,8 +15,8 @@
             "members": [
                 {
                     "name": "color",
-                    "type": "string",
-                    "value": ""
+                    "type": "color",
+                    "value": "#ffff0000"
                 },
                 {
                     "name": "id",
@@ -51,7 +51,8 @@
             "values": [
                 "button",
                 "switch",
-                "timed switch"
+                "timed switch",
+                ""
             ],
             "valuesAsFlags": false
         },

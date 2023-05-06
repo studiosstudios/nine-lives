@@ -113,6 +113,8 @@ public class Level {
     /** Current RayHandler associated with the active world for convenience. */
     private RayHandler rayHandler;
 
+    private Array<Decoration> decorations = new Array();
+
 
     /**
      * Returns the bounding rectangle for the physics world
@@ -606,7 +608,18 @@ public class Level {
                 populateCameraRegions(obstacleData, tileSize, levelHeight);
             } else if (name.equals("goal")) {
                 populateGoal(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("decor")){
+                populateDecorations(obstacleData, tileSize, levelHeight);
             }
+        }
+    }
+
+    private void populateDecorations(JsonValue data, int tileSize, int levelHeight){
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize, levelHeight);
+            Decoration decoration = new Decoration(propertiesMap, textureRegionAssetMap, scale);
+            decorations.add(decoration);
         }
     }
 
@@ -1006,6 +1019,7 @@ public class Level {
         spiritRegionArray.clear();
         objectNames.clear();
         objectJoints.clear();
+        decorations.clear();
         numLives = maxLives;
         tiles = null;
         currCheckpoint = null;
@@ -1174,6 +1188,8 @@ public class Level {
                 obj.draw(canvas);
             }
         }
+
+        for (Decoration d : decorations) { d.draw(canvas); }
 
         if (tiles != null) tiles.draw(canvas);
 
@@ -1357,6 +1373,22 @@ public class Level {
                     obstacleData.put(obs, obs.storeState());
                 }
             }
+        }
+    }
+
+    private class Decoration {
+        private Vector2 position = new Vector2();
+        private TextureRegion textureRegion;
+        private Vector2 scale = new Vector2();
+        private Vector2 textureScale = new Vector2();
+        public Decoration(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale) {
+            position.set((float) properties.get("x"), (float) properties.get("y"));
+            textureRegion = tMap.get((String) properties.get("name"));
+            scale.set(scale);
+            textureScale.set((float) properties.get("width") * scale.x/1024f, (float) properties.get("height") * scale.y/1024f);
+        }
+        public void draw(GameCanvas canvas){
+            canvas.draw(textureRegion, Color.WHITE, 0, 0, position.x * scale.x, position.y * scale.y, 0, textureScale.x, textureScale.y);
         }
     }
 

@@ -596,7 +596,7 @@ public class Level {
             } else if (name.equals("mirrors")) {
                 populateMirrors(obstacleData, tileSize, levelHeight);
             } else if (name.equals("lights")) {
-                System.out.println("Light");
+                populateLights(obstacleData, tileSize, levelHeight);
             } else if (name.equals("cat")) {
                 populateCat(obstacleData, tileSize, levelHeight, populateCat);
             } else if (name.equals("exits")) {
@@ -826,6 +826,16 @@ public class Level {
             readProperties(objJV, tileSize, levelHeight);
             Mirror mirror = new Mirror(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
             addObject(mirror);
+        }
+    }
+
+    private void populateLights(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        textureScaleCache.set(1/32f, 1/32f);
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize, levelHeight);
+            NoveLight light = new NoveLight(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
+            loadTiledActivatable(light);
         }
     }
 

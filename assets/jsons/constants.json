@@ -59,6 +59,14 @@
       "direction": 0
     }
   },
+  "lights": {
+    "offset": [1.5, -0.5],
+    "light": {
+      "offset": [0, -2],
+      "distance": 15,
+      "color": "#ffffffff"
+    }
+  },
   "checkpoint": {
     "base_offset": [0, 1],
     "respawn_offset": [0, 0.5],

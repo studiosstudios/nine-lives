@@ -340,13 +340,36 @@
         }, 
         {
          "draworder":"topdown",
+         "id":2,
+         "name":"cat",
+         "objects":[
+                {
+                 "gid":2,
+                 "height":1024,
+                 "id":38,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":1024,
+                 "x":1024,
+                 "y":13312
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":21,
          "name":"lights",
          "objects":[
                 {
                  "gid":9,
                  "height":1024,
-                 "id":88,
+                 "id":87,
                  "name":"",
                  "properties":[
                         {
@@ -364,7 +387,7 @@
                 {
                  "gid":9,
                  "height":1024,
-                 "id":89,
+                 "id":88,
                  "name":"",
                  "properties":[
                         {
@@ -376,31 +399,8 @@
                  "type":"Light",
                  "visible":true,
                  "width":3072,
-                 "x":8192,
+                 "x":7168,
                  "y":4096
-                }],
-         "opacity":1,
-         "type":"objectgroup",
-         "visible":true,
-         "x":0,
-         "y":0
-        }, 
-        {
-         "draworder":"topdown",
-         "id":2,
-         "name":"cat",
-         "objects":[
-                {
-                 "gid":2,
-                 "height":1024,
-                 "id":38,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":1024,
-                 "x":1024,
-                 "y":13312
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -817,7 +817,7 @@
          "y":0
         }],
  "nextlayerid":22,
- "nextobjectid":91,
+ "nextobjectid":90,
  "orientation":"orthogonal",
  "properties":[
         {
@@ -832,15 +832,15 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"..\/..\/objects\/objects.tsx"
+         "source":"..\/..\/level-editor\/objects\/objects.tsx"
         }, 
         {
          "firstgid":10,
-         "source":"..\/..\/tilesets\/metal-walls.tsx"
+         "source":"..\/..\/level-editor\/tilesets\/metal-walls.tsx"
         }, 
         {
          "firstgid":58,
-         "source":"..\/..\/tilesets\/climbables.tsx"
+         "source":"..\/..\/level-editor\/tilesets\/climbables.tsx"
         }],
  "tilewidth":1024,
  "type":"map",

@@ -45,16 +45,16 @@ public class CameraRegion extends BoxObstacle {
         setY((float) properties.get("y") - getDimension().y/2);
         setName((String) properties.get("name"));
         fixtureCount = 0;
-        shouldSnap = (boolean) properties.get("shouldSnap");
-        if((boolean) properties.get("snapCollisionArea")){
+        shouldSnap = (boolean) properties.get("shouldSnap", false);
+        if((boolean) properties.get("snapCollisionArea", true)){
             snapBounds = this.getBounds();
         }
         else{
-            snapBounds = new Rectangle((float) properties.get("bX") + bounds.x, (float) properties.get("bY") + bounds.y, (float) properties.get("bWidth"), (float) properties.get("bHeight"));
+            snapBounds = new Rectangle((float) properties.get("bX", 0.) + bounds.x, (float) properties.get("bY", 0.) + bounds.y, (float) properties.get("bWidth", 0.), (float) properties.get("bHeight", 0.));
         }
         float expectedWidth = snapBounds.getWidth() * zoom;
         float expectedHeight = snapBounds.getHeight() * zoom;
-        relativeZoom = (boolean) properties.get("isZoomRelative");
+        relativeZoom = (boolean) properties.get("isZoomRelative", false);
         if(relativeZoom)
             zoom = Math.min(expectedWidth*scale.x/GameCanvas.STANDARD_WIDTH, expectedHeight*scale.y/GameCanvas.STANDARD_HEIGHT);
     }

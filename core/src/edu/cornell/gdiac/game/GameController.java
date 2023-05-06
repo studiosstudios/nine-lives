@@ -259,6 +259,7 @@ public class GameController implements Screen {
         Spikes.setConstants(constants.get("spikes"));
         Activator.setConstants(constants.get("activators"));
         Laser.setConstants(constants.get("lasers"));
+        NoveLight.setConstants(constants.get("lights"));
         Checkpoint.setConstants(constants.get("checkpoint"));
         Mirror.setConstants(constants.get("mirrors"));
         Wall.setConstants(constants.get("walls"));
@@ -452,6 +453,8 @@ public class GameController implements Screen {
                 "robot", "robot-anim",
                 // SPIRIT BOUNDARIES
                 "spirit-anim", "spirit-photon", "spirit-photon-cat", "spirit-region",
+                // ACTIVATABLE LIGHTS
+                "ceiling-light",
                 // TILESETS
                 "metal-tileset", "climbable-tileset", "steel",
                 // DOORS & PLATFORMS
@@ -529,8 +532,10 @@ public class GameController implements Screen {
         if (rayHandler != null) {
             rayHandler.dispose();
         }
+        RayHandler.useDiffuseLight(true);
         rayHandler = new RayHandler(world);
-        rayHandler.setAmbientLight(0.7f);
+        rayHandler.setAmbientLight(0.9f);
+//        rayHandler.useDiffuseLight(true);
 //        rayHandler.setShadows(true);
 
         justRespawned = true;

@@ -53,6 +53,7 @@
       "metal-tileset": "world/platforms/metal-tileset.png",
       "climbable-tileset": "world/platforms/climbable-tileset.png",
       "steel": "obstacles/shared/steel.png",
+      "ceiling-light": "obstacles/lights/ceiling-light.png",
       "bg-lab": "world/backgrounds/bg-lab.png"
     },
     "jsons"  : {

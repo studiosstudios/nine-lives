@@ -58,7 +58,7 @@ public class AudioController {
         levelMusic = labMusic;
 
         // TODO: automate this with the volume constant in internal loading json
-        setVolume(0.3f);
+        setVolume(0.0f);
 //        levelMusic.setVolume(0.3f);
 //        stageMusic.setVolume(0.3f);
 
@@ -78,8 +78,8 @@ public class AudioController {
      * @param val the value to set volume to
      */
     public void setVolume(float val) {
-        levelMusic.setVolume(val);
-        stageMusic.setVolume(val);
+        levelMusic.setVolume(0);
+        stageMusic.setVolume(0);
         //TODO: set volume for all sound effects
 //        for (HashMap.Entry<String, Sound> entry : soundAssetMap.entrySet()) {
 //            Sound sound = entry.getValue();

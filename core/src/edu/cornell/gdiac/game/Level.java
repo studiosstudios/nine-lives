@@ -1189,8 +1189,6 @@ public class Level {
             }
         }
 
-        for (Decoration d : decorations) { d.draw(canvas); }
-
         if (tiles != null) tiles.draw(canvas);
 
         if (climbables != null) climbables.draw(canvas);
@@ -1198,6 +1196,8 @@ public class Level {
         for (Activator a : activators) {
             a.draw(canvas);
         }
+
+        for (Decoration d : decorations) { d.draw(canvas); }
 
         spiritLine.draw(canvas);
 
@@ -1384,8 +1384,9 @@ public class Level {
         public Decoration(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale) {
             position.set((float) properties.get("x"), (float) properties.get("y"));
             textureRegion = tMap.get((String) properties.get("name"));
-            scale.set(scale);
-            textureScale.set((float) properties.get("width") * scale.x/1024f, (float) properties.get("height") * scale.y/1024f);
+            this.scale.set(scale);
+            textureScale.set((float) properties.get("width") * scale.x/textureRegion.getRegionWidth(),
+                    (float) properties.get("height") * scale.y/textureRegion.getRegionHeight());
         }
         public void draw(GameCanvas canvas){
             canvas.draw(textureRegion, Color.WHITE, 0, 0, position.x * scale.x, position.y * scale.y, 0, textureScale.x, textureScale.y);

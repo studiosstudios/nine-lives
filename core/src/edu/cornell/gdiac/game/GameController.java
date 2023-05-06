@@ -465,7 +465,11 @@ public class GameController implements Screen {
                 // DOORS & PLATFORMS
                 "door", "platform",
                 // BACKGROUNDS
-                "bg-lab"}; // Unsure if this is actually being used
+                "bg-lab",
+                // DECOR
+                "tutorial-burn", "tutorial-camera", "tutorial-checkpoint", "tutorial-dash", "tutorial-pause",
+                "tutorial-spike", "tutorial-switch", "tutorial-walk-jump"
+                }; // Unsure if this is actually being used
         for (String n : names){
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
         }

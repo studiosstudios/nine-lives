@@ -497,11 +497,13 @@ public class ActionController {
         }
     }
 
+    /**
+     * Main function called when cat reaches goal object.
+     * Spirit particles are spawned at dead bodies and dead bodies are removed.
+     */
     public void recombineLives() {
-//        System.out.println("recombineLives");
-//        System.out.println(level.getdeadBodyArray());
+
         if (level.getSpiritParticles().size == 0) {
-//            System.out.println("recombining lives. . .");
 
             while (level.getdeadBodyArray().size != 0) {
                 for (DeadBody body: level.getdeadBodyArray()) {
@@ -509,18 +511,20 @@ public class ActionController {
                     spirit.setX(body.getX());
                     spirit.setY(body.getY());
                     level.addSpiritParticle(spirit);
-                    System.out.println("added spirit");
+                    //TODO: smooth remove of dead bodies
                     level.removeDeadBody(body);
                 }
             }
         }
     }
 
-
+    /**
+     * Moves the spirit particles.
+     * The particles go towards the Cat.
+     *
+     */
     public void moveSpirits() {
         if (level.getSpiritParticles().size != 0) {
-//            System.out.println("moving spirits. . .");
-//            System.out.println(level.getSpiritParticles().size);
             for (Particle spirit : level.getSpiritParticles()) {
                 float x = level.getCat().getX() - spirit.getX();
                 float y = level.getCat().getY() - spirit.getY();
@@ -529,15 +533,11 @@ public class ActionController {
                 spirit.move();
                 if (Math.abs(spirit.getX() - level.getCat().getX()) <= 1f &&
                     Math.abs(spirit.getY() - level.getCat().getY()) <= 1f) {
-
-                    System.out.println("spirit reached cat");
                     level.getSpiritParticles().removeValue(spirit, true);
                     level.setNumLives(level.getNumLives() + 1);
-                    System.out.println("added life");
                 }
             }
         }
-//        System.out.println("done moving spirits.");
     }
 
     /**

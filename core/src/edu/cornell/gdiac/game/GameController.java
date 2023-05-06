@@ -592,9 +592,6 @@ public class GameController implements Screen {
      */
     private void initCurrLevel(boolean cameraGlide){
         collisionController.setLevel(currLevel);
-        System.out.println("initCurrLevel");
-        System.out.println(currLevel.getGoal());
-
         actionController.setLevel(currLevel);
         actionController.setMobControllers(currLevel);
         if (currLevel.levelStates().size == 0) currLevel.saveState();

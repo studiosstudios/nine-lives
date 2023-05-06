@@ -1,5 +1,5 @@
 {
-    "automappingRulesFile": "./rules/rules.txt",
+    "automappingRulesFile": "rules/rules.txt",
     "commands": [
     ],
     "compatibilityVersion": 1100,
@@ -15,8 +15,8 @@
             "members": [
                 {
                     "name": "color",
-                    "type": "string",
-                    "value": ""
+                    "type": "color",
+                    "value": "#ffff0000"
                 },
                 {
                     "name": "id",
@@ -51,7 +51,8 @@
             "values": [
                 "button",
                 "switch",
-                "timed switch"
+                "timed switch",
+                ""
             ],
             "valuesAsFlags": false
         },
@@ -71,6 +72,41 @@
             "drawFill": true,
             "id": 18,
             "members": [
+                {
+                    "name": "bHeight",
+                    "type": "float",
+                    "value": 0
+                },
+                {
+                    "name": "bWidth",
+                    "type": "float",
+                    "value": 0
+                },
+                {
+                    "name": "bX",
+                    "type": "float",
+                    "value": 0
+                },
+                {
+                    "name": "bY",
+                    "type": "float",
+                    "value": 0
+                },
+                {
+                    "name": "isZoomRelative",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "shouldSnap",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "snapCollisionArea",
+                    "type": "bool",
+                    "value": false
+                },
                 {
                     "name": "zoom",
                     "type": "float",

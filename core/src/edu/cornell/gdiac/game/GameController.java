@@ -13,6 +13,10 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.audio.AudioEngine;
+import edu.cornell.gdiac.audio.AudioSource;
+import edu.cornell.gdiac.audio.MusicQueue;
+import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.game.object.*;
 
 import edu.cornell.gdiac.game.obstacle.*;
@@ -59,8 +63,9 @@ public class GameController implements Screen {
     private static final int MAX_NUM_LIVES = 9;
     /** The hashmap for texture regions */
     private HashMap<String, TextureRegion> textureRegionAssetMap;
-    /** The hashmap for sounds */
-    private HashMap<String, Sound> soundAssetMap;
+//    /** The hashmap for sounds */
+//    private HashMap<String, Sound> soundAssetMap;
+
     /** The hashmap for fonts */
     private HashMap<String, BitmapFont> fontAssetMap;
     /** The JSON value constants */
@@ -117,6 +122,7 @@ public class GameController implements Screen {
     public StageController stageController = null;
     public boolean paused = false;
     public HudStage hud;
+    public AudioController audioController;
     /** only not null if quick launched from Tiled */
     private JsonValue quickLaunchLevel;
 
@@ -138,6 +144,7 @@ public class GameController implements Screen {
     private boolean justRespawned;
     /** The color of the flash animation after resetting/undoing */
     private Color flashColor = new Color(1, 1, 1, 0);
+
     /** RayHandler that takes care of Box2DLights. This MUST be associated with the active World at all times. */
     private RayHandler rayHandler;
 
@@ -226,22 +233,19 @@ public class GameController implements Screen {
      *
      * @param tMap the hashmap for Texture Regions
      * @param fMap the hashmap for Fonts
-     * @param sMap the hashmap for Sounds
      * @param constants the JSON value for constants
      */
     public void setAssets(HashMap<String, TextureRegion> tMap, HashMap<String, BitmapFont> fMap,
-                          HashMap<String, Sound> sMap, JsonValue constants){
+                          JsonValue constants){
         //for now levelcontroller will have access to these assets, but in the future we may see that it is unnecessary
         textureRegionAssetMap = tMap;
         fontAssetMap = fMap;
-        soundAssetMap = sMap;
         constantsJSON = constants;
         setConstants(constants);
         displayFont = fMap.get("retro");
 
         //send the relevant assets to classes that need them
-        actionController.setVolume(constantsJSON.get("defaults").getFloat("volume"));
-        actionController.setAssets(sMap);
+//        actionController.setAssets(sMap);
         for (Level l : levels){
             l.setAssets(tMap);
         }
@@ -277,8 +281,8 @@ public class GameController implements Screen {
      * with the Box2D coordinates.  The bounds are in terms of the Box2d
      * world, not the screen.
      */
-    protected GameController(int numLevels) {
-        this(new Vector2(0,DEFAULT_GRAVITY), new Vector2(DEFAULT_SCALE,DEFAULT_SCALE), numLevels);
+    protected GameController(int numLevels, AudioController audioController) {
+        this(new Vector2(0,DEFAULT_GRAVITY), new Vector2(DEFAULT_SCALE,DEFAULT_SCALE), numLevels, audioController);
     }
 
     /**
@@ -288,8 +292,8 @@ public class GameController implements Screen {
      * with the Box2D coordinates.  The bounds are in terms of the Box2d
      * world, not the screen.
      */
-    protected GameController(String filepath) {
-        this(new Vector2(0,DEFAULT_GRAVITY), new Vector2(DEFAULT_SCALE,DEFAULT_SCALE), 1);
+    protected GameController(String filepath, AudioController audioController) {
+        this(new Vector2(0,DEFAULT_GRAVITY), new Vector2(DEFAULT_SCALE,DEFAULT_SCALE), 1, audioController);
         JsonReader json = new JsonReader();
         quickLaunchLevel = json.parse(Gdx.files.internal(filepath));
     }
@@ -301,7 +305,8 @@ public class GameController implements Screen {
      * with the Box2D coordinates.  The bounds are in terms of the Box2D
      * world, not the screen.
      */
-    protected GameController(Vector2 gravity, Vector2 scale, int numLevels) {
+    protected GameController(Vector2 gravity, Vector2 scale, int numLevels, AudioController audioController) {
+        this.audioController = audioController;
         this.scale = scale;
         debug = false;
         setRet(false);
@@ -316,7 +321,7 @@ public class GameController implements Screen {
         currLevelIndex = 1;
 
         setLevels();
-        actionController = new ActionController(scale, volume);
+        actionController = new ActionController(scale, audioController);
         actionController.setLevel(levels[currLevelIndex]);
         collisionController = new CollisionController(actionController);
         collisionController.setLevel(levels[currLevelIndex]);
@@ -419,7 +424,7 @@ public class GameController implements Screen {
      * 1. Use hyphens<br>
      * 2. For sprites that are for animations, affix their name with "-anim"<br>
      * 3. For textures that serve as backgrounds, prefix their names with "bg-"<br>
-     * 4. Make sure to use the file name (with hyphens) for the assets.json key, and the texture map key as well<br>
+     * 4. Make sure to use the file name (with h yphens) for the assets.json key, and the texture map key as well<br>
      *
      * @param directory	Reference to global asset manager.
      */
@@ -427,7 +432,7 @@ public class GameController implements Screen {
         // Allocate the tiles
         // Creating the hashmaps
         textureRegionAssetMap = new HashMap<>();
-        soundAssetMap = new HashMap<>();
+//        soundAssetMap = new HashMap<>();
         fontAssetMap = new HashMap<>();
 
         // List of textures we extract. These should be the SAME NAME as the keys in the assets.json.
@@ -435,7 +440,7 @@ public class GameController implements Screen {
         String[] names = {
                 // CAT
                 "cat", "walk-anim", "jump", "jump-anim", "sit", "idle-sit-anim", "idle-stand-anim", "meow-anim",
-                "corpse", "corpse2", "corpse-burnt",
+                "trans-anim","climb-anim","corpse", "corpse2", "corpse-burnt","trans2-anim","jump-mid",
                 // SPIKES
                 "spikes",
                 // BUTTONS & SWITCHES
@@ -457,15 +462,23 @@ public class GameController implements Screen {
                 // DOORS & PLATFORMS
                 "door", "platform",
                 // BACKGROUNDS
-                "bg-lab",}; // Unsure if this is actually being used
+                "bg-lab",
+                // DECOR
+                "tutorial-burn", "tutorial-camera", "tutorial-checkpoint", "tutorial-dash", "tutorial-pause",
+                "tutorial-spike", "tutorial-switch", "tutorial-walk-jump"
+                }; // Unsure if this is actually being used
         for (String n : names){
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
         }
 
         names = new String[]{"jump", "dash", "metal-landing", "meow"};
-        for (String n : names){
-            soundAssetMap.put(n, directory.getEntry(n, Sound.class));
-        }
+        audioController.createSoundEffectMap(directory, names);
+
+        names = new String[]{"bkg-lab-1", "bkg-forest-1"};
+        audioController.createMusicMap(directory, names);
+
+//        audioController.playLab();
+//        audioController.playLevelMusic();
 
         names = new String[]{"retro"};
         for (String n : names){
@@ -477,8 +490,7 @@ public class GameController implements Screen {
 
         background = textureRegionAssetMap.get("bg-lab").getTexture();
 
-        // Giving assets to levelController
-        setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants);
+        setAssets(textureRegionAssetMap, fontAssetMap, constants);
         setJSON(tiledJSON(1));
         nextJV = tiledJSON(2);
 
@@ -559,6 +571,13 @@ public class GameController implements Screen {
         }
 
         initCurrLevel(false);
+
+        if (audioController.getCurrMusic().equals("metal") && currLevel.getBiome().equals("forest")) {
+            audioController.playForest();
+        }
+        else if (audioController.getCurrMusic().equals("forest") && currLevel.getBiome().equals("metal")) {
+            audioController.playLab();
+        }
     }
 
     /**
@@ -877,6 +896,7 @@ public class GameController implements Screen {
      * Pausing happens when we switch game modes.
      */
     public void pause() {
+        audioController.pauseLevelMusic();
         paused = true;
         actionController.pause();
     }
@@ -887,6 +907,7 @@ public class GameController implements Screen {
      * This is usually when it regains focus.
      */
     public void resume() {
+        audioController.playLevelMusic();
         paused = false;
         stageController = null;
     }

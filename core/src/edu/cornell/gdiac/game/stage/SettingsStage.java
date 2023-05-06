@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.game.AudioController;
 import edu.cornell.gdiac.game.Save;
 
 public class SettingsStage extends StageWrapper {
@@ -29,10 +30,12 @@ public class SettingsStage extends StageWrapper {
     private boolean catpaw1State;
     private boolean catpaw2State;
 //    private CheckBox vSyncCheckbox = new CheckBox(null, new Skin());
+    private AudioController audioController;
 
     public boolean isBack() { return backButtonState == 2; }
     public int getBackButtonState() { return backButtonState; }
     public void setBackButtonState(int state) { backButtonState = state; }
+    public void setAudioController(AudioController audioController) { this.audioController = audioController; }
 
     public SettingsStage(AssetDirectory internal, boolean createActors) {
         super(internal, createActors);
@@ -83,7 +86,9 @@ public class SettingsStage extends StageWrapper {
         volumeSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-
+                if (audioController != null) {
+                    audioController.setVolume(volumeSlider.getValue());
+                }
             }
         });
         volumeSlider.setValue(Save.getVolume());

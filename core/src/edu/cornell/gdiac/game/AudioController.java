@@ -161,10 +161,6 @@ public class AudioController {
     public void playForest() {
         levelMusic.pause();
         levelMusic = forestMusic;
-//        levelMusic.jumpToSource(forestStart);
-//        for (int i = 0; i < levelMusicMap.size(); i++) {
-//            levelMusic.setSource(1, levelMusicMap.get("bkg-forest"));
-//        }
         currMusic = "forest";
     }
 
@@ -199,7 +195,7 @@ public class AudioController {
      */
     public void playSoundEffect(String soundName) {
 //        System.out.println("playing sound " + soundName);
-        levelSoundMap.get(soundName).play();
+        levelSoundMap.get(soundName).play(levelMusic.getVolume()*2.5f);
     }
 
     /**

@@ -329,7 +329,8 @@ ef	 * <br><br>
 		 spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
 
 		 if (getWidth() != 0 && getHeight() != 0) {
-			 frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false); //not sure if this is necessary
+			 frameBuffer.dispose();
+			 frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
 		 }
 
 		 viewport.update(width, height, true);
@@ -446,7 +447,7 @@ ef	 * <br><br>
 		spriteBatch.flush();
 		frameBuffer.end();
         spriteBatch.setColor(Color.WHITE);
-		spriteBatch.setProjectionMatrix((new Matrix4(IDENTITY)));
+		spriteBatch.setProjectionMatrix(IDENTITY);
 //		draw(new TextureRegion(frameBuffer.getColorBufferTexture()), Color.WHITE, camera.getX() - getWidth()/2f, camera.getY()  - getHeight()/2f,
 //				getWidth(), getHeight());
 		spriteBatch.draw(frameBuffer.getColorBufferTexture(), -1, -1, 2f, 2f, 0, 0, width, height, false, true);

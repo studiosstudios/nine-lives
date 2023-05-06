@@ -75,7 +75,7 @@
     },
    "samples": {
         "bkg-intro": "sounds/bkg-intro.ogg",
-        "bkg-lab": "sounds/bkg-lab.ogg",
-        "bkg-forest": "sounds/bkg-forest.ogg"
+        "bkg-lab-1": "sounds/bkg-lab-1.ogg",
+        "bkg-forest-1": "sounds/bkg-forest-1.ogg"
    }
 }

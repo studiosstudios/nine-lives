@@ -473,12 +473,12 @@ public class GameController implements Screen {
         names = new String[]{"jump", "dash", "metal-landing", "meow"};
         audioController.createSoundEffectMap(directory, names);
 
-        names = new String[]{"bkg-lab", "bkg-forest"};
+        names = new String[]{"bkg-lab-1", "bkg-forest-1"};
         audioController.createMusicMap(directory, names);
 
 //        audioController.setVolume(0.3f);
 //        audioController.playLab();
-        audioController.playLevelMusic();
+//        audioController.playLevelMusic();
 
         names = new String[]{"retro"};
         for (String n : names){

@@ -107,8 +107,10 @@ public class Level {
     private ObjectMap<Obstacle, String> objectJoints = new ObjectMap<>();
     /** joints added between obstacles in this level */
     private Array<Joint> joints = new Array<>();
+    /** Array of spirit particles from dead bodies */
     private Array<Particle> spiritParticles = new Array<>();
-
+    /** The type of biome the level is in */
+    private String biome;
     /** Current RayHandler associated with the active world for convenience. */
     private RayHandler rayHandler;
 
@@ -186,9 +188,26 @@ public class Level {
      */
     public Goal getGoal() { return goal; }
 
+    /**
+     * Returns a reference to the array of spirit particles
+     *
+     * @return spiritParticles
+     */
     public Array<Particle> getSpiritParticles() { return spiritParticles; }
 
+    /**
+     * Adds a Particle to array of spirit particles
+     *
+     * @param p the Particle to add
+     */
     public void addSpiritParticle(Particle p) { spiritParticles.add(p); }
+
+    /**
+     * Returns the biome of the level
+     *
+     * @return biome
+     */
+    public String getBiome() { return biome; }
 
 
     /**
@@ -508,7 +527,7 @@ public class Level {
         }
 
         populateObstacles(obstacleData, tileSize, levelHeight, next == null);
-        String biome = tiledMap.get("properties").get(0).getString("value");
+        biome = tiledMap.get("properties").get(0).getString("value");
 
         TextureRegion tileset = new TextureRegion();
         TextureRegion tileset_climbable = new TextureRegion();
@@ -1196,7 +1215,6 @@ public class Level {
         }
 
         for (Particle spirit : spiritParticles) {
-            System.out.println("calling spirit draw. . .");
             spirit.draw(canvas, textureRegionAssetMap.get("spirit-photon").getTexture(), new Vector2(32f, 32f), new Vector2(20f, 20f));
         }
 
@@ -1240,7 +1258,6 @@ public class Level {
      * Spawns a dead body at the location of the cat
      * */
     public void spawnDeadBody(){
-        System.out.println("spawned dead body");
         textureScaleCache.set(1/34f, 1/34f);
         double rand = Math.random();
         DeadBody deadBody;

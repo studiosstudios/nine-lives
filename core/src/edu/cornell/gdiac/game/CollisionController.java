@@ -97,9 +97,6 @@ public class CollisionController implements ContactListener, ContactFilter {
                 //cat collisions
                 Cat cat = level.getCat();
                 if (bd1 == cat) {
-                    System.out.println("cat hit something");
-                    System.out.println(bd2);
-                    System.out.println(level.getGoal());
 
                     // See if we have landed on the ground.
                     if (!fix2.isSensor() && cat.getGroundSensorName().equals(fd1)) {
@@ -141,9 +138,6 @@ public class CollisionController implements ContactListener, ContactFilter {
                     }
                     if (bd2 instanceof Goal) {
                         //TODO: if not active then collect dead bodies with action controller
-                        System.out.println("at the goal");
-                        System.out.println(level.getdeadBodyArray());
-//                        bd2.setActive(true);
                         actionController.recombineLives();
                     }
                     if (bd2 instanceof CameraRegion){

@@ -6,7 +6,7 @@
           "wrapV": "repeated"
         },
       "platform" : {
-        "file":  "world/platforms/platform.png",
+        "file":  "world/platforms/platform2.png",
         "wrapU": "repeated",
         "wrapV": "repeated"
       },
@@ -25,6 +25,8 @@
       "climb-anim": "cat/climbing-anim.png",
       "meow-anim": "cat/meow-anim.png",
       "trans-anim": "cat/transition-anim.png",
+      "trans2-anim": "cat/jump-stand-trans.png",
+      "jump-mid": "cat/jump-mid-anim.png",
       "corpse": "obstacles/corpse/corpse.png",
       "corpse2" : "obstacles/corpse/corpse2.png",
       "corpse-burnt": "cat/corpse-burnt.png",
@@ -48,7 +50,7 @@
       "spirit-photon": "obstacles/spirit-region/spirit-photon.png",
       "spirit-photon-cat": "obstacles/spirit-region/spirit-photon-cat.png", //UNUSED
       "spirit-region": "obstacles/spirit-region/spirit-region.png",
-      "metal-tileset": "world/platforms/metal-tileset.png",
+      "metal-tileset": "world/platforms/dark-metal-tileset.png",
       "climbable-tileset": "world/platforms/climbable-tileset.png",
       "steel": "obstacles/shared/steel.png",
       "bg-lab": "world/backgrounds/bg-lab.png"
@@ -65,10 +67,15 @@
         "tiledLevel5": "levels/level-beta-hard.json",
         "tiledLevel6": "levels/party-room.json"
     },
-    "sounds" : {
-        "jump" : "cat/jump-CELESTE.wav",
-        "dash" : "cat/dash-CELESTE.wav",
-        "metal-landing" : "cat/metal-landing-CELESTE.wav",
-        "meow" : "cat//meow.mp3"
-    }
+    "soundfx" : {
+        "jump" : "sounds/jump-CELESTE.wav",
+        "dash" : "sounds/dash-CELESTE.wav",
+        "metal-landing" : "sounds/metal-landing-CELESTE.wav",
+        "meow" : "sounds/meow.mp3"
+    },
+   "samples": {
+        "bkg-intro": "sounds/bkg-intro.ogg",
+        "bkg-lab-1": "sounds/bkg-lab-1.ogg",
+        "bkg-forest-1": "sounds/bkg-forest-1.ogg"
+   }
 }

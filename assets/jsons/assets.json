@@ -6,7 +6,7 @@
           "wrapV": "repeated"
         },
       "platform" : {
-        "file":  "world/platforms/platform.png",
+        "file":  "world/platforms/platform2.png",
         "wrapU": "repeated",
         "wrapV": "repeated"
       },
@@ -50,7 +50,7 @@
       "spirit-photon": "obstacles/spirit-region/spirit-photon.png",
       "spirit-photon-cat": "obstacles/spirit-region/spirit-photon-cat.png", //UNUSED
       "spirit-region": "obstacles/spirit-region/spirit-region.png",
-      "metal-tileset": "world/platforms/metal-tileset.png",
+      "metal-tileset": "world/platforms/dark-metal-tileset.png",
       "climbable-tileset": "world/platforms/climbable-tileset.png",
       "steel": "obstacles/shared/steel.png",
       "bg-lab": "world/backgrounds/bg-lab.png"

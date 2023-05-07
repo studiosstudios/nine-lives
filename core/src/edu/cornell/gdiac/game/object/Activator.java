@@ -41,6 +41,7 @@ public abstract class Activator extends PolygonObstacle {
     private boolean pan;
     /** If pressing this activator for the first time should pan the camera */
     private boolean shouldPan;
+    private Color color = new Color();
 
     /**
      * @return true if the activator is currently activating
@@ -96,6 +97,8 @@ public abstract class Activator extends PolygonObstacle {
         id = (String) properties.get("id");
         setX((float) properties.get("x")+objectConstants.get("offset").getFloat(0));
         setY((float) properties.get("y")+objectConstants.get("offset").getFloat(1));
+        System.out.println(properties);
+        color.set((Color) properties.get("color", Color.RED));
         pan = (boolean) properties.get("shouldPan", false);
         active = false;
     }
@@ -114,7 +117,7 @@ public abstract class Activator extends PolygonObstacle {
             currentFrame = animation.getKeyFrame(animationTime);
         }
         float x = getX()*drawScale.x-currentFrame.getRegionWidth()/drawScale.x/4;
-        canvas.draw(currentFrame, Color.WHITE, origin.x, origin.y, x, getY()*drawScale.y, 0, 1f/drawScale.x, 1f/drawScale.y);
+        canvas.draw(currentFrame, color, origin.x, origin.y, x, getY()*drawScale.y, 0, 1f/drawScale.x, 1f/drawScale.y);
         canvas.draw(bottomTexture, Color.WHITE, origin.x, origin.y, x, (getY())*drawScale.y, 0, 1f/drawScale.x, 1f/drawScale.y);
     }
 

@@ -447,7 +447,6 @@ ef	 * <br><br>
 	public void endFrameBuffer() {
 		spriteBatch.flush();
 		frameBuffer.end(viewport.getScreenX(), viewport.getScreenY(), viewport.getScreenWidth(), viewport.getScreenHeight());
-		frameBuffer.end();
         spriteBatch.setColor(Color.WHITE);
 		spriteBatch.setProjectionMatrix(IDENTITY);
 		spriteBatch.draw(frameBuffer.getColorBufferTexture(), -1, -1, 2f, 2f, 0, 0, width, height, false, true);

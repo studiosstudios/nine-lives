@@ -4,7 +4,11 @@ import com.badlogic.gdx.graphics.glutils.HdpiMode;
 import edu.cornell.gdiac.backend.GDXApp;
 import edu.cornell.gdiac.backend.GDXAppSettings;
 import edu.cornell.gdiac.game.NineLives;
+import lwjgl3.Lwjgl3Application;
+import lwjgl3.Lwjgl3ApplicationConfiguration;
+
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileWriter;

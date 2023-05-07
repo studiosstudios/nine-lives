@@ -142,6 +142,7 @@ public class GameCanvas {
 
 		//shaders
 		ShaderProgram.pedantic =false;
+		System.out.println(spriteBatch.getShader().getFragmentShaderSource());
 		spiritModeShader = new ShaderProgram(spriteBatch.getShader().getVertexShaderSource(),
 				Gdx.files.internal("shaders/portal.frag").readString());
 		greyscaleShader = new ShaderProgram(spriteBatch.getShader().getVertexShaderSource(),
@@ -149,6 +150,7 @@ public class GameCanvas {
 
 		frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, (int) STANDARD_WIDTH, (int) STANDARD_HEIGHT, false);
 
+		System.out.println(Gdx.graphics.getDensity());
 
 		setBlendState(BlendState.NO_PREMULT);
 
@@ -443,13 +445,11 @@ ef	 * <br><br>
 	}
 
 	public void endFrameBuffer() {
-		System.out.println(Gdx.graphics.getDensity() * 160f);
 		spriteBatch.flush();
+		frameBuffer.end(viewport.getScreenX(), viewport.getScreenY(), viewport.getScreenWidth(), viewport.getScreenHeight());
 		frameBuffer.end();
         spriteBatch.setColor(Color.WHITE);
 		spriteBatch.setProjectionMatrix(IDENTITY);
-//		draw(new TextureRegion(frameBuffer.getColorBufferTexture()), Color.WHITE, camera.getX() - getWidth()/2f, camera.getY()  - getHeight()/2f,
-//				getWidth(), getHeight());
 		spriteBatch.draw(frameBuffer.getColorBufferTexture(), -1, -1, 2f, 2f, 0, 0, width, height, false, true);
 		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
 	}

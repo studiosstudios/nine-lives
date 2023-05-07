@@ -38,6 +38,7 @@ public class AudioController {
     private String currMusic = "";
     private int forestStart = 0;
     private int pos;
+    private float prevVolume = -1;
 
 
     /**
@@ -57,11 +58,12 @@ public class AudioController {
 
         levelMusic = labMusic;
 
-        // TODO: automate this with the volume constant in internal loading json
-        setVolume(0.0f);
-//        levelMusic.setVolume(0.3f);
-//        stageMusic.setVolume(0.3f);
-
+        if (prevVolume == -1) {
+            // TODO: automate this with the volume constant in internal loading json
+            setVolume(0.3f);
+        } else {
+            setVolume(prevVolume);
+        }
         setLooping();
     }
 
@@ -69,7 +71,7 @@ public class AudioController {
         levelMusic.setLooping(true);
         stageMusic.setLooping(true);
 //        levelMusic.setLoopBehavior(true);
-//        stageMusic.setLoopBehavior(true);
+        stageMusic.setLoopBehavior(true);
     }
 
     /**
@@ -78,13 +80,14 @@ public class AudioController {
      * @param val the value to set volume to
      */
     public void setVolume(float val) {
-        levelMusic.setVolume(0);
-        stageMusic.setVolume(0);
+        levelMusic.setVolume(val);
+        stageMusic.setVolume(val);
         //TODO: set volume for all sound effects
 //        for (HashMap.Entry<String, Sound> entry : soundAssetMap.entrySet()) {
 //            Sound sound = entry.getValue();
 //            sound.setVolume(val);
 //        }
+        prevVolume = val;
     }
 
     public String getCurrMusic() {
@@ -158,10 +161,6 @@ public class AudioController {
     public void playForest() {
         levelMusic.pause();
         levelMusic = forestMusic;
-//        levelMusic.jumpToSource(forestStart);
-//        for (int i = 0; i < levelMusicMap.size(); i++) {
-//            levelMusic.setSource(1, levelMusicMap.get("bkg-forest"));
-//        }
         currMusic = "forest";
     }
 
@@ -196,7 +195,7 @@ public class AudioController {
      */
     public void playSoundEffect(String soundName) {
 //        System.out.println("playing sound " + soundName);
-        levelSoundMap.get(soundName).play();
+        levelSoundMap.get(soundName).play(levelMusic.getVolume()*2.5f);
     }
 
     /**

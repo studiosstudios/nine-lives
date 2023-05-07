@@ -240,14 +240,11 @@ public class GameController implements Screen {
         //for now levelcontroller will have access to these assets, but in the future we may see that it is unnecessary
         textureRegionAssetMap = tMap;
         fontAssetMap = fMap;
-//        soundAssetMap = sMap;
         constantsJSON = constants;
         setConstants(constants);
         displayFont = fMap.get("retro");
 
         //send the relevant assets to classes that need them
-//        audioController.setVolume(constantsJSON.get("defaults").getFloat("volume"));
-//        actionController.setVolume();
 //        actionController.setAssets(sMap);
         for (Level l : levels){
             l.setAssets(tMap);
@@ -480,7 +477,6 @@ public class GameController implements Screen {
         names = new String[]{"bkg-lab-1", "bkg-forest-1"};
         audioController.createMusicMap(directory, names);
 
-//        audioController.setVolume(0.3f);
 //        audioController.playLab();
 //        audioController.playLevelMusic();
 

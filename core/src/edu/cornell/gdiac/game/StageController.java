@@ -156,11 +156,14 @@ public class StageController implements Screen {
 
 		if(!Save.exists()) {
 			Save.create();
+		} else {
+			audioController.setVolume(Save.getVolume());
 		}
 
 		mainMenuStage = new MainMenuStage(internal, true);
 //		mainMenuStage.setViewport(canvas.getViewport());
 		settingsStage = new SettingsStage(internal, true);
+		settingsStage.setAudioController(audioController);
 //		settingsStage.setViewport(canvas.getViewport());
 		pauseStage = new PauseStage(internal, true);
 		levelSelectStage = new LevelSelectStage(internal, true);
@@ -204,7 +207,7 @@ public class StageController implements Screen {
 //		// TODO: automate this with the volume constant in internal loading json
 		// audioController.setVolume(internal.get("defaults").getFloat("volume"));
 
-		audioController.setVolume(0.3f);
+//		audioController.setVolume(0.3f);
 		audioController.addStageMusic(internal.getEntry("bkg-intro", AudioSource.class));
 
 		audioController.playStageMusic();
@@ -298,10 +301,6 @@ public class StageController implements Screen {
 				getStage().draw();
 //				listener.exitScreen(this, 0);
 			} else if (mainMenuStage.isSettings()) {
-				//TODO: laggy for some reason
-				if (Save.exists()) {
-					audioController.setVolume(Save.getVolume());
-				}
 				mainMenuStage.setSettingsState(0);
 				changeStage(settingsStage);
 			} else if (mainMenuStage.isLevelSelect()) {

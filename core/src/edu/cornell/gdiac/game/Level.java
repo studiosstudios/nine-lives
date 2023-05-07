@@ -1259,8 +1259,11 @@ public class Level {
         textureScaleCache.set(1/34f, 1/34f);
         double rand = Math.random();
         DeadBody deadBody;
-        if(rand <0.5){
+        if(rand <0.33){
             deadBody = new DeadBody(textureRegionAssetMap.get("corpse2"),textureRegionAssetMap.get("corpse-burnt"), scale, cat.getPosition(), textureScaleCache);
+        }
+        else if(rand < 0.66){
+            deadBody = new DeadBody(textureRegionAssetMap.get("corpse3"),textureRegionAssetMap.get("corpse-burnt"), scale, cat.getPosition(), textureScaleCache);
         }
         else{
             deadBody = new DeadBody(textureRegionAssetMap.get("corpse"),textureRegionAssetMap.get("corpse-burnt"), scale, cat.getPosition(), textureScaleCache);

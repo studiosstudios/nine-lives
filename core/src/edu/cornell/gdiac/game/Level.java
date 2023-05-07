@@ -47,7 +47,7 @@ public class Level {
     /** Tiles of level */
     protected Tiles tiles;
     /** Climbables of level */
-    protected Climbable climbables;
+    protected Tiles climbables;
     /** All the objects in the world. */
     protected PooledList<Obstacle> objects  = new PooledList<>();
     /** Queue for adding objects */
@@ -545,7 +545,7 @@ public class Level {
         tiles = new Tiles(tileData, 1024, levelWidth, levelHeight, tileset, bounds, fID, new Vector2(1/32f, 1/32f));
 
         if (climbableData != null) {
-            climbables = new Climbable(climbableData, 1024, levelWidth, levelHeight,
+            climbables = new Tiles(climbableData, 1024, levelWidth, levelHeight,
                     textureRegionAssetMap.get("climbable-tileset"), bounds, fID_climbable, new Vector2(1/32f, 1/32f));
         }
 

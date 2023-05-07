@@ -2,8 +2,8 @@
 <map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-up" width="32" height="20" tilewidth="1024" tileheight="1024" infinite="1" nextlayerid="5" nextobjectid="1">
  <tileset firstgid="1" source="../tilesets/metal-walls.tsx"/>
  <tileset firstgid="49" source=":/automap-tiles.tsx"/>
- <tileset firstgid="54" source="../tilesets/DefaultLabTiles.tsx"/>
- <layer id="2" name="input_labWalls" width="32" height="20">
+ <tileset firstgid="54" source="../tilesets/default-metal-walls.tsx"/>
+ <layer id="2" name="input_metalWalls" width="32" height="20">
   <data encoding="csv">
    <chunk x="0" y="0" width="16" height="16">
 0,0,52,0,0,0,52,0,0,0,52,0,0,0,52,0,
@@ -61,7 +61,7 @@
 </chunk>
   </data>
  </layer>
- <layer id="1" name="output_metalWalls" width="32" height="20" visible="0">
+ <layer id="1" name="output_metaWalls" width="32" height="20" visible="0">
   <data encoding="csv">
    <chunk x="0" y="0" width="16" height="16">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

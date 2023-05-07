@@ -6,7 +6,7 @@
           "wrapV": "repeated"
         },
       "platform" : {
-        "file":  "world/platforms/platform2.png",
+        "file":  "world/platforms/platform3.png",
         "wrapU": "repeated",
         "wrapV": "repeated"
       },
@@ -53,7 +53,16 @@
       "metal-tileset": "world/platforms/dark-metal-tileset.png",
       "climbable-tileset": "world/platforms/climbable-tileset.png",
       "steel": "obstacles/shared/steel.png",
-      "bg-lab": "world/backgrounds/bg-lab.png"
+      "bg-lab": "world/backgrounds/bg-lab.png",
+      // Decor
+      "tutorial-burn": "world/decor/tutorial-burn.png",
+      "tutorial-camera": "world/decor/tutorial-camera.png",
+      "tutorial-checkpoint": "world/decor/tutorial-checkpoint.png",
+      "tutorial-dash": "world/decor/tutorial-dash.png",
+      "tutorial-pause": "world/decor/tutorial-pause.png",
+      "tutorial-spike": "world/decor/tutorial-spike.png",
+      "tutorial-switch": "world/decor/tutorial-switch.png",
+      "tutorial-walk-jump": "world/decor/tutorial-walk-jump.png"
     },
     "jsons"  : {
         "constants": "jsons/constants.json",
@@ -61,6 +70,7 @@
         "tiledSuperJump": "levels/super-jump.json",
         "tiledLevelTutorial": "levels/tiledLevelTutorial1.json",
         "tiledLevel1": "levels/spikes-deaths-easy.json",
+        "spikes-death": "levels/spikes-deaths-easy.json",
         "tiledLevel2": "levels/level-beta-med1.json",
         "tiledLevel3": "levels/body-switching-chain-medium.json",
         "tiledLevel4": "levels/super-jump.json",

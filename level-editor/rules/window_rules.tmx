@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-up" width="32" height="20" tilewidth="1024" tileheight="1024" infinite="1" nextlayerid="5" nextobjectid="1">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-up" width="32" height="20" tilewidth="1024" tileheight="1024" infinite="1" nextlayerid="6" nextobjectid="1">
+ <properties>
+  <property name="MatchInOrder" type="bool" value="true"/>
+  <property name="MatchOutsideMap" type="bool" value="true"/>
+ </properties>
  <tileset firstgid="1" source="../tilesets/metal-walls.tsx"/>
  <tileset firstgid="49" source=":/automap-tiles.tsx"/>
  <tileset firstgid="54" source="../tilesets/DefaultLabTiles.tsx"/>
@@ -8,7 +12,7 @@
   <data encoding="csv">
    <chunk x="0" y="0" width="16" height="16">
 0,0,52,0,0,0,52,0,0,0,52,0,0,0,52,0,
-0,52,102,52,0,52,102,51,0,51,102,51,0,51,102,52,
+0,52,102,51,0,52,102,51,0,51,102,51,0,51,102,52,
 0,0,52,0,0,0,52,0,0,0,52,0,0,0,52,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,52,0,0,0,52,0,0,0,52,0,0,0,52,0,
@@ -19,8 +23,8 @@
 0,52,102,52,0,52,102,51,0,51,102,51,0,51,102,52,
 0,0,51,0,0,0,51,51,0,51,51,51,0,51,51,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,51,0,0,0,51,51,0,51,51,51,0,51,51,0,
-0,52,102,52,0,52,102,51,0,51,102,51,0,51,102,52,
+0,0,51,0,0,0,51,51,0,51,51,51,0,51,53,0,
+0,52,102,52,0,52,102,51,0,51,102,51,0,53,102,52,
 0,0,52,0,0,0,52,0,0,0,52,0,0,0,52,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </chunk>

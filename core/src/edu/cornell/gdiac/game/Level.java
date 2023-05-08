@@ -47,7 +47,7 @@ public class Level {
     /** Tiles of level */
     protected Tiles tiles;
     /** Climbables of level */
-    protected Climbable climbables;
+    protected Tiles climbables;
     /** All the objects in the world. */
     protected PooledList<Obstacle> objects  = new PooledList<>();
     /** Queue for adding objects */
@@ -108,9 +108,12 @@ public class Level {
     /** joints added between obstacles in this level */
     private Array<Joint> joints = new Array<>();
     private Array<Particle> spiritParticles = new Array<>();
+    private String biome;
 
     /** Current RayHandler associated with the active world for convenience. */
     private RayHandler rayHandler;
+
+    private Array<Decoration> decorations = new Array();
 
 
     /**
@@ -187,6 +190,8 @@ public class Level {
     public Goal getGoal() { return goal; }
 
     public Array<Particle> getSpiritParticles() { return spiritParticles; }
+
+    public String getBiome() { return biome; }
 
 
     /**
@@ -506,7 +511,7 @@ public class Level {
         }
 
         populateObstacles(obstacleData, tileSize, levelHeight, next == null);
-        String biome = tiledMap.get("properties").get(0).getString("value");
+        biome = tiledMap.get("properties").get(0).getString("value");
 
         TextureRegion tileset = new TextureRegion();
         TextureRegion tileset_climbable = new TextureRegion();
@@ -540,7 +545,7 @@ public class Level {
         tiles = new Tiles(tileData, 1024, levelWidth, levelHeight, tileset, bounds, fID, new Vector2(1/32f, 1/32f));
 
         if (climbableData != null) {
-            climbables = new Climbable(climbableData, 1024, levelWidth, levelHeight,
+            climbables = new Tiles(climbableData, 1024, levelWidth, levelHeight,
                     textureRegionAssetMap.get("climbable-tileset"), bounds, fID_climbable, new Vector2(1/32f, 1/32f));
         }
 
@@ -595,6 +600,8 @@ public class Level {
                 populateBoxes(obstacleData, tileSize, levelHeight);
             } else if (name.equals("mirrors")) {
                 populateMirrors(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("lights")) {
+                populateLights(obstacleData, tileSize, levelHeight);
             } else if (name.equals("cat")) {
                 populateCat(obstacleData, tileSize, levelHeight, populateCat);
             } else if (name.equals("exits")) {
@@ -603,7 +610,18 @@ public class Level {
                 populateCameraRegions(obstacleData, tileSize, levelHeight);
             } else if (name.equals("goal")) {
                 populateGoal(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("decor")){
+                populateDecorations(obstacleData, tileSize, levelHeight);
             }
+        }
+    }
+
+    private void populateDecorations(JsonValue data, int tileSize, int levelHeight){
+        JsonValue objects = data.get("objects");
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize, levelHeight);
+            Decoration decoration = new Decoration(propertiesMap, textureRegionAssetMap, scale);
+            decorations.add(decoration);
         }
     }
 
@@ -827,6 +845,16 @@ public class Level {
         }
     }
 
+    private void populateLights(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        textureScaleCache.set(1/32f, 1/32f);
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize, levelHeight);
+            NoveLight light = new NoveLight(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
+            loadTiledActivatable(light);
+        }
+    }
+
     /**
      * Populates the exits for this level.
      *
@@ -1003,6 +1031,7 @@ public class Level {
         spiritRegionArray.clear();
         objectNames.clear();
         objectJoints.clear();
+        decorations.clear();
         numLives = maxLives;
         tiles = null;
         currCheckpoint = null;
@@ -1179,6 +1208,8 @@ public class Level {
         for (Activator a : activators) {
             a.draw(canvas);
         }
+
+        for (Decoration d : decorations) { d.draw(canvas); }
 
         spiritLine.draw(canvas);
 
@@ -1357,6 +1388,23 @@ public class Level {
                     obstacleData.put(obs, obs.storeState());
                 }
             }
+        }
+    }
+
+    private class Decoration {
+        private Vector2 position = new Vector2();
+        private TextureRegion textureRegion;
+        private Vector2 scale = new Vector2();
+        private Vector2 textureScale = new Vector2();
+        public Decoration(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale) {
+            position.set((float) properties.get("x"), (float) properties.get("y"));
+            textureRegion = tMap.get((String) properties.get("name"));
+            this.scale.set(scale);
+            textureScale.set((float) properties.get("width") * scale.x/textureRegion.getRegionWidth(),
+                    (float) properties.get("height") * scale.y/textureRegion.getRegionHeight());
+        }
+        public void draw(GameCanvas canvas){
+            canvas.draw(textureRegion, Color.WHITE, 0, 0, position.x * scale.x, position.y * scale.y, 0, textureScale.x, textureScale.y);
         }
     }
 

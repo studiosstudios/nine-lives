@@ -37,7 +37,7 @@ public class CameraRegion extends BoxObstacle {
      */
     public CameraRegion(ObjectMap<String, Object> properties, Vector2 scale, Rectangle bounds){
         super((float)properties.get("width"), (float)properties.get("height"));
-        zoom = (float) properties.get("zoom");
+        zoom = (float) properties.get("zoom", 0.6f);
         setBodyType(BodyDef.BodyType.StaticBody); //lmao
         setSensor(true);
         setDrawScale(scale);
@@ -45,16 +45,16 @@ public class CameraRegion extends BoxObstacle {
         setY((float) properties.get("y") - getDimension().y/2);
         setName((String) properties.get("name"));
         fixtureCount = 0;
-        shouldSnap = (boolean) properties.get("shouldSnap");
-        if((boolean) properties.get("snapCollisionArea")){
+        shouldSnap = (boolean) properties.get("shouldSnap", false);
+        if((boolean) properties.get("snapCollisionArea", true)){
             snapBounds = this.getBounds();
         }
         else{
-            snapBounds = new Rectangle((float) properties.get("bX") + bounds.x, (float) properties.get("bY") + bounds.y, (float) properties.get("bWidth"), (float) properties.get("bHeight"));
+            snapBounds = new Rectangle((float) properties.get("bX", 0f) + bounds.x, (float) properties.get("bY", 0f) + bounds.y, (float) properties.get("bWidth", 18f), (float) properties.get("bHeight", 32f));
         }
         float expectedWidth = snapBounds.getWidth() * zoom;
         float expectedHeight = snapBounds.getHeight() * zoom;
-        relativeZoom = (boolean) properties.get("isZoomRelative");
+        relativeZoom = (boolean) properties.get("isZoomRelative", false);
         if(relativeZoom)
             zoom = Math.min(expectedWidth*scale.x/GameCanvas.STANDARD_WIDTH, expectedHeight*scale.y/GameCanvas.STANDARD_HEIGHT);
     }

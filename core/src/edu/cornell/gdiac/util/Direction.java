@@ -28,6 +28,24 @@ public enum Direction {UP, DOWN, LEFT, RIGHT;
     }
 
     /**
+     * Converts a Direction enum to a degree angle.
+     * @param dir Angle in Direction, where UP is 0 degrees and LEFT is 90 degrees and so forth
+     * @return Corresponding Direction enum
+     */
+    public static float dirToDegrees(Direction dir) {
+        switch (dir) {
+            case UP:
+                return 0;
+            case LEFT:
+                return 90;
+            case DOWN:
+                return 180;
+            default:
+                return 270;
+        }
+    }
+
+    /**
      * Rotates a vector by a given Direction, where up is 0 degrees.
      *
      * @param vec    Vector to rotate

@@ -1,1 +1,2 @@
-./metal-wall-rules.tmx
+./DefaultLab_rules.tmx
+./window_rules.tmx

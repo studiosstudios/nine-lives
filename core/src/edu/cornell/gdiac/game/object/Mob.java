@@ -10,6 +10,7 @@
  */
 package edu.cornell.gdiac.game.object;
 
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.Texture;
@@ -203,6 +204,17 @@ public class Mob extends CapsuleObstacle {
         }
         body.setUserData(this);
         return true;
+    }
+
+    /**
+     * Creates PointLight for with soft and xray true
+     * @param rayHandler Ray Handler associated with the currently active box2d world
+     */
+    public void createLight(RayHandler rayHandler) {
+        createPointLight(objectConstants.get("light"), rayHandler);
+        getLight().attachToBody(getBody());
+        getLight().setSoft(true);
+        getLight().setXray(true);
     }
 
     /**

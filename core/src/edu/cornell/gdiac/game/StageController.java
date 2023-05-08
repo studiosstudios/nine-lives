@@ -5,10 +5,16 @@ import com.badlogic.gdx.graphics.*;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.*;
+import edu.cornell.gdiac.audio.AudioEngine;
+import edu.cornell.gdiac.audio.AudioSource;
+import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.game.stage.*;
 import edu.cornell.gdiac.util.*;
+
+import java.util.HashMap;
 
 /**
  * Class that provides a loading screen for the state of the game.
@@ -64,6 +70,13 @@ public class StageController implements Screen {
 	public GameController currLevel;
 	private int selectedLevel;
 
+//	/** The hashmap for music */
+//	private HashMap<String, AudioSource> musicAssetMap;
+//	/** A queue to play music */
+//	MusicQueue music;
+
+	private AudioController audioController;
+
 	public int getSelectedLevel() { return selectedLevel; }
 	public void setSelectedLevel(int level) { selectedLevel = level; }
 
@@ -113,8 +126,8 @@ public class StageController implements Screen {
 	 * @param file  	The asset directory to load in the background
 	 * @param canvas 	The game canvas to draw to
 	 */
-	public StageController(String file, GameCanvas canvas) {
-		this(file, canvas, DEFAULT_BUDGET, false, false);
+	public StageController(String file, GameCanvas canvas, AudioController audioController) {
+		this(file, canvas, DEFAULT_BUDGET, false, false,  audioController);
 	}
 
 	/**
@@ -129,8 +142,9 @@ public class StageController implements Screen {
 	 * @param canvas 	The game canvas to draw to
 	 * @param millis 	The loading budget in milliseconds
 	 */
-	public StageController(String file, GameCanvas canvas, int millis, boolean start, boolean paused) {
+	public StageController(String file, GameCanvas canvas, int millis, boolean start, boolean paused, AudioController audioController) {
 		this.canvas  = canvas;
+		this.audioController = audioController;
 		budget = millis;
 
 		// We need these files loaded immediately
@@ -138,13 +152,18 @@ public class StageController implements Screen {
 		internal.loadAssets();
 		internal.finishLoading();
 
+		startMusic();
+
 		if(!Save.exists()) {
 			Save.create();
+		} else {
+			audioController.setVolume(Save.getVolume());
 		}
 
 		mainMenuStage = new MainMenuStage(internal, true);
 //		mainMenuStage.setViewport(canvas.getViewport());
 		settingsStage = new SettingsStage(internal, true);
+		settingsStage.setAudioController(audioController);
 //		settingsStage.setViewport(canvas.getViewport());
 		pauseStage = new PauseStage(internal, true);
 		levelSelectStage = new LevelSelectStage(internal, true);
@@ -167,8 +186,9 @@ public class StageController implements Screen {
 		assets = new AssetDirectory( file );
 		assets.loadAssets();
 		active = true;
+
 	}
-	
+
 	/**
 	 * Called when this screen should release all resources.
 	 */
@@ -182,6 +202,17 @@ public class StageController implements Screen {
 		assets.loadAssets();
 		assets.finishLoading();
 	}
+
+	public void startMusic() {
+//		// TODO: automate this with the volume constant in internal loading json
+		// audioController.setVolume(internal.get("defaults").getFloat("volume"));
+
+//		audioController.setVolume(0.3f);
+		audioController.addStageMusic(internal.getEntry("bkg-intro", AudioSource.class));
+
+		audioController.playStageMusic();
+	}
+
 	
 	/**
 	 * Update the status of this player mode.
@@ -240,10 +271,12 @@ public class StageController implements Screen {
 			update(delta);
 			draw();
 			if (pause) {
+				audioController.playStageMusic();
 				pauseStage.currLevel = this.currLevel;
 //				changeStage(pauseStage);
 			}
 			if (loading) {
+				audioController.pauseStageMusic();
 				loading = false;
 //				try {
 //					Thread.sleep(1000);
@@ -290,6 +323,7 @@ public class StageController implements Screen {
 				selectedLevel = levelSelectStage.getSelectedLevel();
 //				listener.exitScreen(this, 69);
 			} else if (pauseStage.isResume() && listener != null) {
+				audioController.pauseStageMusic();
 				pause = false;
 				pauseStage.setResumeButtonState(0);
 				pauseStage.currLevel = null;

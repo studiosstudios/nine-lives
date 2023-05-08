@@ -472,10 +472,16 @@ public class GameController implements Screen {
                 "tutorial-burn", "tutorial-camera", "tutorial-checkpoint", "tutorial-dash", "tutorial-pause",
                 "tutorial-spike", "tutorial-switch", "tutorial-walk-jump"
                 }; // Unsure if this is actually being used
-    TexturePacker.Settings settings = new TexturePacker.Settings();
-        TexturePacker.process(settings, "images", "packed", "atlas");
-    AssetManager assetManager = new AssetManager();
+        String[] cat =  {"cat", "walk-anim", "jump", "jump-anim", "sit", "idle-sit-anim", "idle-stand-anim", "meow-anim",
+                "trans-anim","climb-anim","corpse", "corpse2", "corpse3","corpse-burnt","trans2-anim","jump-mid"};
+        TexturePacker.Settings settings = new TexturePacker.Settings();
+        TexturePacker.process(settings, "assets/cat", "packed", "atlas");
+        AssetManager assetManager = new AssetManager();
+        assetManager.load("packed/atlas.atlas", TextureAtlas.class);
         assetManager.finishLoading();
+        TextureAtlas textureAtlas = assetManager.get("packed/atlas.atlas", TextureAtlas.class);
+        for (String n : cat){
+        }
         for (String n : names){
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
         }

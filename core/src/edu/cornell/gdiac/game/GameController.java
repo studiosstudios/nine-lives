@@ -5,6 +5,7 @@ import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.audio.*;
@@ -14,7 +15,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.game.object.*;
-
+import com.badlogic.gdx.tools.texturepacker.TexturePacker;
 import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.game.stage.HudStage;
 import edu.cornell.gdiac.util.ScreenListener;
@@ -458,9 +459,14 @@ public class GameController implements Screen {
                 "door", "platform",
                 // BACKGROUNDS
                 "bg-lab",}; // Unsure if this is actually being used
+        TexturePacker.Settings settings = new TexturePacker.Settings();
+        TexturePacker.process(settings, "images", "packed", "atlas");
+        AssetManager assetManager = new AssetManager();
+        assetManager.finishLoading();
         for (String n : names){
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
         }
+
 
         names = new String[]{"jump", "dash", "metal-landing", "meow"};
         for (String n : names){

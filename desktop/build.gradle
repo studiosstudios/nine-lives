@@ -40,7 +40,11 @@ task dist(type: Jar) {
     }
     with jar
 }
-
+project(":core") { apply plugin: "java-library"
+    dependencies {
+        api "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
+    }
+}
 
 dist.dependsOn classes
 

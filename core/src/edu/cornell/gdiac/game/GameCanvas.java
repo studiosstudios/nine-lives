@@ -108,7 +108,6 @@ public class GameCanvas {
 	protected ShaderProgram greyscaleShader;
 	private FrameBuffer frameBuffer;
 	private final Matrix4 IDENTITY = new Matrix4().setToOrtho2D(0,0,1,1);
-	private Vector2 shaderScale;
 
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
@@ -152,8 +151,6 @@ public class GameCanvas {
 		frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
 
 		setBlendState(BlendState.NO_PREMULT);
-
-		shaderScale = new Vector2(getWidth()/Gdx.graphics.getBackBufferWidth(), getHeight()/Gdx.graphics.getBackBufferHeight());
 
 	}
 	/**
@@ -463,7 +460,6 @@ ef	 * <br><br>
 		spiritModeShader.setUniformf("u_bgColor", bgColor);
 		spiritModeShader.setUniformf("u_edgeColor", edgeColor);
 		spiritModeShader.setUniformf("u_time", time);
-		spiritModeShader.setUniformf("u_textureScale", shaderScale);
 	}
 
 	public void setGreyscaleShader(float greyScale) {

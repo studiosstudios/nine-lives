@@ -15,7 +15,6 @@ uniform float u_thickness;
 uniform float u_radius;
 uniform vec4 u_edgeColor;
 uniform vec4 u_bgColor;
-uniform vec2 u_textureScale;
 
 varying vec2 v_texCoords;
 
@@ -24,7 +23,7 @@ void main( )
 {
     float t = u_time;
     // Normalized pixel coordinates (from -1 to 1)
-    vec2 uvOrig = v_texCoords * u_textureScale;
+    vec2 uvOrig = v_texCoords;
     vec2 uv = (v_texCoords - 0.5)*2.0;
 
 

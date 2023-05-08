@@ -73,13 +73,9 @@
         "controls": "jsons/controls.json",
         "tiledSuperJump": "levels/super-jump.json",
         "tiledLevelTutorial": "levels/tiledLevelTutorial1.json",
-<<<<<<< HEAD
+        "tiledLevel1": "levels/lights.json",
 //        "tiledLevel1": "levels/spikes-deaths-easy.json",
-              "tiledLevel1": "levels/lights.json",
-=======
-        "tiledLevel1": "levels/spikes-deaths-easy.json",
         "spikes-death": "levels/spikes-deaths-easy.json",
->>>>>>> golden
         "tiledLevel2": "levels/level-beta-med1.json",
         "tiledLevel3": "levels/body-switching-chain-medium.json",
         "tiledLevel4": "levels/super-jump.json",

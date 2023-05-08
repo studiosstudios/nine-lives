@@ -7,28 +7,28 @@
   <property name="biome" propertytype="biome" value="metal"/>
  </properties>
  <tileset firstgid="1" source="../../objects/objects.tsx"/>
- <tileset firstgid="11" source="../../tilesets/metal-walls.tsx"/>
- <tileset firstgid="59" source="../../tilesets/climbables.tsx"/>
- <tileset firstgid="63" source="../../objects/objects.tsx"/>
+ <tileset firstgid="15" source="../../tilesets/metal-walls.tsx"/>
+ <tileset firstgid="63" source="../../tilesets/climbables.tsx"/>
+ <tileset firstgid="67" source="../../tilesets/windows.tsx"/>
  <layer id="17" name="metalWalls" width="29" height="17">
   <data encoding="csv">
-24,25,25,25,25,25,25,25,25,25,25,25,25,25,40,13,13,13,13,13,13,13,13,13,42,25,25,25,26,
-36,37,37,37,37,37,37,37,37,37,37,37,37,37,38,0,0,0,0,0,0,0,0,0,36,37,37,37,38,
-36,37,37,37,37,37,37,37,37,37,37,37,37,37,38,0,0,0,0,0,0,0,0,0,36,37,37,37,38,
-48,49,49,49,49,49,49,49,49,49,49,49,49,49,53,13,13,13,13,13,13,13,13,13,51,49,49,49,50,
+28,29,29,29,29,29,29,29,29,29,29,29,29,29,44,17,17,17,17,17,17,17,17,17,46,29,29,29,30,
+40,41,41,41,41,41,41,41,41,41,41,41,41,41,42,0,0,0,0,0,0,0,0,0,40,41,41,41,42,
+40,41,41,41,41,41,41,41,41,41,41,41,41,41,42,0,0,0,0,0,0,0,0,0,40,41,41,41,42,
+52,53,53,53,53,53,53,53,53,53,53,53,53,53,57,17,17,17,17,17,17,17,17,17,55,53,53,53,54,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,24,26,0,0,0,0,12,13,13,13,13,14,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,36,38,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,36,38,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,36,38,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,36,38,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-24,25,25,25,25,25,25,25,25,25,25,25,56,55,25,25,25,26,0,0,0,0,0,0,24,25,25,25,26,
-36,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,55,25,25,25,25,25,25,56,37,37,37,38,
-48,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,50
+0,0,0,0,0,0,0,0,0,0,0,0,28,30,0,0,0,0,16,17,17,17,17,18,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,40,42,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,40,42,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,40,42,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,40,42,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+28,29,29,29,29,29,29,29,29,29,29,29,60,59,29,29,29,30,0,0,0,0,0,0,28,29,29,29,30,
+40,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,59,29,29,29,29,29,29,60,41,41,41,42,
+52,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,54
 </data>
  </layer>
  <layer id="18" name="climbables" width="29" height="17">
@@ -42,11 +42,11 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,59,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,59,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,59,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,59,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,59,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,63,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,63,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,63,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,63,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,63,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
@@ -91,45 +91,59 @@
   <object id="38" gid="2" x="1024" y="13312" width="1024" height="1024"/>
  </objectgroup>
  <objectgroup id="21" name="lights">
-  <object id="87" type="Light" gid="9" x="1024" y="4096" width="3072" height="1024">
+  <object id="87" type="Light" gid="13" x="1024" y="4096" width="3072" height="1024">
    <properties>
-    <property name="active" type="bool" value="true"/>
-    <property name="type" propertytype="light" value="ceiling"/>
+    <property name="type" propertytype="lightType" value="ceiling"/>
    </properties>
   </object>
-  <object id="88" type="Light" gid="9" x="7168" y="4096" width="3072" height="1024">
+  <object id="88" type="Light" gid="13" x="6144" y="4096" width="3072" height="1024">
    <properties>
-    <property name="active" type="bool" value="true"/>
+    <property name="type" propertytype="lightType" value="ceiling"/>
    </properties>
   </object>
-  <object id="94" type="Light" gid="73" x="6144" y="9216" width="1024" height="1024">
+  <object id="89" type="Light" gid="14" x="1024" y="11264" width="1024" height="1024">
    <properties>
-    <property name="active" type="bool" value="true"/>
-    <property name="type" propertytype="light" value="wall"/>
+    <property name="type" propertytype="lightType" value="wall"/>
    </properties>
   </object>
-  <object id="96" type="Light" gid="73" x="15360" y="12288" width="1024" height="1024">
+  <object id="90" type="Light" gid="14" x="18432" y="6144" width="1024" height="1024">
    <properties>
-    <property name="active" type="bool" value="true"/>
-    <property name="type" propertytype="light" value="wall"/>
+    <property name="type" propertytype="lightType" value="wall"/>
    </properties>
   </object>
-  <object id="97" type="Light" gid="73" x="25600" y="12288" width="1024" height="1024">
+  <object id="91" type="Light" gid="14" x="23552" y="6144" width="1024" height="1024">
    <properties>
-    <property name="active" type="bool" value="true"/>
-    <property name="type" propertytype="light" value="wall"/>
+    <property name="type" propertytype="lightType" value="wall"/>
    </properties>
   </object>
-  <object id="98" type="Light" gid="73" x="19456" y="7168" width="1024" height="1024">
+  <object id="92" type="Light" gid="14" x="15360" y="11264" width="1024" height="1024">
    <properties>
-    <property name="active" type="bool" value="true"/>
-    <property name="type" propertytype="light" value="wall"/>
+    <property name="type" propertytype="lightType" value="wall"/>
    </properties>
   </object>
-  <object id="99" type="Light" gid="73" x="22528" y="7168" width="1024" height="1024">
+  <object id="93" type="Light" gid="14" x="19456" y="11264" width="1024" height="1024">
    <properties>
-    <property name="active" type="bool" value="true"/>
-    <property name="type" propertytype="light" value="wall"/>
+    <property name="type" propertytype="lightType" value="wall"/>
+   </properties>
+  </object>
+  <object id="94" type="Light" gid="14" x="22528" y="11264" width="1024" height="1024">
+   <properties>
+    <property name="type" propertytype="lightType" value="wall"/>
+   </properties>
+  </object>
+  <object id="95" type="Light" gid="14" x="26624" y="11264" width="1024" height="1024">
+   <properties>
+    <property name="type" propertytype="lightType" value="wall"/>
+   </properties>
+  </object>
+  <object id="97" type="Light" gid="14" x="16384" y="1024" width="1024" height="1024">
+   <properties>
+    <property name="type" propertytype="lightType" value="wall"/>
+   </properties>
+  </object>
+  <object id="98" type="Light" gid="14" x="22528" y="1024" width="1024" height="1024">
+   <properties>
+    <property name="type" propertytype="lightType" value="wall"/>
    </properties>
   </object>
  </objectgroup>

@@ -263,6 +263,46 @@
         {
             "color": "#ffa0a0a4",
             "drawFill": true,
+            "id": 21,
+            "members": [
+                {
+                    "name": "activatorID",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "active",
+                    "type": "bool",
+                    "value": true
+                },
+                {
+                    "name": "type",
+                    "propertyType": "lightType",
+                    "type": "string",
+                    "value": "ceiling"
+                }
+            ],
+            "name": "Light",
+            "type": "class",
+            "useAs": [
+                "property",
+                "object"
+            ]
+        },
+        {
+            "id": 20,
+            "name": "lightType",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "ceiling",
+                "wall"
+            ],
+            "valuesAsFlags": false
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
             "id": 16,
             "members": [
                 {

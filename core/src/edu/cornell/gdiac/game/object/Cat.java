@@ -925,7 +925,7 @@ public class Cat extends CapsuleObstacle implements Movable {
     private void updateAnimation() {
         float delta = Gdx.graphics.getDeltaTime();
         // WALKING
-        if (state == State.MOVING && horizontalMovement != 0 && isGrounded()) {
+        if ((state == State.MOVING && (horizontalMovement != 0 && isGrounded())) || (state==State.DASHING && verticalMovement == 0)) {
             walkTime += delta;
             currentFrame = walkAnimation.getKeyFrame(walkTime);
 

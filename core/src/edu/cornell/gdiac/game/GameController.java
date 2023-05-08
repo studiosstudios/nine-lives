@@ -125,6 +125,7 @@ public class GameController implements Screen {
     public AudioController audioController;
     /** only not null if quick launched from Tiled */
     private JsonValue quickLaunchLevel;
+    private boolean LIGHTS_ACTIVE = false;
 
     /**
      * PLAY: User has all controls and is in game
@@ -852,8 +853,10 @@ public class GameController implements Screen {
         draw(delta);
 
         // box2dlights draw
-        updateRayHandlerCombinedMatrix();
-        rayHandler.updateAndRender();
+        if (LIGHTS_ACTIVE) {
+            updateRayHandlerCombinedMatrix();
+            rayHandler.updateAndRender();
+        }
 
         // Menu draw
         hud.draw();

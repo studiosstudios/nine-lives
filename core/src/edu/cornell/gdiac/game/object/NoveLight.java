@@ -81,8 +81,8 @@ public class NoveLight extends BoxObstacle implements Activatable {
         createPointLight(lightConstants.get("light"), rayHandler);
         getLight().setSoft(true);
         getLight().setXray(true);
-        Vector2 offset = new Vector2(lightConstants.get("offset").getFloat(0),lightConstants.get("offset").getFloat(1));
         getLight().setPosition(getBody().getPosition().cpy().add(getLight().getPosition()));
+        getLight().setActive(initialActivation);
     }
 
     @Override

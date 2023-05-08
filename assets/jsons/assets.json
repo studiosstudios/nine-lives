@@ -66,14 +66,18 @@
       "tutorial-pause": "world/decor/tutorial-pause.png",
       "tutorial-spike": "world/decor/tutorial-spike.png",
       "tutorial-switch": "world/decor/tutorial-switch.png",
-      "tutorial-walk-jump": "world/decor/tutorial-walk-jump.png"
+      "tutorial-walk-jump": "world/decor/tutorial-walk-jump.png",
+      "cat-vinci": "world/decor/cat-vinci.png",
+      "shelf": "world/decor/shelf.png"
+
     },
     "jsons"  : {
         "constants": "jsons/constants.json",
         "controls": "jsons/controls.json",
         "tiledSuperJump": "levels/super-jump.json",
         "tiledLevelTutorial": "levels/tiledLevelTutorial1.json",
-        "tiledLevel1": "levels/lights.json",
+        "tiledLevel1": "levels/level-decor.json",
+//        "tiledLevel1": "levels/lights.json",
 //        "tiledLevel1": "levels/spikes-deaths-easy.json",
         "spikes-death": "levels/spikes-deaths-easy.json",
         "tiledLevel2": "levels/level-beta-med1.json",

@@ -474,6 +474,8 @@ public class GameController implements Screen {
                 }; // Unsure if this is actually being used
         String[] cat =  {"cat", "walk-anim"};
         TexturePacker.Settings settings = new TexturePacker.Settings();
+        settings.maxWidth = 16384;
+        settings.maxHeight = 2048;
         TexturePacker.process(settings, "cat", "packed", "atlas");
         AssetManager assetManager = new AssetManager();
         assetManager.load("packed/atlas.atlas", TextureAtlas.class);

@@ -84,6 +84,7 @@ public class Level {
      * Camera regions we are currently in contact with
      */
     private Array<CameraRegion> cameraRegions;
+    private final Array<PushableBox> boxes;
     /** The respawn position of the player */
     private Vector2 respawnPos;
 
@@ -381,6 +382,7 @@ public class Level {
         mobArray = new Array<>();
         spiritRegionArray = new Array<>();
         cameraRegions = new Array<>();
+        boxes = new Array<>();
         activationRelations = new HashMap<>();
         spiritMode = false;
         spiritLine = new SpiritLine(Color.WHITE, Color.WHITE, scale);
@@ -820,10 +822,11 @@ public class Level {
      */
     private void populateBoxes(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
-        textureScaleCache.set(1, 1);
+        textureScaleCache.set(1f/4, 1f/4);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
             PushableBox box = new PushableBox(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
+            boxes.add(box);
             addObject(box);
         }
     }
@@ -1032,6 +1035,7 @@ public class Level {
         objectNames.clear();
         objectJoints.clear();
         decorations.clear();
+        boxes.clear();
         numLives = maxLives;
         tiles = null;
         currCheckpoint = null;
@@ -1202,6 +1206,10 @@ public class Level {
 
         for (Activator a : activators) {
             a.draw(canvas);
+        }
+
+        for (PushableBox b : boxes) {
+            b.draw(canvas);
         }
 
         for (Decoration d : decorations) { d.draw(canvas); }

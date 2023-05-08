@@ -36,6 +36,7 @@
       "button-top": "obstacles/button/button-top.png",
       "switch-top": "obstacles/button/switch-top.png",
       "switch-base": "obstacles/button/switch-base.png",
+      "box": "obstacles/box/box.png",
       "flamethrower": "obstacles/flamethrower/flamethrower.png",
       "flame": "obstacles/flamethrower/flame.png", //UNUSED
       "flame-anim": "obstacles/flamethrower/flame-anim.png",

@@ -28,6 +28,7 @@
     "mass" : 1,
     "density": 1,
     "damping": 1.2,
+    "shrink" : 0.9,
     "offset": [0.5, -0.5]
   },
   "flamethrowers": {

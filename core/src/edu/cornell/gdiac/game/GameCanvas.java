@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.*;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.Array;
@@ -106,7 +107,8 @@ public class GameCanvas {
 	protected ShaderProgram spiritModeShader;
 	protected ShaderProgram greyscaleShader;
 	private FrameBuffer frameBuffer;
-	private final Matrix4 IDENTITY = new Matrix4();
+	private final Matrix4 IDENTITY = new Matrix4().setToOrtho2D(0,0,1,1);
+	private Vector2 shaderScale;
 
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
@@ -147,9 +149,11 @@ public class GameCanvas {
 		greyscaleShader = new ShaderProgram(spriteBatch.getShader().getVertexShaderSource(),
 				Gdx.files.internal("shaders/greyscale.frag").readString());
 
-		frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, (int) STANDARD_WIDTH, (int) STANDARD_HEIGHT, false);
+		frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
 
 		setBlendState(BlendState.NO_PREMULT);
+
+		shaderScale = new Vector2(getWidth()/Gdx.graphics.getBackBufferWidth(), getHeight()/Gdx.graphics.getBackBufferHeight());
 
 	}
 	/**
@@ -329,7 +333,7 @@ ef	 * <br><br>
 
 		 if (getWidth() != 0 && getHeight() != 0) {
 			 frameBuffer.dispose();
-			 frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
+			 frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
 		 }
 
 		 viewport.update(width, height, true);
@@ -437,18 +441,16 @@ ef	 * <br><br>
 
 	public void beginFrameBuffer(){
 		begin();
-		HdpiUtils.setMode(HdpiMode.Pixels);
 		frameBuffer.begin();
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		ScreenUtils.clear(Color.BLACK);
 	}
 
 	public void endFrameBuffer() {
 		spriteBatch.flush();
 		frameBuffer.end();
-		HdpiUtils.setMode(HdpiMode.Logical);
         spriteBatch.setColor(Color.WHITE);
 		spriteBatch.setProjectionMatrix(IDENTITY);
-		spriteBatch.draw(frameBuffer.getColorBufferTexture(), -1, -1, 2f, 2f, 0, 0, width, height, false, true);
+		spriteBatch.draw(frameBuffer.getColorBufferTexture(), 0, 0, 1, 1, 0, 0, 1, 1);
 		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
 	}
 
@@ -461,6 +463,7 @@ ef	 * <br><br>
 		spiritModeShader.setUniformf("u_bgColor", bgColor);
 		spiritModeShader.setUniformf("u_edgeColor", edgeColor);
 		spiritModeShader.setUniformf("u_time", time);
+		spiritModeShader.setUniformf("u_textureScale", shaderScale);
 	}
 
 	public void setGreyscaleShader(float greyScale) {

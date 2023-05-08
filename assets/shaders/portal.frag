@@ -15,6 +15,7 @@ uniform float u_thickness;
 uniform float u_radius;
 uniform vec4 u_edgeColor;
 uniform vec4 u_bgColor;
+uniform vec2 u_textureScale;
 
 varying vec2 v_texCoords;
 
@@ -23,7 +24,7 @@ void main( )
 {
     float t = u_time;
     // Normalized pixel coordinates (from -1 to 1)
-    vec2 uvOrig = v_texCoords;
+    vec2 uvOrig = v_texCoords * u_textureScale;
     vec2 uv = (v_texCoords - 0.5)*2.0;
 
 
@@ -41,10 +42,7 @@ void main( )
     vec4 portalColor = texture2D(u_texture,uvOrig);
 
     float edgeDist = smoothstep(targetVal-u_thickness,targetVal+u_thickness, d);
-    col = mix(portalColor, u_bgColor, res);
-    if(d < targetVal+u_thickness){
-        col += u_edgeColor*edgeDist;
-    }
+    col = mix(portalColor, u_bgColor, res) + step(d, targetVal + u_thickness) * u_edgeColor * edgeDist;
 
     // Output to screen
     gl_FragColor = col;

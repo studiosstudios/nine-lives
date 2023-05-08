@@ -3,6 +3,7 @@ package edu.cornell.gdiac.game;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
@@ -129,7 +130,7 @@ public class GameController implements Screen {
     public AudioController audioController;
     /** only not null if quick launched from Tiled */
     private JsonValue quickLaunchLevel;
-    private boolean LIGHTS_ACTIVE = false;
+    private boolean LIGHTS_ACTIVE = true;
 
     private Color spiritModeColor = new Color(1, 1, 1, 1);
 
@@ -891,14 +892,39 @@ public class GameController implements Screen {
                 postUpdate(delta);
             }
         }
+
+        if (LIGHTS_ACTIVE) {
+            updateRayHandlerCombinedMatrix();
+            rayHandler.update();
+        }
+
         if (paused) { updateCamera(); }
         // Main game draw
         draw(delta);
 
         // box2dlights draw
-        if (LIGHTS_ACTIVE) {
-            updateRayHandlerCombinedMatrix();
-            rayHandler.updateAndRender();
+//        if (LIGHTS_ACTIVE) {
+////            updateRayHandlerCombinedMatrix();
+//            rayHandler.updateAndRender();
+//        }
+
+        if (!LIGHTS_ACTIVE) {
+            rayHandler.prepareRender();
+
+            FrameBuffer fbo = new FrameBuffer(Pixmap.Format.RGBA8888, canvas.getWidth(), canvas.getHeight(), false);
+            fbo.begin();
+
+            canvas.spriteBatch.begin();
+
+            rayHandler.renderOnly();
+
+            canvas.spriteBatch.end();
+
+            fbo.end();
+
+            canvas.spriteBatch.begin();
+            canvas.spriteBatch.draw(fbo.getColorBufferTexture(), canvas.getWidth(), canvas.getHeight());
+            canvas.spriteBatch.end();
         }
 
         // Menu draw

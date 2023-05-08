@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="22" height="9" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="24" nextobjectid="107">
  <editorsettings>
-  <export target="../../../assets/levels/test-windows.json" format="json"/>
+  <export target="../../../assets/levels/test-forest.json" format="json"/>
  </editorsettings>
  <properties>
   <property name="biome" propertytype="biome" value="forest"/>

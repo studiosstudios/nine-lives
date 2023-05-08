@@ -474,6 +474,8 @@ public class Level {
 
         this.levelNum = levelNum;
 
+        biome = tiledMap.get("properties").get(0).getString("value");
+
         if (tiledMap == null) throw new InvalidTiledJSON("missing Tiled JSON");
 
         if (tiledMap.getBoolean("infinite")) throw new InvalidTiledJSON("map size cannot be infinite");
@@ -484,6 +486,10 @@ public class Level {
 
         JsonValue layers = tiledMap.get("layers");
         JsonValue tileData = layers.get(0);
+
+        if (biome.equals("forest")) {
+            tileData = layers.get(1);
+        }
         JsonValue climbableData = null;
         JsonValue windowData = null;
 
@@ -517,7 +523,6 @@ public class Level {
         }
 
         populateObstacles(obstacleData, tileSize, levelHeight, next == null);
-        biome = tiledMap.get("properties").get(0).getString("value");
 
         TextureRegion tileset = new TextureRegion();
         TextureRegion tileset_climbable = new TextureRegion();
@@ -555,7 +560,8 @@ public class Level {
             }
         }
 
-        tiles = new Tiles(tileData, 1024, levelWidth, levelHeight, tileset, bounds, fID, new Vector2(1/32f, 1/32f));
+        tiles = new Tiles(tileData, 1024, levelWidth, levelHeight,
+                    tileset, bounds, fID, new Vector2(1/32f, 1/32f));
 
         if (climbableData != null) {
             climbables = new Tiles(climbableData, 1024, levelWidth, levelHeight,

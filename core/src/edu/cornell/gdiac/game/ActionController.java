@@ -31,20 +31,20 @@ public class ActionController {
     protected Rectangle bounds;
     /** The world scale */
     protected Vector2 scale;
-    /** The hashmap for sounds */
-    private HashMap<String, Sound> soundAssetMap;
     /** The JSON value constants */
     private JsonValue constantsJSON;
-    /** The default sound volume */
-    private float volume;
-    /** The jump sound */
-    private long jumpId = -1;
-    /** The plop sound */
-    private long plopId = -1;
-    /** The pew (fire) sound */
-    private long fireId = -1;
-    /** The meow sound */
-    private long meowId = -1;
+//    /** The hashmap for sounds */
+//    private HashMap<String, Sound> soundAssetMap;
+//    /** The default sound volume */
+//    private float volume;
+//    /** The jump sound */
+//    private long jumpId = -1;
+//    /** The plop sound */
+//    private long plopId = -1;
+//    /** The pew (fire) sound */
+//    private long fireId = -1;
+//    /** The meow sound */
+//    private long meowId = -1;
     /** The level */
     private Level level;
     private Array<AIController> mobControllers;
@@ -56,23 +56,25 @@ public class ActionController {
     private Vector2 startPointCache = new Vector2();
     private Vector2 endPointCache = new Vector2();
     private ObjectMap<DeadBody, Float> hitDeadbodies = new ObjectMap<>();
+    private AudioController audioController;
 
     /**
      * Creates and initialize a new instance of a ActionController
      *
      * @param scale	    The game scale Vector2
-     * @param volume    The volume of the game
+     * @param audioController    The audio controller of the game
      */
-    public ActionController(Vector2 scale, float volume) {
+    public ActionController(Vector2 scale, AudioController audioController) {
         this.scale = scale;
-        this.volume = volume;
+//        this.volume = volume;
+        this.audioController = audioController;
         mobControllers = new Array<>();
     }
-
-    /**
-     * Sets the volume for all sounds in the game.
-     * */
-    public void setVolume(float volume) { this.volume = volume; }
+//
+//    /**
+//     * Sets the volume for all sounds in the game.
+//     * */
+//    public void setVolume(float volume) { this.volume = volume; }
 
     /**
      * Sets the level model
@@ -105,12 +107,12 @@ public class ActionController {
         return mobControllers;
     }
 
-    /**
-     * Sets the hashmaps for Texture Regions, Sounds, Fonts, and sets JSON value constants
-     *
-     * @param sMap the hashmap for Sounds
-     */
-    public void setAssets(HashMap<String, Sound> sMap){ soundAssetMap = sMap; }
+//    /**
+//     * Sets the hashmaps for Texture Regions, Sounds, Fonts, and sets JSON value constants
+//     *
+//     * @param sMap the hashmap for Sounds
+//     */
+//    public void setAssets(HashMap<String, Sound> sMap){ soundAssetMap = sMap; }
 
     /**
      * Called when the Screen is paused.
@@ -171,7 +173,7 @@ public class ActionController {
             cat.applyForce();
 
             for (String soundName : cat.getSoundBuffer()) {
-                soundAssetMap.get(soundName).play();
+                audioController.playSoundEffect(soundName);
             }
             cat.getSoundBuffer().clear();
         }

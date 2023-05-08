@@ -6,7 +6,7 @@
           "wrapV": "repeated"
         },
       "platform" : {
-        "file":  "world/platforms/platform.png",
+        "file":  "world/platforms/platform3.png",
         "wrapU": "repeated",
         "wrapV": "repeated"
       },
@@ -22,14 +22,20 @@
       "sit": "cat/sit.png",
       "idle-sit-anim": "cat/idle-sit-anim.png",
       "idle-stand-anim": "cat/idle-stand-anim.png",
+      "climb-anim": "cat/climbing-anim.png",
       "meow-anim": "cat/meow-anim.png",
+      "trans-anim": "cat/transition-anim.png",
+      "trans2-anim": "cat/jump-stand-trans.png",
+      "jump-mid": "cat/jump-mid-anim.png",
       "corpse": "obstacles/corpse/corpse.png",
       "corpse2" : "obstacles/corpse/corpse2.png",
+      "corpse3" : "obstacles/corpse/corpse3.png",
       "corpse-burnt": "cat/corpse-burnt.png",
       "spikes": "obstacles/spikes/spikes.png",
       "button-base": "obstacles/button/button-base.png",
       "button-top": "obstacles/button/button-top.png",
       "switch-top": "obstacles/button/switch-top.png",
+      "switch-base": "obstacles/button/switch-base.png",
       "flamethrower": "obstacles/flamethrower/flamethrower.png",
       "flame": "obstacles/flamethrower/flame.png", //UNUSED
       "flame-anim": "obstacles/flamethrower/flame-anim.png",
@@ -46,10 +52,19 @@
       "spirit-photon": "obstacles/spirit-region/spirit-photon.png",
       "spirit-photon-cat": "obstacles/spirit-region/spirit-photon-cat.png", //UNUSED
       "spirit-region": "obstacles/spirit-region/spirit-region.png",
-      "metal-tileset": "world/platforms/metal-tileset.png",
+      "metal-tileset": "world/platforms/dark-metal-tileset.png",
       "climbable-tileset": "world/platforms/climbable-tileset.png",
       "steel": "obstacles/shared/steel.png",
-      "bg-lab": "world/backgrounds/bg-lab.png"
+      "bg-lab": "world/backgrounds/bg-lab.png",
+      // Decor
+      "tutorial-burn": "world/decor/tutorial-burn.png",
+      "tutorial-camera": "world/decor/tutorial-camera.png",
+      "tutorial-checkpoint": "world/decor/tutorial-checkpoint.png",
+      "tutorial-dash": "world/decor/tutorial-dash.png",
+      "tutorial-pause": "world/decor/tutorial-pause.png",
+      "tutorial-spike": "world/decor/tutorial-spike.png",
+      "tutorial-switch": "world/decor/tutorial-switch.png",
+      "tutorial-walk-jump": "world/decor/tutorial-walk-jump.png"
     },
     "jsons"  : {
         "constants": "jsons/constants.json",
@@ -57,16 +72,22 @@
         "tiledSuperJump": "levels/super-jump.json",
         "tiledLevelTutorial": "levels/tiledLevelTutorial1.json",
         "tiledLevel1": "levels/spikes-deaths-easy.json",
+        "spikes-death": "levels/spikes-deaths-easy.json",
         "tiledLevel2": "levels/level-beta-med1.json",
         "tiledLevel3": "levels/body-switching-chain-medium.json",
         "tiledLevel4": "levels/super-jump.json",
         "tiledLevel5": "levels/level-beta-hard.json",
         "tiledLevel6": "levels/party-room.json"
     },
-    "sounds" : {
-        "jump" : "cat/jump-CELESTE.wav",
-        "dash" : "cat/dash-CELESTE.wav",
-        "metal-landing" : "cat/metal-landing-CELESTE.wav",
-        "meow" : "cat//meow.mp3"
-    }
+    "soundfx" : {
+        "jump" : "sounds/jump-CELESTE.wav",
+        "dash" : "sounds/dash-CELESTE.wav",
+        "metal-landing" : "sounds/metal-landing-CELESTE.wav",
+        "meow" : "sounds/meow.mp3"
+    },
+   "samples": {
+        "bkg-intro": "sounds/bkg-intro.ogg",
+        "bkg-lab-1": "sounds/bkg-lab-1.ogg",
+        "bkg-forest-1": "sounds/bkg-forest-1.ogg"
+   }
 }

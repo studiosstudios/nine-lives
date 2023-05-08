@@ -9,6 +9,7 @@
  <tileset firstgid="1" source="../objects/objects.tsx"/>
  <tileset firstgid="9" source="../tilesets/metal-walls.tsx"/>
  <tileset firstgid="57" source="../tilesets/climbables.tsx"/>
+ <tileset firstgid="61" source="../tilesets/windows.tsx"/>
  <layer id="17" name="metalWalls" width="29" height="17">
   <data encoding="csv">
    <chunk x="0" y="0" width="16" height="16">

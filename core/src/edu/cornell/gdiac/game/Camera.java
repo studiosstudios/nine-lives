@@ -28,11 +28,11 @@ public class Camera {
     /** Rate at which camera glides towards dead body **/
     private final float CAMERA_GLIDE_SWITCH_BODY = 0.025f;
     /** Rate at which camera glides on zoom change **/
-    private final float CAMERA_GLIDE_CHANGE_ZOOM = 0.5f;
+    private final float CAMERA_GLIDE_CHANGE_ZOOM = 0.05f;
     /** Rate at which camera zooms normally **/
-    private final float ZOOM_RATE_NORMAL = 0.01f;
+    private final float ZOOM_RATE_NORMAL = 0.13f;
     /** Rate at which camera zooms on camera region collision **/
-    private final float ZOOM_RATE_CAMERA_REGION = 0.005f;
+    private final float ZOOM_RATE_CAMERA_REGION = 0.1f;
     /** Current rate at which camera zooms **/
     private float zoomRate;
     private float cameraGlideRate;
@@ -74,9 +74,10 @@ public class Camera {
      * @param glide smoothed camera movement
      */
     public void updateCamera(float xPos, float yPos, boolean glide, Rectangle bounds){
-        if(Math.abs(camera.zoom - zoomGoal) > zoomRate) //TODO: collisions slow down zoom
+        if(Math.abs(camera.zoom - zoomGoal) > 0.01f) //TODO: collisions slow down zoom
         {
-            camera.zoom = camera.zoom < zoomGoal ? camera.zoom + zoomRate : camera.zoom - zoomRate;
+//            camera.zoom = camera.zoom < zoomGoal ? camera.zoom + zoomRate : camera.zoom - zoomRate;
+            camera.zoom += (zoomGoal - camera.zoom) * zoomRate;
         }
         else {
             camera.zoom = zoomGoal;

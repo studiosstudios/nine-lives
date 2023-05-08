@@ -102,6 +102,5 @@
     <property name="type" propertytype="exitType" value="return"/>
    </properties>
   </object>
-  <object id="105" x="-1024" y="16384"/>
  </objectgroup>
 </map>

@@ -5,7 +5,6 @@ import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.audio.*;
@@ -19,7 +18,6 @@ import edu.cornell.gdiac.audio.AudioSource;
 import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.game.object.*;
-import com.badlogic.gdx.tools.texturepacker.TexturePacker;
 import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.game.stage.HudStage;
 import edu.cornell.gdiac.util.ScreenListener;
@@ -442,8 +440,8 @@ public class GameController implements Screen {
         // A couple naming conventions: use hyphens, affix animation sprites with "-anim".
         String[] names = {
                 // CAT
-//                "cat", "walk-anim", "jump", "jump-anim", "sit", "idle-sit-anim", "idle-stand-anim", "meow-anim",
-//                "trans-anim","climb-anim","corpse", "corpse2", "corpse3","corpse-burnt","trans2-anim","jump-mid",
+                "cat", "walk-anim", "jump", "jump-anim", "sit", "idle-sit-anim", "idle-stand-anim", "meow-anim",
+                "trans-anim","climb-anim","corpse", "corpse2", "corpse3","corpse-burnt","trans2-anim","jump-mid",
                 // SPIKES
                 "spikes",
                 // BUTTONS & SWITCHES
@@ -471,23 +469,10 @@ public class GameController implements Screen {
                 // DECOR
                 "tutorial-burn", "tutorial-camera", "tutorial-checkpoint", "tutorial-dash", "tutorial-pause",
                 "tutorial-spike", "tutorial-switch", "tutorial-walk-jump"
-                }; // Unsure if this is actually being used
-        String[] cat =  {"cat", "walk-anim"};
-        TexturePacker.Settings settings = new TexturePacker.Settings();
-        settings.maxWidth = 16384;
-        settings.maxHeight = 2048;
-        TexturePacker.process(settings, "cat", "packed", "atlas");
-        AssetManager assetManager = new AssetManager();
-        assetManager.load("packed/atlas.atlas", TextureAtlas.class);
-        assetManager.finishLoading();
-        TextureAtlas textureAtlas = assetManager.get("packed/atlas.atlas", TextureAtlas.class);
-        for (String n : cat){
-            textureRegionAssetMap.put(n, textureAtlas.findRegion(n));
-        }
+        }; // Unsure if this is actually being used
         for (String n : names){
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
         }
-
 
         names = new String[]{"jump", "dash", "metal-landing", "meow"};
         audioController.createSoundEffectMap(directory, names);
@@ -517,7 +502,7 @@ public class GameController implements Screen {
 
 //		InputController.getInstance().writeTo("debug-input/recent.txt");
 //		InputController.getInstance().readFrom("debug-input/recent.txt");
-    }
+}
 
     /**
      * Handles respawning the cat after their death

@@ -41,6 +41,7 @@ public abstract class Activator extends PolygonObstacle {
     private boolean pan;
     /** If pressing this activator for the first time should pan the camera */
     private boolean shouldPan;
+    private Color color = new Color();
 
     /**
      * @return true if the activator is currently activating
@@ -77,10 +78,10 @@ public abstract class Activator extends PolygonObstacle {
      * @param scale          Draw scale for drawing
      * @param textureScale   Texture scale for rescaling texture
      */
-    public Activator(ObjectMap<String, Object> properties, String texture_name, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
+    public Activator(ObjectMap<String, Object> properties, String texture_name, String base_name, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
         super(objectConstants.get("body_shape").asFloatArray());
         topTexture = tMap.get(texture_name).getTexture();
-        bottomTexture = tMap.get("button-base");
+        bottomTexture = tMap.get(base_name);
         setTexture(bottomTexture);
         setTextureScale(textureScale);
         spriteFrames = TextureRegion.split(tMap.get(texture_name).getTexture(), 2048,2048);
@@ -96,6 +97,7 @@ public abstract class Activator extends PolygonObstacle {
         id = (String) properties.get("id");
         setX((float) properties.get("x")+objectConstants.get("offset").getFloat(0));
         setY((float) properties.get("y")+objectConstants.get("offset").getFloat(1));
+        color.set((Color) properties.get("color", Color.RED));
         pan = (boolean) properties.get("shouldPan", false);
         active = false;
     }
@@ -114,7 +116,7 @@ public abstract class Activator extends PolygonObstacle {
             currentFrame = animation.getKeyFrame(animationTime);
         }
         float x = getX()*drawScale.x-currentFrame.getRegionWidth()/drawScale.x/4;
-        canvas.draw(currentFrame, Color.WHITE, origin.x, origin.y, x, getY()*drawScale.y, 0, 1f/drawScale.x, 1f/drawScale.y);
+        canvas.draw(currentFrame, color, origin.x, origin.y, x, getY()*drawScale.y, 0, 1f/drawScale.x, 1f/drawScale.y);
         canvas.draw(bottomTexture, Color.WHITE, origin.x, origin.y, x, (getY())*drawScale.y, 0, 1f/drawScale.x, 1f/drawScale.y);
     }
 

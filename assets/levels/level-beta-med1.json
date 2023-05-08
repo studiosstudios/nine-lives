@@ -592,40 +592,6 @@
                 {
                  "gid":1,
                  "height":1024,
-                 "id":20,
-                 "name":"",
-                 "properties":[
-                        {
-                         "name":"color",
-                         "type":"string",
-                         "value":""
-                        }, 
-                        {
-                         "name":"id",
-                         "type":"string",
-                         "value":"button1"
-                        }, 
-                        {
-                         "name":"shouldPan",
-                         "type":"bool",
-                         "value":false
-                        }, 
-                        {
-                         "name":"type",
-                         "propertytype":"activators",
-                         "type":"string",
-                         "value":"button"
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":1024,
-                 "x":6144,
-                 "y":3072
-                }, 
-                {
-                 "gid":1,
-                 "height":1024,
                  "id":33,
                  "name":"",
                  "properties":[
@@ -678,16 +644,22 @@
                  "y":3072
                 }, 
                 {
-                 "ellipse":true,
-                 "height":0,
-                 "id":86,
+                 "gid":1,
+                 "height":1024,
+                 "id":89,
                  "name":"",
+                 "properties":[
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"button1"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":0,
-                 "x":15360,
-                 "y":-14336
+                 "width":1024,
+                 "x":6144,
+                 "y":3072
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -819,69 +791,6 @@
                  "width":9216,
                  "x":35840,
                  "y":15360
-                }],
-         "opacity":1,
-         "type":"objectgroup",
-         "visible":true,
-         "x":0,
-         "y":0
-        }, 
-        {
-         "draworder":"topdown",
-         "id":19,
-         "name":"cameraRegions",
-         "objects":[
-                {
-                 "height":19456,
-                 "id":87,
-                 "name":"cameraRegion1",
-                 "properties":[
-                        {
-                         "name":"bHeight",
-                         "type":"float",
-                         "value":0
-                        }, 
-                        {
-                         "name":"bWidth",
-                         "type":"float",
-                         "value":0
-                        }, 
-                        {
-                         "name":"bX",
-                         "type":"float",
-                         "value":0
-                        }, 
-                        {
-                         "name":"bY",
-                         "type":"float",
-                         "value":0
-                        }, 
-                        {
-                         "name":"isZoomRelative",
-                         "type":"bool",
-                         "value":false
-                        }, 
-                        {
-                         "name":"shouldSnap",
-                         "type":"bool",
-                         "value":false
-                        }, 
-                        {
-                         "name":"snapCollisionArea",
-                         "type":"bool",
-                         "value":false
-                        }, 
-                        {
-                         "name":"zoom",
-                         "type":"float",
-                         "value":0.8
-                        }],
-                 "rotation":0,
-                 "type":"CameraRegion",
-                 "visible":true,
-                 "width":10240,
-                 "x":34816,
-                 "y":0
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1127,8 +1036,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":20,
- "nextobjectid":92,
+ "nextlayerid":19,
+ "nextobjectid":91,
  "orientation":"orthogonal",
  "properties":[
         {
@@ -1143,7 +1052,7 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"Cornell_2022-2023\/GameDev\/nl-level-editor\/objects\/objects.tsx"
+         "source":"..\/..\/level-editor\/objects\/objects.tsx"
         }, 
         {
          "firstgid":9,
@@ -1151,11 +1060,11 @@
         }, 
         {
          "firstgid":14,
-         "source":"Cornell_2022-2023\/GameDev\/nl-level-editor\/tilesets\/metal-walls.tsx"
+         "source":"..\/..\/level-editor\/tilesets\/metal-walls.tsx"
         }, 
         {
          "firstgid":62,
-         "source":"Cornell_2022-2023\/GameDev\/nl-level-editor\/tilesets\/climbables.tsx"
+         "source":"..\/..\/level-editor\/tilesets\/climbables.tsx"
         }],
  "tilewidth":1024,
  "type":"map",

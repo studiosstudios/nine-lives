@@ -47,7 +47,7 @@ public class Level {
     /** Tiles of level */
     protected Tiles tiles;
     /** Climbables of level */
-    protected Climbable climbables;
+    protected Tiles climbables;
     /** All the objects in the world. */
     protected PooledList<Obstacle> objects  = new PooledList<>();
     /** Queue for adding objects */
@@ -545,7 +545,7 @@ public class Level {
         tiles = new Tiles(tileData, 1024, levelWidth, levelHeight, tileset, bounds, fID, new Vector2(1/32f, 1/32f));
 
         if (climbableData != null) {
-            climbables = new Climbable(climbableData, 1024, levelWidth, levelHeight,
+            climbables = new Tiles(climbableData, 1024, levelWidth, levelHeight,
                     textureRegionAssetMap.get("climbable-tileset"), bounds, fID_climbable, new Vector2(1/32f, 1/32f));
         }
 
@@ -600,6 +600,8 @@ public class Level {
                 populateBoxes(obstacleData, tileSize, levelHeight);
             } else if (name.equals("mirrors")) {
                 populateMirrors(obstacleData, tileSize, levelHeight);
+            } else if (name.equals("lights")) {
+                populateLights(obstacleData, tileSize, levelHeight);
             } else if (name.equals("cat")) {
                 populateCat(obstacleData, tileSize, levelHeight, populateCat);
             } else if (name.equals("exits")) {
@@ -840,6 +842,16 @@ public class Level {
             readProperties(objJV, tileSize, levelHeight);
             Mirror mirror = new Mirror(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
             addObject(mirror);
+        }
+    }
+
+    private void populateLights(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        textureScaleCache.set(1/32f, 1/32f);
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize, levelHeight);
+            NoveLight light = new NoveLight(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
+            loadTiledActivatable(light);
         }
     }
 
@@ -1259,8 +1271,11 @@ public class Level {
         textureScaleCache.set(1/34f, 1/34f);
         double rand = Math.random();
         DeadBody deadBody;
-        if(rand <0.5){
+        if(rand <0.33){
             deadBody = new DeadBody(textureRegionAssetMap.get("corpse2"),textureRegionAssetMap.get("corpse-burnt"), scale, cat.getPosition(), textureScaleCache);
+        }
+        else if(rand < 0.66){
+            deadBody = new DeadBody(textureRegionAssetMap.get("corpse3"),textureRegionAssetMap.get("corpse-burnt"), scale, cat.getPosition(), textureScaleCache);
         }
         else{
             deadBody = new DeadBody(textureRegionAssetMap.get("corpse"),textureRegionAssetMap.get("corpse-burnt"), scale, cat.getPosition(), textureScaleCache);

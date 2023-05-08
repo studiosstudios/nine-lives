@@ -469,10 +469,11 @@ public class GameController implements Screen {
                 "bg-lab",
                 // DECOR
                 "tutorial-burn", "tutorial-camera", "tutorial-checkpoint", "tutorial-dash", "tutorial-pause",
-                "tutorial-spike", "tutorial-switch", "tutorial-walk-jump",
+                "tutorial-spike", "tutorial-switch", "tutorial-walk-jump", "tutorial-jump-dash",
                 "cat-vinci", "shelf"
                 }; // Unsure if this is actually being used
         for (String n : names){
+            System.out.println(n);
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
         }
 

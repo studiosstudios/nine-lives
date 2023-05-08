@@ -29,7 +29,7 @@
   <image width="1024" height="2048" source="tutorial-jump-dash.png"/>
  </tile>
  <tile id="16">
-  <image width="2048" height="2048" source="cat_vinci.PNG"/>
+  <image width="2048" height="2048" source="cat-vinci.png"/>
  </tile>
  <tile id="17">
   <image width="2048" height="1024" source="shelf.png"/>

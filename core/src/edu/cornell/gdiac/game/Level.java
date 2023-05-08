@@ -50,6 +50,8 @@ public class Level {
     protected Tiles climbables;
     /** Windows of level */
     protected  Tiles windows;
+    /** Leaves of level */
+    protected  Tiles leaves;
     /** All the objects in the world. */
     protected PooledList<Obstacle> objects  = new PooledList<>();
     /** Queue for adding objects */
@@ -492,6 +494,7 @@ public class Level {
         }
         JsonValue climbableData = null;
         JsonValue windowData = null;
+        JsonValue leafData = null;
 
         tileSize = tiledMap.getInt("tilewidth");
         int levelWidth = tiledMap.getInt("width");
@@ -512,6 +515,9 @@ public class Level {
             else if (layer.getString("name").equals("windows")) {
                 windowData = layer;
             }
+            else if (layer.getString("name").equals("forestLeaves")) {
+                leafData = layer;
+            }
         }
         if (next != null) {
             if (next) {
@@ -530,6 +536,7 @@ public class Level {
         int fID = 1;
         int fID_climbable = 1;
         int fID_window = 1;
+        int fID_leaves = 1;
         if (biome.equals("metal")) {
             tileset = textureRegionAssetMap.get("metal-tileset");
             for (JsonValue tilesetData : tiledMap.get("tilesets")){
@@ -541,6 +548,9 @@ public class Level {
                 }
                 else if (tilesetData.getString("source").endsWith("windows.tsx")){
                     fID_window = tilesetData.getInt("firstgid");
+                }
+                else if (tilesetData.getString("source").endsWith("forestLeaves.tsx")){
+                    fID_leaves = tilesetData.getInt("firstgid");
                 }
             }
         }
@@ -557,6 +567,9 @@ public class Level {
                 else if (tilesetData.getString("source").endsWith("windows.tsx")){
                     fID_climbable = tilesetData.getInt("firstgid");
                 }
+                else if (tilesetData.getString("source").endsWith("forestLeaves.tsx")){
+                    fID_leaves = tilesetData.getInt("firstgid");
+                }
             }
         }
 
@@ -571,6 +584,11 @@ public class Level {
         if (windowData != null) {
             windows = new Tiles(windowData, 1024, levelWidth, levelHeight,
                     textureRegionAssetMap.get("windows-tileset"), bounds, fID_window, new Vector2(1/32f, 1/32f));
+        }
+
+        if (leafData != null) {
+            leaves = new Tiles(leafData, 1024, levelWidth, levelHeight,
+                    textureRegionAssetMap.get("forestLeaves-tileset"), bounds, fID_leaves, new Vector2(1/32f, 1/32f));
         }
 
         //make joints
@@ -1061,6 +1079,7 @@ public class Level {
         currCheckpoint = null;
         climbables = null;
         windows = null;
+        leaves = null;
         goal = null;
         setComplete(false);
         setFailure(false);
@@ -1269,6 +1288,10 @@ public class Level {
 
         if (windows != null) {
             windows.draw(canvas);
+        }
+
+        if (leaves != null) {
+            leaves.draw(canvas);
         }
     }
 

@@ -462,7 +462,7 @@ public class GameController implements Screen {
                 // ACTIVATABLE LIGHTS
                 "ceiling-light", "wall-light",
                 // TILESETS
-                "metal-tileset", "climbable-tileset", "steel", "windows-tileset",
+                "metal-tileset", "climbable-tileset", "steel", "windows-tileset", "forest-tileset",
                 // DOORS & PLATFORMS
                 "door", "platform",
                 // BACKGROUNDS
@@ -473,7 +473,7 @@ public class GameController implements Screen {
                 "cat-vinci", "shelf"
                 }; // Unsure if this is actually being used
         for (String n : names){
-            System.out.println(n);
+//            System.out.println(n);
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
         }
 

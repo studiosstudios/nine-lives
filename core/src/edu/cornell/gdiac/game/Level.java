@@ -541,9 +541,9 @@ public class Level {
         }
         else if (biome.equals("forest")) {
             // TODO: change this in future
-            tileset = textureRegionAssetMap.get("metal-tileset");
+            tileset = textureRegionAssetMap.get("forest-tileset");
             for (JsonValue tilesetData : tiledMap.get("tilesets")){
-                if (tilesetData.getString("source").endsWith("metal-walls.tsx")){
+                if (tilesetData.getString("source").endsWith("forest-walls.tsx")){
                     fID = tilesetData.getInt("firstgid");
                 }
                 else if (tilesetData.getString("source").endsWith("climbables.tsx")){
@@ -1220,7 +1220,9 @@ public class Level {
             }
         }
 
-        if (tiles != null) tiles.draw(canvas);
+        if (biome != null && biome.equals("metal")) {
+            if (tiles != null) tiles.draw(canvas);
+        }
 
         if (climbables != null) climbables.draw(canvas);
 
@@ -1253,6 +1255,10 @@ public class Level {
 
         if (goal != null) {
             goal.draw(canvas);
+        }
+
+        if (biome != null && biome.equals("forest")) {
+            if (tiles != null) tiles.draw(canvas);
         }
 
         if (windows != null) {

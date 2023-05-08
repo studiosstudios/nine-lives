@@ -440,13 +440,15 @@ ef	 * <br><br>
 
 	public void beginFrameBuffer(){
 		begin();
+		HdpiUtils.setMode(HdpiMode.Pixels);
 		frameBuffer.begin();
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	}
 
 	public void endFrameBuffer() {
 		spriteBatch.flush();
-		frameBuffer.end(viewport.getScreenX(), viewport.getScreenY(), viewport.getScreenWidth(), viewport.getScreenHeight());
+		frameBuffer.end();
+		HdpiUtils.setMode(HdpiMode.Logical);
         spriteBatch.setColor(Color.WHITE);
 		spriteBatch.setProjectionMatrix(IDENTITY);
 		spriteBatch.draw(frameBuffer.getColorBufferTexture(), -1, -1, 2f, 2f, 0, 0, width, height, false, true);

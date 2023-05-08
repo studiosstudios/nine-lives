@@ -75,12 +75,12 @@
                 {
                     "name": "bHeight",
                     "type": "float",
-                    "value": 0
+                    "value": 32
                 },
                 {
                     "name": "bWidth",
                     "type": "float",
-                    "value": 0
+                    "value": 18
                 },
                 {
                     "name": "bX",
@@ -105,7 +105,7 @@
                 {
                     "name": "snapCollisionArea",
                     "type": "bool",
-                    "value": false
+                    "value": true
                 },
                 {
                     "name": "zoom",

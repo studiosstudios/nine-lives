@@ -135,10 +135,6 @@ public class Cat extends CapsuleObstacle implements Movable {
 
     private boolean climbingPressed;
 
-    /**
-     * Whether we are climbing on a wall
-     */
-    private boolean isClimbing;
 
     private int dashTimer = 0;
     private final Vector2 dashCache = new Vector2();
@@ -403,8 +399,8 @@ public class Cat extends CapsuleObstacle implements Movable {
      *
      * @return Whether the cat is currently climbing
      */
-    public boolean getIsClimbing() {
-        return isClimbing;
+    public boolean isClimbing() {
+        return state == State.CLIMBING;
     }
 
     /*
@@ -713,6 +709,10 @@ public class Cat extends CapsuleObstacle implements Movable {
         return sensorFixture;
     }
 
+    /**
+     * Creates PointLight for Cat with soft and xray true
+     * @param rayHandler Ray Handler associated with the currently active box2d world
+     */
     public void createLight(RayHandler rayHandler) {
         createPointLight(objectConstants.get("light"), rayHandler);
         getLight().attachToBody(getBody());
@@ -782,6 +782,11 @@ public class Cat extends CapsuleObstacle implements Movable {
                 if (!isWalled() || !climbingPressed) {
                     state = State.MOVING;
                     setGravityScale(2f);
+                    if (verticalMovement == 0) {
+                        // Push Cali off the wall slightly to prevent her from sticking. The vertical movement check is important
+                        // to allow the player to naturally jump off the top of a wall.
+                        setRelativeVY(getDirectionFactor());
+                    }
                     return;
                 }
                 else if (jumpPressed) {
@@ -870,8 +875,8 @@ public class Cat extends CapsuleObstacle implements Movable {
      * combination of keys held down - and stores it in <code>dashCache</code>.
      */
     private void calculateDashVector() {
-        float horizontalForce = horizontalMovement / 1.8f;
-        float verticalForce = verticalMovement / 1.8f;
+        float horizontalForce = horizontalMovement / 1.7f;
+        float verticalForce = verticalMovement / 1.7f;
         if (horizontalMovement == 0 && verticalMovement == 0) {
             // If the player dashes without holding any keys, we increase the force of the dash.
             // Otherwise, the dash itself 'feels' too short.
@@ -917,16 +922,18 @@ public class Cat extends CapsuleObstacle implements Movable {
 
         float directionFactor = getDirectionFactor();
         float x = getTextureCenterX();
-        float y = getTextureCenterY();
+        float y = getTextureCenterY() + 3; // Slight offset to prevent Cali from being in the ground
+
+        if (isClimbing()) y = y - 10;
 
         if (failedSwitchTicks < FAILED_SWITCH_TICKS){
             float xOffset = ((float) (Math.sin(-failedSwitchTicks /2) * Math.exp(-failedSwitchTicks
                     /30)))*drawScale.x/2;
             failColor.a = 0.5f - Math.abs(failedSwitchTicks-FAILED_SWITCH_TICKS/2)/ FAILED_SWITCH_TICKS;
-            canvas.draw(currentFrame, failColor, origin.x, origin.y, x + xOffset, y+3, 0, directionFactor/drawScale.x, 1f/drawScale.y);
+            canvas.draw(currentFrame, failColor, origin.x, origin.y, x + xOffset, y, 0, directionFactor/drawScale.x, 1f/drawScale.y);
         }
 
-        canvas.draw(currentFrame, Color.WHITE, origin.x, origin.y, x, y+3, 0, directionFactor/drawScale.x, 1f/drawScale.y);
+        canvas.draw(currentFrame, Color.WHITE, origin.x, origin.y, x, y, 0, directionFactor/drawScale.x, 1f/drawScale.y);
     }
 
     /**
@@ -976,7 +983,7 @@ public class Cat extends CapsuleObstacle implements Movable {
             }
         }
         // SITTING
-        else if (state == State.MOVING && horizontalMovement == 0 && verticalMovement == 0) {
+        else if (state == State.MOVING && horizontalMovement == 0 && !isClimbing()) {
             fallTime += delta;
             if(!transAnimation2.isAnimationFinished(fallTime)){
                 currentFrame = transAnimation2.getKeyFrame(fallTime);

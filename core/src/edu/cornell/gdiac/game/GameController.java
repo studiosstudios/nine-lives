@@ -129,6 +129,7 @@ public class GameController implements Screen {
     public AudioController audioController;
     /** only not null if quick launched from Tiled */
     private JsonValue quickLaunchLevel;
+    private boolean LIGHTS_ACTIVE = false;
 
     private Color spiritModeColor = new Color(1, 1, 1, 1);
 
@@ -269,6 +270,7 @@ public class GameController implements Screen {
         Spikes.setConstants(constants.get("spikes"));
         Activator.setConstants(constants.get("activators"));
         Laser.setConstants(constants.get("lasers"));
+        NoveLight.setConstants(constants.get("lights"));
         Checkpoint.setConstants(constants.get("checkpoint"));
         Mirror.setConstants(constants.get("mirrors"));
         Wall.setConstants(constants.get("walls"));
@@ -463,6 +465,8 @@ public class GameController implements Screen {
                 "robot", "robot-anim",
                 // SPIRIT BOUNDARIES
                 "spirit-anim", "spirit-photon", "spirit-photon-cat", "spirit-region",
+                // ACTIVATABLE LIGHTS
+                "ceiling-light", "wall-light",
                 // TILESETS
                 "metal-tileset", "climbable-tileset", "steel",
                 // DOORS & PLATFORMS
@@ -547,8 +551,10 @@ public class GameController implements Screen {
         if (rayHandler != null) {
             rayHandler.dispose();
         }
+        RayHandler.useDiffuseLight(true);
         rayHandler = new RayHandler(world);
-        rayHandler.setAmbientLight(0.8f);
+        rayHandler.setAmbientLight(0.9f);
+//        rayHandler.setShadows(true);
 
         justRespawned = true;
         justReset = true;
@@ -890,10 +896,13 @@ public class GameController implements Screen {
         draw(delta);
 
         // box2dlights draw
-        updateRayHandlerCombinedMatrix();
-        rayHandler.updateAndRender();
+        if (LIGHTS_ACTIVE) {
+            updateRayHandlerCombinedMatrix();
+            rayHandler.updateAndRender();
+        }
 
-        // Pause menu draw
+        // Menu draw
+        hud.draw();
         if (paused && stageController != null) { stageController.render(delta); }
     }
 
@@ -1004,7 +1013,6 @@ public class GameController implements Screen {
         canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2f, canvas.getCamera().getY()  - canvas.getHeight()/2f, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
 
         canvas.end();
-        hud.draw();
 
         if (debug) {
             canvas.beginDebug();

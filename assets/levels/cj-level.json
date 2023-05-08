@@ -62,41 +62,7 @@
          "draworder":"topdown",
          "id":19,
          "name":"cameraRegions",
-         "objects":[
-                {
-                 "height":17408,
-                 "id":64,
-                 "name":"",
-                 "properties":[
-                        {
-                         "name":"zoom",
-                         "type":"float",
-                         "value":0.8
-                        }],
-                 "rotation":0,
-                 "type":"CameraRegion",
-                 "visible":true,
-                 "width":14336,
-                 "x":0,
-                 "y":0
-                }, 
-                {
-                 "height":17408,
-                 "id":65,
-                 "name":"",
-                 "properties":[
-                        {
-                         "name":"zoom",
-                         "type":"float",
-                         "value":0.6
-                        }],
-                 "rotation":0,
-                 "type":"CameraRegion",
-                 "visible":true,
-                 "width":15360,
-                 "x":14336,
-                 "y":0
-                }],
+         "objects":[],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,

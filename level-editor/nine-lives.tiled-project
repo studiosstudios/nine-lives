@@ -15,8 +15,8 @@
             "members": [
                 {
                     "name": "color",
-                    "type": "string",
-                    "value": ""
+                    "type": "color",
+                    "value": "#ffff0000"
                 },
                 {
                     "name": "id",
@@ -51,7 +51,8 @@
             "values": [
                 "button",
                 "switch",
-                "timed switch"
+                "timed switch",
+                ""
             ],
             "valuesAsFlags": false
         },
@@ -74,12 +75,12 @@
                 {
                     "name": "bHeight",
                     "type": "float",
-                    "value": 0
+                    "value": 32
                 },
                 {
                     "name": "bWidth",
                     "type": "float",
-                    "value": 0
+                    "value": 18
                 },
                 {
                     "name": "bX",
@@ -104,7 +105,7 @@
                 {
                     "name": "snapCollisionArea",
                     "type": "bool",
-                    "value": false
+                    "value": true
                 },
                 {
                     "name": "zoom",
@@ -257,46 +258,6 @@
                 "property",
                 "object",
                 "tile"
-            ]
-        },
-        {
-            "id": 21,
-            "name": "light",
-            "storageType": "string",
-            "type": "enum",
-            "values": [
-                "ceiling",
-                "wall"
-            ],
-            "valuesAsFlags": false
-        },
-        {
-            "color": "#ffa0a0a4",
-            "drawFill": true,
-            "id": 20,
-            "members": [
-                {
-                    "name": "activatorID",
-                    "type": "string",
-                    "value": ""
-                },
-                {
-                    "name": "active",
-                    "type": "bool",
-                    "value": false
-                },
-                {
-                    "name": "type",
-                    "propertyType": "light",
-                    "type": "string",
-                    "value": "ceiling"
-                }
-            ],
-            "name": "Light",
-            "type": "class",
-            "useAs": [
-                "property",
-                "object"
             ]
         },
         {

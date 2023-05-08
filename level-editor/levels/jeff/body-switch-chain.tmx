@@ -6,9 +6,9 @@
  <properties>
   <property name="biome" propertytype="biome" value="metal"/>
  </properties>
- <tileset firstgid="1" source="../objects/objects.tsx"/>
+ <tileset firstgid="1" source="../../objects/objects.tsx"/>
  <tileset firstgid="9" source=":/automap-tiles.tsx"/>
- <tileset firstgid="14" source="../tilesets/metal-walls.tsx"/>
+ <tileset firstgid="14" source="../../tilesets/metal-walls.tsx"/>
  <layer id="17" name="metalWalls" width="48" height="21">
   <data encoding="csv">
 27,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,29,

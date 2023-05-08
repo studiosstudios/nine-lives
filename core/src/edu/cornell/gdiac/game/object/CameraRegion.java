@@ -37,7 +37,7 @@ public class CameraRegion extends BoxObstacle {
      */
     public CameraRegion(ObjectMap<String, Object> properties, Vector2 scale, Rectangle bounds){
         super((float)properties.get("width"), (float)properties.get("height"));
-        zoom = (float) properties.get("zoom");
+        zoom = (float) properties.get("zoom", 0.6f);
         setBodyType(BodyDef.BodyType.StaticBody); //lmao
         setSensor(true);
         setDrawScale(scale);
@@ -50,7 +50,7 @@ public class CameraRegion extends BoxObstacle {
             snapBounds = this.getBounds();
         }
         else{
-            snapBounds = new Rectangle((float) properties.get("bX", 0.) + bounds.x, (float) properties.get("bY", 0.) + bounds.y, (float) properties.get("bWidth", 0.), (float) properties.get("bHeight", 0.));
+            snapBounds = new Rectangle((float) properties.get("bX", 0f) + bounds.x, (float) properties.get("bY", 0f) + bounds.y, (float) properties.get("bWidth", 18f), (float) properties.get("bHeight", 32f));
         }
         float expectedWidth = snapBounds.getWidth() * zoom;
         float expectedHeight = snapBounds.getHeight() * zoom;

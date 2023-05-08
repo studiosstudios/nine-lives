@@ -113,7 +113,7 @@ public class GameController implements Screen {
     /** Whether level was just reset (matters for respawn behavior) **/
     private boolean justReset;
     final float RESPAWN_DELAY = 60f; //about 17ms per RESPAWN_DELAY unit (holds 1 second-0.5s on dead body, 0.5s on respawned cat)
-    /** The background texture */
+    /** The lab background texture */
     private Texture background;
     /** Ticks since the player has undone */
     private float undoTime;
@@ -462,16 +462,18 @@ public class GameController implements Screen {
                 // ACTIVATABLE LIGHTS
                 "ceiling-light", "wall-light",
                 // TILESETS
-                "metal-tileset", "climbable-tileset", "steel",
+                "metal-tileset", "climbable-tileset", "steel", "windows-tileset", "forest-tileset", "forestLeaves-tileset",
                 // DOORS & PLATFORMS
                 "door", "platform",
                 // BACKGROUNDS
-                "bg-lab",
+                "bg-lab", "bg-forest",
                 // DECOR
                 "tutorial-burn", "tutorial-camera", "tutorial-checkpoint", "tutorial-dash", "tutorial-pause",
-                "tutorial-spike", "tutorial-switch", "tutorial-walk-jump"
+                "tutorial-spike", "tutorial-switch", "tutorial-walk-jump", "tutorial-jump-dash",
+                "cat-vinci", "shelf"
                 }; // Unsure if this is actually being used
         for (String n : names){
+//            System.out.println(n);
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
         }
 
@@ -950,6 +952,11 @@ public class GameController implements Screen {
 
         canvas.begin();
         canvas.applyViewport(false);
+        if (currLevel.getBiome() != null && currLevel.getBiome().equals("metal")) {
+            background = textureRegionAssetMap.get("bg-lab").getTexture();
+        } else {
+            background = textureRegionAssetMap.get("bg-forest").getTexture();
+        }
         canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight());
         if (true) { //TODO: only draw when necessary
             prevLevel.draw(canvas, false);

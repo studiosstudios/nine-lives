@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.10.1" name="decor" tilewidth="2048" tileheight="1024" tilecount="8" columns="0">
+<tileset version="1.10" tiledversion="1.10.1" name="decor" tilewidth="2048" tileheight="2048" tilecount="11" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="8">
   <image width="1024" height="1024" source="tutorial-burn.png"/>
@@ -24,5 +24,14 @@
  </tile>
  <tile id="15">
   <image width="2048" height="1024" source="tutorial-walk-jump.png"/>
+ </tile>
+ <tile id="18">
+  <image width="1024" height="2048" source="tutorial-jump-dash.png"/>
+ </tile>
+ <tile id="16">
+  <image width="2048" height="2048" source="cat-vinci.png"/>
+ </tile>
+ <tile id="17">
+  <image width="2048" height="1024" source="shelf.png"/>
  </tile>
 </tileset>

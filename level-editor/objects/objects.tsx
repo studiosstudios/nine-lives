@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.10.1" name="objects" tilewidth="3072" tileheight="2048" tilecount="9" columns="0" objectalignment="topleft">
+<tileset version="1.10" tiledversion="1.10.1" name="objects" tilewidth="3072" tileheight="2048" tilecount="10" columns="0" objectalignment="topleft">
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="0" type="Activator">
   <image width="1024" height="1024" source="button.png"/>
@@ -27,5 +27,8 @@
  </tile>
  <tile id="8">
   <image width="3072" height="1024" source="ceiling-light.png"/>
+ </tile>
+ <tile id="10">
+  <image width="1024" height="1024" source="wall-light.png"/>
  </tile>
 </tileset>

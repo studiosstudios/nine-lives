@@ -63,16 +63,18 @@
     "ceiling": {
       "offset": [1.5, -0.5],
       "light": {
-        "offset": [0, -2],
+        "offset": [0, -3],
         "distance": 15,
-        "color": "#ffffffff"
+        "color": "#ffffffff",
+        "directionDegree": 270,
+        "coneDegree": 90
       }
     },
     "wall": {
       "offset": [0.5, -0.5],
       "light": {
         "offset": [0, 0],
-        "distance": 10,
+        "distance": 7,
         "color": "#ffffffff"
       }
     }

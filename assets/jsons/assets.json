@@ -54,6 +54,7 @@
       "climbable-tileset": "world/platforms/climbable-tileset.png",
       "steel": "obstacles/shared/steel.png",
       "ceiling-light": "obstacles/lights/ceiling-light.png",
+      "wall-light": "obstacles/lights/wall-light.png",
       "bg-lab": "world/backgrounds/bg-lab.png"
     },
     "jsons"  : {

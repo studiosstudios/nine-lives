@@ -454,7 +454,7 @@ public class GameController implements Screen {
                 // SPIRIT BOUNDARIES
                 "spirit-anim", "spirit-photon", "spirit-photon-cat", "spirit-region",
                 // ACTIVATABLE LIGHTS
-                "ceiling-light",
+                "ceiling-light", "wall-light",
                 // TILESETS
                 "metal-tileset", "climbable-tileset", "steel",
                 // DOORS & PLATFORMS
@@ -535,7 +535,6 @@ public class GameController implements Screen {
         RayHandler.useDiffuseLight(true);
         rayHandler = new RayHandler(world);
         rayHandler.setAmbientLight(0.9f);
-//        rayHandler.useDiffuseLight(true);
 //        rayHandler.setShadows(true);
 
         justRespawned = true;

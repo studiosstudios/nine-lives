@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
@@ -56,19 +57,32 @@ public class NoveLight extends BoxObstacle implements Activatable {
         initTiledActivations(properties);
     }
 
+    public boolean activatePhysics(World world) {
+        if (!super.activatePhysics(world)) {
+            return false;
+        }
+
+
+        for (Fixture f : getBody().getFixtureList()) {
+            f.setSensor(true);
+        }
+        return true;
+    }
+
     /**
      * Creates PointLight for with soft and xray true
      * @param rayHandler Ray Handler associated with the currently active box2d world
      */
     public void createLight(RayHandler rayHandler) {
         // I assume that all ceiling lights and all wall lights will look the same, so we draw constants.json.
-        // We can instead draw from the level tiled instead, and can be done if needed
+        // We can instead draw from the level tiled instead, and can be done if needed (for example, if we want certain lights to have different colors)
         JsonValue lightConstants = objectConstants.get(type == LightType.CEILING ? "ceiling" : "wall");
+        // ConeLights don't really look good for the ceiling lights
         createPointLight(lightConstants.get("light"), rayHandler);
         getLight().setSoft(true);
         getLight().setXray(true);
         Vector2 offset = new Vector2(lightConstants.get("offset").getFloat(0),lightConstants.get("offset").getFloat(1));
-        getLight().setPosition(getBody().getPosition().cpy().add(offset));
+        getLight().setPosition(getBody().getPosition().cpy().add(getLight().getPosition()));
     }
 
     @Override

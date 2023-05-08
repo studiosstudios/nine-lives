@@ -142,15 +142,12 @@ public class GameCanvas {
 
 		//shaders
 		ShaderProgram.pedantic =false;
-		System.out.println(spriteBatch.getShader().getFragmentShaderSource());
 		spiritModeShader = new ShaderProgram(spriteBatch.getShader().getVertexShaderSource(),
 				Gdx.files.internal("shaders/portal.frag").readString());
 		greyscaleShader = new ShaderProgram(spriteBatch.getShader().getVertexShaderSource(),
 				Gdx.files.internal("shaders/greyscale.frag").readString());
 
 		frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, (int) STANDARD_WIDTH, (int) STANDARD_HEIGHT, false);
-
-		System.out.println(Gdx.graphics.getDensity());
 
 		setBlendState(BlendState.NO_PREMULT);
 

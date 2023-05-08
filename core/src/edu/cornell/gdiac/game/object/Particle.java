@@ -115,6 +115,23 @@ public class Particle implements Pool.Poolable {
     }
 
     /**
+     * Sets the angle of this particle
+     *
+     * When the angle is set, the particle will change its velocity
+     * to (PARTICLE_SPEED,angle) in polar-coordinates.
+     *
+     * @param angle  the angle of this particle
+     */
+    public void setAngle(float angle, float speed) {
+        this.angle = angle;
+        velocity.set((float)(speed*Math.cos(angle)),
+                (float)(speed*Math.sin(angle)));
+    }
+
+
+
+
+    /**
      * Creates a new (unitialized) Particle.
      *
      * The position and velocity are initially 0.  To initialize

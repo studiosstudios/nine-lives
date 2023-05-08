@@ -29,16 +29,25 @@ public class AudioController {
      * A queue to play level music
      */
     private MusicQueue levelMusic;
+    /** Lab Music */
     private MusicQueue labMusic;
+    /** Forest Music */
     private MusicQueue forestMusic;
     /**
      * A queue to play stage music
      */
     private MusicQueue stageMusic;
+    /** The current biome the player is on for the type of music playing */
     private String currMusic = "";
     private int forestStart = 0;
     private int pos;
+    /** The previous saved volume */
     private float prevVolume = -1;
+    /** The current volume for sound effects */
+    private float sfxVolume;
+    /** The current volume for music */
+    private float musicVolume;
+
 
 
     /**
@@ -82,13 +91,20 @@ public class AudioController {
     public void setVolume(float val) {
         levelMusic.setVolume(val);
         stageMusic.setVolume(val);
-        //TODO: set volume for all sound effects
-//        for (HashMap.Entry<String, Sound> entry : soundAssetMap.entrySet()) {
-//            Sound sound = entry.getValue();
-//            sound.setVolume(val);
-//        }
         prevVolume = val;
+        sfxVolume = val;
+        musicVolume = val;
     }
+
+    /**
+     * Sets the volume for all music and sound effects
+     *
+     * @param val the value to set volume to
+     */
+    public void setSfxVolume(float val) {
+        sfxVolume = val;
+    }
+
 
     public String getCurrMusic() {
         return currMusic;
@@ -195,7 +211,7 @@ public class AudioController {
      */
     public void playSoundEffect(String soundName) {
 //        System.out.println("playing sound " + soundName);
-        levelSoundMap.get(soundName).play(levelMusic.getVolume()*2.5f);
+        levelSoundMap.get(soundName).play(sfxVolume*2.5f);
     }
 
     /**

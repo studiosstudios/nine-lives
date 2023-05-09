@@ -191,6 +191,7 @@ public class AudioController {
      */
     public void playForest() {
         levelMusic.pause();
+//        System.out.println(forestMusic);
         levelMusic = forestMusic;
         currMusic = "forest";
     }

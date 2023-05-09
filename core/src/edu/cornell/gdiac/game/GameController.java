@@ -3,19 +3,12 @@ package edu.cornell.gdiac.game;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.audio.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.audio.AudioEngine;
-import edu.cornell.gdiac.audio.AudioSource;
-import edu.cornell.gdiac.audio.MusicQueue;
-import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.game.object.*;
 
 import edu.cornell.gdiac.game.obstacle.*;
@@ -908,24 +901,6 @@ public class GameController implements Screen {
 //            rayHandler.updateAndRender();
 //        }
 
-        if (!LIGHTS_ACTIVE) {
-            rayHandler.prepareRender();
-
-            FrameBuffer fbo = new FrameBuffer(Pixmap.Format.RGBA8888, canvas.getWidth(), canvas.getHeight(), false);
-            fbo.begin();
-
-            canvas.spriteBatch.begin();
-
-            rayHandler.renderOnly();
-
-            canvas.spriteBatch.end();
-
-            fbo.end();
-
-            canvas.spriteBatch.begin();
-            canvas.spriteBatch.draw(fbo.getColorBufferTexture(), canvas.getWidth(), canvas.getHeight());
-            canvas.spriteBatch.end();
-        }
 
         // Menu draw
         hud.draw();
@@ -1029,16 +1004,25 @@ public class GameController implements Screen {
             nextLevel.draw(canvas, false, vfx, effectSize);
         }
         currLevel.draw(canvas, gameState != GameState.RESPAWN, vfx, effectSize);
+
+        canvas.endFrameBuffer();
+        canvas.drawLightsToBuffer(rayHandler);
         if (vfx) {
             canvas.setSpiritModeShader(1.8f - 0.6f * effectSize, 0.3f,
                     spiritModeColor, spiritModeColor, spiritModeTicks/60f);
         }
-        canvas.endFrameBuffer();
+        if (vfx) { canvas.setGreyscaleShader(effectSize); }
+        canvas.drawFrameBuffer();
         if (vfx) canvas.setShader(null);
 
         canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2f, canvas.getCamera().getY()  - canvas.getHeight()/2f, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
 
         canvas.end();
+//
+//        canvas.drawLightsToBuffer(rayHandler);
+//        canvas.spriteBatch.begin();
+//        canvas.drawLightsFromBuffer();
+//        canvas.spriteBatch.end();
 
         if (debug) {
             canvas.beginDebug();

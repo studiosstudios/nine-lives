@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.game;
 
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
@@ -106,8 +107,9 @@ public class GameCanvas {
 	private final float CAMERA_ZOOM = 0.6f;
 	protected ShaderProgram spiritModeShader;
 	protected ShaderProgram greyscaleShader;
-	private FrameBuffer frameBuffer;
-	private final Matrix4 IDENTITY = new Matrix4().setToOrtho2D(0,0,1,1);
+	private FrameBuffer mainFrameBuffer;
+	private FrameBuffer lightsFrameBuffer;
+	private final Matrix4 FBO_PROJECTION = new Matrix4().setToOrtho2D(0,0,1,1);
 
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
@@ -148,7 +150,8 @@ public class GameCanvas {
 		greyscaleShader = new ShaderProgram(spriteBatch.getShader().getVertexShaderSource(),
 				Gdx.files.internal("shaders/greyscale.frag").readString());
 
-		frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
+		mainFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
+		lightsFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
 
 		setBlendState(BlendState.NO_PREMULT);
 
@@ -164,9 +167,11 @@ public class GameCanvas {
 		spriteBatch.dispose();
 		spriteBatch = null;
 		debugRender.dispose();
-		frameBuffer.dispose();
+		mainFrameBuffer.dispose();
+		lightsFrameBuffer.dispose();
 		debugRender = null;
-		frameBuffer = null;
+		mainFrameBuffer = null;
+		mainFrameBuffer = null;
 		local  = null;
 		global = null;
 		vertex = null;
@@ -329,8 +334,10 @@ ef	 * <br><br>
 		 spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
 
 		 if (getWidth() != 0 && getHeight() != 0) {
-			 frameBuffer.dispose();
-			 frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
+			 mainFrameBuffer.dispose();
+			 mainFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
+			 lightsFrameBuffer.dispose();
+			 lightsFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
 		 }
 
 		 viewport.update(width, height, true);
@@ -438,17 +445,13 @@ ef	 * <br><br>
 
 	public void beginFrameBuffer(){
 		begin();
-		frameBuffer.begin();
+		mainFrameBuffer.begin();
 		ScreenUtils.clear(Color.BLACK);
 	}
 
 	public void endFrameBuffer() {
 		spriteBatch.flush();
-		frameBuffer.end();
-        spriteBatch.setColor(Color.WHITE);
-		spriteBatch.setProjectionMatrix(IDENTITY);
-		spriteBatch.draw(frameBuffer.getColorBufferTexture(), 0, 0, 1, 1, 0, 0, 1, 1);
-		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
+		mainFrameBuffer.end();
 	}
 
 	public void setShader(ShaderProgram shader) { spriteBatch.setShader(shader); }
@@ -501,6 +504,24 @@ ef	 * <br><br>
 	//////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////// DRAWING MODES ///////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////
+
+
+	public void drawLightsToBuffer(RayHandler rayHandler) {
+		spriteBatch.end();
+		rayHandler.prepareRender();
+		mainFrameBuffer.begin();
+		rayHandler.renderOnly();
+		mainFrameBuffer.end();
+		spriteBatch.begin();
+	}
+
+
+	public void drawFrameBuffer() {
+		spriteBatch.setColor(Color.WHITE);
+		spriteBatch.setProjectionMatrix(FBO_PROJECTION);
+		spriteBatch.draw(mainFrameBuffer.getColorBufferTexture(), 0, 0, 1, 1, 0, 0, 1, 1);
+		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
+	}
 
 	/**
 	 * Draws the texture at the given position.

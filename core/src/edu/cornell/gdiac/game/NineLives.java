@@ -127,10 +127,10 @@ public class NineLives extends Game implements ScreenListener {
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
 		if (screen == menu && exitCode == 0) {
-			menu.loadAssets();
+//			menu.loadAssets();
 			startGame(TOTAL_LEVELS, 1);
 		} else if (screen == menu && exitCode == 69) {
-			menu.loadAssets();
+//			menu.loadAssets();
 			startGame(TOTAL_LEVELS, menu.getSelectedLevel());
 		} else if (screen == menu && exitCode == 25) {
 			controller.resume();

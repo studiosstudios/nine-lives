@@ -185,9 +185,10 @@ public class Goal extends BoxObstacle
     public void draw(GameCanvas canvas){
         float scale = 32f/textureSize;
 
+        System.out.println(y*drawScale.y);
         canvas.draw(bottom, Color.WHITE, 0, 0, x*drawScale.x, y*drawScale.y, 0, scale, scale);
-        for (float dy = 0; dy < height; dy+= (height/textureSize)){
-            System.out.println("drawing middle");
+        for (float dy = 0; dy < height; dy += (height/textureSize)){
+//            System.out.println("drawing middle");
 //            if (isActive()) {}
             canvas.draw(middle, Color.WHITE, 0, 0, x*drawScale.x, (y + dy) * drawScale.y, 0, scale, scale);
         }

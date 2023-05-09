@@ -123,7 +123,7 @@ public class GameController implements Screen {
     public AudioController audioController;
     /** only not null if quick launched from Tiled */
     private JsonValue quickLaunchLevel;
-    private boolean LIGHTS_ACTIVE = false;
+    private boolean LIGHTS_ACTIVE = true;
 
     private Color spiritModeColor = new Color(1, 1, 1, 1);
 
@@ -554,10 +554,10 @@ public class GameController implements Screen {
             rayHandler.dispose();
         }
 //        RayHandler.useDiffuseLight(true);
-        RayHandler.useDiffuseLight(false);
+//        RayHandler.useDiffuseLight(false);
 
         rayHandler = new RayHandler(world);
-        rayHandler.setAmbientLight(0.9f);
+        rayHandler.setAmbientLight(0.85f);
 //        rayHandler.setShadows(true);
 
         justRespawned = true;

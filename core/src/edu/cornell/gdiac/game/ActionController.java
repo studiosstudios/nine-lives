@@ -148,6 +148,10 @@ public class ActionController {
             sr.update();
         }
 
+        if (level.getSpiritParticles().size != 0 && level.getdeadBodyArray().size == 0) {
+            moveSpirits();
+        }
+
         if (ic.didSwitch()) {
             //switch body
             DeadBody body = level.getNextBody();
@@ -493,30 +497,44 @@ public class ActionController {
         }
     }
 
+    /**
+     * Main function called when cat reaches goal object.
+     * Spirit particles are spawned at dead bodies and dead bodies are removed.
+     */
     public void recombineLives() {
-        level.resetLives();
-        for (DeadBody body: level.getdeadBodyArray()) {
-            level.removeDeadBody(body);
-            Particle spirit = new Particle();
-            spirit.setX(body.getX());
-            spirit.setY(body.getY());
-            float x = level.getCat().getX() - body.getX();
-            float y = level.getCat().getY() - body.getY();
-            float angle = (float) Math.atan((double)x/(double)y);
-            spirit.setAngle(angle);
-//            level.getSpiritParticles().add(spirit);
+
+        if (level.getSpiritParticles().size == 0) {
+
+            while (level.getdeadBodyArray().size != 0) {
+                for (DeadBody body: level.getdeadBodyArray()) {
+                    Particle spirit = new Particle();
+                    spirit.setX(body.getX());
+                    spirit.setY(body.getY());
+                    level.addSpiritParticle(spirit);
+                    //TODO: smooth remove of dead bodies
+                    level.removeDeadBody(body);
+                }
+            }
         }
-//        moveSpirits();
     }
 
-
+    /**
+     * Moves the spirit particles.
+     * The particles go towards the Cat.
+     *
+     */
     public void moveSpirits() {
-        while (level.getSpiritParticles().size != 0) {
-            System.out.println(level.getSpiritParticles());
+        if (level.getSpiritParticles().size != 0) {
             for (Particle spirit : level.getSpiritParticles()) {
+                float x = level.getCat().getX() - spirit.getX();
+                float y = level.getCat().getY() - spirit.getY();
+                float angle = (float) Math.atan((double)y/(double)x);
+                spirit.setAngle(angle, 0.2f);
                 spirit.move();
-                if (Math.abs(spirit.getX() - level.getCat().getX()) <= 5f) {
+                if (Math.abs(spirit.getX() - level.getCat().getX()) <= 1f &&
+                    Math.abs(spirit.getY() - level.getCat().getY()) <= 1f) {
                     level.getSpiritParticles().removeValue(spirit, true);
+                    level.setNumLives(level.getNumLives() + 1);
                 }
             }
         }

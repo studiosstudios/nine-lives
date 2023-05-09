@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
+import edu.cornell.gdiac.util.Direction;
 
 import java.util.HashMap;
 
@@ -19,11 +20,27 @@ public class Goal extends BoxObstacle
     protected Vector2 origin;
     /** Whether this goal is active or not */
     private boolean active;
+    /** width of the door when fully closed */
+    private final float width;
+    /** height of the door when fully closed */
+    private final float height;
+    /** x position of the door when fully closed */
+    private final float x;
+    /** y position of the door when fully closed */
+    private final float y;
+    private int textureSize;
+    private TextureRegion top;
+
+    private TextureRegion bottom;
+
+    private TextureRegion middle;
+
+    private static float shrink;
     /** The sensor shape for this goal */
     private PolygonShape sensorShape;
     /** The constants for the goal */
     protected static JsonValue objectConstants;
-    private static final String sensorName = "goalSensor";
+    private static final String sensorName = "goalobjsensor";
     /** The texture for the non-active goal */
     private TextureRegion texture;
     /** The texture for the active goal */
@@ -40,22 +57,43 @@ public class Goal extends BoxObstacle
     private Animation<TextureRegion> active_animation;
 
     /**
-     * Creates a new Goal object.
+     * Creates a new Door object.
      *
      * @param properties     String-Object map of properties for this object
      * @param tMap           Texture map for loading textures
      * @param scale          Draw scale for drawing
-     * @param textureScale   Texture scale for rescaling texture
+     * @param textureSize    Size of texture in pixels
      */
-    public Goal(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
+    public Goal(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int textureSize){
+        this((float) properties.get("width"), (float) properties.get("height"),
+                properties, tMap, scale, textureSize);
+    }
 
-        super(32/scale.x, 64/scale.y);
+    /**
+     * Creates a new Door object.
+     *
+     * @param width          Width of the door
+     * @param height         Height of the door
+     * @param properties     String-Object map of properties for this object
+     * @param tMap           Texture map for loading textures
+     * @param scale          Draw scale for drawing
+     * @param textureSize    Size of texture in pixels
+     */
+    public Goal(float width, float height, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int textureSize){
+        super(width, height);
+
+        // Split the texture
+        TextureRegion[][] tiles = tMap.get("goal-active").split(tMap.get("goal-active").getTexture(), textureSize, textureSize);
+        top = tiles[0][2];
+        middle = tiles[0][1];
+        bottom = tiles[0][0];
+
         active = false;
         setTextureScale(textureScale);
         int spriteWidth = 1024;
         int spriteHeight = 2048;
-        this.texture = tMap.get("goal");
-        this.activeTexture = tMap.get("goal");
+//        this.texture = tMap.get("goal");
+//        this.activeTexture = tMap.get("goal");
 //        spriteFrames = TextureRegion.split(tMap.get("checkpoint-anim").getTexture(), spriteWidth, spriteHeight);
 //        activeSpriteFrames = TextureRegion.split(tMap.get("checkpoint-active-anim").getTexture(), spriteWidth, spriteHeight);
 //        float frameDuration = 0.1f;
@@ -69,15 +107,25 @@ public class Goal extends BoxObstacle
         setName("goal");
         setDrawScale(scale);
         setSensor(true);
-        setX((float) properties.get("x") + objectConstants.get("offset").getFloat(0));
-        setY((float) properties.get("y") + objectConstants.get("offset").getFloat(1));
-        setSensor(true);
+        x =(float) properties.get("x") + objectConstants.get("offset").getFloat(0) + width/2f;
+        y = (float) properties.get("y") + objectConstants.get("offset").getFloat(1) - height;
+
+        this.width = width;
+        this.height = height;
+        this.textureSize = textureSize;
+
+        setDimension(width, height);
+        setX(x);
+        setY(y);
+
+//        setX((float) properties.get("x") + objectConstants.get("offset").getFloat(0));
+//        setY((float) properties.get("y") + objectConstants.get("offset").getFloat(1));
+
+//        setSensor(true);
         setBodyType(BodyDef.BodyType.StaticBody);
         Vector2 solidCenter = new Vector2(0,0);
         sensorShape = new PolygonShape();
-        sensorShape.setAsBox(getWidth() / 2 * objectConstants.getFloat("solid_width_scale"),
-                getHeight() / 2 * objectConstants.getFloat("solid_height_scale"),
-                solidCenter, 0.0f);
+        sensorShape.setAsBox(width/2, height, solidCenter, 0.0f);
     }
 
     @Override
@@ -125,34 +173,32 @@ public class Goal extends BoxObstacle
 //        }
 //    }
 
-    /**
-     * @return true if the goal is active
-     */
-    public boolean isActive(){
-        return active;
-    }
-
-    /**
-     * Set whether the goal is active or not
-     * @param val to set active
-     */
-    public void setActive(Boolean val) { active = val; }
-
     @Override
-    public void draw(GameCanvas canvas) {
-        if (active) {
-//           TextureRegion singleFrame = spriteFrames[0][0];
-//           TextureRegion[][] splitTexture = TextureRegion.split(singleFrame.getTexture(), singleFrame.getRegionWidth(), singleFrame.getRegionHeight()/2);
-//           setTexture(splitTexture[1][1]);
-            setTexture(texture);
-        } else {
-//           TextureRegion singleFrame = activeSpriteFrames[0][0];
-//           TextureRegion[][] splitTexture = TextureRegion.split(singleFrame.getTexture(), singleFrame.getRegionWidth(), singleFrame.getRegionHeight()/2);
-//           setTexture(splitTexture[1][1]);
-            setTexture(activeTexture);
+    public void draw(GameCanvas canvas){
+        float scale = 32f/textureSize;
+
+        canvas.draw(bottom, Color.WHITE, 0, 0, (x-0.5f)*drawScale.x, y*drawScale.y, 0, scale, scale);
+        for (float dy = 1; dy < height-1; dy+= 1){
+//            if (isActive()) {}
+            canvas.draw(middle, Color.WHITE, 0, 0, (x-0.5f)*drawScale.x, (y + dy) * drawScale.y, 0, scale, scale);
         }
-        super.draw(canvas);
+        canvas.draw(top, Color.WHITE, 0, 0, (x-0.5f)*drawScale.x, (y + height - 1) * drawScale.y, 0, scale, scale);
+
     }
+//    public void draw(GameCanvas canvas) {
+//        if (active) {
+////           TextureRegion singleFrame = spriteFrames[0][0];
+////           TextureRegion[][] splitTexture = TextureRegion.split(singleFrame.getTexture(), singleFrame.getRegionWidth(), singleFrame.getRegionHeight()/2);
+////           setTexture(splitTexture[1][1]);
+//            setTexture(texture);
+//        } else {
+////           TextureRegion singleFrame = activeSpriteFrames[0][0];
+////           TextureRegion[][] splitTexture = TextureRegion.split(singleFrame.getTexture(), singleFrame.getRegionWidth(), singleFrame.getRegionHeight()/2);
+////           setTexture(splitTexture[1][1]);
+//            setTexture(activeTexture);
+//        }
+//        super.draw(canvas);
+//    }
 
 //    @Override
 //    public void draw(GameCanvas canvas){
@@ -171,13 +217,16 @@ public class Goal extends BoxObstacle
      * Loads json values that specify object properties that remain the same across all levels
      * @param constants Json field corresponding to this object
      */
-    public static void setConstants(JsonValue constants) { objectConstants = constants; }
+    public static void setConstants(JsonValue constants) {
+        objectConstants = constants;
+        shrink = constants.getFloat("shrink");
+    }
 
     public void drawDebug(GameCanvas canvas){
         super.drawDebug(canvas);
-        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
-        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
-        canvas.drawPhysics(sensorShape, Color.RED, getX()-xTranslate, getY()-yTranslate, getAngle(), drawScale.x, drawScale.y);
+//        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+//        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+        canvas.drawPhysics(sensorShape, Color.RED, getX(), getY(), getAngle(), drawScale.x, drawScale.y);
     }
 
     public String getSensorName(){ return sensorName; }

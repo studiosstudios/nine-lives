@@ -117,6 +117,7 @@ public class Goal extends BoxObstacle
 
         this.width = width;
         this.height = height;
+        this.textureSize = textureSize;  // <------------------------  lmao
 
         setDimension(width, height);
         setX(x);
@@ -186,7 +187,7 @@ public class Goal extends BoxObstacle
         float scale = 32f/textureSize;
 
         canvas.draw(bottom, Color.WHITE, 0, 0, x*drawScale.x, y*drawScale.y, 0, scale, scale);
-        for (float dy = 0; dy < height; dy+= (height/textureSize)){
+        for (float dy = 0; dy < height; dy+= 1){
             System.out.println("drawing middle");
 //            if (isActive()) {}
             canvas.draw(middle, Color.WHITE, 0, 0, x*drawScale.x, (y + dy) * drawScale.y, 0, scale, scale);

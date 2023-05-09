@@ -85,6 +85,7 @@ public class Goal extends BoxObstacle
 
         // Split the texture
         TextureRegion[][] tiles = tMap.get("goal").split(tMap.get("goal").getTexture(), textureSize, textureSize);
+        System.out.println(tiles);
         top = tiles[0][1];
         middle = tiles[0][2];
         bottom = tiles[0][0];
@@ -116,9 +117,14 @@ public class Goal extends BoxObstacle
 
         this.width = width;
         this.height = height;
+
         setDimension(width, height);
         setX(x);
         setY(y);
+        System.out.println("x: " + x);
+        System.out.println("y: " + y);
+
+
 
 //        setX((float) properties.get("x") + objectConstants.get("offset").getFloat(0));
 //        setY((float) properties.get("y") + objectConstants.get("offset").getFloat(1));
@@ -181,6 +187,7 @@ public class Goal extends BoxObstacle
 
         canvas.draw(bottom, Color.WHITE, 0, 0, x*drawScale.x, y*drawScale.y, 0, scale, scale);
         for (float dy = 0; dy < height; dy+= (height/textureSize)){
+            System.out.println("drawing middle");
 //            if (isActive()) {}
             canvas.draw(middle, Color.WHITE, 0, 0, x*drawScale.x, (y + dy) * drawScale.y, 0, scale, scale);
         }

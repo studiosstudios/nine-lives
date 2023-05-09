@@ -290,7 +290,18 @@
          "draworder":"topdown",
          "id":20,
          "name":"goal",
-         "objects":[],
+         "objects":[
+                {
+                 "height":3072,
+                 "id":108,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":1024,
+                 "x":39936,
+                 "y":3072
+                }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -437,7 +448,7 @@
          "y":0
         }],
  "nextlayerid":22,
- "nextobjectid":108,
+ "nextobjectid":109,
  "orientation":"orthogonal",
  "properties":[
         {

@@ -85,11 +85,10 @@
         "controls": "jsons/controls.json",
         "tiledSuperJump": "levels/super-jump.json",
         "tiledLevelTutorial": "levels/tiledLevelTutorial1.json",
-        "tiledLevel1": "levels/tutorial-walk-jump.json",
+//        "tutorial1": "levels/tutorial-walk-jump.json",
+        "tiledLevel1": "levels/tutorial-dash.json",
         "tiledLevel2": "levels/test-forest.json",
-
       //        "tiledLevel2": "levels/test-windows.json",
-//        "tiledLevel2": "levels/tutorial-dash.json",
       //        "tiledLevel1": "levels/lights.json",
 //        "tiledLevel1": "levels/spikes-deaths-easy.json",
         "spikes-death": "levels/spikes-deaths-easy.json",

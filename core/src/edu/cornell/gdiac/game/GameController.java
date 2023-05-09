@@ -1017,7 +1017,6 @@ public class GameController implements Screen {
         } else {
             background = textureRegionAssetMap.get("bg-forest").getTexture();
         }
-//        canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight());
 
         if (effectSize > 0) { canvas.setGreyscaleShader(effectSize); }
         canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2f, canvas.getCamera().getY()  - canvas.getHeight()/2f, canvas.getWidth(), canvas.getHeight());
@@ -1033,7 +1032,7 @@ public class GameController implements Screen {
         canvas.drawLightsToBuffer(rayHandler);
 
         if (effectSize > 0) {
-            canvas.setSpiritModeShader(1.8f - 0.6f * effectSize, 0.3f,
+            canvas.setSpiritModeShader(1.8f - 0.525f * effectSize, 0.3f,
                     spiritModeColor, spiritModeColor, spiritModeTicks/60f);
         }
         canvas.drawFrameBuffer();

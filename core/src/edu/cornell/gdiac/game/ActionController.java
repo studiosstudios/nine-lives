@@ -432,16 +432,16 @@ public class ActionController {
     private void getRayCastEnd(Vector2 start, Direction dir){
         switch (dir) {
             case UP:
-                endPointCache.set(start.x,bounds.height);
+                endPointCache.set(start.x,bounds.height + bounds.y);
                 break;
             case LEFT:
-                endPointCache.set(0, start.y);
+                endPointCache.set(bounds.x, start.y);
                 break;
             case DOWN:
-                endPointCache.set(start.x, 0);
+                endPointCache.set(start.x, bounds.y);
                 break;
             case RIGHT:
-                endPointCache.set(bounds.width, start.y);
+                endPointCache.set(bounds.width + bounds.x, start.y);
                 break;
         }
     }

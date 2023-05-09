@@ -32,6 +32,9 @@
             "size": 36
         }
     },
+    "soundfx" : {
+      "menu-select" : "sounds/menu-select.wav"
+    },
     "samples": {
         "bkg-intro": "sounds/bkg-intro.ogg"
     },

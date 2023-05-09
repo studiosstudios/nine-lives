@@ -11,6 +11,7 @@ import edu.cornell.gdiac.assets.*;
 import edu.cornell.gdiac.audio.AudioEngine;
 import edu.cornell.gdiac.audio.AudioSource;
 import edu.cornell.gdiac.audio.MusicQueue;
+import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.game.stage.*;
 import edu.cornell.gdiac.util.*;
 
@@ -66,17 +67,9 @@ public class StageController implements Screen {
 	private LevelSelectStage levelSelectStage;
 	private LoadingStage loadingStage;
 	private StartStage startStage;
-
 	public GameController currLevel;
 	private int selectedLevel;
-
-//	/** The hashmap for music */
-//	private HashMap<String, AudioSource> musicAssetMap;
-//	/** A queue to play music */
-//	MusicQueue music;
-
 	private AudioController audioController;
-
 	public int getSelectedLevel() { return selectedLevel; }
 	public void setSelectedLevel(int level) { selectedLevel = level; }
 
@@ -204,12 +197,13 @@ public class StageController implements Screen {
 	}
 
 	public void startMusic() {
+		// Get some stage sound effects
+		audioController.addSoundEffect("menu-select", internal.getEntry("menu-select", SoundEffect.class));
 //		// TODO: automate this with the volume constant in internal loading json
 		// audioController.setVolume(internal.get("defaults").getFloat("volume"));
 
 //		audioController.setVolume(0.3f);
 		audioController.addStageMusic(internal.getEntry("bkg-intro", AudioSource.class));
-
 		audioController.playStageMusic();
 	}
 
@@ -294,6 +288,7 @@ public class StageController implements Screen {
 
 			// We are ready, notify our listener
 			if (mainMenuStage.isPlay() && listener != null) {
+				audioController.playSoundEffect("menu-select");
 				loading = true;
 				fromSelect = false;
 				changeStage(loadingStage);
@@ -301,12 +296,15 @@ public class StageController implements Screen {
 				getStage().draw();
 //				listener.exitScreen(this, 0);
 			} else if (mainMenuStage.isSettings()) {
+				audioController.playSoundEffect("menu-select");
 				mainMenuStage.setSettingsState(0);
 				changeStage(settingsStage);
 			} else if (mainMenuStage.isLevelSelect()) {
+				audioController.playSoundEffect("menu-select");
 				mainMenuStage.setLevelSelectState(0);
 				changeStage(levelSelectStage);
 			} else if (settingsStage.isBack() || levelSelectStage.isBack()) {
+				audioController.playSoundEffect("menu-select");
 				if (settingsStage.isBack()) {
 					settingsStage.exit();
 				}
@@ -314,6 +312,7 @@ public class StageController implements Screen {
 				levelSelectStage.setBackButtonState(0);
 				changeStage(mainMenuStage);
 			} else if (levelSelectStage.isPlay() && listener != null) {
+				audioController.playSoundEffect("menu-select");
 				loading = true;
 				fromSelect = true;
 				changeStage(loadingStage);
@@ -323,12 +322,14 @@ public class StageController implements Screen {
 				selectedLevel = levelSelectStage.getSelectedLevel();
 //				listener.exitScreen(this, 69);
 			} else if (pauseStage.isResume() && listener != null) {
+				audioController.playSoundEffect("menu-select");
 				audioController.pauseStageMusic();
 				pause = false;
 				pauseStage.setResumeButtonState(0);
 				pauseStage.currLevel = null;
 				listener.exitScreen(this, 25);
 			} else if (pauseStage.isMainMenu() && listener != null) {
+				audioController.playSoundEffect("menu-select");
 				pause = false;
 				pauseStage.setMainMenuState(0);
 				pauseStage.currLevel = null;
@@ -336,6 +337,7 @@ public class StageController implements Screen {
 				changeStage(mainMenuStage);
 				listener.exitScreen(this, 79);
 			} else if (mainMenuStage.isExit() && listener != null) {
+				audioController.playSoundEffect("menu-select");
 				listener.exitScreen(this, 99);
 			}
 		}

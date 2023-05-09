@@ -37,7 +37,14 @@
     "friction": 1,
     "density": 1,
     "mass": 1,
-    "sensor_shape" : [-0.3, -0.6, 0.3, -0.6, 0.3, 0.9, -0.3, 0.9]
+    "sensor_shape" : [-0.3, -0.6, 0.3, -0.6, 0.3, 0.9, -0.3, 0.9],
+    "light": {
+      "distance": 2.5,
+      "color": "#ff00008c",
+      "offset": [0, 0],
+      "directionDegree": 0,
+      "coneDegree": 20
+    }
   },
   "lasers": {
     "offset": [0.5, -0.5],
@@ -45,14 +52,45 @@
     "thickness": 3,
     "friction": 0.4,
     "density": 1,
-    "mass": 1
+    "mass": 1,
+    "light": {
+      "distance": 0.4,
+      "color": "#ff00008c",
+      "direction": 0
+    }
+  },
+  "lights":{
+    "ceiling": {
+      "offset": [1.5, -0.5],
+      "light": {
+        "offset": [0, -3],
+        "distance": 15,
+        "color": "#ffffffff",
+        "directionDegree": 270,
+        "coneDegree": 90
+      }
+    },
+    "wall": {
+      "offset": [0.5, -0.5],
+      "light": {
+        "offset": [0, 0],
+        "distance": 7,
+        "color": "#ffffffff"
+      }
+    }
   },
   "checkpoint": {
     "base_offset": [0, 1],
     "respawn_offset": [0, 0.5],
     "offset": [0.5, -1],
     "solid_height_scale": 0.5,
-    "solid_width_scale": 1
+    "solid_width_scale": 1,
+    "light": {
+      "distance": 2.5,
+      "color": "#0000ffaa",
+      "activated_color": "#ffff00aa",
+      "offset": [0, 0]
+    }
   },
   "goal": {
     "shrink": 0.55,
@@ -134,7 +172,8 @@
     },
     "light": {
       "distance": 3,
-      "color": "#ffff008c",
+//      "color": "#ffff008c",
+      "color": "#ffff00aa",
       "offset": [0, 0]
     }
   },
@@ -152,6 +191,12 @@
     "friction": 0.4,
     "density" : 0.0,
     "restitution": 0.1,
-    "offset": [0.5, 0]
+    "offset": [0.5, 0],
+    "light": {
+      "distance": 3,
+      //      "color": "#ffff008c",
+      "color": "#ffa500aa",
+      "offset": [0, 0]
+    }
   }
 }

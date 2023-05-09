@@ -7,16 +7,11 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.audio.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.audio.AudioEngine;
-import edu.cornell.gdiac.audio.AudioSource;
-import edu.cornell.gdiac.audio.MusicQueue;
-import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.game.object.*;
 
 import edu.cornell.gdiac.game.obstacle.*;
@@ -114,7 +109,7 @@ public class GameController implements Screen {
     /** Whether level was just reset (matters for respawn behavior) **/
     private boolean justReset;
     final float RESPAWN_DELAY = 60f; //about 17ms per RESPAWN_DELAY unit (holds 1 second-0.5s on dead body, 0.5s on respawned cat)
-    /** The background texture */
+    /** The lab background texture */
     private Texture background;
     /** Ticks since the player has undone */
     private float undoTime;
@@ -126,6 +121,7 @@ public class GameController implements Screen {
     public AudioController audioController;
     /** only not null if quick launched from Tiled */
     private JsonValue quickLaunchLevel;
+    private boolean LIGHTS_ACTIVE = false;
 
     /**
      * PLAY: User has all controls and is in game
@@ -264,6 +260,7 @@ public class GameController implements Screen {
         Spikes.setConstants(constants.get("spikes"));
         Activator.setConstants(constants.get("activators"));
         Laser.setConstants(constants.get("lasers"));
+        NoveLight.setConstants(constants.get("lights"));
         Checkpoint.setConstants(constants.get("checkpoint"));
         Mirror.setConstants(constants.get("mirrors"));
         Wall.setConstants(constants.get("walls"));
@@ -351,7 +348,6 @@ public class GameController implements Screen {
         prevJV = getJSON();
         setJSON(nextJV);
         setRet(false);
-
 
         currLevelIndex = (currLevelIndex + 1) % 3;
         currLevel.setComplete(false);
@@ -445,11 +441,11 @@ public class GameController implements Screen {
         String[] names = {
                 // CAT
                 "cat", "walk-anim", "jump", "jump-anim", "sit", "idle-sit-anim", "idle-stand-anim", "meow-anim",
-                "trans-anim","climb-anim","corpse", "corpse2", "corpse-burnt","trans2-anim","jump-mid",
+                "trans-anim","climb-anim","corpse", "corpse2", "corpse3","corpse-burnt","trans2-anim","jump-mid",
                 // SPIKES
                 "spikes",
                 // BUTTONS & SWITCHES
-                "button-base", "button-top", "switch-top",
+                "button-base", "button-top", "switch-top", "switch-base",
                 // FLAMETHROWERS
                 "flamethrower", "flame", "flame-anim",
                 // LASERS
@@ -462,21 +458,25 @@ public class GameController implements Screen {
                 "robot", "robot-anim",
                 // SPIRIT BOUNDARIES
                 "spirit-anim", "spirit-photon", "spirit-photon-cat", "spirit-region",
+                // ACTIVATABLE LIGHTS
+                "ceiling-light", "wall-light",
                 // TILESETS
-                "metal-tileset", "climbable-tileset", "steel",
+                "metal-tileset", "climbable-tileset", "steel", "windows-tileset", "forest-tileset", "forestLeaves-tileset",
                 // DOORS & PLATFORMS
                 "door", "platform",
                 // BACKGROUNDS
-                "bg-lab",
+                "bg-lab", "bg-forest",
                 // DECOR
                 "tutorial-burn", "tutorial-camera", "tutorial-checkpoint", "tutorial-dash", "tutorial-pause",
-                "tutorial-spike", "tutorial-switch", "tutorial-walk-jump"
+                "tutorial-spike", "tutorial-switch", "tutorial-walk-jump", "tutorial-jump-dash",
+                "cat-vinci", "shelf"
                 }; // Unsure if this is actually being used
         for (String n : names){
+//            System.out.println(n);
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
         }
 
-        names = new String[]{"jump", "dash", "metal-landing", "meow"};
+        names = new String[]{"jump", "dash", "metal-landing", "meow-1", "meow-2", "meow-3"};
         audioController.createSoundEffectMap(directory, names);
 
         names = new String[]{"bkg-lab-1", "bkg-forest-1"};
@@ -546,8 +546,10 @@ public class GameController implements Screen {
         if (rayHandler != null) {
             rayHandler.dispose();
         }
+        RayHandler.useDiffuseLight(true);
         rayHandler = new RayHandler(world);
-        rayHandler.setAmbientLight(0.8f);
+        rayHandler.setAmbientLight(0.9f);
+//        rayHandler.setShadows(true);
 
         justRespawned = true;
         justReset = true;
@@ -602,6 +604,14 @@ public class GameController implements Screen {
         nextLevel.pause();
         prevLevel.pause();
         undoTime = 0;
+
+        if (audioController.getCurrMusic().equals("metal") && currLevel.getBiome().equals("forest")) {
+            audioController.playForest();
+        }
+        else if (audioController.getCurrMusic().equals("forest") && currLevel.getBiome().equals("metal")) {
+            audioController.playLab();
+        }
+
         resume();
     }
 
@@ -855,10 +865,13 @@ public class GameController implements Screen {
         draw(delta);
 
         // box2dlights draw
-        updateRayHandlerCombinedMatrix();
-        rayHandler.updateAndRender();
+        if (LIGHTS_ACTIVE) {
+            updateRayHandlerCombinedMatrix();
+            rayHandler.updateAndRender();
+        }
 
-        // Pause menu draw
+        // Menu draw
+        hud.draw();
         if (paused && stageController != null) { stageController.render(delta); }
     }
 
@@ -949,6 +962,11 @@ public class GameController implements Screen {
 
         canvas.begin();
         canvas.applyViewport(false);
+        if (currLevel.getBiome() != null && currLevel.getBiome().equals("metal")) {
+            background = textureRegionAssetMap.get("bg-lab").getTexture();
+        } else {
+            background = textureRegionAssetMap.get("bg-forest").getTexture();
+        }
         canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight());
         if (true) { //TODO: only draw when necessary
             prevLevel.draw(canvas, false);
@@ -957,7 +975,6 @@ public class GameController implements Screen {
         currLevel.draw(canvas, gameState != GameState.RESPAWN);
         canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
         canvas.end();
-        hud.draw();
 
         if (debug) {
             canvas.beginDebug();

@@ -86,8 +86,8 @@ public class Goal extends BoxObstacle
         // Split the texture
         TextureRegion[][] tiles = tMap.get("goal").split(tMap.get("goal").getTexture(), textureSize, textureSize);
         System.out.println(tiles);
-        top = tiles[0][1];
-        middle = tiles[0][2];
+        top = tiles[0][2];
+        middle = tiles[0][1];
         bottom = tiles[0][0];
 
 //        this.textureSize = textureSize;

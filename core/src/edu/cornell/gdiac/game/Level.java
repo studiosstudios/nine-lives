@@ -848,7 +848,7 @@ public class Level {
         for (JsonValue objJV : objects) {
             System.out.println("populating goal");
             readProperties(objJV, tileSize, levelHeight);
-            goal = new Goal(propertiesMap, textureRegionAssetMap, scale, 586);
+            goal = new Goal(propertiesMap, textureRegionAssetMap, scale, 512);
             addObject(goal);
         }
     }

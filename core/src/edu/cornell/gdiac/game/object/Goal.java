@@ -84,7 +84,7 @@ public class Goal extends BoxObstacle
 //        super(32/scale.x, 64/scale.y);
 
         // Split the texture
-        TextureRegion[][] tiles = tMap.get("goal").split(tMap.get("goal").getTexture(), textureSize, textureSize);
+        TextureRegion[][] tiles = tMap.get("goal-active").split(tMap.get("goal-active").getTexture(), textureSize, textureSize);
         System.out.println(tiles);
         top = tiles[0][2];
         middle = tiles[0][1];
@@ -113,7 +113,7 @@ public class Goal extends BoxObstacle
         setDrawScale(scale);
         setSensor(true);
         x =(float) properties.get("x") + objectConstants.get("offset").getFloat(0) + width/2f;
-        y = (float) properties.get("y") + objectConstants.get("offset").getFloat(1) - height/2f;
+        y = (float) properties.get("y") + objectConstants.get("offset").getFloat(1) - height;
 
         this.width = width;
         this.height = height;
@@ -186,14 +186,14 @@ public class Goal extends BoxObstacle
     public void draw(GameCanvas canvas){
         float scale = 32f/textureSize;
 
-        System.out.println(y*drawScale.y);
+//        System.out.println(y*drawScale.y);
         canvas.draw(bottom, Color.WHITE, 0, 0, x*drawScale.x, y*drawScale.y, 0, scale, scale);
-        for (float dy = 0; dy < height; dy+= 1){
-            System.out.println("drawing middle");
+        for (float dy = 1; dy < height-1; dy+= 1){
+//            System.out.println("drawing middle");
 //            if (isActive()) {}
             canvas.draw(middle, Color.WHITE, 0, 0, x*drawScale.x, (y + dy) * drawScale.y, 0, scale, scale);
         }
-        canvas.draw(top, Color.WHITE, 0, 0, x*drawScale.x, (y + height) * drawScale.y, 0, scale, scale);
+        canvas.draw(top, Color.WHITE, 0, 0, x*drawScale.x, (y + height - 1) * drawScale.y, 0, scale, scale);
 
     }
 //    public void draw(GameCanvas canvas) {

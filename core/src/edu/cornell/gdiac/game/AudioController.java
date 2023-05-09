@@ -47,7 +47,7 @@ public class AudioController {
     private float sfxVolume;
     /** The current volume for music */
     private float musicVolume;
-
+    private boolean empty;
 
 
     /**
@@ -58,6 +58,7 @@ public class AudioController {
     public AudioController() {
         levelSoundMap = new HashMap<>();
         levelMusicMap = new HashMap<>();
+        empty = true;
 
         AudioEngine engine = (AudioEngine) Gdx.audio;
 //        levelMusic = engine.newMusicBuffer(false, 44100);
@@ -105,10 +106,21 @@ public class AudioController {
         sfxVolume = val;
     }
 
-
+    /**
+     * Returns the current music playing
+     *
+     * @return currMusic
+     */
     public String getCurrMusic() {
         return currMusic;
     }
+
+    /**
+     * Whether this audio controller is empty of sound
+     *
+     * @return empty
+     */
+    public boolean isEmpty() { return empty; }
 
     /**
      * Adds an AudioSource to the level music queue
@@ -206,6 +218,16 @@ public class AudioController {
     }
 
     /**
+     * Add sound effect to map
+     * @param name the name of the sound effect
+     * @param sound the sound effect
+     */
+    public void addSoundEffect(String name, SoundEffect sound) {
+        levelSoundMap.put(name, sound);
+        empty = false;
+    }
+
+    /**
      * Plays a specific sound effect
      *
      * @param soundName the name of the sound effect to play
@@ -268,10 +290,6 @@ public class AudioController {
         levelMusic.advanceSource();
         setLooping();
     }
-
-//    public void prevLevelMusic() {
-//        levelMusic.
-//    }
 
     /**
      * Advances the stage music queue to the next AudioSource

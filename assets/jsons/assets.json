@@ -99,7 +99,10 @@
         "jump" : "sounds/jump-CELESTE.wav",
         "dash" : "sounds/dash-CELESTE.wav",
         "metal-landing" : "sounds/metal-landing-CELESTE.wav",
-        "meow" : "sounds/meow.mp3"
+        "meow" : "sounds/meow.mp3",
+        "meow-1": "sounds/meow-1.wav",
+        "meow-2": "sounds/meow-2.wav",
+//        "menu-select": "sounds/menu-select.wav"
     },
    "samples": {
         "bkg-intro": "sounds/bkg-intro.ogg",

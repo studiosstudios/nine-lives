@@ -142,7 +142,7 @@ public class SettingsStage extends StageWrapper {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (audioController != null) {
-                    audioController.setVolume(effectsSlider.getValue());
+                    audioController.setSfxVolume(effectsSlider.getValue());
                 }
             }
         });
@@ -152,9 +152,12 @@ public class SettingsStage extends StageWrapper {
 //        musicSlider.sizeBy(1,1);
 //        musicSlider.scaleBy(0.75f);
         musicSlider.addListener(new ChangeListener() {
+
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-
+                if (audioController != null) {
+                    audioController.setVolume(musicSlider.getValue());
+                }
             }
         });
         musicSlider.setValue(Save.getMusic());

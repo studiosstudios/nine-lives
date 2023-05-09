@@ -207,6 +207,9 @@ public class SettingsStage extends StageWrapper {
     private void controls() {
         table.align(Align.topLeft);
         table.setFillParent(true);
+        table.row().pad(100, 0, 0, 0);
+        Table leftTable = new Table();
+        Table rightTable = new Table();
 
         Label up = new Label("up", controlStyle);
         Label down = new Label("down", controlStyle);
@@ -243,18 +246,26 @@ public class SettingsStage extends StageWrapper {
             buttons[i].setText(Input.Keys.toString(bindings[i]).toUpperCase());
         }
 
-        for (int i = 0; i < bindings.length; i++) {
+        for (int i = 0; i < bindings.length/2; i++) {
             TextButton button = buttons[i];
-            table.row();
-            table.add(labels[i]).pad(0, 175, 0, 0);
-            table.add(button).pad(0, 15, 0, 0);
+            leftTable.row();
+            leftTable.add(labels[i]).pad(0, 20, 0, 0).align(Align.left);
+            leftTable.add(button).pad(0, 15, 0, 0).align(Align.left);
+        }
+        for (int i = bindings.length/2; i < bindings.length; i++) {
+            TextButton button = buttons[i];
+            rightTable.row();
+            rightTable.add(labels[i]).pad(0, 20, 0, 0).align(Align.left);
+            rightTable.add(button).pad(0, 15, 0, 0).align(Align.left);
         }
 
         for (Cell cell: table.getCells()) {
             cell.align(Align.left);
         }
-        table.columnDefaults(1).setActorWidth(400);
-        table.columnDefaults(1).fillX();
+//        table.columnDefaults(1).setActorWidth(400);
+//        table.columnDefaults(1).fillX();
+        table.add(leftTable);
+        table.add(rightTable);
 
         backButtonActor.setTouchable(Touchable.disabled);
         backButtonActor.setVisible(false);

@@ -41,10 +41,7 @@ void main( )
     vec4 portalColor = texture2D(u_texture,uvOrig);
 
     float edgeDist = smoothstep(targetVal-u_thickness,targetVal+u_thickness, d);
-    col = mix(portalColor, u_bgColor, res);
-    if(d < targetVal+u_thickness){
-        col += u_edgeColor*edgeDist;
-    }
+    col = mix(portalColor, u_bgColor, res) + step(d, targetVal + u_thickness) * u_edgeColor * edgeDist;
 
     // Output to screen
     gl_FragColor = col;

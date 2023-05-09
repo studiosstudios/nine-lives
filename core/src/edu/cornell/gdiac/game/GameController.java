@@ -3,18 +3,12 @@ package edu.cornell.gdiac.game;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.audio.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.audio.AudioEngine;
-import edu.cornell.gdiac.audio.AudioSource;
-import edu.cornell.gdiac.audio.MusicQueue;
-import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.game.object.*;
 
 import edu.cornell.gdiac.game.obstacle.*;
@@ -769,7 +763,7 @@ public class GameController implements Screen {
             if (spiritModeTicks <= MAX_SPIRIT_MODE_TICKS) {
                 effectSize = (float) Math.sin(Math.PI * (double) (spiritModeTicks / 2f / MAX_SPIRIT_MODE_TICKS));
             } else {
-                effectSize =  (0.9f + 0.1f * (float) Math.cos(0.03 * (spiritModeTicks - MAX_SPIRIT_MODE_TICKS)));
+                effectSize = 1;
             }
         }
 
@@ -893,15 +887,16 @@ public class GameController implements Screen {
                 postUpdate(delta);
             }
         }
+
+        if (LIGHTS_ACTIVE) {
+            updateRayHandlerCombinedMatrix();
+            rayHandler.update();
+        }
+
         if (paused) { updateCamera(); }
         // Main game draw
         draw(delta);
 
-        // box2dlights draw
-        if (LIGHTS_ACTIVE) {
-            updateRayHandlerCombinedMatrix();
-            rayHandler.updateAndRender();
-        }
 
         // Menu draw
         hud.draw();
@@ -992,26 +987,29 @@ public class GameController implements Screen {
      */
     public void draw(float dt) {
 
-        boolean vfx = effectSize > 0;
-
         canvas.clear();
         canvas.beginFrameBuffer();
         canvas.applyViewport(false);
-        if (vfx) { canvas.setGreyscaleShader(effectSize); }
+        if (effectSize > 0) { canvas.setGreyscaleShader(effectSize); }
         canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2f, canvas.getCamera().getY()  - canvas.getHeight()/2f, canvas.getWidth(), canvas.getHeight());
 
         if (true) { //TODO: only draw when necessary
-            prevLevel.draw(canvas, false, vfx, effectSize);
-            nextLevel.draw(canvas, false, vfx, effectSize);
+            prevLevel.draw(canvas, false, effectSize);
+            nextLevel.draw(canvas, false, effectSize);
         }
-        currLevel.draw(canvas, gameState != GameState.RESPAWN, vfx, effectSize);
-        if (vfx) {
+        currLevel.draw(canvas, gameState != GameState.RESPAWN, effectSize);
+
+        canvas.endFrameBuffer();
+
+        canvas.drawLightsToBuffer(rayHandler);
+
+        if (effectSize > 0) {
             canvas.setSpiritModeShader(1.8f - 0.6f * effectSize, 0.3f,
                     spiritModeColor, spiritModeColor, spiritModeTicks/60f);
         }
-        canvas.endFrameBuffer();
-        if (vfx) canvas.setShader(null);
+        canvas.drawFrameBuffer();
 
+        if (effectSize > 0) canvas.setShader(null);
         canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2f, canvas.getCamera().getY()  - canvas.getHeight()/2f, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
 
         canvas.end();
@@ -1023,16 +1021,6 @@ public class GameController implements Screen {
             if (levelNum < numLevels) nextLevel.drawDebug(canvas);
             canvas.endDebug();
         }
-
-        //box2d debug check
-//        Array<Body> bodies = new Array<>();
-//        world.getBodies(bodies);
-//        System.out.println(bodies.size);
-//        int numBodies = 0;
-//        for (Level l : levels){
-//            numBodies += l.objects.size();
-//        }
-//        System.out.println(numBodies);
 
     }
 

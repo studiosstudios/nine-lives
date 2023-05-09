@@ -4,38 +4,59 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 
 public class HudStage extends StageWrapper {
     public int lives = 9;
 
-    Actor nine;
-    Actor eight;
-    Actor seven;
-    Actor six;
-    Actor five;
-    Actor four;
-    Actor three;
-    Actor two;
-    Actor one;
+    private float bellHeight;
+
+    Actor bell9;
+    Actor bell8;
+    Actor bell7;
+    Actor bell6;
+    Actor bell5;
+    Actor bell4;
+    Actor bell3;
+    Actor bell2;
+    Actor bell1;
+
+    Actor cracked9;
+    Actor cracked8;
+    Actor cracked7;
+    Actor cracked6;
+    Actor cracked5;
+    Actor cracked4;
+    Actor cracked3;
+    Actor cracked2;
+    Actor cracked1;
+
 
     Array<Actor> bellArray = new Array<>();
+    Array<Actor> crackedArray = new Array<>();
 
     public HudStage(AssetDirectory internal, boolean createActors) {
         super(internal, createActors);
-        bellArray.add(nine);
-        bellArray.add(eight);
-        bellArray.add(seven);
-        bellArray.add(six);
-        bellArray.add(five);
-        bellArray.add(four);
-        bellArray.add(three);
-        bellArray.add(two);
-        bellArray.add(one);
+        bellArray.add(bell9);
+        bellArray.add(bell8);
+        bellArray.add(bell7);
+        bellArray.add(bell6);
+        bellArray.add(bell5);
+        bellArray.add(bell4);
+        bellArray.add(bell3);
+        bellArray.add(bell2);
+        bellArray.add(bell1);
+        crackedArray.add(cracked9);
+        crackedArray.add(cracked8);
+        crackedArray.add(cracked7);
+        crackedArray.add(cracked6);
+        crackedArray.add(cracked5);
+        crackedArray.add(cracked4);
+        crackedArray.add(cracked3);
+        crackedArray.add(cracked2);
+        crackedArray.add(cracked1);
         updateLives();
     }
 
@@ -43,44 +64,82 @@ public class HudStage extends StageWrapper {
      *
      */
     public void createActors() {
+        bellHeight = STANDARD_HEIGHT-26;
         Actor bar = addActor(internal.getEntry("bar", Texture.class), 5, STANDARD_HEIGHT-36);
         bar.setScale(0.5f);
 
-        nine = addActor(internal.getEntry("bell", Texture.class), 26, STANDARD_HEIGHT-25);
-        nine.setScale(0.5f);
-        nine.setVisible(false);
+        bell9 = addActor(internal.getEntry("bell", Texture.class), 26, bellHeight);
+        bell9.setScale(0.5f);
+        bell9.setVisible(false);
 
-        eight = addActor(internal.getEntry("bell", Texture.class), 26+36, STANDARD_HEIGHT-25);
-        eight.setScale(0.5f);
-        eight.setVisible(false);
+        bell8 = addActor(internal.getEntry("bell", Texture.class), 26+36, bellHeight);
+        bell8.setScale(0.5f);
+        bell8.setVisible(false);
 
-        seven = addActor(internal.getEntry("bell", Texture.class), 26+36*2, STANDARD_HEIGHT-25);
-        seven.setScale(0.5f);
-        seven.setVisible(false);
+        bell7 = addActor(internal.getEntry("bell", Texture.class), 26+36*2, bellHeight);
+        bell7.setScale(0.5f);
+        bell7.setVisible(false);
 
-        six = addActor(internal.getEntry("bell", Texture.class), 26+36*3, STANDARD_HEIGHT-25);
-        six.setScale(0.5f);
-        six.setVisible(false);
+        bell6 = addActor(internal.getEntry("bell", Texture.class), 26+36*3, bellHeight);
+        bell6.setScale(0.5f);
+        bell6.setVisible(false);
 
-        five = addActor(internal.getEntry("bell", Texture.class), 26+36*4, STANDARD_HEIGHT-25);
-        five.setScale(0.5f);
-        five.setVisible(false);
+        bell5 = addActor(internal.getEntry("bell", Texture.class), 26+36*4, bellHeight);
+        bell5.setScale(0.5f);
+        bell5.setVisible(false);
 
-        four = addActor(internal.getEntry("bell", Texture.class), 26+36*5, STANDARD_HEIGHT-25);
-        four.setScale(0.5f);
-        four.setVisible(false);
+        bell4 = addActor(internal.getEntry("bell", Texture.class), 26+36*5, bellHeight);
+        bell4.setScale(0.5f);
+        bell4.setVisible(false);
 
-        three = addActor(internal.getEntry("bell", Texture.class), 26+36*6, STANDARD_HEIGHT-25);
-        three.setScale(0.5f);
-        three.setVisible(false);
+        bell3 = addActor(internal.getEntry("bell", Texture.class), 26+36*6, bellHeight);
+        bell3.setScale(0.5f);
+        bell3.setVisible(false);
 
-        two = addActor(internal.getEntry("bell", Texture.class), 26+36*7, STANDARD_HEIGHT-25);
-        two.setScale(0.5f);
-        two.setVisible(false);
+        bell2 = addActor(internal.getEntry("bell", Texture.class), 26+36*7, bellHeight);
+        bell2.setScale(0.5f);
+        bell2.setVisible(false);
 
-        one = addActor(internal.getEntry("bell", Texture.class), 26+36*8, STANDARD_HEIGHT-25);
-        one.setScale(0.5f);
-        one.setVisible(false);
+        bell1 = addActor(internal.getEntry("bell", Texture.class), 26+36*8, bellHeight);
+        bell1.setScale(0.5f);
+        bell1.setVisible(false);
+
+        cracked9 = addActor(internal.getEntry("cracked-bell", Texture.class), 26, bellHeight);
+        cracked9.setScale(0.5f);
+        cracked9.setVisible(false);
+
+        cracked8 = addActor(internal.getEntry("cracked-bell", Texture.class), 26+36, bellHeight);
+        cracked8.setScale(0.5f);
+        cracked8.setVisible(false);
+
+        cracked7 = addActor(internal.getEntry("cracked-bell", Texture.class), 26+36*2, bellHeight);
+        cracked7.setScale(0.5f);
+        cracked7.setVisible(false);
+
+        cracked6 = addActor(internal.getEntry("cracked-bell", Texture.class), 26+36*3, bellHeight);
+        cracked6.setScale(0.5f);
+        cracked6.setVisible(false);
+
+        cracked5 = addActor(internal.getEntry("cracked-bell", Texture.class), 26+36*4, bellHeight);
+        cracked5.setScale(0.5f);
+        cracked5.setVisible(false);
+
+        cracked4 = addActor(internal.getEntry("cracked-bell", Texture.class), 26+36*5, bellHeight);
+        cracked4.setScale(0.5f);
+        cracked4.setVisible(false);
+
+        cracked3 = addActor(internal.getEntry("cracked-bell", Texture.class), 26+36*6, bellHeight);
+        cracked3.setScale(0.5f);
+        cracked3.setVisible(false);
+
+        cracked2 = addActor(internal.getEntry("cracked-bell", Texture.class), 26+36*7, bellHeight);
+        cracked2.setScale(0.5f);
+        cracked2.setVisible(false);
+
+        cracked1 = addActor(internal.getEntry("cracked-bell", Texture.class), 26+36*8, bellHeight);
+        cracked1.setScale(0.5f);
+        cracked1.setVisible(false);
+
     }
 
     /**
@@ -120,7 +179,9 @@ public class HudStage extends StageWrapper {
         for (int i = 0; i < 9; i++) {
             if (i < lives)  {
                 bellArray.get(i).setVisible(true);
+                crackedArray.get(i).setVisible(false);
             } else {
+                crackedArray.get(i).setVisible(true);
                 bellArray.get(i).setVisible(false);
             }
         }

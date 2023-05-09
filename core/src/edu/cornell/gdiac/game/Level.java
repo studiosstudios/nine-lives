@@ -1,6 +1,5 @@
 package edu.cornell.gdiac.game;
 
-import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -14,7 +13,7 @@ import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.util.PooledList;
 
 import java.util.HashMap;
-import java.util.Random;
+
 /**
  * Represents a single level in our game
  * <br><br>
@@ -1179,10 +1178,9 @@ public class Level {
      *
      * @param canvas	  the drawing context
      * @param drawCat     if we should draw the cat
-     * @param vfx         if we should apply vfx
-     * @param effectSize  amount of vfx to apply (0-1)
+     * @param greyscale   amount of greyscale to apply (0-1)
      */
-    public void draw(GameCanvas canvas, boolean drawCat, boolean vfx, float effectSize) {
+    public void draw(GameCanvas canvas, boolean drawCat, float greyscale) {
 
         for (Laser l : lasers){
             l.drawLaser(canvas);
@@ -1190,6 +1188,7 @@ public class Level {
 
         //draw everything except cat, dead bodies and spirit region
         for(Obstacle obj : objects) {
+            obj.setLightGreyscale(greyscale);
             if (obj != cat && !(obj instanceof DeadBody) && !(obj instanceof SpiritRegion)
                     && !(obj instanceof Wall && !(obj instanceof Platform)) && !(obj instanceof Activator) ) {
                 obj.draw(canvas);
@@ -1206,7 +1205,7 @@ public class Level {
 
         for (Decoration d : decorations) { d.draw(canvas); }
 
-        if (vfx) {canvas.setShader(null);}
+        if (greyscale > 0) {canvas.setShader(null);}
 
         spiritLine.draw(canvas);
 
@@ -1222,23 +1221,23 @@ public class Level {
         spiritLine.draw(canvas);
 
         for (DeadBody db : deadBodyArray) {
-            if (vfx) {
+            if (greyscale > 0) {
                 if (db == nextBody){
                     canvas.setShader(null);
                 } else {
-                    canvas.setGreyscaleShader(effectSize);
+                    canvas.setGreyscaleShader(greyscale);
                 }
             }
             db.draw(canvas);
         }
 
-        if (vfx) {canvas.setShader(null);}
+        if (greyscale > 0) {canvas.setShader(null);}
 
         if(cat != null && drawCat) {
             cat.draw(canvas);
         }
 
-        if (vfx) canvas.setGreyscaleShader(effectSize);
+        if (greyscale > 0) canvas.setGreyscaleShader(greyscale);
 
         if (currCheckpoint != null) {
             currCheckpoint.drawBase(canvas);

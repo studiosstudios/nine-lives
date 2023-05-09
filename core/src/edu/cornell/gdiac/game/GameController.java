@@ -123,7 +123,7 @@ public class GameController implements Screen {
     public AudioController audioController;
     /** only not null if quick launched from Tiled */
     private JsonValue quickLaunchLevel;
-    private boolean LIGHTS_ACTIVE = true;
+    private boolean LIGHTS_ACTIVE = false;
 
     private Color spiritModeColor = new Color(1, 1, 1, 1);
 
@@ -761,7 +761,7 @@ public class GameController implements Screen {
             if (spiritModeTicks <= MAX_SPIRIT_MODE_TICKS) {
                 effectSize = (float) Math.sin(Math.PI * (double) (spiritModeTicks / 2f / MAX_SPIRIT_MODE_TICKS));
             } else {
-                effectSize =  (0.9f + 0.1f * (float) Math.cos(0.03 * (spiritModeTicks - MAX_SPIRIT_MODE_TICKS)));
+                effectSize = 1;
             }
         }
 
@@ -895,12 +895,6 @@ public class GameController implements Screen {
         // Main game draw
         draw(delta);
 
-        // box2dlights draw
-//        if (LIGHTS_ACTIVE) {
-////            updateRayHandlerCombinedMatrix();
-//            rayHandler.updateAndRender();
-//        }
-
 
         // Menu draw
         hud.draw();
@@ -991,38 +985,32 @@ public class GameController implements Screen {
      */
     public void draw(float dt) {
 
-        boolean vfx = effectSize > 0;
-
         canvas.clear();
         canvas.beginFrameBuffer();
         canvas.applyViewport(false);
-        if (vfx) { canvas.setGreyscaleShader(effectSize); }
+        if (effectSize > 0) { canvas.setGreyscaleShader(effectSize); }
         canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2f, canvas.getCamera().getY()  - canvas.getHeight()/2f, canvas.getWidth(), canvas.getHeight());
 
         if (true) { //TODO: only draw when necessary
-            prevLevel.draw(canvas, false, vfx, effectSize);
-            nextLevel.draw(canvas, false, vfx, effectSize);
+            prevLevel.draw(canvas, false, effectSize);
+            nextLevel.draw(canvas, false, effectSize);
         }
-        currLevel.draw(canvas, gameState != GameState.RESPAWN, vfx, effectSize);
+        currLevel.draw(canvas, gameState != GameState.RESPAWN, effectSize);
 
         canvas.endFrameBuffer();
+
         canvas.drawLightsToBuffer(rayHandler);
-        if (vfx) {
+
+        if (effectSize > 0) {
             canvas.setSpiritModeShader(1.8f - 0.6f * effectSize, 0.3f,
                     spiritModeColor, spiritModeColor, spiritModeTicks/60f);
         }
-        if (vfx) { canvas.setGreyscaleShader(effectSize); }
         canvas.drawFrameBuffer();
-        if (vfx) canvas.setShader(null);
 
+        if (effectSize > 0) canvas.setShader(null);
         canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2f, canvas.getCamera().getY()  - canvas.getHeight()/2f, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
 
         canvas.end();
-//
-//        canvas.drawLightsToBuffer(rayHandler);
-//        canvas.spriteBatch.begin();
-//        canvas.drawLightsFromBuffer();
-//        canvas.spriteBatch.end();
 
         if (debug) {
             canvas.beginDebug();
@@ -1031,16 +1019,6 @@ public class GameController implements Screen {
             if (levelNum < numLevels) nextLevel.drawDebug(canvas);
             canvas.endDebug();
         }
-
-        //box2d debug check
-//        Array<Body> bodies = new Array<>();
-//        world.getBodies(bodies);
-//        System.out.println(bodies.size);
-//        int numBodies = 0;
-//        for (Level l : levels){
-//            numBodies += l.objects.size();
-//        }
-//        System.out.println(numBodies);
 
     }
 

@@ -115,7 +115,7 @@ public abstract class Activator extends PolygonObstacle {
             animationTime += Gdx.graphics.getDeltaTime();
             currentFrame = animation.getKeyFrame(animationTime);
         }
-        float x = getX()*drawScale.x-currentFrame.getRegionWidth()/drawScale.x/4;
+        float x = getX()*drawScale.x-currentFrame.getRegionWidth()/drawScale.x/2;
         float scale = 64f/currentFrame.getRegionWidth();
         canvas.draw(currentFrame, color, origin.x, origin.y, x, getY()*drawScale.y, 0, scale,scale);
         canvas.draw(bottomTexture, Color.WHITE, origin.x, origin.y, x, (getY())*drawScale.y, 0, scale, scale);

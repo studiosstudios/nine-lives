@@ -75,12 +75,13 @@
         "tiledLevelTutorial": "levels/tiledLevelTutorial1.json",
         "tiledLevel1": "levels/lights.json",
 //        "tiledLevel1": "levels/spikes-deaths-easy.json",
+        "tiledLevel6": "levels/sabrina.json",
         "spikes-death": "levels/spikes-deaths-easy.json",
         "tiledLevel2": "levels/level-beta-med1.json",
         "tiledLevel3": "levels/body-switching-chain-medium.json",
         "tiledLevel4": "levels/super-jump.json",
         "tiledLevel5": "levels/level-beta-hard.json",
-        "tiledLevel6": "levels/party-room.json"
+        "tiledLevel7": "levels/party-room.json"
     },
     "soundfx" : {
         "jump" : "sounds/jump-CELESTE.wav",

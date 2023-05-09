@@ -222,8 +222,6 @@ public class Cat extends CapsuleObstacle implements Movable {
     private float climbTime;
     private float fallTime;
     private TextureRegion normalTexture;
-    private TextureRegion jumpTexture;
-    private TextureRegion sitTexture;
     private float stationaryTime;
 
     /** List of shapes corresponding to the sensors attached to this body */
@@ -598,8 +596,6 @@ public class Cat extends CapsuleObstacle implements Movable {
         soundBuffer = new HashSet<>();
 
         normalTexture = tMap.get("cat");
-        jumpTexture = tMap.get("jump");
-        sitTexture = tMap.get("sit");
 
         walkAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("walk-anim").getTexture(),1024,1024)[0]);
         jumpAnimation = new Animation<>(0.025f, TextureRegion.split(tMap.get("jump-anim").getTexture(),1024,1024)[0]);
@@ -912,7 +908,7 @@ public class Cat extends CapsuleObstacle implements Movable {
             float xOffset = ((float) (Math.sin(-failedSwitchTicks /2) * Math.exp(-failedSwitchTicks
                     /30)))*drawScale.x/2;
             failColor.a = 0.5f - Math.abs(failedSwitchTicks-FAILED_SWITCH_TICKS/2)/ FAILED_SWITCH_TICKS;
-            canvas.draw(currentFrame, failColor, origin.x, origin.y, x + xOffset, y, 0, directionFactor/drawScale.x, 1f/drawScale.y);
+            canvas.draw(currentFrame, failColor, origin.x, origin.y, x + xOffset, y, 0, directionFactor*(64f/currentFrame.getRegionWidth()),directionFactor*(64f/currentFrame.getRegionWidth()));
         }
 
         canvas.draw(currentFrame, Color.WHITE, origin.x, origin.y, x, y, 0, directionFactor*(64f/currentFrame.getRegionWidth()), 64f/currentFrame.getRegionHeight());

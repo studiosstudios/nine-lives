@@ -440,7 +440,7 @@ public class GameController implements Screen {
         // A couple naming conventions: use hyphens, affix animation sprites with "-anim".
         String[] names = {
                 // CAT
-                "cat", "walk-anim", "jump", "jump-anim", "sit", "idle-sit-anim", "idle-stand-anim", "meow-anim",
+                "cat", "walk-anim", "jump-anim", "idle-sit-anim", "idle-stand-anim", "meow-anim",
                 "trans-anim","climb-anim","corpse", "corpse2", "corpse3","corpse-burnt","trans2-anim","jump-mid",
                 // SPIKES
                 "spikes",

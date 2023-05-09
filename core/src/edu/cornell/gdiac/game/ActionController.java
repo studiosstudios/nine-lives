@@ -529,7 +529,7 @@ public class ActionController {
                 float x = level.getCat().getX() - spirit.getX();
                 float y = level.getCat().getY() - spirit.getY();
                 float angle = (float) Math.atan((double)y/(double)x);
-                spirit.setAngle(angle, 0.2f);
+                spirit.setAngle(angle, 0.25f);
                 spirit.move();
                 if (Math.abs(spirit.getX() - level.getCat().getX()) <= 1f &&
                     Math.abs(spirit.getY() - level.getCat().getY()) <= 1f) {

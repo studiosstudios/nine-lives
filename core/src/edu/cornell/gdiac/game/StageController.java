@@ -305,7 +305,7 @@ public class StageController implements Screen {
 
 			// We are ready, notify our listener
 			if (mainMenuStage.isPlay() && listener != null) {
-				audioController.playSoundEffect("menu-select");
+//				audioController.playSoundEffect("menu-select");
 				loading = true;
 				fromSelect = false;
 				changeStage(loadingStage);

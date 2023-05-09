@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.game.object;
 
 import box2dLight.ChainLight;
+import box2dLight.Light;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -93,6 +94,20 @@ public class Laser extends BoxObstacle implements Activatable{
         getLight().setSoft(true);
         getLight().setXray(true);
         lights[0] = getLightAsChain();
+    }
+
+    /**
+     * Applies a greyscale effect to the box2dlights associated with this object.
+     *
+     * @param greyscale  Amount of greyscale to apply: 0 is none, 1 is full.
+     */
+    @Override
+    public void setLightGreyscale(float greyscale){
+        for (Light light : lights) {
+            light.setColor(lightColor.r * (1 - greyscale) + greyColor * greyscale,
+                    lightColor.g * (1 - greyscale) + greyColor * greyscale,
+                    lightColor.b * (1 - greyscale) + greyColor * greyscale, lightColor.a);
+        }
     }
 
     /**

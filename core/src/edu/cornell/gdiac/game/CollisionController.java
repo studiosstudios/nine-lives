@@ -167,8 +167,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                             db.addHazard();
                         }
                     } else if (bd2 instanceof Flamethrower.Flame) {
-                        db.setBurning(true);
-                        db.addHazard();
+                        db.addFlame();
                     } else if (bd2 instanceof SpiritRegion){
                         db.addSpiritRegion((SpiritRegion) bd2);
                     }
@@ -299,8 +298,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                             db.removeHazard();
                         }
                     } else if (bd2 instanceof Flamethrower.Flame) {
-                        db.setBurning(false);
-                        db.removeHazard();
+                        db.removeFlame();
                     }
                     if (bd2 instanceof SpiritRegion){
                         db.removeSpiritRegion((SpiritRegion) bd2);

@@ -37,9 +37,9 @@ public class SpiritLine {
     /** How fast the middle point reaches its target */
     private static final float MID_MOVE_SPEED = 0.075f;
     /** The alpha target value when in spirit mode */
-    private static final float TARGET_ALPHA = 0.6f;
+    private static final float TARGET_ALPHA = 0.85f;
     /** How fast line fades in when exiting spirit mode */
-    private static final float FADE_IN_SPEED = 0.05f;
+    private static final float FADE_IN_SPEED = 0.2f;
     /** How fast line fades out when exiting spirit mode */
     private static final float FADE_OUT_SPEED = 0.2f;
     /** The thickness of the line */
@@ -111,6 +111,10 @@ public class SpiritLine {
         return end.epsilonEquals(endTarget, epsilon) && startTarget.epsilonEquals(startTarget, epsilon);
     }
 
+    public void setOuterColor(Color outerColor) {
+        this.outerColor.set(outerColor.r, outerColor.g, outerColor.b, alpha);
+    }
+
     /**
      * Draws the line to the canvas
      * @param canvas   Canvas to draw to
@@ -120,8 +124,8 @@ public class SpiritLine {
         points.set(1, middle1);
         points.set(2, middle2);
         points.set(3, end);
-        canvas.drawSpline(points, THICKNESS/4, innerColor, scale.x, scale.y);
         canvas.drawSpline(points, THICKNESS, outerColor, scale.x, scale.y);
+        canvas.drawSpline(points, THICKNESS/4, innerColor, scale.x, scale.y);
     }
 
 }

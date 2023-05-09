@@ -1,11 +1,13 @@
 package edu.cornell.gdiac.game;
 
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.*;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.Array;
@@ -57,7 +59,7 @@ public class GameCanvas {
 	public static final float STANDARD_HEIGHT = 576f;
 	
 	/** Drawing context to handle textures AND POLYGONS as sprites */
-	private PolygonSpriteBatch spriteBatch;
+	protected PolygonSpriteBatch spriteBatch;
 
 	/** Path rendering */
 	private PathFactory pathFactory;
@@ -102,6 +104,11 @@ public class GameCanvas {
 	private Vector2 vertex;
 	/** Cache object to handle raw textures */
 	private TextureRegion holder;
+	private final float CAMERA_ZOOM = 0.6f;
+	protected ShaderProgram spiritModeShader;
+	protected ShaderProgram greyscaleShader;
+	private FrameBuffer mainFrameBuffer;
+	private final Matrix4 FBO_PROJECTION = new Matrix4().setToOrtho2D(0,0,1,1);
 
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
@@ -134,6 +141,18 @@ public class GameCanvas {
 		local  = new Affine2();
 		global = new Matrix4();
 		vertex = new Vector2();
+
+		//shaders
+		ShaderProgram.pedantic =false;
+		spiritModeShader = new ShaderProgram(spriteBatch.getShader().getVertexShaderSource(),
+				Gdx.files.internal("shaders/portal.frag").readString());
+		greyscaleShader = new ShaderProgram(spriteBatch.getShader().getVertexShaderSource(),
+				Gdx.files.internal("shaders/greyscale.frag").readString());
+
+		mainFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
+
+		setBlendState(BlendState.NO_PREMULT);
+
 	}
 	/**
 	* Eliminate any resources that should be garbage collected manually.
@@ -146,7 +165,9 @@ public class GameCanvas {
 		spriteBatch.dispose();
 		spriteBatch = null;
 		debugRender.dispose();
+		mainFrameBuffer.dispose();
 		debugRender = null;
+		mainFrameBuffer = null;
 		local  = null;
 		global = null;
 		vertex = null;
@@ -226,7 +247,7 @@ public class GameCanvas {
 
 	/**
 	 * Changes the width and height of this canvas
-	 * <br><br>
+ef	 * <br><br>
 	 * This method raises an IllegalStateException if called while drawing is
 	 * active (e.g. in-between a begin-end pair).
 	 *
@@ -304,8 +325,16 @@ public class GameCanvas {
 	 * weird scaling issues.
 	 */
 	 public void resize() {
-		spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, getWidth(), getHeight());
-		 viewport.update(getWidth(), getHeight(), true);
+		 width = getWidth();
+		 height = getHeight();
+		 spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
+
+		 if (getWidth() != 0 && getHeight() != 0) {
+			 mainFrameBuffer.dispose();
+			 mainFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
+		 }
+
+		 viewport.update(width, height, true);
 	}
 	
 	/**
@@ -402,9 +431,78 @@ public class GameCanvas {
 	 */
 	public void begin() {
 		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
+//		vfxManager.update(Gdx.graphics.getDeltaTime());
 		spriteBatch.begin();
 		viewport.apply();
 		active = DrawPass.STANDARD;
+	}
+
+	/**
+	 * Begins the spritebatch and framebuffer, and clears the frame buffer.
+	 */
+	public void beginFrameBuffer(){
+		begin();
+		mainFrameBuffer.begin();
+		ScreenUtils.clear(Color.BLACK);
+	}
+
+	/**
+	 * Flushes the sprite batch and ends the frame buffer.
+	 */
+	public void endFrameBuffer() {
+		spriteBatch.flush();
+		mainFrameBuffer.end();
+	}
+
+	/**
+	 * Sets the spritebatch to use a specified shader.
+	 *
+	 * @param shader   Shader to use.
+	 */
+	public void setShader(ShaderProgram shader) { spriteBatch.setShader(shader); }
+
+
+	/**
+	 * Sets the spritebatch to use the spiritmode portal effect shader.
+	 *
+	 * @param diameter    diameter of the portal effect in uv coordinates
+	 * @param thickness   thickness (in unspecified units) of the fading part of the portal
+	 * @param bgColor     color of the solid part of the portal
+	 * @param edgeColor   color of the fading part of the portal
+	 * @param time        time since shader was initially applied
+	 */
+	public void setSpiritModeShader(float diameter, float thickness, Color bgColor, Color edgeColor, float time) {
+		spriteBatch.setShader(spiritModeShader);
+		spiritModeShader.setUniformf("u_radius", diameter);
+		spiritModeShader.setUniformf("u_thickness", thickness);
+		spiritModeShader.setUniformf("u_bgColor", bgColor);
+		spiritModeShader.setUniformf("u_edgeColor", edgeColor);
+		spiritModeShader.setUniformf("u_time", time);
+	}
+
+	/**
+	 * Sets the spritebatch to use the greyscale shader.
+	 *
+	 * @param greyScale  The amount of greyscale to apply: 0 is none, 1 is full.
+	 */
+	public void setGreyscaleShader(float greyScale) {
+		spriteBatch.setShader(greyscaleShader);
+		greyscaleShader.setUniformf("u_greyscale", greyScale);
+	}
+
+	/**
+	 * Projects a vector in world units into pixel units, then returns the ratio of its position with respect to
+	 * the screen dimensions. This is specifically used by the shockwave shader effect to get the position of the
+	 * shockwave center.
+	 *
+	 * @param vec  Vector to project
+	 * @return     Ratio of projected vector to screen dimensions
+	 */
+	public Vector2 projectRatio(Vector2 vec) {
+		Vector3 proj3 = camera.getCamera().project(new Vector3(vec.x, vec.y, 0),
+				viewport.getScreenX(), viewport.getScreenY(),
+				viewport.getScreenWidth(), viewport.getScreenHeight());
+		return vec.set(proj3.x/getWidth(), proj3.y/getHeight());
 	}
 
 	/**
@@ -415,11 +513,39 @@ public class GameCanvas {
 		active = DrawPass.INACTIVE;
 	}
 
+	/**
+	 * Flushes the spritebatch.
+	 */
 	public void flush() { spriteBatch.flush(); }
 
 	//////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////// DRAWING MODES ///////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////
+
+
+	/**
+	 * Draws the lights from a rayhandler into the framebuffer.
+	 *
+	 * @param rayHandler    box2dlights rayhandler
+	 */
+	public void drawLightsToBuffer(RayHandler rayHandler) {
+		spriteBatch.end();
+		rayHandler.prepareRender();
+		mainFrameBuffer.begin();
+		rayHandler.renderOnly();
+		mainFrameBuffer.end();
+		spriteBatch.begin();
+	}
+
+	/**
+	 * Draws the captured framebuffer into the main canvas.
+	 */
+	public void drawFrameBuffer() {
+		spriteBatch.setColor(Color.WHITE);
+		spriteBatch.setProjectionMatrix(FBO_PROJECTION);
+		spriteBatch.draw(mainFrameBuffer.getColorBufferTexture(), 0, 0, 1, 1, 0, 0, 1, 1);
+		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
+	}
 
 	/**
 	 * Draws the texture at the given position.

@@ -41,12 +41,12 @@ public class DeadBody extends CapsuleObstacle implements Movable {
     private Animation<TextureRegion> animation;
     private float time;
     private ObjectSet<Fixture> groundFixtures = new ObjectSet<>();
-
     public static final String groundSensorName = "deadBodyGround";
     public static final String centerSensorName = "deadBodyCenter";
     public static final String catBodyName = "deadCatBody";
     public static final String catSensorsName = "deadCatSensors";
     public static final String hitboxSensorName = "deadBodyHitBox";
+    private int flameCounter;
     private PolygonShape hitboxShape;
     /** List of shapes corresponding to the sensors attached to this body */
     private Array<Shape> sensorShapes;
@@ -100,6 +100,22 @@ public class DeadBody extends CapsuleObstacle implements Movable {
      * A hazard has stopped touching this dead body.
      */
     public void removeHazard(){ hazardsTouching--; }
+
+    /** A fixture has started touching a flame */
+    public void addFlame(){
+        if (flameCounter++ == 0) {
+            hazardsTouching++;
+            setBurning(true);
+        }
+    }
+
+    /** A fixture has stopped touching a flame */
+    public void removeFlame() {
+        if ( --flameCounter == 0) {
+            hazardsTouching--;
+            setBurning(false);
+        }
+    }
 
     /**
      * Creates a new dead body. Note that the Box2D body created in this constructor is not the actual solid part of the

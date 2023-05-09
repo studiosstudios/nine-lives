@@ -28,6 +28,7 @@
     "mass" : 1,
     "density": 1,
     "damping": 1.2,
+    "shrink" : 0.9,
     "offset": [0.5, -0.5]
   },
   "flamethrowers": {
@@ -93,9 +94,11 @@
     }
   },
   "goal": {
+    "shrink": 0.55,
     "base_offset": [0, 1],
-    "offset": [0.5, -1],
-    "solid_height_scale": 1,
+    "offset": [0, 0],
+//    "offset": [0.5, -1],
+    "solid_height_scale": 0.5,
     "solid_width_scale": 1
   },
   "deadBody": {

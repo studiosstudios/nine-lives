@@ -7,16 +7,11 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.audio.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.audio.AudioEngine;
-import edu.cornell.gdiac.audio.AudioSource;
-import edu.cornell.gdiac.audio.MusicQueue;
-import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.game.object.*;
 
 import edu.cornell.gdiac.game.obstacle.*;
@@ -353,7 +348,6 @@ public class GameController implements Screen {
         setJSON(nextJV);
         setRet(false);
 
-
         currLevelIndex = (currLevelIndex + 1) % 3;
         currLevel.setComplete(false);
         setLevels();
@@ -605,6 +599,14 @@ public class GameController implements Screen {
         nextLevel.pause();
         prevLevel.pause();
         undoTime = 0;
+
+        if (audioController.getCurrMusic().equals("metal") && currLevel.getBiome().equals("forest")) {
+            audioController.playForest();
+        }
+        else if (audioController.getCurrMusic().equals("forest") && currLevel.getBiome().equals("metal")) {
+            audioController.playLab();
+        }
+
         resume();
     }
 

@@ -156,6 +156,7 @@ public class AudioController {
             }
             levelMusicMap.put(names[i], directory.getEntry(names[i], AudioSource.class));
         }
+        currMusic = "metal";
     }
 
     /**
@@ -201,7 +202,7 @@ public class AudioController {
      */
     public void playStageMusic() {
         stageMusic.play();
-        currMusic = "stage";
+//        currMusic = "stage";
     }
 
     /**

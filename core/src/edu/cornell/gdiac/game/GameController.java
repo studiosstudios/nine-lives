@@ -3,24 +3,19 @@ package edu.cornell.gdiac.game;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.audio.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.audio.AudioEngine;
-import edu.cornell.gdiac.audio.AudioSource;
-import edu.cornell.gdiac.audio.MusicQueue;
-import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.game.object.*;
 
 import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.game.stage.HudStage;
 import edu.cornell.gdiac.util.ScreenListener;
 
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.util.HashMap;
 
 /**
@@ -111,7 +106,7 @@ public class GameController implements Screen {
     /** Whether level was just reset (matters for respawn behavior) **/
     private boolean justReset;
     final float RESPAWN_DELAY = 60f; //about 17ms per RESPAWN_DELAY unit (holds 1 second-0.5s on dead body, 0.5s on respawned cat)
-    /** The background texture */
+    /** The lab background texture */
     private Texture background;
     /** Ticks since the player has undone */
     private float undoTime;
@@ -359,7 +354,6 @@ public class GameController implements Screen {
         setJSON(nextJV);
         setRet(false);
 
-
         currLevelIndex = (currLevelIndex + 1) % 3;
         currLevel.setComplete(false);
         setLevels();
@@ -374,6 +368,8 @@ public class GameController implements Screen {
         }
         initCurrLevel(true);
         collisionController.setDidChange(true);
+//        collisionController.setLevel(levels[currLevelIndex]);
+//        actionController.setLevel(levels[currLevelIndex]);
     }
 
     /**
@@ -405,6 +401,8 @@ public class GameController implements Screen {
 
         initCurrLevel(true);
         collisionController.setDidChange(true);
+//        collisionController.setLevel(levels[currLevelIndex]);
+//        actionController.setLevel(levels[currLevelIndex]);
     }
 
     /**
@@ -460,7 +458,7 @@ public class GameController implements Screen {
                 // CHECKPOINTS
                 "checkpoint-anim", "checkpoint-active-anim", "checkpoint-base", "checkpoint-base-active",
                 // GOAL
-                "goal",
+                "goal", "goal-active",
                 // ROBOT & MOBS
                 "robot", "robot-anim",
                 // SPIRIT BOUNDARIES
@@ -468,20 +466,25 @@ public class GameController implements Screen {
                 // ACTIVATABLE LIGHTS
                 "ceiling-light", "wall-light",
                 // TILESETS
-                "metal-tileset", "climbable-tileset", "steel",
+                "metal-tileset", "climbable-tileset", "steel", "windows-tileset", "forest-tileset", "forestLeaves-tileset",
                 // DOORS & PLATFORMS
                 "door", "platform",
+                // BOX
+                "box",
                 // BACKGROUNDS
-                "bg-lab",
+                "bg-lab", "bg-forest",
                 // DECOR
                 "tutorial-burn", "tutorial-camera", "tutorial-checkpoint", "tutorial-dash", "tutorial-pause",
-                "tutorial-spike", "tutorial-switch", "tutorial-walk-jump"
+                "tutorial-side-spikes", "tutorial-spikes", "tutorial-switch", "tutorial-walk-jump",
+                "tutorial-jump-dash", "tutorial-undo",
+                "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf", "wall-bottom", "wall-top"
                 }; // Unsure if this is actually being used
         for (String n : names){
+//            System.out.println(n);
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
         }
 
-        names = new String[]{"jump", "dash", "metal-landing", "meow"};
+        names = new String[]{"jump", "dash", "metal-landing", "meow-1", "meow-2", "meow-3"};
         audioController.createSoundEffectMap(directory, names);
 
         names = new String[]{"bkg-lab-1", "bkg-forest-1"};
@@ -551,7 +554,9 @@ public class GameController implements Screen {
         if (rayHandler != null) {
             rayHandler.dispose();
         }
-        RayHandler.useDiffuseLight(true);
+//        RayHandler.useDiffuseLight(true);
+        RayHandler.useDiffuseLight(false);
+
         rayHandler = new RayHandler(world);
         rayHandler.setAmbientLight(0.9f);
 //        rayHandler.setShadows(true);
@@ -585,9 +590,11 @@ public class GameController implements Screen {
         initCurrLevel(false);
 
         if (audioController.getCurrMusic().equals("metal") && currLevel.getBiome().equals("forest")) {
+            System.out.println("switch to forest");
             audioController.playForest();
         }
         else if (audioController.getCurrMusic().equals("forest") && currLevel.getBiome().equals("metal")) {
+            System.out.println("switch to lab");
             audioController.playLab();
         }
     }
@@ -609,6 +616,14 @@ public class GameController implements Screen {
         nextLevel.pause();
         prevLevel.pause();
         undoTime = 0;
+
+        if (audioController.getCurrMusic().equals("metal") && currLevel.getBiome().equals("forest")) {
+            audioController.playForest();
+        }
+        else if (audioController.getCurrMusic().equals("forest") && currLevel.getBiome().equals("metal")) {
+            audioController.playLab();
+        }
+
         resume();
     }
 
@@ -683,10 +698,12 @@ public class GameController implements Screen {
             return false;
         }  else if (input.didNext() && levelNum < numLevels) {
             pause();
+//            nextLevel();
             init(levelNum + 1);
             return false;
         }  else if (input.didPrev() && levelNum > 1) {
             pause();
+//            prevLevel();
             init(levelNum - 1);
             return false;
         }
@@ -704,6 +721,7 @@ public class GameController implements Screen {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt) {
+//        System.out.println(currLevel.getGoal());
         if (collisionController.getReturn()) {
             setRet(true);
         }
@@ -767,7 +785,7 @@ public class GameController implements Screen {
             if (spiritModeTicks <= MAX_SPIRIT_MODE_TICKS) {
                 effectSize = (float) Math.sin(Math.PI * (double) (spiritModeTicks / 2f / MAX_SPIRIT_MODE_TICKS));
             } else {
-                effectSize =  (0.9f + 0.1f * (float) Math.cos(0.03 * (spiritModeTicks - MAX_SPIRIT_MODE_TICKS)));
+                effectSize = 1;
             }
         }
 
@@ -891,15 +909,16 @@ public class GameController implements Screen {
                 postUpdate(delta);
             }
         }
+
+        if (LIGHTS_ACTIVE) {
+            updateRayHandlerCombinedMatrix();
+            rayHandler.update();
+        }
+
         if (paused) { updateCamera(); }
         // Main game draw
         draw(delta);
 
-        // box2dlights draw
-        if (LIGHTS_ACTIVE) {
-            updateRayHandlerCombinedMatrix();
-            rayHandler.updateAndRender();
-        }
 
         // Menu draw
         hud.draw();
@@ -990,26 +1009,36 @@ public class GameController implements Screen {
      */
     public void draw(float dt) {
 
-        boolean vfx = effectSize > 0;
-
         canvas.clear();
         canvas.beginFrameBuffer();
         canvas.applyViewport(false);
-        if (vfx) { canvas.setGreyscaleShader(effectSize); }
+        if (currLevel.getBiome() != null && currLevel.getBiome().equals("metal")) {
+            background = textureRegionAssetMap.get("bg-lab").getTexture();
+        } else {
+            background = textureRegionAssetMap.get("bg-forest").getTexture();
+        }
+//        canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight());
+
+        if (effectSize > 0) { canvas.setGreyscaleShader(effectSize); }
         canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2f, canvas.getCamera().getY()  - canvas.getHeight()/2f, canvas.getWidth(), canvas.getHeight());
 
         if (true) { //TODO: only draw when necessary
-            prevLevel.draw(canvas, false, vfx, effectSize);
-            nextLevel.draw(canvas, false, vfx, effectSize);
+            prevLevel.draw(canvas, false, effectSize);
+            nextLevel.draw(canvas, false, effectSize);
         }
-        currLevel.draw(canvas, gameState != GameState.RESPAWN, vfx, effectSize);
-        if (vfx) {
+        currLevel.draw(canvas, gameState != GameState.RESPAWN, effectSize);
+
+        canvas.endFrameBuffer();
+
+        canvas.drawLightsToBuffer(rayHandler);
+
+        if (effectSize > 0) {
             canvas.setSpiritModeShader(1.8f - 0.6f * effectSize, 0.3f,
                     spiritModeColor, spiritModeColor, spiritModeTicks/60f);
         }
-        canvas.endFrameBuffer();
-        if (vfx) canvas.setShader(null);
+        canvas.drawFrameBuffer();
 
+        if (effectSize > 0) canvas.setShader(null);
         canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2f, canvas.getCamera().getY()  - canvas.getHeight()/2f, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
 
         canvas.end();
@@ -1021,16 +1050,6 @@ public class GameController implements Screen {
             if (levelNum < numLevels) nextLevel.drawDebug(canvas);
             canvas.endDebug();
         }
-
-        //box2d debug check
-//        Array<Body> bodies = new Array<>();
-//        world.getBodies(bodies);
-//        System.out.println(bodies.size);
-//        int numBodies = 0;
-//        for (Level l : levels){
-//            numBodies += l.objects.size();
-//        }
-//        System.out.println(numBodies);
 
     }
 

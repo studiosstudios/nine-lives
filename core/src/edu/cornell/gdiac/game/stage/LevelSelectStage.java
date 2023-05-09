@@ -14,17 +14,15 @@ public class LevelSelectStage extends StageWrapper {
     private Actor selectedActor;
     private Actor backButtonActor;
     private Actor playButtonActor;
-    private Actor backCatpawActor;
-    private Actor playCatpawActor;
-    private Actor oneActor;
-    private Actor twoActor;
+//    private Actor oneActor;
+//    private Actor twoActor;
 //    private List<Actor> actorList = new ArrayList<>(2);
 //    actorList.add(oneActor);
     /** State to keep track of whether the main menu button has been clicked */
     private int backButtonState;
     private int playButtonState;
-    private int oneState;
-    private int twoState;
+//    private int oneState;
+//    private int twoState;
 
     public boolean isBack() { return backButtonState == 2; }
     public int getBackButtonState() { return backButtonState; }
@@ -35,10 +33,10 @@ public class LevelSelectStage extends StageWrapper {
     public LevelSelectStage(AssetDirectory internal, boolean createActors) {
         super(internal, createActors);
     }
-    public int getSelectedLevel() {
-        int l = (oneState == 1 && twoState == 0) ? 1 : 2;
-        return l;
-    }
+//    public int getSelectedLevel() {
+//        int l = (oneState == 1 && twoState == 0) ? 1 : 2;
+//        return l;
+//    }
 
     /**
      *
@@ -53,18 +51,11 @@ public class LevelSelectStage extends StageWrapper {
         playButtonActor = addActor(internal.getEntry("play", Texture.class), 940, buttonY-175);
         playButtonActor.setScale(0.5f);
 
-        backCatpawActor = addActor(internal.getEntry("paw", Texture.class), buttonX+30, buttonY-225);
-        backCatpawActor.setScale(0.5f);
-        backCatpawActor.setVisible(false);
-        playCatpawActor = addActor(internal.getEntry("paw", Texture.class), buttonX+30, buttonY-175);
-        playCatpawActor.setScale(0.5f);
-        playCatpawActor.setVisible(false);
+        backButtonActor.addListener(createHoverListener(backButtonActor));
+        playButtonActor.addListener(createHoverListener(playButtonActor));
 
-        backButtonActor.addListener(createCatpawListener(backButtonActor, backCatpawActor));
-        playButtonActor.addListener(createCatpawListener(playButtonActor, playCatpawActor));
-
-        oneActor = addActor(internal.getEntry("one", Texture.class), xHalf-(18.5f*18)-5f, yHalf+(29*3));
-        twoActor = addActor(internal.getEntry("two", Texture.class), xHalf-(22.5f*11), yHalf+(29*3));
+//        oneActor = addActor(internal.getEntry("one", Texture.class), xHalf-(18.5f*18)-5f, yHalf+(29*3));
+//        twoActor = addActor(internal.getEntry("two", Texture.class), xHalf-(22.5f*11), yHalf+(29*3));
     }
 
     /**
@@ -84,17 +75,18 @@ public class LevelSelectStage extends StageWrapper {
         } else if (actor == playButtonActor) {
             playButtonState = 1;
             playButtonActor.setColor(Color.LIGHT_GRAY);
-        } else if (actor == oneActor) {
-            oneState = 1;
-            oneActor.setColor(Color.LIGHT_GRAY);
-            twoState = 0;
-            twoActor.setColor(Color.WHITE);
-        } else if (actor == twoActor) {
-            twoState = 1;
-            twoActor.setColor(Color.LIGHT_GRAY);
-            oneState = 0;
-            oneActor.setColor(Color.WHITE);
         }
+//        else if (actor == oneActor) {
+//            oneState = 1;
+//            oneActor.setColor(Color.LIGHT_GRAY);
+//            twoState = 0;
+//            twoActor.setColor(Color.WHITE);
+//        } else if (actor == twoActor) {
+//            twoState = 1;
+//            twoActor.setColor(Color.LIGHT_GRAY);
+//            oneState = 0;
+//            oneActor.setColor(Color.WHITE);
+//        }
         return true;
     }
 

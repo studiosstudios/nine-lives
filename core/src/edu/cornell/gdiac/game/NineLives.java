@@ -24,7 +24,7 @@ public class NineLives extends Game implements ScreenListener {
 	private GameController controller;
 	/** The AudioController to control all sound effects and music */
 	private AudioController audioController;
-	private final int TOTAL_LEVELS = 6;
+	private final int TOTAL_LEVELS = 9;
 	private boolean quickLaunchFromTiled;
 	private String filepath;
 
@@ -127,10 +127,10 @@ public class NineLives extends Game implements ScreenListener {
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
 		if (screen == menu && exitCode == 0) {
-			menu.loadAssets();
+//			menu.loadAssets();
 			startGame(TOTAL_LEVELS, 1);
 		} else if (screen == menu && exitCode == 69) {
-			menu.loadAssets();
+//			menu.loadAssets();
 			startGame(TOTAL_LEVELS, menu.getSelectedLevel());
 		} else if (screen == menu && exitCode == 25) {
 			controller.resume();

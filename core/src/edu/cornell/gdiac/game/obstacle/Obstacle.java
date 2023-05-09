@@ -31,7 +31,6 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.*;  // For GameCanvas
 
-import java.util.HashMap;
 
 /**
  * Base model class to support collisions.
@@ -88,6 +87,12 @@ public abstract class Obstacle {
 	private ObjectMap<String, Object> pausedState;
 	/** box2dlight associated with this object */
 	private Light light;
+	/** Color of the box2dlight associated with this object */
+	protected Color lightColor = new Color();
+	/** Greyscale RGB values of box2dlight color*/
+	protected float greyColor;
+	/** RGB weights for converting light colors to greyscale.*/
+	private Vector3 greyConv = new Vector3(0.333f, 0.333f, 0.333f);
 
 	/// BodyDef Methods
 	/**
@@ -414,7 +419,9 @@ public abstract class Obstacle {
 	 */
 	public void createPointLight(JsonValue lightData, RayHandler rayHandler) {
 		float xOffset = lightData.get("offset").getFloat(0), yOffset = lightData.get("offset").getFloat(1);
-		light = new PointLight(rayHandler, 100, Color.valueOf(lightData.getString("color")), lightData.getFloat("distance"), xOffset, yOffset);
+		lightColor.set(Color.valueOf(lightData.getString("color")));
+		greyColor = greyConv.x * lightColor.r + greyConv.x * lightColor.g + greyConv.x * lightColor.b;
+		light = new PointLight(rayHandler, 100, lightColor, lightData.getFloat("distance"), xOffset, yOffset);
 	}
 
 	/**
@@ -434,10 +441,12 @@ public abstract class Obstacle {
 	 */
 	public void createConeLight(JsonValue lightData, RayHandler rayHandler) {
 		float xOffset = lightData.get("offset").getFloat(0), yOffset = lightData.get("offset").getFloat(1);
+		lightColor.set(Color.valueOf(lightData.getString("color")));
+		greyColor = greyConv.x * lightColor.r + greyConv.x * lightColor.g + greyConv.x * lightColor.b;
 		light = new ConeLight(
 				rayHandler,
 				100,
-				Color.valueOf(lightData.getString("color")),
+				lightColor,
 				lightData.getFloat("distance"),
 				xOffset,
 				yOffset,
@@ -477,10 +486,12 @@ public abstract class Obstacle {
 	 * @param vertices Vertices defining the ChainLight
 	 */
 	public void createChainLight(JsonValue lightData, RayHandler rayHandler, float[] vertices) {
+		lightColor.set(Color.valueOf(lightData.getString("color")));
+		greyColor = greyConv.x * lightColor.r + greyConv.x * lightColor.g + greyConv.x * lightColor.b;
 		light = new ChainLight(
 				rayHandler,
 				100,
-				Color.valueOf(lightData.getString("color")),
+				lightColor,
 				lightData.getFloat("distance"),
 				lightData.getInt("direction"),
 				vertices);
@@ -500,12 +511,26 @@ public abstract class Obstacle {
 	 * @param direction Direction this ChainLight should emit light
 	 */
 	public void createChainLight(JsonValue lightData, RayHandler rayHandler, int direction) {
+		lightColor.set(Color.valueOf(lightData.getString("color")));
+		greyColor = greyConv.x * lightColor.r + greyConv.x * lightColor.g + greyConv.x * lightColor.b;
 		light = new ChainLight(
 				rayHandler,
 				100,
-				Color.valueOf(lightData.getString("color")),
+				lightColor,
 				lightData.getFloat("distance"),
 				direction);
+	}
+
+	/**
+	 * Applies a greyscale effect to the box2dlight associated with this object.
+	 *
+	 * @param greyscale  Amount of greyscale to apply: 0 is none, 1 is full.
+	 */
+	public void setLightGreyscale(float greyscale){
+		if (light == null) return;
+		light.setColor(lightColor.r * (1-greyscale) + greyColor * greyscale,
+				lightColor.g * (1-greyscale) + greyColor * greyscale,
+				lightColor.b * (1-greyscale) + greyColor * greyscale, lightColor.a);
 	}
 
 	/**

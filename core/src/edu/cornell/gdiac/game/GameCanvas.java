@@ -1,11 +1,13 @@
 package edu.cornell.gdiac.game;
 
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.*;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.Array;
@@ -105,8 +107,8 @@ public class GameCanvas {
 	private final float CAMERA_ZOOM = 0.6f;
 	protected ShaderProgram spiritModeShader;
 	protected ShaderProgram greyscaleShader;
-	private FrameBuffer frameBuffer;
-	private final Matrix4 IDENTITY = new Matrix4();
+	private FrameBuffer mainFrameBuffer;
+	private final Matrix4 FBO_PROJECTION = new Matrix4().setToOrtho2D(0,0,1,1);
 
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
@@ -147,7 +149,7 @@ public class GameCanvas {
 		greyscaleShader = new ShaderProgram(spriteBatch.getShader().getVertexShaderSource(),
 				Gdx.files.internal("shaders/greyscale.frag").readString());
 
-		frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, (int) STANDARD_WIDTH, (int) STANDARD_HEIGHT, false);
+		mainFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
 
 		setBlendState(BlendState.NO_PREMULT);
 
@@ -163,9 +165,9 @@ public class GameCanvas {
 		spriteBatch.dispose();
 		spriteBatch = null;
 		debugRender.dispose();
-		frameBuffer.dispose();
+		mainFrameBuffer.dispose();
 		debugRender = null;
-		frameBuffer = null;
+		mainFrameBuffer = null;
 		local  = null;
 		global = null;
 		vertex = null;
@@ -328,8 +330,8 @@ ef	 * <br><br>
 		 spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
 
 		 if (getWidth() != 0 && getHeight() != 0) {
-			 frameBuffer.dispose();
-			 frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
+			 mainFrameBuffer.dispose();
+			 mainFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
 		 }
 
 		 viewport.update(width, height, true);
@@ -435,44 +437,58 @@ ef	 * <br><br>
 		active = DrawPass.STANDARD;
 	}
 
+	/**
+	 * Begins the spritebatch and framebuffer, and clears the frame buffer.
+	 */
 	public void beginFrameBuffer(){
 		begin();
-		HdpiUtils.setMode(HdpiMode.Pixels);
-		frameBuffer.begin();
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		mainFrameBuffer.begin();
+		ScreenUtils.clear(Color.BLACK);
 	}
 
+	/**
+	 * Flushes the sprite batch and ends the frame buffer.
+	 */
 	public void endFrameBuffer() {
 		spriteBatch.flush();
-		frameBuffer.end();
-		HdpiUtils.setMode(HdpiMode.Logical);
-        spriteBatch.setColor(Color.WHITE);
-		spriteBatch.setProjectionMatrix(IDENTITY);
-		spriteBatch.draw(frameBuffer.getColorBufferTexture(), -1, -1, 2f, 2f, 0, 0, width, height, false, true);
-		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
+		mainFrameBuffer.end();
 	}
 
+	/**
+	 * Sets the spritebatch to use a specified shader.
+	 *
+	 * @param shader   Shader to use.
+	 */
 	public void setShader(ShaderProgram shader) { spriteBatch.setShader(shader); }
 
-	public void setSpiritModeShader(float radius, float thickness, Color bgColor, Color edgeColor, float time) {
+
+	/**
+	 * Sets the spritebatch to use the spiritmode portal effect shader.
+	 *
+	 * @param diameter    diameter of the portal effect in uv coordinates
+	 * @param thickness   thickness (in unspecified units) of the fading part of the portal
+	 * @param bgColor     color of the solid part of the portal
+	 * @param edgeColor   color of the fading part of the portal
+	 * @param time        time since shader was initially applied
+	 */
+	public void setSpiritModeShader(float diameter, float thickness, Color bgColor, Color edgeColor, float time) {
 		spriteBatch.setShader(spiritModeShader);
-		spiritModeShader.setUniformf("u_radius", radius);
+		spiritModeShader.setUniformf("u_radius", diameter);
 		spiritModeShader.setUniformf("u_thickness", thickness);
 		spiritModeShader.setUniformf("u_bgColor", bgColor);
 		spiritModeShader.setUniformf("u_edgeColor", edgeColor);
 		spiritModeShader.setUniformf("u_time", time);
 	}
 
+	/**
+	 * Sets the spritebatch to use the greyscale shader.
+	 *
+	 * @param greyScale  The amount of greyscale to apply: 0 is none, 1 is full.
+	 */
 	public void setGreyscaleShader(float greyScale) {
 		spriteBatch.setShader(greyscaleShader);
 		greyscaleShader.setUniformf("u_greyscale", greyScale);
 	}
-
-	/**
-	 * Sets up the spritebatch for drawing. This should only be used if you want to draw textures without VFX
-	 * after calling <code>endVFX()</code> - if you want to begin drawing at a drawing loop you should call <code>begin()</code>.
-	 */
-	public void batchBegin(){ spriteBatch.begin(); }
 
 	/**
 	 * Projects a vector in world units into pixel units, then returns the ratio of its position with respect to
@@ -497,11 +513,39 @@ ef	 * <br><br>
 		active = DrawPass.INACTIVE;
 	}
 
+	/**
+	 * Flushes the spritebatch.
+	 */
 	public void flush() { spriteBatch.flush(); }
 
 	//////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////// DRAWING MODES ///////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////
+
+
+	/**
+	 * Draws the lights from a rayhandler into the framebuffer.
+	 *
+	 * @param rayHandler    box2dlights rayhandler
+	 */
+	public void drawLightsToBuffer(RayHandler rayHandler) {
+		spriteBatch.end();
+		rayHandler.prepareRender();
+		mainFrameBuffer.begin();
+		rayHandler.renderOnly();
+		mainFrameBuffer.end();
+		spriteBatch.begin();
+	}
+
+	/**
+	 * Draws the captured framebuffer into the main canvas.
+	 */
+	public void drawFrameBuffer() {
+		spriteBatch.setColor(Color.WHITE);
+		spriteBatch.setProjectionMatrix(FBO_PROJECTION);
+		spriteBatch.draw(mainFrameBuffer.getColorBufferTexture(), 0, 0, 1, 1, 0, 0, 1, 1);
+		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
+	}
 
 	/**
 	 * Draws the texture at the given position.

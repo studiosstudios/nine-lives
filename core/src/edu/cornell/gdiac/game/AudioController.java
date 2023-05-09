@@ -47,8 +47,7 @@ public class AudioController {
     private float sfxVolume;
     /** The current volume for music */
     private float musicVolume;
-
-
+    private int numMeows;
 
     /**
      * Creates a new Audio Controller
@@ -58,6 +57,7 @@ public class AudioController {
     public AudioController() {
         levelSoundMap = new HashMap<>();
         levelMusicMap = new HashMap<>();
+        numMeows = 0;
 
         AudioEngine engine = (AudioEngine) Gdx.audio;
 //        levelMusic = engine.newMusicBuffer(false, 44100);
@@ -105,10 +105,21 @@ public class AudioController {
         sfxVolume = val;
     }
 
-
+    /**
+     * Returns the current music playing
+     *
+     * @return currMusic
+     */
     public String getCurrMusic() {
         return currMusic;
     }
+
+    /**
+     * Returns the number of meow sound effects
+     *
+     * @return numMeows
+     */
+    public int getNumMeows() { return numMeows; }
 
     /**
      * Adds an AudioSource to the level music queue
@@ -137,6 +148,9 @@ public class AudioController {
     public void createSoundEffectMap(AssetDirectory directory, String[] names) {
         for (String n : names) {
             levelSoundMap.put(n, directory.getEntry(n, SoundEffect.class));
+            if (n.contains("meow")) {
+                numMeows++;
+            }
         }
     }
 
@@ -156,6 +170,7 @@ public class AudioController {
             }
             levelMusicMap.put(names[i], directory.getEntry(names[i], AudioSource.class));
         }
+        currMusic = "metal";
     }
 
     /**
@@ -176,6 +191,7 @@ public class AudioController {
      */
     public void playForest() {
         levelMusic.pause();
+        System.out.println(forestMusic);
         levelMusic = forestMusic;
         currMusic = "forest";
     }
@@ -201,7 +217,16 @@ public class AudioController {
      */
     public void playStageMusic() {
         stageMusic.play();
-        currMusic = "stage";
+//        currMusic = "stage";
+    }
+
+    /**
+     * Add sound effect to map
+     * @param name the name of the sound effect
+     * @param sound the sound effect
+     */
+    public void addSoundEffect(String name, SoundEffect sound) {
+        levelSoundMap.put(name, sound);
     }
 
     /**
@@ -267,10 +292,6 @@ public class AudioController {
         levelMusic.advanceSource();
         setLooping();
     }
-
-//    public void prevLevelMusic() {
-//        levelMusic.
-//    }
 
     /**
      * Advances the stage music queue to the next AudioSource

@@ -20,6 +20,11 @@
         "wrapU": "repeated",
         "wrapV": "repeated"
       },
+      "goal-active": {
+        "file": "obstacles/goal/goal-active.png",
+        "wrapU": "repeated",
+        "wrapV": "repeated"
+      },
       "cat":  "cat/cat.png",
       "walk-anim": "cat/walk-anim.png",
       "jump": "cat/jump.png",

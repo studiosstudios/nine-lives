@@ -46,6 +46,7 @@
       "button-top": "obstacles/button/button-top.png",
       "switch-top": "obstacles/button/switch-top.png",
       "switch-base": "obstacles/button/switch-base.png",
+      "box": "obstacles/box/box.png",
       "flamethrower": "obstacles/flamethrower/flamethrower.png",
       "flame": "obstacles/flamethrower/flame.png", //UNUSED
       "flame-anim": "obstacles/flamethrower/flame-anim.png",
@@ -101,12 +102,13 @@
         "tiledLevel4": "levels/spikes-deaths-easy.json",
       //        "tiledLevel2": "levels/test-windows.json",
       //        "tiledLevel1": "levels/lights.json",
-        "tiledLevel5": "levels/level-beta-med1.json",
-        "tiledLevel6": "levels/body-switching-chain-medium.json",
-        "tiledLevel7": "levels/super-jump.json"
+        "tiledLevel5": "levels/activator-door-tutorial.json",
+        "tiledLevel6": "levels/level-beta-med1.json",
+        "tiledLevel7": "levels/body-switching-chain-medium.json",
+        "tiledLevel8": "levels/super-jump.json"
 //        "tiledLevel5": "levels/level-beta-hard.json",
 //        "tiledLevel8": "levels/party-room.json"
-        "tiledLevel8": "levels/test-forest.json"
+        "tiledLevel9": "levels/test-forest.json"
     },
     "soundfx" : {
         "jump" : "sounds/jump-CELESTE.wav",

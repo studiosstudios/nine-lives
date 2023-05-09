@@ -37,14 +37,14 @@ public class PushableBox extends BoxObstacle implements Movable {
      * @param textureScale   Texture scale for rescaling texture
      */
     public PushableBox(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
-        super(tMap.get("steel").getRegionWidth()/scale.x,
-                tMap.get("steel").getRegionHeight()/scale.y);
+        super(tMap.get("box").getRegionWidth()/scale.x*textureScale.x * objectConstants.getFloat("shrink"),
+                tMap.get("box").getRegionHeight()/scale.y*textureScale.y * objectConstants.getFloat("shrink"));
 
         setBodyType(BodyDef.BodyType.DynamicBody);
         setFixedRotation(true);
         setName("box");
         setDrawScale(scale);
-        setTexture(tMap.get("steel"));
+        setTexture(tMap.get("box"));
         setTextureScale(textureScale);
 
         setRestitution(objectConstants.getFloat("restitution", 0));

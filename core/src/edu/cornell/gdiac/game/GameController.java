@@ -468,8 +468,9 @@ public class GameController implements Screen {
                 "bg-lab", "bg-forest",
                 // DECOR
                 "tutorial-burn", "tutorial-camera", "tutorial-checkpoint", "tutorial-dash", "tutorial-pause",
-                "tutorial-spike", "tutorial-switch", "tutorial-walk-jump", "tutorial-jump-dash",
-                "cat-vinci", "shelf"
+                "tutorial-side-spikes", "tutorial-spikes", "tutorial-switch", "tutorial-walk-jump",
+                "tutorial-jump-dash", "tutorial-undo",
+                "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf"
                 }; // Unsure if this is actually being used
         for (String n : names){
 //            System.out.println(n);

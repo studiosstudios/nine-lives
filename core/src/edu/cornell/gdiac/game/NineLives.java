@@ -22,7 +22,7 @@ public class NineLives extends Game implements ScreenListener {
 	private StageController menu;
 	/** The WorldController that contains all LevelControllers*/
 	private GameController controller;
-	private final int TOTAL_LEVELS = 6;
+	private final int TOTAL_LEVELS = 7;
 	private boolean quickLaunchFromTiled;
 	private String filepath;
 

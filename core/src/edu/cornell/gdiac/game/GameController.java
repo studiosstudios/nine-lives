@@ -545,7 +545,9 @@ public class GameController implements Screen {
         if (rayHandler != null) {
             rayHandler.dispose();
         }
-        RayHandler.useDiffuseLight(true);
+//        RayHandler.useDiffuseLight(true);
+        RayHandler.useDiffuseLight(false);
+
         rayHandler = new RayHandler(world);
         rayHandler.setAmbientLight(0.9f);
 //        rayHandler.setShadows(true);

@@ -1,6 +1,5 @@
 package edu.cornell.gdiac.game;
 
-import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -14,7 +13,7 @@ import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.util.PooledList;
 
 import java.util.HashMap;
-import java.util.Random;
+
 /**
  * Represents a single level in our game
  * <br><br>
@@ -117,7 +116,7 @@ public class Level {
     private String biome;
     /** Current RayHandler associated with the active world for convenience. */
     private RayHandler rayHandler;
-
+    private DeadBody nextBody;
     private Array<Decoration> decorations = new Array();
 
 
@@ -405,7 +404,7 @@ public class Level {
         cameraRegions = new Array<>();
         activationRelations = new HashMap<>();
         spiritMode = false;
-        spiritLine = new SpiritLine(Color.WHITE, Color.CYAN, scale);
+        spiritLine = new SpiritLine(Color.WHITE, Color.WHITE, scale);
     }
 
     /**
@@ -1246,17 +1245,12 @@ public class Level {
     /**
      * Draws the level to the given game canvas. Assumes <code>canvas.begin()</code> has already been called.
      *
-     * @param canvas	the drawing context
-     * @param drawCat   if we should draw the cat
+     * @param canvas	  the drawing context
+     * @param drawCat     if we should draw the cat
+     * @param greyscale   amount of greyscale to apply (0-1)
      */
-    public void draw(GameCanvas canvas, boolean drawCat) {
-//        if (background != null) {
-//            //scales background with level size
-//            float scaleX = bounds.width/background.getWidth() * scale.x;
-//            float scaleY = bounds.height/background.getHeight() * scale.y;
-//            canvas.draw(background, Color.WHITE, bounds.x * scale.x, bounds.y * scale.y, background.getWidth()*Float.max(scaleX,scaleY), background.getHeight()*Float.max(scaleX,scaleY));
-////            canvas.draw(background, 0, 0);
-//        }
+    public void draw(GameCanvas canvas, boolean drawCat, float greyscale) {
+
         for (Decoration d : decorations) { d.draw(canvas); }
 
         for (Laser l : lasers){
@@ -1265,6 +1259,7 @@ public class Level {
 
         //draw everything except cat, dead bodies and spirit region
         for(Obstacle obj : objects) {
+            obj.setLightGreyscale(greyscale);
             if (obj != cat && !(obj instanceof DeadBody) && !(obj instanceof SpiritRegion)
                     && !(obj instanceof Wall && !(obj instanceof Platform)) && !(obj instanceof Activator) ) {
                 obj.draw(canvas);
@@ -1281,14 +1276,9 @@ public class Level {
             a.draw(canvas);
         }
 
-        spiritLine.draw(canvas);
+        if (greyscale > 0) {canvas.setShader(null);}
 
-        for (DeadBody db : deadBodyArray) {
-            db.draw(canvas);
-        }
-        if(cat != null && drawCat) {
-            cat.draw(canvas);
-        }
+        spiritLine.draw(canvas);
 
         for (SpiritRegion s : spiritRegionArray) {
             s.draw(canvas);
@@ -1297,6 +1287,25 @@ public class Level {
         for (Particle spirit : spiritParticles) {
             spirit.draw(canvas, textureRegionAssetMap.get("spirit-photon").getTexture(), new Vector2(32f, 32f), new Vector2(20f, 20f));
         }
+
+        for (DeadBody db : deadBodyArray) {
+            if (greyscale > 0) {
+                if (db == nextBody){
+                    canvas.setShader(null);
+                } else {
+                    canvas.setGreyscaleShader(greyscale);
+                }
+            }
+            db.draw(canvas);
+        }
+
+        if (greyscale > 0) {canvas.setShader(null);}
+
+        if(cat != null && drawCat) {
+            cat.draw(canvas);
+        }
+
+        if (greyscale > 0) canvas.setGreyscaleShader(greyscale);
 
         if (currCheckpoint != null) {
             currCheckpoint.drawBase(canvas);
@@ -1406,6 +1415,7 @@ public class Level {
                 }
             }
         }
+        nextBody = nextdb;
         return nextdb;
     }
 

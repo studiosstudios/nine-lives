@@ -47,8 +47,7 @@ public class AudioController {
     private float sfxVolume;
     /** The current volume for music */
     private float musicVolume;
-    private boolean empty;
-
+    private int numMeows;
 
     /**
      * Creates a new Audio Controller
@@ -58,7 +57,7 @@ public class AudioController {
     public AudioController() {
         levelSoundMap = new HashMap<>();
         levelMusicMap = new HashMap<>();
-        empty = true;
+        numMeows = 0;
 
         AudioEngine engine = (AudioEngine) Gdx.audio;
 //        levelMusic = engine.newMusicBuffer(false, 44100);
@@ -116,11 +115,11 @@ public class AudioController {
     }
 
     /**
-     * Whether this audio controller is empty of sound
+     * Returns the number of meow sound effects
      *
-     * @return empty
+     * @return numMeows
      */
-    public boolean isEmpty() { return empty; }
+    public int getNumMeows() { return numMeows; }
 
     /**
      * Adds an AudioSource to the level music queue
@@ -149,6 +148,9 @@ public class AudioController {
     public void createSoundEffectMap(AssetDirectory directory, String[] names) {
         for (String n : names) {
             levelSoundMap.put(n, directory.getEntry(n, SoundEffect.class));
+            if (n.contains("meow")) {
+                numMeows++;
+            }
         }
     }
 
@@ -224,7 +226,6 @@ public class AudioController {
      */
     public void addSoundEffect(String name, SoundEffect sound) {
         levelSoundMap.put(name, sound);
-        empty = false;
     }
 
     /**

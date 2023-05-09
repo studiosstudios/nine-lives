@@ -27,6 +27,7 @@ import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.Camera;
 import edu.cornell.gdiac.game.obstacle.*;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import java.util.HashMap;
@@ -481,7 +482,9 @@ public class Cat extends CapsuleObstacle implements Movable {
 
     public void setMeowing(boolean value) {
         if (value && !isMeowing) {
-            soundBuffer.add("meow");
+            Random rand = new Random();
+            int randomNum = rand.nextInt((3 - 1) + 1) + 1;
+            soundBuffer.add("meow-"+randomNum);
         }
         isMeowing = value;
     }

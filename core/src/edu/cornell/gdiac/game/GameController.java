@@ -471,7 +471,7 @@ public class GameController implements Screen {
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
         }
 
-        names = new String[]{"jump", "dash", "metal-landing", "meow"};
+        names = new String[]{"jump", "dash", "metal-landing", "meow-1", "meow-2", "meow-3"};
         audioController.createSoundEffectMap(directory, names);
 
         names = new String[]{"bkg-lab-1", "bkg-forest-1"};

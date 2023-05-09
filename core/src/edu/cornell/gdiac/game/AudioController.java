@@ -70,8 +70,10 @@ public class AudioController {
         if (prevVolume == -1) {
             // TODO: automate this with the volume constant in internal loading json
             setVolume(0.3f);
+            setSfxVolume(0.3f);
         } else {
             setVolume(prevVolume);
+            setSfxVolume(prevVolume);
         }
         setLooping();
     }
@@ -92,7 +94,6 @@ public class AudioController {
         levelMusic.setVolume(val);
         stageMusic.setVolume(val);
         prevVolume = val;
-        sfxVolume = val;
         musicVolume = val;
     }
 

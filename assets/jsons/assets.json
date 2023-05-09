@@ -15,6 +15,11 @@
         "wrapU": "repeated",
         "wrapV": "repeated"
       },
+      "goal": {
+        "file": "obstacles/goal/goal.png",
+        "wrapU": "repeated",
+        "wrapV": "repeated"
+      },
       "cat":  "cat/cat.png",
       "walk-anim": "cat/walk-anim.png",
       "jump": "cat/jump.png",
@@ -43,7 +48,6 @@
       "checkpoint-active-anim" : "obstacles/checkpoint/checkpoint-active-anim.png",
       "checkpoint-base" : "obstacles/checkpoint/checkpoint-base.png",
       "checkpoint-base-active" : "obstacles/checkpoint/checkpoint-base-active.png",
-      "goal" : "obstacles/goal/goal.png",
       "robot": "mob/robot/robot.png",
       "robot-anim": "mob/robot/robot-anim.png",
       "spirit-anim": "obstacles/spirit-region/spirit-anim.png", //UNUSED

@@ -55,8 +55,10 @@
     "solid_width_scale": 1
   },
   "goal": {
+    "shrink": 0.55,
     "base_offset": [0, 1],
-    "offset": [0.5, -1],
+    "offset": [0, 0],
+//    "offset": [0.5, -1],
     "solid_height_scale": 0.5,
     "solid_width_scale": 1
   },

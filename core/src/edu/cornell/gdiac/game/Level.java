@@ -792,6 +792,23 @@ public class Level {
     }
 
     /**
+     * Populates the goal for this level.
+     *
+     * @param data          Tiled JSON data for the goal
+     * @param tileSize      Tile size in the Tiled JSON
+     * @param levelHeight   Level height in Box2D units
+     */
+    private void populateGoal(JsonValue data, int tileSize, int levelHeight) {
+        JsonValue objects = data.get("objects");
+        textureScaleCache.set(1/32f, 1/32f);
+        for (JsonValue objJV : objects) {
+            readProperties(objJV, tileSize, levelHeight);
+            goal = new Goal(propertiesMap, textureRegionAssetMap, scale, 128);
+            addObject(goal);
+        }
+    }
+
+    /**
      * Populates the spirit regions for this level.
      *
      * @param data          Tiled JSON data for all spirit regions
@@ -876,16 +893,6 @@ public class Level {
             addObject(exit);
             if (exit.exitType() == Exit.ExitType.GOAL) goalExit = exit;
             if (exit.exitType() == Exit.ExitType.RETURN) returnExit = exit;
-        }
-    }
-
-    private void populateGoal(JsonValue data, int tileSize, int levelHeight) {
-        JsonValue objects = data.get("objects");
-        textureScaleCache.set(1/32f, 1/32f);
-        for (JsonValue objJV : objects) {
-            readProperties(objJV, tileSize, levelHeight);
-            goal = new Goal(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
-            addObject(goal);
         }
     }
 

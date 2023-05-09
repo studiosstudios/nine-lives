@@ -470,7 +470,7 @@ public class GameController implements Screen {
                 "tutorial-burn", "tutorial-camera", "tutorial-checkpoint", "tutorial-dash", "tutorial-pause",
                 "tutorial-side-spikes", "tutorial-spikes", "tutorial-switch", "tutorial-walk-jump",
                 "tutorial-jump-dash", "tutorial-undo",
-                "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf"
+                "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf", "wall-bottom", "wall-top"
                 }; // Unsure if this is actually being used
         for (String n : names){
 //            System.out.println(n);
@@ -581,9 +581,11 @@ public class GameController implements Screen {
         initCurrLevel(false);
 
         if (audioController.getCurrMusic().equals("metal") && currLevel.getBiome().equals("forest")) {
+            System.out.println("switch to forest");
             audioController.playForest();
         }
         else if (audioController.getCurrMusic().equals("forest") && currLevel.getBiome().equals("metal")) {
+            System.out.println("switch to lab");
             audioController.playLab();
         }
     }

@@ -846,7 +846,6 @@ public class Level {
         JsonValue objects = data.get("objects");
         textureScaleCache.set(1/32f, 1/32f);
         for (JsonValue objJV : objects) {
-            System.out.println("populating goal");
             readProperties(objJV, tileSize, levelHeight);
             goal = new Goal(propertiesMap, textureRegionAssetMap, scale, 512);
             addObject(goal);
@@ -1258,6 +1257,7 @@ public class Level {
 //            canvas.draw(background, Color.WHITE, bounds.x * scale.x, bounds.y * scale.y, background.getWidth()*Float.max(scaleX,scaleY), background.getHeight()*Float.max(scaleX,scaleY));
 ////            canvas.draw(background, 0, 0);
 //        }
+        for (Decoration d : decorations) { d.draw(canvas); }
 
         for (Laser l : lasers){
             l.drawLaser(canvas);
@@ -1280,8 +1280,6 @@ public class Level {
         for (Activator a : activators) {
             a.draw(canvas);
         }
-
-        for (Decoration d : decorations) { d.draw(canvas); }
 
         spiritLine.draw(canvas);
 

@@ -124,8 +124,7 @@ public class GameController implements Screen {
     public AudioController audioController;
     /** only not null if quick launched from Tiled */
     private JsonValue quickLaunchLevel;
-    private boolean LIGHTS_ACTIVE = false;
-
+    private boolean LIGHTS_ACTIVE = true;
     private Color spiritModeColor = new Color(1, 1, 1, 1);
 
     /**

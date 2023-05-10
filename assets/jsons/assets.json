@@ -70,8 +70,16 @@
       "steel": "obstacles/shared/steel.png",
       "ceiling-light": "obstacles/lights/ceiling-light.png",
       "wall-light": "obstacles/lights/wall-light.png",
-      "bg-lab": "world/backgrounds/bg-lab.png",
-      "bg-forest": "world/backgrounds/bg-forest.png",
+      "bg-lab": {
+        "file": "world/backgrounds/bg-lab.png",
+        "wrapU": "repeated",
+        "wrapV": "repeated"
+      },
+      "bg-forest": {
+        "file": "world/backgrounds/bg-forest.png",
+        "wrapU": "repeated",
+        "wrapV": "repeated"
+      },
       // Decor
       "tutorial-burn": "world/decor/tutorial-burn.png",
       "tutorial-camera": "world/decor/tutorial-camera.png",
@@ -105,7 +113,7 @@
         "tiledLevel5": "levels/activator-door-tutorial.json",
         "tiledLevel6": "levels/level-beta-med1.json",
         "tiledLevel7": "levels/body-switching-chain-medium.json",
-        "tiledLevel8": "levels/super-jump.json"
+        "tiledLevel8": "levels/super-jump.json",
 //        "tiledLevel5": "levels/level-beta-hard.json",
 //        "tiledLevel8": "levels/party-room.json"
         "tiledLevel9": "levels/test-forest.json"

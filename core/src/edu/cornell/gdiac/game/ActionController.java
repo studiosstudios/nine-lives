@@ -349,7 +349,8 @@ public class ActionController {
 
             //object is grounded, update base velocity to be average of velocities of grounds
             if (numGrounded > 0 && !baseVel.scl(1f / numGrounded).epsilonEquals(Vector2.Zero, 0.001f)) {
-                obj.setBaseVelocity(baseVel);
+//                obj.setBaseVelocity(baseVel);
+                obj.setBaseVX(baseVel.x);
                 grounded.put(obj, true);
                 return true;
             }

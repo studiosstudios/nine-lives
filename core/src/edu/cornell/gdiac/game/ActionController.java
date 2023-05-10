@@ -502,9 +502,12 @@ public class ActionController {
      * Spirit particles are spawned at dead bodies and dead bodies are removed.
      */
     public void recombineLives() {
+        if (level.getNumLives() != level.getMaxLives() && level.getdeadBodyArray().size == 0) {
+            level.resetLives();
+            return;
+        }
 
         if (level.getSpiritParticles().size == 0) {
-
             while (level.getdeadBodyArray().size != 0) {
                 for (DeadBody body: level.getdeadBodyArray()) {
                     Particle spirit = new Particle();

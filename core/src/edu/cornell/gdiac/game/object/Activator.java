@@ -84,7 +84,7 @@ public abstract class Activator extends PolygonObstacle {
         bottomTexture = tMap.get(base_name);
         setTexture(bottomTexture);
         setTextureScale(textureScale);
-        spriteFrames = TextureRegion.split(tMap.get(texture_name).getTexture(), 2048,2048);
+        spriteFrames = TextureRegion.split(tMap.get(texture_name).getTexture(), 1024,1024);
         float frameDuration = 0.2f;
         animation = new Animation<>(frameDuration, spriteFrames[0]);
         setBodyType(BodyDef.BodyType.StaticBody);
@@ -115,9 +115,10 @@ public abstract class Activator extends PolygonObstacle {
             animationTime += Gdx.graphics.getDeltaTime();
             currentFrame = animation.getKeyFrame(animationTime);
         }
-        float x = getX()*drawScale.x-currentFrame.getRegionWidth()/drawScale.x/4;
-        canvas.draw(currentFrame, color, origin.x, origin.y, x, getY()*drawScale.y, 0, 1f/drawScale.x, 1f/drawScale.y);
-        canvas.draw(bottomTexture, Color.WHITE, origin.x, origin.y, x, (getY())*drawScale.y, 0, 1f/drawScale.x, 1f/drawScale.y);
+        float x = getX()*drawScale.x-currentFrame.getRegionWidth()/drawScale.x/2;
+        float scale = 64f/currentFrame.getRegionWidth();
+        canvas.draw(currentFrame, color, origin.x, origin.y, x, getY()*drawScale.y, 0, scale,scale);
+        canvas.draw(bottomTexture, Color.WHITE, origin.x, origin.y, x, (getY())*drawScale.y, 0, scale, scale);
     }
 
     /**

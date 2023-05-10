@@ -112,7 +112,7 @@
 //        "tiledLevel8": "levels/party-room.json"
       "tiledLevel10": "levels/party-room.json",
 
-        "tiledLevel11": "levels/test-forest.json",
+        "tiledLevel11": "levels/test-forest.json"
     },
     "soundfx" : {
         "jump" : "sounds/jump-CELESTE.wav",

@@ -111,14 +111,15 @@
         "tiledLevel6": "levels/basic-body-switch.json",
         "tiledLevel7": "levels/spikes-deaths-easy.json",
         "tiledLevel8": "levels/tutorial-camera.json",
-        "tiledLevel9": "levels/level-beta-med1.json",
-        "tiledLevel10": "levels/tutorial-flamethrower.json",
-        "tiledLevel11": "levels/body-switching-chain-medium.json",
-        "tiledLevel12": "levels/super-jump.json",
+        "tiledLevel9": "levels/mob-push-box.json",
+        "tiledLevel10": "levels/level-beta-med1.json",
+        "tiledLevel11": "levels/tutorial-flamethrower.json",
+        "tiledLevel12": "levels/body-switching-chain-medium.json",
+        "tiledLevel13": "levels/super-jump.json",
 //        "tiledLevel5": "levels/level-beta-hard.json",
 //        "tiledLevel8": "levels/party-room.json"
-        "tiledLevel13": "levels/party-room.json",
-        "tiledLevel14": "levels/test-forest.json"
+        "tiledLevel14": "levels/party-room.json",
+        "tiledLevel15": "levels/test-forest.json"
     },
     "soundfx" : {
         "jump" : "sounds/jump-CELESTE.wav",

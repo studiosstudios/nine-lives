@@ -432,16 +432,16 @@ public class ActionController {
     private void getRayCastEnd(Vector2 start, Direction dir){
         switch (dir) {
             case UP:
-                endPointCache.set(start.x,bounds.height);
+                endPointCache.set(start.x,bounds.height + bounds.y);
                 break;
             case LEFT:
-                endPointCache.set(0, start.y);
+                endPointCache.set(bounds.x, start.y);
                 break;
             case DOWN:
-                endPointCache.set(start.x, 0);
+                endPointCache.set(start.x, bounds.y);
                 break;
             case RIGHT:
-                endPointCache.set(bounds.width, start.y);
+                endPointCache.set(bounds.width + bounds.x, start.y);
                 break;
         }
     }
@@ -529,7 +529,7 @@ public class ActionController {
                 float x = level.getCat().getX() - spirit.getX();
                 float y = level.getCat().getY() - spirit.getY();
                 float angle = (float) Math.atan((double)y/(double)x);
-                spirit.setAngle(angle, 0.2f);
+                spirit.setAngle(angle, 0.25f);
                 spirit.move();
                 if (Math.abs(spirit.getX() - level.getCat().getX()) <= 1f &&
                     Math.abs(spirit.getY() - level.getCat().getY()) <= 1f) {

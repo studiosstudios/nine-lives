@@ -45,9 +45,9 @@ public class DesktopLauncher {
 
 		GDXAppSettings config = new GDXAppSettings();
 		config.title = "9 Lives";
-		config.width  = 1024;
-		config.height = 576;
-		config.fullscreen = FULLSCREEN;
+		config.width  = 1280;
+		config.height = 720;
+//		config.fullscreen = FULLSCREEN;
 		config.getLwjgl3Configuration().setHdpiMode(HdpiMode.Pixels);
 		new GDXApp(new NineLives(quickLaunchingFromTiled, quickLaunchFilepath), config);
 	}

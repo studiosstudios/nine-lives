@@ -4,13 +4,18 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import org.w3c.dom.Text;
 
 public abstract class StageWrapper extends Stage {
 
@@ -27,7 +32,12 @@ public abstract class StageWrapper extends Stage {
     /** y-coordinate for top button */
     public int buttonY;
     static BitmapFont font;
+    static BitmapFont controlFont;
     static Label.LabelStyle labelStyle;
+    static Label.LabelStyle controlStyle;
+    static TextButton.TextButtonStyle textButtonStyle;
+    static TextButton.TextButtonStyle controlButtonStyle;
+    static Slider.SliderStyle sliderStyle;
 
     public StageWrapper(AssetDirectory internal, boolean createActors) {
         super(new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT));
@@ -35,15 +45,30 @@ public abstract class StageWrapper extends Stage {
         FreeTypeFontGenerator.setMaxTextureSize(2048);
         FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("shared/preahvihear.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 40; //24
+        parameter.size = 32; //24
         parameter.genMipMaps = true;
         parameter.minFilter = Texture.TextureFilter.Linear;
         parameter.magFilter = Texture.TextureFilter.Linear;
         font = gen.generateFont(parameter);
-        gen.dispose();
 //        font = internal.getEntry("chewy", BitmapFont.class);
 //        font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         labelStyle = new Label.LabelStyle(font, Color.WHITE);
+        textButtonStyle = new TextButton.TextButtonStyle(null,null,null, font);
+        parameter.size = 24;
+        controlFont = gen.generateFont(parameter);
+        gen.dispose();
+        controlStyle = new Label.LabelStyle(controlFont, Color.WHITE);
+        controlButtonStyle = new TextButton.TextButtonStyle(null,null,null, controlFont);
+
+        Texture knob = internal.getEntry("paw", Texture.class);
+        Texture slider = internal.getEntry("slider-empty", Texture.class);
+        Texture before = internal.getEntry("slider-full", Texture.class);
+        TextureRegionDrawable sliderTexture = new TextureRegionDrawable(new TextureRegion(slider));
+        TextureRegionDrawable sliderKnobTexture = new TextureRegionDrawable(new TextureRegion(knob));
+        TextureRegionDrawable sliderTextureBefore = new TextureRegionDrawable(new TextureRegion(before));
+        sliderStyle = new Slider.SliderStyle(sliderTexture, sliderKnobTexture);
+        sliderStyle.knobBefore = sliderTextureBefore;
+
         buttonX = (int)(3f/5 * STANDARD_WIDTH);
         buttonY = (int)(1f/2 * STANDARD_HEIGHT);
         xHalf = (int) (1f/2 * STANDARD_WIDTH);
@@ -61,10 +86,15 @@ public abstract class StageWrapper extends Stage {
     }
 
     public Actor addActor(Texture texture, float x, float y) {
+        Actor actor = createActor(texture, x, y);
+        super.addActor(actor);
+        return actor;
+    }
+
+    public Actor createActor(Texture texture, float x, float y) {
         Actor actor = new Image(texture);
         actor.setPosition(x, y);
         actor.addListener(new Listener());
-        super.addActor(actor);
         return actor;
     }
 

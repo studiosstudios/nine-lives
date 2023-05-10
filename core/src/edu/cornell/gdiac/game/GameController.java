@@ -475,10 +475,12 @@ public class GameController implements Screen {
                 "tutorial-burn", "tutorial-camera", "tutorial-checkpoint", "tutorial-dash", "tutorial-pause",
                 "tutorial-side-spikes", "tutorial-spikes", "tutorial-switch", "tutorial-walk-jump",
                 "tutorial-jump-dash", "tutorial-undo",
+                "cabinet-left", "cabinet-mid", "cabinet-right", "goggles", "microscope",
                 "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf", "wall-bottom", "wall-top"
                 }; // Unsure if this is actually being used
         for (String n : names){
 //            System.out.println(n);
+//            System.out.println(directory.getEntry(n, Texture.class));
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
         }
 

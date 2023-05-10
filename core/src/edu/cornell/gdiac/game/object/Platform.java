@@ -179,8 +179,6 @@ public class Platform extends PolygonObstacle implements Activatable {
         setVX(getVX() + (targetVel.x - getVX()) * damping);
         setVY(getVY() + (targetVel.y - getVY()) * damping);
 
-        System.out.println(getLinearVelocity());
-
     }
 
     /**

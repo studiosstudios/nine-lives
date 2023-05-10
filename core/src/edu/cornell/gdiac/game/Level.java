@@ -215,6 +215,13 @@ public class Level {
      */
     public String getBiome() { return biome; }
 
+    /**
+     * Returns the maximum number of lives
+     *
+     * @return maxLives
+     */
+    public int getMaxLives() { return maxLives; }
+
 
     /**
      * Sets the cat for this level. This is used for level switching.

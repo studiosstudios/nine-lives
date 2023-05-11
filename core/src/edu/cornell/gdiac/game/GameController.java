@@ -15,7 +15,6 @@ import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.game.stage.HudStage;
 import edu.cornell.gdiac.util.ScreenListener;
 
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.util.HashMap;
 
 /**

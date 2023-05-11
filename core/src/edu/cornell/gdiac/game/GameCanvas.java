@@ -542,9 +542,12 @@ ef	 * <br><br>
 	 */
 	public void drawFrameBuffer() {
 		spriteBatch.setColor(Color.WHITE);
+		setBlendState(BlendState.ALPHA_BLEND);
 		spriteBatch.setProjectionMatrix(FBO_PROJECTION);
 		spriteBatch.draw(mainFrameBuffer.getColorBufferTexture(), 0, 0, 1, 1, 0, 0, 1, 1);
+		spriteBatch.flush();
 		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
+		setBlendState(BlendState.NO_PREMULT);
 	}
 
 	/**

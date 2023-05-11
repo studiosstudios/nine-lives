@@ -17,7 +17,7 @@ import java.util.HashMap;
 /**
  * A Platform is a kinematic body that can move between two points.
  */
-public class Platform extends PolygonObstacle implements Activatable {
+public class Platform extends BoxObstacle implements Activatable {
     /** Current activation state */
     private boolean activated;
     /** Starting activation state */
@@ -42,6 +42,8 @@ public class Platform extends PolygonObstacle implements Activatable {
     private TextureRegion[][] textures;
     private int tileSize;
     private Vector2 other;
+    private float width;
+    private float height;
 
     /**
      * Creates a new Door object.
@@ -54,9 +56,13 @@ public class Platform extends PolygonObstacle implements Activatable {
      * @param tileSize       Size in pixels of tileset tiles
      */
     public Platform(float width, float height, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize){
-        super(new float[]{0, 0, width, 0, width, height, 0, height});
+        super(width, height);
+        this.width = width;
+        this.height = height;
         setName("platform");
-        setBodyType(BodyDef.BodyType.KinematicBody);
+        setBodyType(BodyDef.BodyType.StaticBody);
+        setGravityScale(0);
+        setFixedRotation(true);
         setDensity(objectConstants.getFloat( "density", 0.0f ));
         setFriction(objectConstants.getFloat( "friction", 0.0f ));
         setRestitution(objectConstants.getFloat( "restitution", 0.0f ));
@@ -64,8 +70,8 @@ public class Platform extends PolygonObstacle implements Activatable {
         setTexture(tMap.get("steel"));
         this.tileSize = tileSize;
         initTextures(tMap.get("platform"), (int) width, (int) height);
-        setX((float) properties.get("x"));
-        setY((float) properties.get("y") - height);
+        setX((float) properties.get("x") + width/2f);
+        setY((float) properties.get("y") - height/2f);
         startPos = getPosition().cpy();
         speed = (float) properties.get("speed", 5f);
         damping = (float) properties.get("damping", 0.1f);
@@ -149,6 +155,8 @@ public class Platform extends PolygonObstacle implements Activatable {
         super.update(dt);
         if (moving == 0) { return; }
 
+        dt = 1/60f;
+
         //check if should start slowing down to 0
         if (target.dst(getPosition()) - estimateDist(dt) <= 0){
             targetVel.set(0, 0);
@@ -161,6 +169,7 @@ public class Platform extends PolygonObstacle implements Activatable {
         if (getPosition().epsilonEquals(target, 0.01f)){
             moving = 0;
             setPosition(target);
+            setBodyType(BodyDef.BodyType.StaticBody);
             targetVel.set(0, 0);
             setVX(0);
             setVY(0);
@@ -170,6 +179,7 @@ public class Platform extends PolygonObstacle implements Activatable {
         if (other.dst(getPosition()) > other.dst(target)) {
             moving = 0;
             setPosition(target);
+            setBodyType(BodyDef.BodyType.StaticBody);
             setVX(0);
             setVY(0);
             targetVel.set(0, 0);
@@ -212,7 +222,8 @@ public class Platform extends PolygonObstacle implements Activatable {
         for (int dx = 0; dx < getWidth(); dx++) {
             for (int dy = 0; dy < getHeight(); dy++){
                 TextureRegion platformTile = textures[dx][dy];
-                canvas.draw(platformTile, Color.WHITE, 0, 0, (getX() + dx)*drawScale.x, (getY() +  dy)*drawScale.y, 0, drawScale.x/tileSize, drawScale.y/tileSize);
+                canvas.draw(platformTile, Color.WHITE, 0, 0, (getX() - width/2f + dx)*drawScale.x,
+                        (getY() - height/2f +  dy)*drawScale.y, 0, drawScale.x/tileSize, drawScale.y/tileSize);
             }
         }
     }
@@ -223,6 +234,7 @@ public class Platform extends PolygonObstacle implements Activatable {
         targetVel.set(-disp.x, -disp.y).nor().scl(speed);
         target.set(startPos);
         other.set(disp.x + startPos.x, disp.y + startPos.y);
+        setBodyType(BodyDef.BodyType.DynamicBody);
     }
 
 
@@ -231,6 +243,7 @@ public class Platform extends PolygonObstacle implements Activatable {
         targetVel.set(disp.x, disp.y).nor().scl(speed);
         target.set(disp.x + startPos.x, disp.y + startPos.y);
         other.set(startPos);
+        setBodyType(BodyDef.BodyType.DynamicBody);
     }
 
     //region ACTIVATABLE METHODS

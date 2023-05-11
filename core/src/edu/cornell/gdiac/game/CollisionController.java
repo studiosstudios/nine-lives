@@ -268,8 +268,8 @@ public class CollisionController implements ContactListener, ContactFilter {
                         for(int index = 0; index < cameraRegions.size; index++){
                             if(cameraRegions.get(index) == bd2 && cameraRegions.get(index).getFixtureCount() == 0){
                                 cameraRegions.removeIndex(index);
+                                break;
                             }
-                            break;
                         }
                         if(level.getCameraRegions().isEmpty()){
                             if(level.getCat().isActive()) {

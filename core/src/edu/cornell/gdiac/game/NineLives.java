@@ -24,7 +24,8 @@ public class NineLives extends Game implements ScreenListener {
 	private GameController controller;
 	/** The AudioController to control all sound effects and music */
 	private AudioController audioController;
-	private final int TOTAL_LEVELS = 11;
+
+	private final int TOTAL_LEVELS = 14;
 	private boolean quickLaunchFromTiled;
 	private String filepath;
 
@@ -69,8 +70,10 @@ public class NineLives extends Game implements ScreenListener {
 			menu = null;
 		}
 
-		controller.dispose();
-		controller = null;
+		if (controller != null) {
+			controller.dispose();
+			controller = null;
+		}
 
 		// Unload all of the resources
 		if (directory != null) {

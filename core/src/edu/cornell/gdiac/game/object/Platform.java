@@ -152,6 +152,9 @@ public class Platform extends PolygonObstacle implements Activatable {
         //check if should start slowing down to 0
         if (target.dst(getPosition()) - estimateDist(dt) <= 0){
             targetVel.set(0, 0);
+        } else {
+            //in case something bad happens
+            targetVel.set(disp.x * moving, disp.y * moving).nor().scl(speed);
         }
 
         //check if close enough to target pos
@@ -222,7 +225,7 @@ public class Platform extends PolygonObstacle implements Activatable {
         other.set(disp.x + startPos.x, disp.y + startPos.y);
     }
 
-    //region ACTIVATABLE METHODS
+
     public void deactivated(World world){
         moving = 1;
         targetVel.set(disp.x, disp.y).nor().scl(speed);

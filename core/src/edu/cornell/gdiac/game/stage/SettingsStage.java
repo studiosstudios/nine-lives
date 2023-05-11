@@ -144,6 +144,7 @@ public class SettingsStage extends StageWrapper {
                 if (audioController != null) {
                     audioController.setSfxVolume(effectsSlider.getValue());
                 }
+                //TODO: play sound effect on release for player to hear adjusted SFX volume
             }
         });
         effectsSlider.setValue(Save.getVolume());

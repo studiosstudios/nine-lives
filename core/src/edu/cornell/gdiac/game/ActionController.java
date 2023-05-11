@@ -349,7 +349,8 @@ public class ActionController {
 
             //object is grounded, update base velocity to be average of velocities of grounds
             if (numGrounded > 0 && !baseVel.scl(1f / numGrounded).epsilonEquals(Vector2.Zero, 0.001f)) {
-                obj.setBaseVelocity(baseVel);
+//                obj.setBaseVelocity(baseVel);
+                obj.setBaseVX(baseVel.x);
                 grounded.put(obj, true);
                 return true;
             }
@@ -502,9 +503,12 @@ public class ActionController {
      * Spirit particles are spawned at dead bodies and dead bodies are removed.
      */
     public void recombineLives() {
+        if (level.getNumLives() != level.getMaxLives() && level.getdeadBodyArray().size == 0) {
+            level.resetLives();
+            return;
+        }
 
         if (level.getSpiritParticles().size == 0) {
-
             while (level.getdeadBodyArray().size != 0) {
                 for (DeadBody body: level.getdeadBodyArray()) {
                     Particle spirit = new Particle();

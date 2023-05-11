@@ -161,10 +161,12 @@ public class Checkpoint extends BoxObstacle
         JsonValue lightData = objectConstants.get("light");
         if (b) {
             animation.setPlayMode(Animation.PlayMode.LOOP);
-            getLight().setColor(Color.valueOf(lightData.getString("activated_color")));
+            lightColor = Color.valueOf(lightData.getString("activated_color"));
+            greyColor = greyColor(lightColor);
         } else {
             activeAnimation.setPlayMode(Animation.PlayMode.LOOP);
-            getLight().setColor(Color.valueOf(lightData.getString("color")));
+            lightColor = Color.valueOf(lightData.getString("color"));
+            greyColor = greyColor(lightColor);
         }
     }
 

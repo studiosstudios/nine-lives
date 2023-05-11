@@ -223,8 +223,6 @@ public class Cat extends CapsuleObstacle implements Movable {
     private float climbTime;
     private float fallTime;
     private TextureRegion normalTexture;
-    private TextureRegion jumpTexture;
-    private TextureRegion sitTexture;
     private float stationaryTime;
 
     /** List of shapes corresponding to the sensors attached to this body */
@@ -564,7 +562,7 @@ public class Cat extends CapsuleObstacle implements Movable {
      * @return The centered x-coordinate of the current cat frame.
      */
     public float getTextureCenterX() {
-        return getDrawX() - getDirectionFactor() * currentFrame.getRegionWidth()/drawScale.x/2;
+        return getDrawX() - getDirectionFactor() * currentFrame.getRegionWidth()/drawScale.x;
     }
 
     /**
@@ -573,7 +571,7 @@ public class Cat extends CapsuleObstacle implements Movable {
      * @return The centered x-coordinate of the current cat frame.
      */
     public float getTextureCenterY() {
-        return getDrawY() - currentFrame.getRegionHeight()/drawScale.y/2;
+        return getDrawY() - currentFrame.getRegionHeight()/drawScale.y;
     }
     //endregion
     /*/////*/
@@ -619,18 +617,16 @@ public class Cat extends CapsuleObstacle implements Movable {
         soundBuffer = new HashSet<>();
 
         normalTexture = tMap.get("cat");
-        jumpTexture = tMap.get("jump");
-        sitTexture = tMap.get("sit");
 
-        walkAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("walk-anim").getTexture(),2048,2048)[0]);
-        jumpAnimation = new Animation<>(0.025f, TextureRegion.split(tMap.get("jump-anim").getTexture(),2048,2048)[0]);
-        meowAnimation = new Animation<>(0.05f, TextureRegion.split(tMap.get("meow-anim").getTexture(),2048,2048)[0]);
-        transAnimation = new Animation<>(0.08f, TextureRegion.split(tMap.get("trans-anim").getTexture(),2048,2048)[0]);
-        idleAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("idle-sit-anim").getTexture(),2048,2048)[0]);
-        idleStandAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("idle-stand-anim").getTexture(),2048,2048)[0]);
-        climbAnimation = new Animation<>(0.05f, TextureRegion.split(tMap.get("climb-anim").getTexture(),2048,2048)[0]);
-        transAnimation2 = new Animation<>(0.015f, TextureRegion.split(tMap.get("trans2-anim").getTexture(),2048,2048)[0]);
-        midJumpAnimation = new Animation<>(0.1f, TextureRegion.split(tMap.get("jump-mid").getTexture(),2048,2048)[0]);
+        walkAnimation = new Animation<>(0.10f, TextureRegion.split(tMap.get("walk-anim").getTexture(),1024,1024)[0]);
+        jumpAnimation = new Animation<>(0.025f, TextureRegion.split(tMap.get("jump-anim").getTexture(),1024,1024)[0]);
+        meowAnimation = new Animation<>(0.05f, TextureRegion.split(tMap.get("meow-anim").getTexture(),1024,1024)[0]);
+        transAnimation = new Animation<>(0.08f, TextureRegion.split(tMap.get("trans-anim").getTexture(),1024,1024)[0]);
+        idleAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("idle-sit-anim").getTexture(),1024,1024)[0]);
+        idleStandAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("idle-stand-anim").getTexture(),1024,1024)[0]);
+        climbAnimation = new Animation<>(0.05f, TextureRegion.split(tMap.get("climb-anim").getTexture(),1024,1024)[0]);
+        transAnimation2 = new Animation<>(0.015f, TextureRegion.split(tMap.get("trans2-anim").getTexture(),1024,1024)[0]);
+        midJumpAnimation = new Animation<>(0.1f, TextureRegion.split(tMap.get("jump-mid").getTexture(),1024,1024)[0]);
         meowAnimation.setPlayMode(Animation.PlayMode.REVERSED);
         idleStandAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
         idleAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
@@ -933,10 +929,10 @@ public class Cat extends CapsuleObstacle implements Movable {
             float xOffset = ((float) (Math.sin(-failedSwitchTicks /2) * Math.exp(-failedSwitchTicks
                     /30)))*drawScale.x/2;
             failColor.a = 0.5f - Math.abs(failedSwitchTicks-FAILED_SWITCH_TICKS/2)/ FAILED_SWITCH_TICKS;
-            canvas.draw(currentFrame, failColor, origin.x, origin.y, x + xOffset, y, 0, directionFactor/drawScale.x, 1f/drawScale.y);
+            canvas.draw(currentFrame, failColor, origin.x, origin.y, x + xOffset, y, 0, directionFactor*(64f/currentFrame.getRegionWidth()),(64f/currentFrame.getRegionWidth()));
         }
 
-        canvas.draw(currentFrame, Color.WHITE, origin.x, origin.y, x, y, 0, directionFactor/drawScale.x, 1f/drawScale.y);
+        canvas.draw(currentFrame, Color.WHITE, origin.x, origin.y, x, y, 0, directionFactor*(64f/currentFrame.getRegionWidth()), 64f/currentFrame.getRegionHeight());
     }
 
     /**
@@ -946,7 +942,7 @@ public class Cat extends CapsuleObstacle implements Movable {
     private void updateAnimation() {
         float delta = Gdx.graphics.getDeltaTime();
         // WALKING
-        if (state == State.MOVING && horizontalMovement != 0 && isGrounded()) {
+        if ((state == State.MOVING && (horizontalMovement != 0 && isGrounded())) || (state==State.DASHING && verticalMovement == 0)) {
             walkTime += delta;
             currentFrame = walkAnimation.getKeyFrame(walkTime);
 
@@ -1017,7 +1013,8 @@ public class Cat extends CapsuleObstacle implements Movable {
         for (int i = 0; i < dashShadowQueue.size; i++) {
             DashShadow shadow = dashShadowQueue.removeFirst();
             dashColor.a = shadow.timer / 10f;
-            canvas.draw(currentFrame, dashColor, origin.x, origin.y, shadow.x, shadow.y, 0, shadow.directionFactor/drawScale.x, 1f/drawScale.y);
+            float scale = 64f/currentFrame.getRegionWidth();
+            canvas.draw(currentFrame, dashColor, origin.x, origin.y, shadow.x, shadow.y, 0, shadow.directionFactor*(scale), scale);
             if (shadow.timer - 1 > 0) {
                 shadow.timer--;
                 dashShadowQueue.addLast(shadow);

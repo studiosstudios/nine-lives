@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.*;
 import com.badlogic.gdx.Gdx;
+import edu.cornell.gdiac.util.Direction;
 
 import java.util.HashMap;
 
@@ -42,6 +43,8 @@ public abstract class Activator extends PolygonObstacle {
     /** If pressing this activator for the first time should pan the camera */
     private boolean shouldPan;
     private Color color = new Color();
+    /** direction of this button */
+    private Direction dir;
 
     /**
      * @return true if the activator is currently activating
@@ -84,19 +87,26 @@ public abstract class Activator extends PolygonObstacle {
         bottomTexture = tMap.get(base_name);
         setTexture(bottomTexture);
         setTextureScale(textureScale);
-        spriteFrames = TextureRegion.split(tMap.get(texture_name).getTexture(), 2048,2048);
+        spriteFrames = TextureRegion.split(tMap.get(texture_name).getTexture(), 1024,1024);
         float frameDuration = 0.2f;
         animation = new Animation<>(frameDuration, spriteFrames[0]);
         setBodyType(BodyDef.BodyType.StaticBody);
         animation.setPlayMode(Animation.PlayMode.REVERSED);
         animationTime = 0f;
 
+        setAngle((float) ((float) properties.get("rotation") * Math.PI/180));
+        dir = Direction.angleToDir((int) ((float) properties.get("rotation")));
+        Vector2 offset = new Vector2(objectConstants.get("offset").getFloat(0), objectConstants.get("offset").getFloat(1));
+        Direction.rotateVector(offset, dir);
+        setX((float) properties.get("x") + offset.x);
+        setY((float) properties.get("y") + offset.y);
+
         setDrawScale(scale);
         setFixedRotation(true);
 
         id = (String) properties.get("id");
-        setX((float) properties.get("x")+objectConstants.get("offset").getFloat(0));
-        setY((float) properties.get("y")+objectConstants.get("offset").getFloat(1));
+//        setX((float) properties.get("x")+objectConstants.get("offset").getFloat(0));
+//        setY((float) properties.get("y")+objectConstants.get("offset").getFloat(1));
         color.set((Color) properties.get("color", Color.RED));
         pan = (boolean) properties.get("shouldPan", false);
         active = false;
@@ -115,9 +125,16 @@ public abstract class Activator extends PolygonObstacle {
             animationTime += Gdx.graphics.getDeltaTime();
             currentFrame = animation.getKeyFrame(animationTime);
         }
-        float x = getX()*drawScale.x-currentFrame.getRegionWidth()/drawScale.x/4;
-        canvas.draw(currentFrame, color, origin.x, origin.y, x, getY()*drawScale.y, 0, 1f/drawScale.x, 1f/drawScale.y);
-        canvas.draw(bottomTexture, Color.WHITE, origin.x, origin.y, x, (getY())*drawScale.y, 0, 1f/drawScale.x, 1f/drawScale.y);
+        float x = getX()*drawScale.x-currentFrame.getRegionWidth()/drawScale.x/2;
+        float scale = 64f/currentFrame.getRegionWidth();
+
+//        System.out.println();
+        if (Math.round(Math.toDegrees(getAngle())) == 180) {
+            x = x + drawScale.x;
+        }
+
+        canvas.draw(currentFrame, color, origin.x, origin.y, x, getY()*drawScale.y, getAngle(), scale,scale);
+        canvas.draw(bottomTexture, Color.WHITE, origin.x, origin.y, x, (getY())*drawScale.y, getAngle(), scale, scale);
     }
 
     /**

@@ -275,13 +275,14 @@ public class StageController implements Screen {
 			}
 			if (loading) {
 				if (!startLoad) {
+					audioController.playSoundEffect("menu-select");
 					assets = new AssetDirectory("jsons/assets.json");
 					assets.loadAssets();
 					startLoad = true;
 				}
-				audioController.pauseStageMusic();
 				assets.update();
 				if (assets.isFinished()) {
+					audioController.pauseStageMusic();
 					loading = false;
 					if (fromSelect) {
 						fromSelect = false;

@@ -1,7 +1,7 @@
 /assets/debug-input/*
 out/
 /desktop/out/
-
+misc/
 ## Level Editor
 /level-editor/**/*.json
 /level-editor/extensions/TiledExtension/config.txt

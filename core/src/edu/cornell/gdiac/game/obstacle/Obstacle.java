@@ -420,7 +420,7 @@ public abstract class Obstacle {
 	public void createPointLight(JsonValue lightData, RayHandler rayHandler) {
 		float xOffset = lightData.get("offset").getFloat(0), yOffset = lightData.get("offset").getFloat(1);
 		lightColor.set(Color.valueOf(lightData.getString("color")));
-		greyColor = greyConv.x * lightColor.r + greyConv.x * lightColor.g + greyConv.x * lightColor.b;
+		greyColor = greyColor(lightColor);
 		light = new PointLight(rayHandler, 100, lightColor, lightData.getFloat("distance"), xOffset, yOffset);
 	}
 
@@ -442,7 +442,7 @@ public abstract class Obstacle {
 	public void createConeLight(JsonValue lightData, RayHandler rayHandler) {
 		float xOffset = lightData.get("offset").getFloat(0), yOffset = lightData.get("offset").getFloat(1);
 		lightColor.set(Color.valueOf(lightData.getString("color")));
-		greyColor = greyConv.x * lightColor.r + greyConv.x * lightColor.g + greyConv.x * lightColor.b;
+		greyColor = greyColor(lightColor);
 		light = new ConeLight(
 				rayHandler,
 				100,
@@ -487,7 +487,7 @@ public abstract class Obstacle {
 	 */
 	public void createChainLight(JsonValue lightData, RayHandler rayHandler, float[] vertices) {
 		lightColor.set(Color.valueOf(lightData.getString("color")));
-		greyColor = greyConv.x * lightColor.r + greyConv.x * lightColor.g + greyConv.x * lightColor.b;
+		greyColor = greyColor(lightColor);
 		light = new ChainLight(
 				rayHandler,
 				100,
@@ -512,7 +512,7 @@ public abstract class Obstacle {
 	 */
 	public void createChainLight(JsonValue lightData, RayHandler rayHandler, int direction) {
 		lightColor.set(Color.valueOf(lightData.getString("color")));
-		greyColor = greyConv.x * lightColor.r + greyConv.x * lightColor.g + greyConv.x * lightColor.b;
+		greyColor = greyColor(lightColor);
 		light = new ChainLight(
 				rayHandler,
 				100,
@@ -531,6 +531,14 @@ public abstract class Obstacle {
 		light.setColor(lightColor.r * (1-greyscale) + greyColor * greyscale,
 				lightColor.g * (1-greyscale) + greyColor * greyscale,
 				lightColor.b * (1-greyscale) + greyColor * greyscale, lightColor.a);
+	}
+
+	/**
+	 * @param c   Color to convert to greyscale
+	 * @return    Float RGB value of color converted to greyscale
+	 */
+	protected float greyColor(Color c){
+		return greyConv.x * c.r + greyConv.x * c.g + greyConv.x * c.b;
 	}
 
 	/**

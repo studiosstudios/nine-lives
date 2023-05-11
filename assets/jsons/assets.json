@@ -105,7 +105,8 @@
       "wall-top": "world/decor/wall-top.png",
       "coke": "world/decor/coke.png",
       "test-tubes": "world/decor/test-tubes.png",
-      "tank": "world/decor/tank.png"
+      "tank": "world/decor/tank.png",
+      "coming-soon": "world/decor/coming-soon.png"
     },
     "jsons"  : {
         "constants": "jsons/constants.json",

@@ -74,7 +74,39 @@
          "draworder":"topdown",
          "id":19,
          "name":"cameraRegions",
-         "objects":[],
+         "objects":[
+                {
+                 "height":21504,
+                 "id":145,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"isZoomRelative",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"shouldSnap",
+                         "type":"bool",
+                         "value":true
+                        }, 
+                        {
+                         "name":"snapCollisionArea",
+                         "type":"bool",
+                         "value":true
+                        }, 
+                        {
+                         "name":"zoom",
+                         "type":"float",
+                         "value":0.8
+                        }],
+                 "rotation":0,
+                 "type":"CameraRegion",
+                 "visible":true,
+                 "width":23552,
+                 "x":3072,
+                 "y":0
+                }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -559,7 +591,7 @@
                         {
                          "name":"closeAngle",
                          "type":"int",
-                         "value":270
+                         "value":90
                         }, 
                         {
                          "name":"totalTicks",
@@ -708,7 +740,7 @@
          "y":0
         }],
  "nextlayerid":23,
- "nextobjectid":145,
+ "nextobjectid":148,
  "orientation":"orthogonal",
  "properties":[
         {

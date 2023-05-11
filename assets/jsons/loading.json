@@ -18,18 +18,31 @@
         "one": "ui/level-select/one.png",
         "two": "ui/level-select/two.png",
         "loading-tutorial": "ui/loading/loading-tutorial.png",
+        "loading-text-1": "ui/loading/loading-text-1.png",
+        "loading-text-2": "ui/loading/loading-text-2.png",
+        "loading-text-3": "ui/loading/loading-text-3.png",
         "paw": "ui/shared/paw.png",
         "splash-screen": "ui/loading/splash-screen.png",
         "bg-level-select": "ui/level-select/bg-level-select.png",
         "bar": "ui/hud/bar.png",
         "bell": "ui/hud/bell.png",
+        "cracked-bell": "ui/hud/cracked.png",
         "slider-empty": "ui/settings/slider-empty.png",
         "slider-full": "ui/settings/slider-full.png"
 	},
-  "fonts": {
-    "chewy": {
-      "file": "fonts/chewy.ttf",
-      "size": 36
+    "fonts": {
+        "chewy": {
+            "file": "fonts/chewy.ttf",
+            "size": 36
+        }
+    },
+    "soundfx" : {
+      "menu-select" : "sounds/menu-select.wav"
+    },
+    "samples": {
+        "bkg-intro": "sounds/bkg-intro.ogg"
+    },
+    "defaults": {
+       "volume": 0.3
     }
-  }
 }

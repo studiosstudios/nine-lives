@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.game.object;
 
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -140,16 +141,32 @@ public class Checkpoint extends BoxObstacle
     }
 
     /**
+     * Creates PointLight for Checkpoint with soft and xray true
+     * @param rayHandler Ray Handler associated with the currently active box2d world
+     */
+    public void createLight(RayHandler rayHandler) {
+        createPointLight(objectConstants.get("light"), rayHandler);
+        getLight().attachToBody(getBody());
+        getLight().setSoft(true);
+        getLight().setXray(true);
+    }
+
+    /**
      * @param b               whether we want the checkpoint to be active
      * @param facingRight     if the player was facing right when getting this checkpoint
      */
     public void setCurrent(boolean b, boolean facingRight){
         current = b;
         this.facingRight = facingRight;
+        JsonValue lightData = objectConstants.get("light");
         if (b) {
             animation.setPlayMode(Animation.PlayMode.LOOP);
+            lightColor = Color.valueOf(lightData.getString("activated_color"));
+            greyColor = greyColor(lightColor);
         } else {
             activeAnimation.setPlayMode(Animation.PlayMode.LOOP);
+            lightColor = Color.valueOf(lightData.getString("color"));
+            greyColor = greyColor(lightColor);
         }
     }
 

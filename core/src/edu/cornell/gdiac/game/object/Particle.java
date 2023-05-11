@@ -115,6 +115,23 @@ public class Particle implements Pool.Poolable {
     }
 
     /**
+     * Sets the angle of this particle
+     *
+     * When the angle is set, the particle will change its velocity
+     * to (PARTICLE_SPEED,angle) in polar-coordinates.
+     *
+     * @param angle  the angle of this particle
+     */
+    public void setAngle(float angle, float speed) {
+        this.angle = angle;
+        velocity.set((float)(speed*Math.cos(angle)),
+                (float)(speed*Math.sin(angle)));
+    }
+
+
+
+
+    /**
      * Creates a new (unitialized) Particle.
      *
      * The position and velocity are initially 0.  To initialize
@@ -152,8 +169,8 @@ public class Particle implements Pool.Poolable {
 
     public float getTop() { return top; }
 
-    public void draw(GameCanvas canvas, Texture texture) {
-        canvas.draw(texture, new Color(Color.WHITE), getX(),
-                getY(), 5f, 5f);
+    public void draw(GameCanvas canvas, Texture texture, Vector2 drawScale, Vector2 textureScale) {
+        canvas.draw(texture, new Color(Color.WHITE), getX()*drawScale.x,
+                getY()*drawScale.y, textureScale.x, textureScale.y);
     }
 }

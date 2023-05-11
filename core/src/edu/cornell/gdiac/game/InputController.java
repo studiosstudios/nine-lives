@@ -305,6 +305,13 @@ public class InputController {
 	}
 
 	/**
+	 * Returns true if the switch button was just pressed.
+	 *
+	 * @return true if the switch button was just pressed.
+	 */
+	public boolean switchPressed() { return isClicked("switch"); }
+
+	/**
 	 * Creates a new input controller
 	 * 
 	 * The input controller attempts to connect to the X-Box controller at device 0,

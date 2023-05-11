@@ -17,6 +17,8 @@
  */
 package edu.cornell.gdiac.game.obstacle;
 
+import box2dLight.ChainLight;
+import box2dLight.ConeLight;
 import box2dLight.Light;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
@@ -29,7 +31,6 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.*;  // For GameCanvas
 
-import java.util.HashMap;
 
 /**
  * Base model class to support collisions.
@@ -86,6 +87,12 @@ public abstract class Obstacle {
 	private ObjectMap<String, Object> pausedState;
 	/** box2dlight associated with this object */
 	private Light light;
+	/** Color of the box2dlight associated with this object */
+	protected Color lightColor = new Color();
+	/** Greyscale RGB values of box2dlight color*/
+	protected float greyColor;
+	/** RGB weights for converting light colors to greyscale.*/
+	private Vector3 greyConv = new Vector3(0.333f, 0.333f, 0.333f);
 
 	/// BodyDef Methods
 	/**
@@ -378,6 +385,11 @@ public abstract class Obstacle {
 	public Light getLight() { return light; }
 
 	/**
+	 * @return The box2dlight associated with this obstacle, casted as a ChainLight
+	 */
+	public ChainLight getLightAsChain() { return (ChainLight) light; }
+
+	/**
 	 * Sets the box2dlight associated with this obstacle
 	 *
 	 * @param l the box2dlight to associate with this obstacle
@@ -399,16 +411,136 @@ public abstract class Obstacle {
 	 * 	  distance,
 	 * 	  color,
 	 * 	  offset
+	 * 	  OPTIONAL: activated_color (for objects that might be "activated", like buttons or checkpoints)
 	 * 	}
 	 * <br>
-	 * @param objectConstants valid JSON of object constants corresponding to this obstacle
+	 * @param lightData valid JSON of object constants corresponding to this obstacle
 	 * @param rayHandler Ray handler currently associated with the active world
 	 */
 	public void createPointLight(JsonValue lightData, RayHandler rayHandler) {
 		float xOffset = lightData.get("offset").getFloat(0), yOffset = lightData.get("offset").getFloat(1);
-		light = new PointLight(rayHandler, 100, Color.valueOf(lightData.getString("color")), lightData.getFloat("distance"), xOffset, yOffset);
+		lightColor.set(Color.valueOf(lightData.getString("color")));
+		greyColor = greyColor(lightColor);
+		light = new PointLight(rayHandler, 100, lightColor, lightData.getFloat("distance"), xOffset, yOffset);
 	}
-	
+
+	/**
+	 * Creates a box2dlight ConeLight given a valid objectConstants and rayHandler
+	 * <br><br>
+	 * The objectConstants should contain the following fields:<br>
+	 * 	light: {
+	 *	  distance
+	 *        color
+	 *        offset
+	 *        directionDegree
+	 *        coneDegree
+	 * 	}
+	 * <br>
+	 * @param lightData valid JSON of object constants corresponding to this obstacle
+	 * @param rayHandler Ray handler currently associated with the active world
+	 */
+	public void createConeLight(JsonValue lightData, RayHandler rayHandler) {
+		float xOffset = lightData.get("offset").getFloat(0), yOffset = lightData.get("offset").getFloat(1);
+		lightColor.set(Color.valueOf(lightData.getString("color")));
+		greyColor = greyColor(lightColor);
+		light = new ConeLight(
+				rayHandler,
+				100,
+				lightColor,
+				lightData.getFloat("distance"),
+				xOffset,
+				yOffset,
+				lightData.getFloat("directionDegree"),
+				lightData.getFloat("coneDegree"));
+	}
+
+	/**
+	 * Creates a box2dlight Chainlight given a valid objectConstants and rayHandler
+	 * <br><br>
+	 * The objectConstants should contain the following fields:<br>
+	 * 	light: {
+	 *	  distance
+	 *        color
+	 *        direction
+	 * 	}
+	 * <br>
+	 * @param lightData valid JSON of object constants corresponding to this obstacle
+	 * @param rayHandler Ray handler currently associated with the active world
+	 */
+	public void createChainLight(JsonValue lightData, RayHandler rayHandler) {
+		createChainLight(lightData, rayHandler, new float[0]);
+	}
+
+	/**
+	 * Creates a box2dlight Chainlight given a valid objectConstants and rayHandler
+	 * <br><br>
+	 * The objectConstants should contain the following fields:<br>
+	 * 	light: {
+	 *	  distance
+	 *        color
+	 *        direction
+	 * 	}
+	 * <br>
+	 * @param lightData valid JSON of object constants corresponding to this obstacle
+	 * @param rayHandler Ray handler currently associated with the active world
+	 * @param vertices Vertices defining the ChainLight
+	 */
+	public void createChainLight(JsonValue lightData, RayHandler rayHandler, float[] vertices) {
+		lightColor.set(Color.valueOf(lightData.getString("color")));
+		greyColor = greyColor(lightColor);
+		light = new ChainLight(
+				rayHandler,
+				100,
+				lightColor,
+				lightData.getFloat("distance"),
+				lightData.getInt("direction"),
+				vertices);
+	}
+
+	/**
+	 * Creates a box2dlight Chainlight given a valid objectConstants and rayHandler
+	 * <br><br>
+	 * The objectConstants should contain the following fields:<br>
+	 * 	light: {
+	 *	  distance
+	 *        color
+	 * 	}
+	 * <br>
+	 * @param lightData valid JSON of object constants corresponding to this obstacle
+	 * @param rayHandler Ray handler currently associated with the active world
+	 * @param direction Direction this ChainLight should emit light
+	 */
+	public void createChainLight(JsonValue lightData, RayHandler rayHandler, int direction) {
+		lightColor.set(Color.valueOf(lightData.getString("color")));
+		greyColor = greyColor(lightColor);
+		light = new ChainLight(
+				rayHandler,
+				100,
+				lightColor,
+				lightData.getFloat("distance"),
+				direction);
+	}
+
+	/**
+	 * Applies a greyscale effect to the box2dlight associated with this object.
+	 *
+	 * @param greyscale  Amount of greyscale to apply: 0 is none, 1 is full.
+	 */
+	public void setLightGreyscale(float greyscale){
+		if (light == null) return;
+		light.setColor(lightColor.r * (1-greyscale) + greyColor * greyscale,
+				lightColor.g * (1-greyscale) + greyColor * greyscale,
+				lightColor.b * (1-greyscale) + greyColor * greyscale, lightColor.a);
+	}
+
+	/**
+	 * @param c   Color to convert to greyscale
+	 * @return    Float RGB value of color converted to greyscale
+	 */
+	protected float greyColor(Color c){
+		return greyConv.x * c.r + greyConv.x * c.g + greyConv.x * c.b;
+	}
+
 	/**
 	 * Returns true if the body is active
 	 *

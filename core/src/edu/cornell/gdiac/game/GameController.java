@@ -1,20 +1,15 @@
 package edu.cornell.gdiac.game;
 
-import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.audio.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.game.object.*;
-
 import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.game.stage.HudStage;
 import edu.cornell.gdiac.util.ScreenListener;
@@ -59,8 +54,9 @@ public class GameController implements Screen {
     private static final int MAX_NUM_LIVES = 9;
     /** The hashmap for texture regions */
     private HashMap<String, TextureRegion> textureRegionAssetMap;
-    /** The hashmap for sounds */
-    private HashMap<String, Sound> soundAssetMap;
+//    /** The hashmap for sounds */
+//    private HashMap<String, Sound> soundAssetMap;
+
     /** The hashmap for fonts */
     private HashMap<String, BitmapFont> fontAssetMap;
     /** The JSON value constants */
@@ -108,7 +104,7 @@ public class GameController implements Screen {
     /** Whether level was just reset (matters for respawn behavior) **/
     private boolean justReset;
     final float RESPAWN_DELAY = 60f; //about 17ms per RESPAWN_DELAY unit (holds 1 second-0.5s on dead body, 0.5s on respawned cat)
-    /** The background texture */
+    /** The lab background texture */
     private Texture background;
     /** Ticks since the player has undone */
     private float undoTime;
@@ -117,8 +113,17 @@ public class GameController implements Screen {
     public StageController stageController = null;
     public boolean paused = false;
     public HudStage hud;
+    /** Number of frames in spirit mode. */
+    private int spiritModeTicks;
+    /** Number of frames required for VFX effects to reach maximum strength. */
+    private final static int MAX_SPIRIT_MODE_TICKS = 30;
+    /** Strength of VFX effects - always between 0 and 1. */
+    private float effectSize;
+    public AudioController audioController;
     /** only not null if quick launched from Tiled */
     private JsonValue quickLaunchLevel;
+    private boolean LIGHTS_ACTIVE = true;
+    private Color spiritModeColor = new Color(1, 1, 1, 1);
 
     /**
      * PLAY: User has all controls and is in game
@@ -138,6 +143,7 @@ public class GameController implements Screen {
     private boolean justRespawned;
     /** The color of the flash animation after resetting/undoing */
     private Color flashColor = new Color(1, 1, 1, 0);
+
     /** RayHandler that takes care of Box2DLights. This MUST be associated with the active World at all times. */
     private RayHandler rayHandler;
 
@@ -226,22 +232,19 @@ public class GameController implements Screen {
      *
      * @param tMap the hashmap for Texture Regions
      * @param fMap the hashmap for Fonts
-     * @param sMap the hashmap for Sounds
      * @param constants the JSON value for constants
      */
     public void setAssets(HashMap<String, TextureRegion> tMap, HashMap<String, BitmapFont> fMap,
-                          HashMap<String, Sound> sMap, JsonValue constants){
+                          JsonValue constants){
         //for now levelcontroller will have access to these assets, but in the future we may see that it is unnecessary
         textureRegionAssetMap = tMap;
         fontAssetMap = fMap;
-        soundAssetMap = sMap;
         constantsJSON = constants;
         setConstants(constants);
         displayFont = fMap.get("retro");
 
         //send the relevant assets to classes that need them
-        actionController.setVolume(constantsJSON.get("defaults").getFloat("volume"));
-        actionController.setAssets(sMap);
+//        actionController.setAssets(sMap);
         for (Level l : levels){
             l.setAssets(tMap);
         }
@@ -259,6 +262,7 @@ public class GameController implements Screen {
         Spikes.setConstants(constants.get("spikes"));
         Activator.setConstants(constants.get("activators"));
         Laser.setConstants(constants.get("lasers"));
+        NoveLight.setConstants(constants.get("lights"));
         Checkpoint.setConstants(constants.get("checkpoint"));
         Mirror.setConstants(constants.get("mirrors"));
         Wall.setConstants(constants.get("walls"));
@@ -277,8 +281,8 @@ public class GameController implements Screen {
      * with the Box2D coordinates.  The bounds are in terms of the Box2d
      * world, not the screen.
      */
-    protected GameController(int numLevels) {
-        this(new Vector2(0,DEFAULT_GRAVITY), new Vector2(DEFAULT_SCALE,DEFAULT_SCALE), numLevels);
+    protected GameController(int numLevels, AudioController audioController) {
+        this(new Vector2(0,DEFAULT_GRAVITY), new Vector2(DEFAULT_SCALE,DEFAULT_SCALE), numLevels, audioController);
     }
 
     /**
@@ -288,8 +292,8 @@ public class GameController implements Screen {
      * with the Box2D coordinates.  The bounds are in terms of the Box2d
      * world, not the screen.
      */
-    protected GameController(String filepath) {
-        this(new Vector2(0,DEFAULT_GRAVITY), new Vector2(DEFAULT_SCALE,DEFAULT_SCALE), 1);
+    protected GameController(String filepath, AudioController audioController) {
+        this(new Vector2(0,DEFAULT_GRAVITY), new Vector2(DEFAULT_SCALE,DEFAULT_SCALE), 1, audioController);
         JsonReader json = new JsonReader();
         quickLaunchLevel = json.parse(Gdx.files.internal(filepath));
     }
@@ -301,7 +305,8 @@ public class GameController implements Screen {
      * with the Box2D coordinates.  The bounds are in terms of the Box2D
      * world, not the screen.
      */
-    protected GameController(Vector2 gravity, Vector2 scale, int numLevels) {
+    protected GameController(Vector2 gravity, Vector2 scale, int numLevels, AudioController audioController) {
+        this.audioController = audioController;
         this.scale = scale;
         debug = false;
         setRet(false);
@@ -316,7 +321,7 @@ public class GameController implements Screen {
         currLevelIndex = 1;
 
         setLevels();
-        actionController = new ActionController(scale, volume);
+        actionController = new ActionController(scale, audioController);
         actionController.setLevel(levels[currLevelIndex]);
         collisionController = new CollisionController(actionController);
         collisionController.setLevel(levels[currLevelIndex]);
@@ -346,7 +351,6 @@ public class GameController implements Screen {
         setJSON(nextJV);
         setRet(false);
 
-
         currLevelIndex = (currLevelIndex + 1) % 3;
         currLevel.setComplete(false);
         setLevels();
@@ -361,6 +365,8 @@ public class GameController implements Screen {
         }
         initCurrLevel(true);
         collisionController.setDidChange(true);
+//        collisionController.setLevel(levels[currLevelIndex]);
+//        actionController.setLevel(levels[currLevelIndex]);
     }
 
     /**
@@ -392,6 +398,8 @@ public class GameController implements Screen {
 
         initCurrLevel(true);
         collisionController.setDidChange(true);
+//        collisionController.setLevel(levels[currLevelIndex]);
+//        actionController.setLevel(levels[currLevelIndex]);
     }
 
     /**
@@ -419,7 +427,7 @@ public class GameController implements Screen {
      * 1. Use hyphens<br>
      * 2. For sprites that are for animations, affix their name with "-anim"<br>
      * 3. For textures that serve as backgrounds, prefix their names with "bg-"<br>
-     * 4. Make sure to use the file name (with hyphens) for the assets.json key, and the texture map key as well<br>
+     * 4. Make sure to use the file name (with h yphens) for the assets.json key, and the texture map key as well<br>
      *
      * @param directory	Reference to global asset manager.
      */
@@ -427,19 +435,19 @@ public class GameController implements Screen {
         // Allocate the tiles
         // Creating the hashmaps
         textureRegionAssetMap = new HashMap<>();
-        soundAssetMap = new HashMap<>();
+//        soundAssetMap = new HashMap<>();
         fontAssetMap = new HashMap<>();
 
         // List of textures we extract. These should be the SAME NAME as the keys in the assets.json.
         // A couple naming conventions: use hyphens, affix animation sprites with "-anim".
         String[] names = {
                 // CAT
-                "cat", "walk-anim", "jump", "jump-anim", "sit", "idle-sit-anim", "idle-stand-anim", "meow-anim",
-                "corpse", "corpse2", "corpse-burnt",
+                "cat", "walk-anim", "jump-anim", "idle-sit-anim", "idle-stand-anim", "meow-anim",
+                "trans-anim","climb-anim","corpse", "corpse2", "corpse3","corpse-burnt","trans2-anim","jump-mid",
                 // SPIKES
                 "spikes",
                 // BUTTONS & SWITCHES
-                "button-base", "button-top", "switch-top",
+                "button-base", "button-top", "switch-top", "switch-base",
                 // FLAMETHROWERS
                 "flamethrower", "flame", "flame-anim",
                 // LASERS
@@ -447,25 +455,43 @@ public class GameController implements Screen {
                 // CHECKPOINTS
                 "checkpoint-anim", "checkpoint-active-anim", "checkpoint-base", "checkpoint-base-active",
                 // GOAL
-                "goal",
+                "goal", "goal-active",
                 // ROBOT & MOBS
                 "robot", "robot-anim",
                 // SPIRIT BOUNDARIES
                 "spirit-anim", "spirit-photon", "spirit-photon-cat", "spirit-region",
+                // ACTIVATABLE LIGHTS
+                "ceiling-light", "wall-light",
                 // TILESETS
-                "metal-tileset", "climbable-tileset", "steel",
+                "metal-tileset", "climbable-tileset", "steel", "windows-tileset", "forest-tileset", "forestLeaves-tileset",
                 // DOORS & PLATFORMS
                 "door", "platform",
+                // BOX
+                "box",
                 // BACKGROUNDS
-                "bg-lab",}; // Unsure if this is actually being used
+                "bg-lab", "bg-forest",
+                // DECOR
+                "tutorial-burn", "tutorial-camera", "tutorial-checkpoint", "tutorial-dash", "tutorial-pause",
+                "tutorial-side-spikes", "tutorial-spikes", "tutorial-switch", "tutorial-walk-jump",
+                "tutorial-jump-dash", "tutorial-undo",
+                "cabinet-left", "cabinet-mid", "cabinet-right", "goggles", "microscope",
+                "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf", "wall-bottom", "wall-top",
+                "tank", "test-tubes", "coke", "coming-soon"
+                }; // Unsure if this is actually being used
         for (String n : names){
+//            System.out.println(n);
+//            System.out.println(directory.getEntry(n, Texture.class));
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
         }
 
-        names = new String[]{"jump", "dash", "metal-landing", "meow"};
-        for (String n : names){
-            soundAssetMap.put(n, directory.getEntry(n, Sound.class));
-        }
+        names = new String[]{"jump", "dash", "metal-landing", "meow-1", "meow-2", "meow-3"};
+        audioController.createSoundEffectMap(directory, names);
+
+        names = new String[]{"bkg-lab-1", "bkg-forest-1"};
+        audioController.createMusicMap(directory, names);
+
+//        audioController.playLab();
+//        audioController.playLevelMusic();
 
         names = new String[]{"retro"};
         for (String n : names){
@@ -477,8 +503,7 @@ public class GameController implements Screen {
 
         background = textureRegionAssetMap.get("bg-lab").getTexture();
 
-        // Giving assets to levelController
-        setAssets(textureRegionAssetMap, fontAssetMap, soundAssetMap, constants);
+        setAssets(textureRegionAssetMap, fontAssetMap, constants);
         setJSON(tiledJSON(1));
         nextJV = tiledJSON(2);
 
@@ -487,7 +512,7 @@ public class GameController implements Screen {
 
 //		InputController.getInstance().writeTo("debug-input/recent.txt");
 //		InputController.getInstance().readFrom("debug-input/recent.txt");
-    }
+}
 
     /**
      * Handles respawning the cat after their death
@@ -529,8 +554,12 @@ public class GameController implements Screen {
         if (rayHandler != null) {
             rayHandler.dispose();
         }
+//        RayHandler.useDiffuseLight(true);
+//        RayHandler.useDiffuseLight(false);
+
         rayHandler = new RayHandler(world);
-        rayHandler.setAmbientLight(0.8f);
+        rayHandler.setAmbientLight(0.85f);
+//        rayHandler.setShadows(true);
 
         justRespawned = true;
         justReset = true;
@@ -559,6 +588,15 @@ public class GameController implements Screen {
         }
 
         initCurrLevel(false);
+
+        if (audioController.getCurrMusic().equals("metal") && currLevel.getBiome().equals("forest")) {
+            System.out.println("switch to forest");
+            audioController.playForest();
+        }
+        else if (audioController.getCurrMusic().equals("forest") && currLevel.getBiome().equals("metal")) {
+            System.out.println("switch to lab");
+            audioController.playLab();
+        }
     }
 
     /**
@@ -578,6 +616,14 @@ public class GameController implements Screen {
         nextLevel.pause();
         prevLevel.pause();
         undoTime = 0;
+
+        if (audioController.getCurrMusic().equals("metal") && currLevel.getBiome().equals("forest")) {
+            audioController.playForest();
+        }
+        else if (audioController.getCurrMusic().equals("forest") && currLevel.getBiome().equals("metal")) {
+            audioController.playLab();
+        }
+
         resume();
     }
 
@@ -631,6 +677,14 @@ public class GameController implements Screen {
             return false;
         }
 
+        if (input.holdSwitch()) {
+            spiritModeTicks++;
+            updateVFX(true, input.switchPressed(), dt);
+        } else {
+            updateVFX(false, false, dt);
+            spiritModeTicks = 0;
+        }
+
         if (currLevel.isFailure() || input.didReset()) {
             if (currLevel.isFailure()) flashColor.set(1, 0, 0, 1);
             reset();
@@ -644,10 +698,12 @@ public class GameController implements Screen {
             return false;
         }  else if (input.didNext() && levelNum < numLevels) {
             pause();
+//            nextLevel();
             init(levelNum + 1);
             return false;
         }  else if (input.didPrev() && levelNum > 1) {
             pause();
+//            prevLevel();
             init(levelNum - 1);
             return false;
         }
@@ -665,10 +721,13 @@ public class GameController implements Screen {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt) {
+//        System.out.println(currLevel.getGoal());
         if (collisionController.getReturn()) {
             setRet(true);
         }
         actionController.update(dt);
+
+        currLevel.getSpiritLine().setOuterColor(spiritModeColor);
         flashColor.a -= flashColor.a/10;
         updateCamera();
 
@@ -708,6 +767,33 @@ public class GameController implements Screen {
             undoTime = 0;
             flashColor.set(1, 1, 1, 1);
         }
+    }
+
+    /**
+     * Updates parameters for the vfx depending on how long the player has been in spirit mode.
+     *
+     * @param increasing    true if effect strength should increase
+     * @param justPressed   if the switch button was just pressed
+     * @param dt            time since last frame
+     */
+    private void updateVFX(boolean increasing, boolean justPressed, float dt){
+
+        if (!increasing) {
+            effectSize += -effectSize/10f;
+            if (effectSize - 0.05f < 0) effectSize = 0;
+        } else {
+            if (spiritModeTicks <= MAX_SPIRIT_MODE_TICKS) {
+                effectSize = (float) Math.sin(Math.PI * (double) (spiritModeTicks / 2f / MAX_SPIRIT_MODE_TICKS));
+            } else {
+                effectSize = 1;
+            }
+        }
+
+        Color targetColor = currLevel.getCat().getSpiritRegionColor();
+        spiritModeColor.r += (targetColor.r - spiritModeColor.r) * 0.05f;
+        spiritModeColor.g += (targetColor.g - spiritModeColor.g) * 0.05f;
+        spiritModeColor.b += (targetColor.b - spiritModeColor.b) * 0.05f;
+
     }
 
     /**
@@ -823,15 +909,19 @@ public class GameController implements Screen {
                 postUpdate(delta);
             }
         }
+
+        if (LIGHTS_ACTIVE) {
+            updateRayHandlerCombinedMatrix();
+            rayHandler.update();
+        }
+
         if (paused) { updateCamera(); }
         // Main game draw
         draw(delta);
 
-        // box2dlights draw
-        updateRayHandlerCombinedMatrix();
-        rayHandler.updateAndRender();
 
-        // Pause menu draw
+        // Menu draw
+        hud.draw();
         if (paused && stageController != null) { stageController.render(delta); }
     }
 
@@ -877,6 +967,7 @@ public class GameController implements Screen {
      * Pausing happens when we switch game modes.
      */
     public void pause() {
+        audioController.pauseLevelMusic();
         paused = true;
         actionController.pause();
     }
@@ -887,6 +978,7 @@ public class GameController implements Screen {
      * This is usually when it regains focus.
      */
     public void resume() {
+        audioController.playLevelMusic();
         paused = false;
         stageController = null;
     }
@@ -916,19 +1008,39 @@ public class GameController implements Screen {
      * @param dt	Number of seconds since last animation frame
      */
     public void draw(float dt) {
-        canvas.clear();
 
-        canvas.begin();
+        canvas.clear();
+        canvas.beginFrameBuffer();
         canvas.applyViewport(false);
-        canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight());
-        if (true) { //TODO: only draw when necessary
-            prevLevel.draw(canvas, false);
-            nextLevel.draw(canvas, false);
+        if (currLevel.getBiome() != null && currLevel.getBiome().equals("metal")) {
+            background = textureRegionAssetMap.get("bg-lab").getTexture();
+        } else {
+            background = textureRegionAssetMap.get("bg-forest").getTexture();
         }
-        currLevel.draw(canvas, gameState != GameState.RESPAWN);
-        canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
+
+        if (effectSize > 0) { canvas.setGreyscaleShader(effectSize); }
+        canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2f, canvas.getCamera().getY()  - canvas.getHeight()/2f, canvas.getWidth(), canvas.getHeight());
+
+        if (true) { //TODO: only draw when necessary
+            prevLevel.draw(canvas, false, effectSize);
+            nextLevel.draw(canvas, false, effectSize);
+        }
+        currLevel.draw(canvas, gameState != GameState.RESPAWN, effectSize);
+
+        canvas.endFrameBuffer();
+
+        canvas.drawLightsToBuffer(rayHandler);
+
+        if (effectSize > 0) {
+            canvas.setSpiritModeShader(1.8f - 0.525f * effectSize, 0.3f,
+                    spiritModeColor, spiritModeColor, spiritModeTicks/60f);
+        }
+        canvas.drawFrameBuffer();
+
+        if (effectSize > 0) canvas.setShader(null);
+        canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2f, canvas.getCamera().getY()  - canvas.getHeight()/2f, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
+
         canvas.end();
-        hud.draw();
 
         if (debug) {
             canvas.beginDebug();
@@ -937,16 +1049,6 @@ public class GameController implements Screen {
             if (levelNum < numLevels) nextLevel.drawDebug(canvas);
             canvas.endDebug();
         }
-
-        //box2d debug check
-//        Array<Body> bodies = new Array<>();
-//        world.getBodies(bodies);
-//        System.out.println(bodies.size);
-//        int numBodies = 0;
-//        for (Level l : levels){
-//            numBodies += l.objects.size();
-//        }
-//        System.out.println(numBodies);
 
     }
 

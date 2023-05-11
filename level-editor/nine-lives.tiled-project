@@ -1,5 +1,5 @@
 {
-    "automappingRulesFile": "./rules/rules.txt",
+    "automappingRulesFile": "rules/rules.txt",
     "commands": [
     ],
     "compatibilityVersion": 1100,
@@ -15,8 +15,8 @@
             "members": [
                 {
                     "name": "color",
-                    "type": "string",
-                    "value": ""
+                    "type": "color",
+                    "value": "#ffff0000"
                 },
                 {
                     "name": "id",
@@ -51,7 +51,8 @@
             "values": [
                 "button",
                 "switch",
-                "timed switch"
+                "timed switch",
+                ""
             ],
             "valuesAsFlags": false
         },
@@ -71,6 +72,41 @@
             "drawFill": true,
             "id": 18,
             "members": [
+                {
+                    "name": "bHeight",
+                    "type": "float",
+                    "value": 32
+                },
+                {
+                    "name": "bWidth",
+                    "type": "float",
+                    "value": 18
+                },
+                {
+                    "name": "bX",
+                    "type": "float",
+                    "value": 0
+                },
+                {
+                    "name": "bY",
+                    "type": "float",
+                    "value": 0
+                },
+                {
+                    "name": "isZoomRelative",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "shouldSnap",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "snapCollisionArea",
+                    "type": "bool",
+                    "value": true
+                },
                 {
                     "name": "zoom",
                     "type": "float",
@@ -223,6 +259,46 @@
                 "object",
                 "tile"
             ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 21,
+            "members": [
+                {
+                    "name": "activatorID",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "active",
+                    "type": "bool",
+                    "value": true
+                },
+                {
+                    "name": "type",
+                    "propertyType": "lightType",
+                    "type": "string",
+                    "value": "ceiling"
+                }
+            ],
+            "name": "Light",
+            "type": "class",
+            "useAs": [
+                "property",
+                "object"
+            ]
+        },
+        {
+            "id": 20,
+            "name": "lightType",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "ceiling",
+                "wall"
+            ],
+            "valuesAsFlags": false
         },
         {
             "color": "#ffa0a0a4",

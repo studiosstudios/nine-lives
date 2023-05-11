@@ -31,20 +31,20 @@ public class ActionController {
     protected Rectangle bounds;
     /** The world scale */
     protected Vector2 scale;
-    /** The hashmap for sounds */
-    private HashMap<String, Sound> soundAssetMap;
     /** The JSON value constants */
     private JsonValue constantsJSON;
-    /** The default sound volume */
-    private float volume;
-    /** The jump sound */
-    private long jumpId = -1;
-    /** The plop sound */
-    private long plopId = -1;
-    /** The pew (fire) sound */
-    private long fireId = -1;
-    /** The meow sound */
-    private long meowId = -1;
+//    /** The hashmap for sounds */
+//    private HashMap<String, Sound> soundAssetMap;
+//    /** The default sound volume */
+//    private float volume;
+//    /** The jump sound */
+//    private long jumpId = -1;
+//    /** The plop sound */
+//    private long plopId = -1;
+//    /** The pew (fire) sound */
+//    private long fireId = -1;
+//    /** The meow sound */
+//    private long meowId = -1;
     /** The level */
     private Level level;
     private Array<AIController> mobControllers;
@@ -56,23 +56,25 @@ public class ActionController {
     private Vector2 startPointCache = new Vector2();
     private Vector2 endPointCache = new Vector2();
     private ObjectMap<DeadBody, Float> hitDeadbodies = new ObjectMap<>();
+    private AudioController audioController;
 
     /**
      * Creates and initialize a new instance of a ActionController
      *
      * @param scale	    The game scale Vector2
-     * @param volume    The volume of the game
+     * @param audioController    The audio controller of the game
      */
-    public ActionController(Vector2 scale, float volume) {
+    public ActionController(Vector2 scale, AudioController audioController) {
         this.scale = scale;
-        this.volume = volume;
+//        this.volume = volume;
+        this.audioController = audioController;
         mobControllers = new Array<>();
     }
-
-    /**
-     * Sets the volume for all sounds in the game.
-     * */
-    public void setVolume(float volume) { this.volume = volume; }
+//
+//    /**
+//     * Sets the volume for all sounds in the game.
+//     * */
+//    public void setVolume(float volume) { this.volume = volume; }
 
     /**
      * Sets the level model
@@ -105,12 +107,12 @@ public class ActionController {
         return mobControllers;
     }
 
-    /**
-     * Sets the hashmaps for Texture Regions, Sounds, Fonts, and sets JSON value constants
-     *
-     * @param sMap the hashmap for Sounds
-     */
-    public void setAssets(HashMap<String, Sound> sMap){ soundAssetMap = sMap; }
+//    /**
+//     * Sets the hashmaps for Texture Regions, Sounds, Fonts, and sets JSON value constants
+//     *
+//     * @param sMap the hashmap for Sounds
+//     */
+//    public void setAssets(HashMap<String, Sound> sMap){ soundAssetMap = sMap; }
 
     /**
      * Called when the Screen is paused.
@@ -146,6 +148,10 @@ public class ActionController {
             sr.update();
         }
 
+        if (level.getSpiritParticles().size != 0 && level.getdeadBodyArray().size == 0) {
+            moveSpirits();
+        }
+
         if (ic.didSwitch()) {
             //switch body
             DeadBody body = level.getNextBody();
@@ -171,7 +177,7 @@ public class ActionController {
             cat.applyForce();
 
             for (String soundName : cat.getSoundBuffer()) {
-                soundAssetMap.get(soundName).play();
+                audioController.playSoundEffect(soundName);
             }
             cat.getSoundBuffer().clear();
         }
@@ -344,7 +350,7 @@ public class ActionController {
             //object is grounded, update base velocity to be average of velocities of grounds
             if (numGrounded > 0 && !baseVel.scl(1f / numGrounded).epsilonEquals(Vector2.Zero, 0.001f)) {
 //                obj.setBaseVelocity(baseVel);
-                obj.setBaseVX(baseVel.x); //only moves in x
+                obj.setBaseVX(baseVel.x);
                 grounded.put(obj, true);
                 return true;
             }
@@ -427,16 +433,16 @@ public class ActionController {
     private void getRayCastEnd(Vector2 start, Direction dir){
         switch (dir) {
             case UP:
-                endPointCache.set(start.x,bounds.height);
+                endPointCache.set(start.x,bounds.height + bounds.y);
                 break;
             case LEFT:
-                endPointCache.set(0, start.y);
+                endPointCache.set(bounds.x, start.y);
                 break;
             case DOWN:
-                endPointCache.set(start.x, 0);
+                endPointCache.set(start.x, bounds.y);
                 break;
             case RIGHT:
-                endPointCache.set(bounds.width, start.y);
+                endPointCache.set(bounds.width + bounds.x, start.y);
                 break;
         }
     }
@@ -492,30 +498,47 @@ public class ActionController {
         }
     }
 
+    /**
+     * Main function called when cat reaches goal object.
+     * Spirit particles are spawned at dead bodies and dead bodies are removed.
+     */
     public void recombineLives() {
-        level.resetLives();
-        for (DeadBody body: level.getdeadBodyArray()) {
-            level.removeDeadBody(body);
-            Particle spirit = new Particle();
-            spirit.setX(body.getX());
-            spirit.setY(body.getY());
-            float x = level.getCat().getX() - body.getX();
-            float y = level.getCat().getY() - body.getY();
-            float angle = (float) Math.atan((double)x/(double)y);
-            spirit.setAngle(angle);
-//            level.getSpiritParticles().add(spirit);
+        if (level.getNumLives() != level.getMaxLives() && level.getdeadBodyArray().size == 0) {
+            level.resetLives();
+            return;
         }
-//        moveSpirits();
+
+        if (level.getSpiritParticles().size == 0) {
+            while (level.getdeadBodyArray().size != 0) {
+                for (DeadBody body: level.getdeadBodyArray()) {
+                    Particle spirit = new Particle();
+                    spirit.setX(body.getX());
+                    spirit.setY(body.getY());
+                    level.addSpiritParticle(spirit);
+                    //TODO: smooth remove of dead bodies
+                    level.removeDeadBody(body);
+                }
+            }
+        }
     }
 
-
+    /**
+     * Moves the spirit particles.
+     * The particles go towards the Cat.
+     *
+     */
     public void moveSpirits() {
-        while (level.getSpiritParticles().size != 0) {
-            System.out.println(level.getSpiritParticles());
+        if (level.getSpiritParticles().size != 0) {
             for (Particle spirit : level.getSpiritParticles()) {
+                float x = level.getCat().getX() - spirit.getX();
+                float y = level.getCat().getY() - spirit.getY();
+                float angle = (float) Math.atan((double)y/(double)x);
+                spirit.setAngle(angle, 0.25f);
                 spirit.move();
-                if (Math.abs(spirit.getX() - level.getCat().getX()) <= 5f) {
+                if (Math.abs(spirit.getX() - level.getCat().getX()) <= 1f &&
+                    Math.abs(spirit.getY() - level.getCat().getY()) <= 1f) {
                     level.getSpiritParticles().removeValue(spirit, true);
+                    level.setNumLives(level.getNumLives() + 1);
                 }
             }
         }

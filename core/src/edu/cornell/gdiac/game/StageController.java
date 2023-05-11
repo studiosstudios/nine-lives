@@ -69,6 +69,13 @@ public class StageController implements Screen {
 	private StartStage startStage;
 	public GameController currLevel;
 	private int selectedLevel;
+	private boolean startLoad = false;
+
+//	/** The hashmap for music */
+//	private HashMap<String, AudioSource> musicAssetMap;
+//	/** A queue to play music */
+//	MusicQueue music;
+
 	private AudioController audioController;
 	public int getSelectedLevel() { return selectedLevel; }
 	public void setSelectedLevel(int level) { selectedLevel = level; }
@@ -179,7 +186,6 @@ public class StageController implements Screen {
 		assets = new AssetDirectory( file );
 		assets.loadAssets();
 		active = true;
-
 	}
 
 	/**
@@ -207,7 +213,7 @@ public class StageController implements Screen {
 		audioController.playStageMusic();
 	}
 
-	
+
 	/**
 	 * Update the status of this player mode.
 	 * <br><br>
@@ -261,34 +267,46 @@ public class StageController implements Screen {
 	 */
 	public void render(float delta) {
 		if (active) {
-//			if (!pause && startStage != null) { update(delta); }
 			update(delta);
 			draw();
 			if (pause) {
 				audioController.playStageMusic();
 				pauseStage.currLevel = this.currLevel;
-//				changeStage(pauseStage);
 			}
 			if (loading) {
-				audioController.pauseStageMusic();
-				loading = false;
-//				try {
-//					Thread.sleep(1000);
-//				} catch (InterruptedException e) {
-//					Thread.currentThread().interrupt();
-//				}
-				if (fromSelect) {
-					fromSelect = false;
-					listener.exitScreen(this, 69);
-				} else {
-					fromSelect = false;
-					listener.exitScreen(this,0);
+				if (!startLoad) {
+					audioController.playSoundEffect("menu-select");
+					assets = new AssetDirectory("jsons/assets.json");
+					assets.loadAssets();
+					startLoad = true;
+				}
+				assets.update();
+				if (assets.isFinished()) {
+					audioController.pauseStageMusic();
+					loading = false;
+					if (fromSelect) {
+						fromSelect = false;
+						startLoad = false;
+						listener.exitScreen(this, 69);
+					} else {
+						fromSelect = false;
+						startLoad = false;
+						listener.exitScreen(this, 0);
+					}
+					loading = false;
+					if (fromSelect) {
+						fromSelect = false;
+						listener.exitScreen(this, 69);
+					} else {
+						fromSelect = false;
+						listener.exitScreen(this, 0);
+					}
 				}
 			}
 
 			// We are ready, notify our listener
 			if (mainMenuStage.isPlay() && listener != null) {
-				audioController.playSoundEffect("menu-select");
+//				audioController.playSoundEffect("menu-select");
 				loading = true;
 				fromSelect = false;
 				changeStage(loadingStage);
@@ -319,7 +337,7 @@ public class StageController implements Screen {
 				getStage().act();
 				getStage().draw();
 				levelSelectStage.setPlayButtonState(0);
-				selectedLevel = levelSelectStage.getSelectedLevel();
+				selectedLevel = 1;
 //				listener.exitScreen(this, 69);
 			} else if (pauseStage.isResume() && listener != null) {
 				audioController.playSoundEffect("menu-select");

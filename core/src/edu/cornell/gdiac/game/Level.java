@@ -215,6 +215,13 @@ public class Level {
      */
     public String getBiome() { return biome; }
 
+    /**
+     * Returns the maximum number of lives
+     *
+     * @return maxLives
+     */
+    public int getMaxLives() { return maxLives; }
+
 
     /**
      * Sets the cat for this level. This is used for level switching.
@@ -1499,6 +1506,7 @@ public class Level {
         public Decoration(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale) {
             position.set((float) properties.get("x"), (float) properties.get("y"));
             textureRegion = tMap.get((String) properties.get("name"));
+//            System.out.println(properties.get("name"));
             this.scale.set(scale);
             textureScale.set((float) properties.get("width") * scale.x/textureRegion.getRegionWidth(),
                     (float) properties.get("height") * scale.y/textureRegion.getRegionHeight());

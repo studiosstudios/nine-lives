@@ -96,6 +96,11 @@
       "cat-tank-pink": "world/decor/cat-tank-pink.png",
       "cat-tank-green": "world/decor/cat-tank-green.png",
       "shelf": "world/decor/shelf.png",
+      "cabinet-left": "world/decor/cabinet-left.png",
+      "cabinet-mid": "world/decor/cabinet-mid.png",
+      "cabinet-right": "world/decor/cabinet-right.png",
+      "goggles": "world/decor/goggles.png",
+      "microscope": "world/decor/microscope.png",
       "wall-bottom": "world/decor/wall-bottom.png",
       "wall-top": "world/decor/wall-top.png"
     },
@@ -107,16 +112,20 @@
         "tiledLevel1": "levels/tutorial-walk-jump.json",
         "tiledLevel2": "levels/tutorial-dash.json",
         "tiledLevel3": "levels/tutorial-first-death.json",
-        "tiledLevel4": "levels/spikes-deaths-easy.json",
+        "tiledLevel4": "levels/tutorial-undo.json",
       //        "tiledLevel2": "levels/test-windows.json",
       //        "tiledLevel1": "levels/lights.json",
         "tiledLevel5": "levels/activator-door-tutorial.json",
-        "tiledLevel6": "levels/level-beta-med1.json",
-        "tiledLevel7": "levels/body-switching-chain-medium.json",
-        "tiledLevel8": "levels/super-jump.json",
+        "tiledLevel6": "levels/basic-body-switch.json",
+        "tiledLevel7": "levels/spikes-deaths-easy.json",
+        "tiledLevel8": "levels/tutorial-camera.json",
+        "tiledLevel9": "levels/level-beta-med1.json",
+        "tiledLevel10": "levels/body-switching-chain-medium.json",
+        "tiledLevel11": "levels/super-jump.json",
 //        "tiledLevel5": "levels/level-beta-hard.json",
 //        "tiledLevel8": "levels/party-room.json"
-        "tiledLevel9": "levels/test-forest.json"
+       "tiledLevel12": "levels/party-room.json",
+        "tiledLevel13": "levels/test-forest.json"
     },
     "soundfx" : {
         "jump" : "sounds/jump-CELESTE.wav",

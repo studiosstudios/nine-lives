@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.game.object.*;
-
 import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.game.stage.HudStage;
 import edu.cornell.gdiac.util.ScreenListener;
@@ -443,7 +442,7 @@ public class GameController implements Screen {
         // A couple naming conventions: use hyphens, affix animation sprites with "-anim".
         String[] names = {
                 // CAT
-                "cat", "walk-anim", "jump", "jump-anim", "sit", "idle-sit-anim", "idle-stand-anim", "meow-anim",
+                "cat", "walk-anim", "jump-anim", "idle-sit-anim", "idle-stand-anim", "meow-anim",
                 "trans-anim","climb-anim","corpse", "corpse2", "corpse3","corpse-burnt","trans2-anim","jump-mid",
                 // SPIKES
                 "spikes",
@@ -475,10 +474,12 @@ public class GameController implements Screen {
                 "tutorial-burn", "tutorial-camera", "tutorial-checkpoint", "tutorial-dash", "tutorial-pause",
                 "tutorial-side-spikes", "tutorial-spikes", "tutorial-switch", "tutorial-walk-jump",
                 "tutorial-jump-dash", "tutorial-undo",
+                "cabinet-left", "cabinet-mid", "cabinet-right", "goggles", "microscope",
                 "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf", "wall-bottom", "wall-top"
                 }; // Unsure if this is actually being used
         for (String n : names){
 //            System.out.println(n);
+//            System.out.println(directory.getEntry(n, Texture.class));
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
         }
 
@@ -510,7 +511,7 @@ public class GameController implements Screen {
 
 //		InputController.getInstance().writeTo("debug-input/recent.txt");
 //		InputController.getInstance().readFrom("debug-input/recent.txt");
-    }
+}
 
     /**
      * Handles respawning the cat after their death
@@ -553,10 +554,10 @@ public class GameController implements Screen {
             rayHandler.dispose();
         }
 //        RayHandler.useDiffuseLight(true);
-        RayHandler.useDiffuseLight(false);
+//        RayHandler.useDiffuseLight(false);
 
         rayHandler = new RayHandler(world);
-        rayHandler.setAmbientLight(0.9f);
+        rayHandler.setAmbientLight(0.85f);
 //        rayHandler.setShadows(true);
 
         justRespawned = true;

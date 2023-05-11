@@ -12,7 +12,7 @@ Dash  | 	↑,↓,←,→  +  X
 Attach to Wall  | 	Z
 Climb  | 	↑ and ↓
 Switch Body  | 	⇧ (SHIFT)
-Cancel Switch  | 	CTRL
+Cancel Switch  | 	SPACE
 Meow  | 	M 
 
 

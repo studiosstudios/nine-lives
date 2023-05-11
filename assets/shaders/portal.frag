@@ -31,7 +31,7 @@ void main( )
     vec2 pc = vec2(d, alpha); // polar coords
 
     //fancy calc or irregular shape
-    float sinVal = sin(2*t)*0.075 + sin(0.5+pc.y*3.+t*7.)*sin(pc.y*18.+t*2.)*0.02 - cos(0.3-pc.y*8.+t*5.)*0.015 + sin(pc.y*8.+t*8.)*0.03 * sin(-pc.y*2.+t*2.);
+    float sinVal = sin(2.*t)*0.075 + sin(0.5+pc.y*3.+t*7.)*sin(pc.y*18.+t*2.)*0.02 - cos(0.3-pc.y*8.+t*5.)*0.015 + sin(pc.y*8.+t*8.)*0.03 * sin(-pc.y*2.+t*2.);
     float targetVal = u_radius + sinVal;
     float thickness = u_thickness + 0.1* sin(t);
     float res = smoothstep(targetVal-thickness, targetVal+thickness, d);

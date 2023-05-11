@@ -148,6 +148,7 @@ public class GameCanvas {
 				Gdx.files.internal("shaders/portal.frag").readString());
 		greyscaleShader = new ShaderProgram(spriteBatch.getShader().getVertexShaderSource(),
 				Gdx.files.internal("shaders/greyscale.frag").readString());
+		System.out.println(spiritModeShader.getLog());
 
 		mainFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
 

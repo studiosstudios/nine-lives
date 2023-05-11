@@ -94,7 +94,10 @@
       "goggles": "world/decor/goggles.png",
       "microscope": "world/decor/microscope.png",
       "wall-bottom": "world/decor/wall-bottom.png",
-      "wall-top": "world/decor/wall-top.png"
+      "wall-top": "world/decor/wall-top.png",
+      "coke": "world/decor/coke.png",
+      "test-tubes": "world/decor/test-tubes.png",
+      "tank": "world/decor/tank.png"
     },
     "jsons"  : {
         "constants": "jsons/constants.json",

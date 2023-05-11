@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.10.1" name="decor" tilewidth="3840" tileheight="2388" tilecount="22" columns="0">
+<tileset version="1.10" tiledversion="1.10.1" name="decor" tilewidth="3840" tileheight="2946" tilecount="25" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="8">
   <image width="1024" height="1024" source="tutorial-burn.png"/>
@@ -66,5 +66,14 @@
  </tile>
  <tile id="29">
   <image width="256" height="256" source="goggles.png"/>
+ </tile>
+ <tile id="30">
+  <image width="256" height="256" source="coke.png"/>
+ </tile>
+ <tile id="31">
+  <image width="2048" height="2946" source="tank.png"/>
+ </tile>
+ <tile id="32">
+  <image width="256" height="256" source="test-tubes.png"/>
  </tile>
 </tileset>

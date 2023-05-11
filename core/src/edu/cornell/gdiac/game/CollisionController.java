@@ -172,7 +172,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                         db.addSpiritRegion((SpiritRegion) bd2);
                     } else if (fd1.equals(DeadBody.centerSensorName) && !fix2.isSensor() && bd2 != level.getCat()) {
                         //dead body has been squished D:
-                        level.removeDeadBody(db);
+//                        level.removeDeadBody(db);
                     }
                 }
 

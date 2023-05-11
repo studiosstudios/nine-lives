@@ -185,6 +185,13 @@ public class Platform extends BoxObstacle implements Activatable {
             targetVel.set(0, 0);
         }
 
+        //check if moved off of path
+        if (!getPosition().sub(target).isOnLine(disp)) {
+            float proj = getPosition().sub(target).dot(disp)/disp.len2();
+            setX(target.x + proj * disp.x);
+            setY(target.y + proj * disp.y);
+        }
+
         //update velocity
         setVX(getVX() + (targetVel.x - getVX()) * damping);
         setVY(getVY() + (targetVel.y - getVY()) * damping);

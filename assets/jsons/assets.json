@@ -102,7 +102,10 @@
       "goggles": "world/decor/goggles.png",
       "microscope": "world/decor/microscope.png",
       "wall-bottom": "world/decor/wall-bottom.png",
-      "wall-top": "world/decor/wall-top.png"
+      "wall-top": "world/decor/wall-top.png",
+      "coke": "world/decor/coke.png",
+      "test-tubes": "world/decor/test-tubes.png",
+      "tank": "world/decor/tank.png"
     },
     "jsons"  : {
         "constants": "jsons/constants.json",
@@ -117,15 +120,16 @@
       //        "tiledLevel1": "levels/lights.json",
         "tiledLevel5": "levels/activator-door-tutorial.json",
         "tiledLevel6": "levels/basic-body-switch.json",
-        "tiledLevel7": "levels/spikes-deaths-easy.json",
-        "tiledLevel8": "levels/tutorial-camera.json",
-        "tiledLevel9": "levels/triple-body-deposits.json",
-        "tiledLevel10": "levels/level-beta-med1.json",
-        "tiledLevel11": "levels/super-jump.json",
+        "tiledLevel7": "levels/tutorial-camera.json",
+        "tiledLevel8": "levels/spikes-deaths-easy.json",
+        "tiledLevel9": "levels/mob-push-box.json",
+        "tiledLevel10": "levels/tutorial-flamethrower.json",
+        "tiledLevel11": "levels/triple-body-deposits.json",
+        "tiledLevel12": "levels/level-beta-med1.json",
+        "tiledLevel13": "levels/super-jump.json",
 //        "tiledLevel5": "levels/level-beta-hard.json",
-//        "tiledLevel8": "levels/party-room.json"
-       "tiledLevel12": "levels/party-room.json",
-        "tiledLevel13": "levels/test-forest.json"
+        "tiledLevel14": "levels/party-room.json",
+        "tiledLevel15": "levels/test-forest.json"
     },
     "soundfx" : {
         "jump" : "sounds/jump-CELESTE.wav",

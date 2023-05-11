@@ -475,7 +475,8 @@ public class GameController implements Screen {
                 "tutorial-side-spikes", "tutorial-spikes", "tutorial-switch", "tutorial-walk-jump",
                 "tutorial-jump-dash", "tutorial-undo",
                 "cabinet-left", "cabinet-mid", "cabinet-right", "goggles", "microscope",
-                "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf", "wall-bottom", "wall-top"
+                "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf", "wall-bottom", "wall-top",
+                "tank", "test-tubes", "coke"
                 }; // Unsure if this is actually being used
         for (String n : names){
 //            System.out.println(n);

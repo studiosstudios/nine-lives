@@ -25,7 +25,7 @@ public class GameController implements Screen {
     /** Listener that will update the player mode when we are done */
     private ScreenListener listener;
     /** Exit code for quitting the game */
-    public static final int EXIT_QUIT = 0;
+    public static final int EXIT_QUIT = 99;
     /** Default drawscale */
     protected static final float DEFAULT_SCALE = 32;
     /** The default value of gravity (going down) */

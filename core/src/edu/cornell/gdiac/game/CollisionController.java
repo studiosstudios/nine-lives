@@ -160,7 +160,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                 if (bd1 instanceof DeadBody) {
                     DeadBody db = (DeadBody) bd1;
                     if (bd2 instanceof Spikes) {
-                        if (fd1.equals(DeadBody.centerSensorName) && fd2.equals(Spikes.centerName)) {
+                        if (fd1.equals(DeadBody.spikesSensorName) && fd2.equals(Spikes.centerName)) {
                             actionController.fixBodyToSpikes(db, (Spikes) bd2, contact.getWorldManifold().getPoints());
                         }
                         if (fd1.equals(DeadBody.catBodyName) && fd2.equals(Spikes.pointyName)){
@@ -170,6 +170,9 @@ public class CollisionController implements ContactListener, ContactFilter {
                         db.addFlame();
                     } else if (bd2 instanceof SpiritRegion){
                         db.addSpiritRegion((SpiritRegion) bd2);
+                    } else if (fd1.equals(DeadBody.centerSensorName) && !fix2.isSensor() && bd2 != level.getCat()) {
+                        //dead body has been squished D:
+//                        level.removeDeadBody(db);
                     }
                 }
 
@@ -367,6 +370,8 @@ public class CollisionController implements ContactListener, ContactFilter {
                 if (fd1 instanceof Activator && bd2 instanceof Flamethrower.Flame) {
                     return false;
                 }
+
+                if (bd1 instanceof Wall && bd2 instanceof Platform) return false;
 
                 //spikes and dead bodies
                 if (bd1 instanceof Spikes && bd2 instanceof DeadBody) {

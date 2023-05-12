@@ -46,6 +46,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
     public static final String catBodyName = "deadCatBody";
     public static final String catSensorsName = "deadCatSensors";
     public static final String hitboxSensorName = "deadBodyHitBox";
+    public static final String spikesSensorName = "deadBodySpikes";
     private int flameCounter;
     private PolygonShape hitboxShape;
     /** List of shapes corresponding to the sensors attached to this body */
@@ -131,7 +132,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
     public DeadBody(TextureRegion texture, TextureRegion burnTexture, Vector2 scale, Vector2 position, Vector2 textureScale) {
         super(0, 0, objectConstants.getFloat("capsuleWidth"), objectConstants.getFloat("capsuleHeight"), Orientation.TOP);
 
-        spriteFrames = TextureRegion.split(burnTexture.getTexture(), 2048,2048);
+        spriteFrames = TextureRegion.split(burnTexture.getTexture(), 256,256);
         animation = new Animation<>(0.025f, spriteFrames[0]);
         time = 0f;
         setTexture(texture);
@@ -192,12 +193,17 @@ public class DeadBody extends CapsuleObstacle implements Movable {
         Fixture solidFixture = body.createFixture(hitboxDef);
         solidFixture.setUserData(hitboxSensorName);
 
+        //spikes solid sensor
+        JsonValue spikesSensorJV = objectConstants.get("spikes_sensor");
+        Fixture fix = generateSensor(solidOffset,
+                spikesSensorJV.getFloat("width", 0) * getWidth()/2, hy,
+                spikesSensorName);
+        fix.setSensor(false);
+
         //center sensor
         JsonValue centerSensorJV = objectConstants.get("center_sensor");
-        Fixture fix = generateSensor(solidOffset,
-                centerSensorJV.getFloat("width", 0) * getWidth()/2, hy,
-                centerSensorName);
-        fix.setSensor(false);
+        generateSensor(new Vector2(0, -centerSensorJV.getFloat("y_offset")), centerSensorJV.getFloat("width"),
+                centerSensorJV.getFloat("height"), centerSensorName);
 
         JsonValue groundSensorJV = objectConstants.get("ground_sensor");
         Fixture a = generateSensor(new Vector2(0, -getHeight() / 2),

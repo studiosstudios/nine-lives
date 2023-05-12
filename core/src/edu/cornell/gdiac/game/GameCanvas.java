@@ -530,6 +530,7 @@ ef	 * <br><br>
 	 * @param rayHandler    box2dlights rayhandler
 	 */
 	public void drawLightsToBuffer(RayHandler rayHandler) {
+		//TODO: try with changing blend state instead of ending batch
 		spriteBatch.end();
 		rayHandler.prepareRender();
 		mainFrameBuffer.begin();

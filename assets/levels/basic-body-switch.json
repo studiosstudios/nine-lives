@@ -311,16 +311,15 @@
          "name":"goal",
          "objects":[
                 {
-                 "gid":8,
-                 "height":2048,
-                 "id":86,
+                 "height":10240,
+                 "id":104,
                  "name":"",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":1024,
                  "x":27648,
-                 "y":12288
+                 "y":4096
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -350,6 +349,18 @@
                  "width":1024,
                  "x":14336,
                  "y":6144
+                }, 
+                {
+                 "gid":3,
+                 "height":2048,
+                 "id":103,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":1024,
+                 "x":1024,
+                 "y":12288
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -767,7 +778,7 @@
          "y":0
         }],
  "nextlayerid":21,
- "nextobjectid":103,
+ "nextobjectid":105,
  "orientation":"orthogonal",
  "properties":[
         {
@@ -782,15 +793,15 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"Kimmy\/Cornell_2022-2023\/GameDev\/nine-lives\/level-editor\/objects\/objects.tsx"
+         "source":"..\/..\/level-editor\/objects\/objects.tsx"
         }, 
         {
          "firstgid":15,
-         "source":"Kimmy\/Cornell_2022-2023\/GameDev\/nine-lives\/level-editor\/tilesets\/metal-walls.tsx"
+         "source":"..\/..\/level-editor\/tilesets\/metal-walls.tsx"
         }, 
         {
          "firstgid":63,
-         "source":"Kimmy\/Cornell_2022-2023\/GameDev\/nine-lives\/level-editor\/tilesets\/climbables.tsx"
+         "source":"..\/..\/level-editor\/tilesets\/climbables.tsx"
         }],
  "tilewidth":1024,
  "type":"map",

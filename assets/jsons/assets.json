@@ -104,6 +104,7 @@
       "coke": "world/decor/coke.png",
       "test-tubes": "world/decor/test-tubes.png",
       "tank": "world/decor/tank.png",
+      "broken-robot": "world/decor/broken-robot.png",
       "coming-soon": "world/decor/coming-soon.png"
     },
     "jsons"  : {

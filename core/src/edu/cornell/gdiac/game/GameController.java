@@ -2,6 +2,7 @@ package edu.cornell.gdiac.game;
 
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
@@ -894,14 +895,14 @@ public class GameController implements Screen {
     @Override
     public void render(float delta) {
         //FOR DEBUGGING
-//		delta = 1/60f;
-//		if (Gdx.input.isKeyPressed(Input.Keys.F)){
-//			try {
-//				Thread.sleep(500);
-//			} catch (InterruptedException e) {
-//				Thread.currentThread().interrupt();
-//			}
-//		}
+		delta = 1/60f;
+		if (Gdx.input.isKeyPressed(Input.Keys.F)){
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		}
 //        System.out.println("before:" + canvas.getCamera().getCamera().position);
         if (!paused) {
             if (preUpdate(delta)) {

@@ -569,7 +569,18 @@
          "draworder":"topdown",
          "id":20,
          "name":"goal",
-         "objects":[],
+         "objects":[
+                {
+                 "height":6144,
+                 "id":126,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":1024,
+                 "x":50176,
+                 "y":2048
+                }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -603,6 +614,18 @@
                  "visible":true,
                  "width":1024,
                  "x":47104,
+                 "y":13312
+                }, 
+                {
+                 "gid":3,
+                 "height":2048,
+                 "id":125,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":1024,
+                 "x":1024,
                  "y":13312
                 }],
          "opacity":1,
@@ -941,7 +964,7 @@
          "y":0
         }],
  "nextlayerid":24,
- "nextobjectid":125,
+ "nextobjectid":127,
  "orientation":"orthogonal",
  "properties":[
         {

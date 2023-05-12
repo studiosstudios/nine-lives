@@ -562,7 +562,7 @@ public class Cat extends CapsuleObstacle implements Movable {
      * @return The centered x-coordinate of the current cat frame.
      */
     public float getTextureCenterX() {
-        return getDrawX() - getDirectionFactor() * currentFrame.getRegionWidth()/drawScale.x;
+        return getDrawX() - getDirectionFactor() * currentFrame.getRegionWidth()/drawScale.x*4;
     }
 
     /**
@@ -571,7 +571,7 @@ public class Cat extends CapsuleObstacle implements Movable {
      * @return The centered x-coordinate of the current cat frame.
      */
     public float getTextureCenterY() {
-        return getDrawY() - currentFrame.getRegionHeight()/drawScale.y;
+        return getDrawY() - currentFrame.getRegionHeight()/drawScale.y*4;
     }
     //endregion
     /*/////*/
@@ -618,15 +618,15 @@ public class Cat extends CapsuleObstacle implements Movable {
 
         normalTexture = tMap.get("cat");
 
-        walkAnimation = new Animation<>(0.10f, TextureRegion.split(tMap.get("walk-anim").getTexture(),1024,1024)[0]);
-        jumpAnimation = new Animation<>(0.025f, TextureRegion.split(tMap.get("jump-anim").getTexture(),1024,1024)[0]);
-        meowAnimation = new Animation<>(0.05f, TextureRegion.split(tMap.get("meow-anim").getTexture(),1024,1024)[0]);
-        transAnimation = new Animation<>(0.08f, TextureRegion.split(tMap.get("trans-anim").getTexture(),1024,1024)[0]);
-        idleAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("idle-sit-anim").getTexture(),1024,1024)[0]);
-        idleStandAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("idle-stand-anim").getTexture(),1024,1024)[0]);
-        climbAnimation = new Animation<>(0.05f, TextureRegion.split(tMap.get("climb-anim").getTexture(),1024,1024)[0]);
-        transAnimation2 = new Animation<>(0.015f, TextureRegion.split(tMap.get("trans2-anim").getTexture(),1024,1024)[0]);
-        midJumpAnimation = new Animation<>(0.1f, TextureRegion.split(tMap.get("jump-mid").getTexture(),1024,1024)[0]);
+        walkAnimation = new Animation<>(0.10f, TextureRegion.split(tMap.get("walk-anim").getTexture(),256,256)[0]);
+        jumpAnimation = new Animation<>(0.025f, TextureRegion.split(tMap.get("jump-anim").getTexture(),256,256)[0]);
+        meowAnimation = new Animation<>(0.05f, TextureRegion.split(tMap.get("meow-anim").getTexture(),256,256)[0]);
+        transAnimation = new Animation<>(0.08f, TextureRegion.split(tMap.get("trans-anim").getTexture(),256,256)[0]);
+        idleAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("idle-sit-anim").getTexture(),256,256)[0]);
+        idleStandAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("idle-stand-anim").getTexture(),256,256)[0]);
+        climbAnimation = new Animation<>(0.05f, TextureRegion.split(tMap.get("climb-anim").getTexture(),256,256)[0]);
+        transAnimation2 = new Animation<>(0.015f, TextureRegion.split(tMap.get("trans2-anim").getTexture(),256,256)[0]);
+        midJumpAnimation = new Animation<>(0.1f, TextureRegion.split(tMap.get("jump-mid").getTexture(),256,256)[0]);
         meowAnimation.setPlayMode(Animation.PlayMode.REVERSED);
         idleStandAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
         idleAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);

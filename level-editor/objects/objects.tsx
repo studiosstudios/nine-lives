@@ -34,10 +34,10 @@
  <tile id="11" type="Spikes">
   <image width="1024" height="1024" source="spikes-center.png"/>
  </tile>
- <tile id="12">
+ <tile id="12" type="Light">
   <image width="3072" height="1024" source="ceiling-light.png"/>
  </tile>
- <tile id="13">
+ <tile id="13" type="Light">
   <image width="1024" height="1024" source="wall-light.png"/>
  </tile>
 </tileset>

@@ -79,6 +79,7 @@ public class NoveLight extends BoxObstacle implements Activatable {
         JsonValue lightConstants = objectConstants.get(type == LightType.CEILING ? "ceiling" : "wall");
         // ConeLights don't really look good for the ceiling lights
         createPointLight(lightConstants.get("light"), rayHandler);
+//        createConeLight(lightConstants.get("light"), rayHandler);
         getLight().setSoft(true);
         getLight().setXray(true);
         getLight().setPosition(getBody().getPosition().cpy().add(getLight().getPosition()));

@@ -559,7 +559,8 @@ public class GameController implements Screen {
 //        RayHandler.useDiffuseLight(false);
 
         rayHandler = new RayHandler(world);
-        rayHandler.setAmbientLight(0.85f);
+//        rayHandler.setAmbientLight(0.35f, 0.35f, 0.35f, 0.1f);
+        rayHandler.setAmbientLight(0.8f);
 //        rayHandler.setShadows(true);
 
         justRespawned = true;

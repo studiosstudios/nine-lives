@@ -38,7 +38,7 @@ public class GameLauncher {
         ProcessBuilder builder = new ProcessBuilder();
         if (onMac) {
             // Without this the application will just run without showing anything
-            builder.command("java", "-XstartOnFirstThread", "-jar", symbiosisPath, tempFilePath);
+            builder.command("java", "-jar", symbiosisPath, tempFilePath);
         } else {
             builder.command("java", "-jar", symbiosisPath, tempFilePath);
         }

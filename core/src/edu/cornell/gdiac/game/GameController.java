@@ -732,6 +732,7 @@ public class GameController implements Screen {
         currLevel.getSpiritLine().setOuterColor(spiritModeColor);
         flashColor.a -= flashColor.a/10;
         updateCamera();
+        System.out.println(canvas.getViewport().getScreenWidth() + " " + canvas.getViewport().getScreenHeight());
 
         hud.lives = currLevel.getNumLives();
         hud.updateLives();
@@ -904,12 +905,12 @@ public class GameController implements Screen {
 				Thread.currentThread().interrupt();
 			}
 		}
-//        System.out.println("before:" + canvas.getCamera().getCamera().position);
-        if (!paused) {
-            if (preUpdate(delta)) {
-                update(delta); // This is the one that must be defined.
-                postUpdate(delta);
-            }
+        if (!paused && preUpdate(delta)) {
+            update(delta); // This is the one that must be defined.
+            postUpdate(delta);
+        }
+        else {
+            updateCamera();
         }
 
         if (LIGHTS_ACTIVE) {
@@ -917,7 +918,6 @@ public class GameController implements Screen {
             rayHandler.update();
         }
 
-        if (paused) { updateCamera(); }
         // Main game draw
         draw(delta);
 
@@ -1037,7 +1037,7 @@ public class GameController implements Screen {
             canvas.setSpiritModeShader(1.8f - 0.525f * effectSize, 0.3f,
                     spiritModeColor, spiritModeColor, spiritModeTicks/60f);
         }
-        canvas.drawFrameBuffer();
+        canvas.drawFrameBuffer(); //applyViewport within here
 
         if (effectSize > 0) canvas.setShader(null);
         canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2f, canvas.getCamera().getY()  - canvas.getHeight()/2f, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);

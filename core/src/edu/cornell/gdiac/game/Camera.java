@@ -41,7 +41,7 @@ public class Camera {
     /** Whether camera is moving **/
     private boolean isGliding;
     /** Default camera zoom when no other specified zoom */
-    public static final float CAMERA_ZOOM = 0.6f;
+    public static final float CAMERA_ZOOM = 1f;
     /** Zoom Goal: Can only be in increments of 0.01 */
     private float zoomGoal;
 
@@ -74,53 +74,51 @@ public class Camera {
      * @param glide smoothed camera movement
      */
     public void updateCamera(float xPos, float yPos, boolean glide, Rectangle bounds){
-        if(Math.abs(camera.zoom - zoomGoal) > 0.01f) //TODO: collisions slow down zoom
-        {
-//            camera.zoom = camera.zoom < zoomGoal ? camera.zoom + zoomRate : camera.zoom - zoomRate;
-            camera.zoom += (zoomGoal - camera.zoom) * zoomRate;
-        }
-        else {
-            camera.zoom = zoomGoal;
-            setZoomRate("NORMAL");
-            //After finishing a zoom, return rates back to normal (unless body switching)
-            if(cameraGlideRate != CAMERA_GLIDE_SWITCH_BODY){
-                setGlideMode("NORMAL");
-            }
-        }
-        float width_scaled = viewportWidth*camera.zoom; //width of viewport zoomed in
-        if(xPos > bounds.width - width_scaled/2 + bounds.x){
-            xPos = bounds.width - width_scaled + width_scaled/2 + bounds.x;
-        }
-        if(xPos < width_scaled/2 + bounds.x){
-            xPos = width_scaled/2 + bounds.x;
-        }
-        float height_scaled = viewportHeight*camera.zoom; //height of viewport zoomed in
-        if(yPos > bounds.height - height_scaled/2 + bounds.y){
-            yPos = bounds.height - height_scaled + height_scaled/2 + bounds.y;
-        }
-        if(yPos < height_scaled/2 + bounds.y){
-            yPos = height_scaled/2 + bounds.y;
-        }
-        if(glide) {
-            x += (xPos - x) * cameraGlideRate;
-            y += (yPos - y) * cameraGlideRate;
-        }
-        else{
-            x = xPos;
-            y = yPos;
-        }
-        if(Math.abs((xPos - x) * cameraGlideRate) < 0.1 && Math.abs((yPos - y) * cameraGlideRate) < 0.1){
-            isGliding = false;
-            x = xPos;
-            y = yPos;
-        }
-        else{
-            isGliding = true;
-        }
-//        System.out.println("Before update: "+camera.position+" "+camera);
-        camera.position.set(x, y, 0);
-//        System.out.println("After update: "+camera.position+" "+camera);
-        camera.update();
+//        if(Math.abs(camera.zoom - zoomGoal) > 0.01f) //TODO: collisions slow down zoom
+//        {
+////            camera.zoom = camera.zoom < zoomGoal ? camera.zoom + zoomRate : camera.zoom - zoomRate;
+//            camera.zoom += (zoomGoal - camera.zoom) * zoomRate;
+//        }
+//        else {
+//            camera.zoom = zoomGoal;
+//            setZoomRate("NORMAL");
+//            //After finishing a zoom, return rates back to normal (unless body switching)
+//            if(cameraGlideRate != CAMERA_GLIDE_SWITCH_BODY){
+//                setGlideMode("NORMAL");
+//            }
+//        }
+//        float width_scaled = viewportWidth*camera.zoom; //width of viewport zoomed in
+//        if(xPos > bounds.width - width_scaled/2 + bounds.x){
+//            xPos = bounds.width - width_scaled + width_scaled/2 + bounds.x;
+//        }
+//        if(xPos < width_scaled/2 + bounds.x){
+//            xPos = width_scaled/2 + bounds.x;
+//        }
+//        float height_scaled = viewportHeight*camera.zoom; //height of viewport zoomed in
+//        if(yPos > bounds.height - height_scaled/2 + bounds.y){
+//            yPos = bounds.height - height_scaled + height_scaled/2 + bounds.y;
+//        }
+//        if(yPos < height_scaled/2 + bounds.y){
+//            yPos = height_scaled/2 + bounds.y;
+//        }
+//        if(glide) {
+//            x += (xPos - x) * cameraGlideRate;
+//            y += (yPos - y) * cameraGlideRate;
+//        }
+//        else{
+//            x = xPos;
+//            y = yPos;
+//        }
+//        if(Math.abs((xPos - x) * cameraGlideRate) < 0.1 && Math.abs((yPos - y) * cameraGlideRate) < 0.1){
+//            isGliding = false;
+//            x = xPos;
+//            y = yPos;
+//        }
+//        else{
+//            isGliding = true;
+//        }
+//        camera.position.set(x, y, 0);
+//        camera.update();
     }
 
     /**

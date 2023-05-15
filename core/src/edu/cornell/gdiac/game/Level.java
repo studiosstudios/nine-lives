@@ -599,8 +599,8 @@ public class Level {
             }
         }
 
-        tiles = new Tiles(tileData, 1024, levelWidth, levelHeight,
-                    tileset, bounds, fID, new Vector2(1/32f, 1/32f));
+        tiles = new Tiles(tileData, 128, levelWidth, levelHeight,
+                    tileset, bounds, fID, new Vector2(1/4f, 1/4f));
 
         if (climbableData != null) {
             climbables = new Tiles(climbableData, 1024, levelWidth, levelHeight,
@@ -835,7 +835,6 @@ public class Level {
      */
     private void populateDoors(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
-        textureScaleCache.set(1/32f, 1/32f);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
             Door door = new Door(propertiesMap, textureRegionAssetMap, scale, 128);

@@ -60,7 +60,7 @@
       "spirit-photon": "obstacles/spirit-region/spirit-photon.png",
       "spirit-photon-cat": "obstacles/spirit-region/spirit-photon-cat.png", //UNUSED
       "spirit-region": "obstacles/spirit-region/spirit-region.png",
-      "metal-tileset": "world/platforms/dark-metal-tileset.png",
+      "metal-tileset": "world/platforms/dark-metal-tileset-resized.png",
       "climbable-tileset": "world/platforms/climbable-tileset.png",
       "windows-tileset": "world/platforms/windows-tileset.png",
       "forest-tileset": "world/platforms/forest-tileset.png",

@@ -174,6 +174,7 @@ public class Door extends BoxObstacle implements Activatable {
             closing = 0;
         } else if (closing == 1 && cap.getPosition().dst(capOpenPos) > capOpenPos.dst(capClosedPos)){
             cap.setPosition(capClosedPos);
+            cap.setBodyType(BodyDef.BodyType.StaticBody);
             closing = 0;
         }
         switch (angle) {
@@ -244,6 +245,7 @@ public class Door extends BoxObstacle implements Activatable {
      */
     @Override
     public void deactivated(World world){
+        cap.setBodyType(BodyDef.BodyType.DynamicBody);
         closing = -1;
     }
 

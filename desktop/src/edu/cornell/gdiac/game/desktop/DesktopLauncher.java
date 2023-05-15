@@ -47,8 +47,10 @@ public class DesktopLauncher {
 		config.title = "9 Lives";
 		config.width  = 1280;
 		config.height = 720;
+		config.forceExit = true;
 //		config.fullscreen = FULLSCREEN;
 		config.getLwjgl3Configuration().setHdpiMode(HdpiMode.Pixels);
 		new GDXApp(new NineLives(quickLaunchingFromTiled, quickLaunchFilepath), config);
+		System.exit(0); // This works for the Packr app but there should be a more elegant way to close
 	}
 }

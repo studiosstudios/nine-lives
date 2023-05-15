@@ -27,9 +27,7 @@
       },
       "cat":  "cat/cat.png",
       "walk-anim": "cat/walk-anim.png",
-      "jump": "cat/jump.png",
       "jump-anim": "cat/jump-anim.png",
-      "sit": "cat/sit.png",
       "idle-sit-anim": "cat/idle-sit-anim.png",
       "idle-stand-anim": "cat/idle-stand-anim.png",
       "climb-anim": "cat/climbing-anim.png",
@@ -47,7 +45,7 @@
       "switch-top": "obstacles/button/switch-top.png",
       "switch-base": "obstacles/button/switch-base.png",
       "box": "obstacles/box/box.png",
-      "flamethrower": "obstacles/flamethrower/flamethrower.png",
+      "flamethrower": "obstacles/flamethrower/flame-throw.png",
       "flame": "obstacles/flamethrower/flame.png", //UNUSED
       "flame-anim": "obstacles/flamethrower/flame-anim.png",
       "laser": "obstacles/laser/laser.png",
@@ -106,6 +104,7 @@
       "coke": "world/decor/coke.png",
       "test-tubes": "world/decor/test-tubes.png",
       "tank": "world/decor/tank.png",
+      "broken-robot": "world/decor/broken-robot.png",
       "coming-soon": "world/decor/coming-soon.png"
     },
     "jsons"  : {

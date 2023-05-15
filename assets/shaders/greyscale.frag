@@ -17,6 +17,6 @@ void main() {
     float grey = dot(color.xyz, vec3(0.299, 0.587, 0.114));
     vec3 out_col = mix(color.xyz, vec3(grey), u_greyscale);
 
-    gl_FragColor = vec4(out_col * color.a, color.a);
+    gl_FragColor = vec4(out_col, color.a);
 
 }

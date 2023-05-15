@@ -2,6 +2,7 @@ package edu.cornell.gdiac.game;
 
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
@@ -25,7 +26,7 @@ public class GameController implements Screen {
     /** Listener that will update the player mode when we are done */
     private ScreenListener listener;
     /** Exit code for quitting the game */
-    public static final int EXIT_QUIT = 0;
+    public static final int EXIT_QUIT = 99;
     /** Default drawscale */
     protected static final float DEFAULT_SCALE = 32;
     /** The default value of gravity (going down) */
@@ -476,7 +477,7 @@ public class GameController implements Screen {
                 "tutorial-jump-dash", "tutorial-undo",
                 "cabinet-left", "cabinet-mid", "cabinet-right", "goggles", "microscope",
                 "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf", "wall-bottom", "wall-top",
-                "tank", "test-tubes", "coke", "coming-soon"
+                "tank", "test-tubes", "coke", "broken-robot", "coming-soon"
                 }; // Unsure if this is actually being used
         for (String n : names){
 //            System.out.println(n);
@@ -558,7 +559,8 @@ public class GameController implements Screen {
 //        RayHandler.useDiffuseLight(false);
 
         rayHandler = new RayHandler(world);
-        rayHandler.setAmbientLight(0.85f);
+//        rayHandler.setAmbientLight(0.35f, 0.35f, 0.35f, 0.1f);
+        rayHandler.setAmbientLight(0.8f);
 //        rayHandler.setShadows(true);
 
         justRespawned = true;
@@ -894,14 +896,14 @@ public class GameController implements Screen {
     @Override
     public void render(float delta) {
         //FOR DEBUGGING
-//		delta = 1/60f;
-//		if (Gdx.input.isKeyPressed(Input.Keys.F)){
-//			try {
-//				Thread.sleep(500);
-//			} catch (InterruptedException e) {
-//				Thread.currentThread().interrupt();
-//			}
-//		}
+		delta = 1/60f;
+		if (Gdx.input.isKeyPressed(Input.Keys.F)){
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		}
 //        System.out.println("before:" + canvas.getCamera().getCamera().position);
         if (!paused) {
             if (preUpdate(delta)) {

@@ -43,13 +43,9 @@ public class Door extends BoxObstacle implements Activatable {
     /** y position of the door when fully closed */
     private final float y;
     private int textureSize;
-
     private TextureRegion top;
-
     private TextureRegion bottom;
-
     private TextureRegion middle;
-
     private static float shrink;
 
     /**
@@ -73,7 +69,7 @@ public class Door extends BoxObstacle implements Activatable {
         bottom.setRegion(0, textureSize/2, textureSize, textureSize/2); //remove weird line
         this.textureSize = textureSize;
         setDrawScale(scale);
-        setBodyType(BodyDef.BodyType.StaticBody);
+        setBodyType(BodyDef.BodyType.KinematicBody);
         setDensity(objectConstants.getFloat( "density", 0.0f ));
         setFriction(objectConstants.getFloat( "friction", 0.0f ));
         setRestitution(objectConstants.getFloat( "restitution", 0.0f ));

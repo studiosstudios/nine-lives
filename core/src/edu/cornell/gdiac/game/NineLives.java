@@ -70,8 +70,10 @@ public class NineLives extends Game implements ScreenListener {
 			menu = null;
 		}
 
-		controller.dispose();
-		controller = null;
+		if (controller != null) {
+			controller.dispose();
+			controller = null;
+		}
 
 		// Unload all of the resources
 		if (directory != null) {

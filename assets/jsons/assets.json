@@ -27,9 +27,7 @@
       },
       "cat":  "cat/cat.png",
       "walk-anim": "cat/walk-anim.png",
-      "jump": "cat/jump.png",
       "jump-anim": "cat/jump-anim.png",
-      "sit": "cat/sit.png",
       "idle-sit-anim": "cat/idle-sit-anim.png",
       "idle-stand-anim": "cat/idle-stand-anim.png",
       "climb-anim": "cat/climbing-anim.png",
@@ -47,8 +45,7 @@
       "switch-top": "obstacles/button/switch-top.png",
       "switch-base": "obstacles/button/switch-base.png",
       "box": "obstacles/box/box.png",
-      "flamethrower": "obstacles/flamethrower/flamethrower.png",
-      "flame": "obstacles/flamethrower/flame.png", //UNUSED
+      "flamethrower": "obstacles/flamethrower/flame-throw.png",
       "flame-anim": "obstacles/flamethrower/flame-anim.png",
       "laser": "obstacles/laser/laser.png",
       "laser-beam": "obstacles/laser/laser-beam.png", //UNUSED
@@ -70,8 +67,16 @@
       "steel": "obstacles/shared/steel.png",
       "ceiling-light": "obstacles/lights/ceiling-light.png",
       "wall-light": "obstacles/lights/wall-light.png",
-      "bg-lab": "world/backgrounds/bg-lab.png",
-      "bg-forest": "world/backgrounds/bg-forest.png",
+      "bg-lab": {
+        "file": "world/backgrounds/bg-lab.png",
+        "wrapU": "repeated",
+        "wrapV": "repeated"
+      },
+      "bg-forest": {
+        "file": "world/backgrounds/bg-forest.png",
+        "wrapU": "repeated",
+        "wrapV": "repeated"
+      },
       // Decor
       "tutorial-burn": "world/decor/tutorial-burn.png",
       "tutorial-camera": "world/decor/tutorial-camera.png",
@@ -84,12 +89,23 @@
       "tutorial-walk-jump": "world/decor/tutorial-walk-jump.png",
       "tutorial-jump-dash": "world/decor/tutorial-jump-dash.png",
       "tutorial-undo": "world/decor/tutorial-undo.png",
+      "tutorial-climb": "world/decor/tutorial-climb.png",
       "cat-vinci": "world/decor/cat-vinci.png",
       "cat-tank-pink": "world/decor/cat-tank-pink.png",
       "cat-tank-green": "world/decor/cat-tank-green.png",
       "shelf": "world/decor/shelf.png",
+      "cabinet-left": "world/decor/cabinet-left.png",
+      "cabinet-mid": "world/decor/cabinet-mid.png",
+      "cabinet-right": "world/decor/cabinet-right.png",
+      "goggles": "world/decor/goggles.png",
+      "microscope": "world/decor/microscope.png",
       "wall-bottom": "world/decor/wall-bottom.png",
-      "wall-top": "world/decor/wall-top.png"
+      "wall-top": "world/decor/wall-top.png",
+      "coke": "world/decor/coke.png",
+      "test-tubes": "world/decor/test-tubes.png",
+      "tank": "world/decor/tank.png",
+      "broken-robot": "world/decor/broken-robot.png",
+      "coming-soon": "world/decor/coming-soon.png"
     },
     "jsons"  : {
         "constants": "jsons/constants.json",
@@ -99,20 +115,21 @@
         "tiledLevel1": "levels/tutorial-walk-jump.json",
         "tiledLevel2": "levels/tutorial-dash.json",
         "tiledLevel3": "levels/tutorial-first-death.json",
-        "tiledLevel4": "levels/spikes-deaths-easy.json",
+        "tiledLevel4": "levels/tutorial-undo.json",
       //        "tiledLevel2": "levels/test-windows.json",
       //        "tiledLevel1": "levels/lights.json",
         "tiledLevel5": "levels/activator-door-tutorial.json",
         "tiledLevel6": "levels/basic-body-switch.json",
-
-        "tiledLevel7": "levels/level-beta-med1.json",
-        "tiledLevel8": "levels/body-switching-chain-medium.json",
-        "tiledLevel9": "levels/super-jump.json",
+        "tiledLevel7": "levels/tutorial-camera.json",
+        "tiledLevel8": "levels/spikes-deaths-easy.json",
+        "tiledLevel9": "levels/mob-push-box.json",
+        "tiledLevel10": "levels/tutorial-flamethrower.json",
+        "tiledLevel11": "levels/triple-body-deposits.json",
+        "tiledLevel12": "levels/level-beta-med1.json",
+        "tiledLevel13": "levels/super-jump.json",
 //        "tiledLevel5": "levels/level-beta-hard.json",
-//        "tiledLevel8": "levels/party-room.json"
-      "tiledLevel10": "levels/party-room.json",
-
-        "tiledLevel11": "levels/test-forest.json",
+//        "tiledLevel14": "levels/party-room.json",
+        "tiledLevel14": "levels/test-forest.json"
     },
     "soundfx" : {
         "jump" : "sounds/jump-CELESTE.wav",

@@ -148,6 +148,7 @@ public class GameCanvas {
 				Gdx.files.internal("shaders/portal.frag").readString());
 		greyscaleShader = new ShaderProgram(spriteBatch.getShader().getVertexShaderSource(),
 				Gdx.files.internal("shaders/greyscale.frag").readString());
+		System.out.println(spiritModeShader.getLog());
 
 		mainFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
 
@@ -529,6 +530,7 @@ ef	 * <br><br>
 	 * @param rayHandler    box2dlights rayhandler
 	 */
 	public void drawLightsToBuffer(RayHandler rayHandler) {
+		//TODO: try with changing blend state instead of ending batch
 		spriteBatch.end();
 		rayHandler.prepareRender();
 		mainFrameBuffer.begin();
@@ -542,9 +544,12 @@ ef	 * <br><br>
 	 */
 	public void drawFrameBuffer() {
 		spriteBatch.setColor(Color.WHITE);
+		setBlendState(BlendState.ALPHA_BLEND);
 		spriteBatch.setProjectionMatrix(FBO_PROJECTION);
 		spriteBatch.draw(mainFrameBuffer.getColorBufferTexture(), 0, 0, 1, 1, 0, 0, 1, 1);
+		spriteBatch.flush();
 		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
+		setBlendState(BlendState.NO_PREMULT);
 	}
 
 	/**

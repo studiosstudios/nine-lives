@@ -1,12 +1,4 @@
 { "compressionlevel":-1,
- "editorsettings":
-    {
-     "export":
-        {
-         "format":"tmx",
-         "target":"level-template2.tmx"
-        }
-    },
  "height":21,
  "infinite":false,
  "layers":[
@@ -79,38 +71,6 @@
          "id":19,
          "name":"cameraRegions",
          "objects":[
-                {
-                 "height":13312,
-                 "id":112,
-                 "name":"",
-                 "properties":[
-                        {
-                         "name":"isZoomRelative",
-                         "type":"bool",
-                         "value":true
-                        }, 
-                        {
-                         "name":"shouldSnap",
-                         "type":"bool",
-                         "value":true
-                        }, 
-                        {
-                         "name":"snapCollisionArea",
-                         "type":"bool",
-                         "value":false
-                        }, 
-                        {
-                         "name":"zoom",
-                         "type":"float",
-                         "value":1
-                        }],
-                 "rotation":0,
-                 "type":"CameraRegion",
-                 "visible":true,
-                 "width":14336,
-                 "x":0,
-                 "y":5120
-                }, 
                 {
                  "height":13312,
                  "id":120,
@@ -609,7 +569,18 @@
          "draworder":"topdown",
          "id":20,
          "name":"goal",
-         "objects":[],
+         "objects":[
+                {
+                 "height":6144,
+                 "id":126,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":1024,
+                 "x":50176,
+                 "y":2048
+                }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -643,6 +614,18 @@
                  "visible":true,
                  "width":1024,
                  "x":47104,
+                 "y":13312
+                }, 
+                {
+                 "gid":3,
+                 "height":2048,
+                 "id":125,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":1024,
+                 "x":1024,
                  "y":13312
                 }],
          "opacity":1,
@@ -981,7 +964,7 @@
          "y":0
         }],
  "nextlayerid":24,
- "nextobjectid":125,
+ "nextobjectid":127,
  "orientation":"orthogonal",
  "properties":[
         {
@@ -996,19 +979,19 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"..\/..\/objects\/objects.tsx"
+         "source":"..\/..\/level-editor\/objects\/objects.tsx"
         }, 
         {
          "firstgid":15,
-         "source":"..\/..\/tilesets\/metal-walls.tsx"
+         "source":"..\/..\/level-editor\/tilesets\/metal-walls.tsx"
         }, 
         {
          "firstgid":63,
-         "source":"..\/..\/tilesets\/climbables.tsx"
+         "source":"..\/..\/level-editor\/tilesets\/climbables.tsx"
         }, 
         {
          "firstgid":67,
-         "source":"..\/..\/tilesets\/default-metal-walls.tsx"
+         "source":"..\/..\/level-editor\/tilesets\/default-metal-walls.tsx"
         }],
  "tilewidth":1024,
  "type":"map",

@@ -2,6 +2,7 @@ package edu.cornell.gdiac.game;
 
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
@@ -10,12 +11,10 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.game.object.*;
-
 import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.game.stage.HudStage;
 import edu.cornell.gdiac.util.ScreenListener;
 
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.util.HashMap;
 
 /**
@@ -27,7 +26,7 @@ public class GameController implements Screen {
     /** Listener that will update the player mode when we are done */
     private ScreenListener listener;
     /** Exit code for quitting the game */
-    public static final int EXIT_QUIT = 0;
+    public static final int EXIT_QUIT = 99;
     /** Default drawscale */
     protected static final float DEFAULT_SCALE = 32;
     /** The default value of gravity (going down) */
@@ -125,7 +124,6 @@ public class GameController implements Screen {
     /** only not null if quick launched from Tiled */
     private JsonValue quickLaunchLevel;
     private boolean LIGHTS_ACTIVE = true;
-
     private Color spiritModeColor = new Color(1, 1, 1, 1);
 
     /**
@@ -445,14 +443,14 @@ public class GameController implements Screen {
         // A couple naming conventions: use hyphens, affix animation sprites with "-anim".
         String[] names = {
                 // CAT
-                "cat", "walk-anim", "jump", "jump-anim", "sit", "idle-sit-anim", "idle-stand-anim", "meow-anim",
+                "cat", "walk-anim", "jump-anim", "idle-sit-anim", "idle-stand-anim", "meow-anim",
                 "trans-anim","climb-anim","corpse", "corpse2", "corpse3","corpse-burnt","trans2-anim","jump-mid",
                 // SPIKES
                 "spikes",
                 // BUTTONS & SWITCHES
                 "button-base", "button-top", "switch-top", "switch-base",
                 // FLAMETHROWERS
-                "flamethrower", "flame", "flame-anim",
+                "flamethrower", "flame-anim",
                 // LASERS
                 "laser",
                 // CHECKPOINTS
@@ -476,11 +474,14 @@ public class GameController implements Screen {
                 // DECOR
                 "tutorial-burn", "tutorial-camera", "tutorial-checkpoint", "tutorial-dash", "tutorial-pause",
                 "tutorial-side-spikes", "tutorial-spikes", "tutorial-switch", "tutorial-walk-jump",
-                "tutorial-jump-dash", "tutorial-undo",
-                "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf", "wall-bottom", "wall-top"
+                "tutorial-jump-dash", "tutorial-undo", "tutorial-climb",
+                "cabinet-left", "cabinet-mid", "cabinet-right", "goggles", "microscope",
+                "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf", "wall-bottom", "wall-top",
+                "tank", "test-tubes", "coke", "broken-robot", "coming-soon"
                 }; // Unsure if this is actually being used
         for (String n : names){
 //            System.out.println(n);
+//            System.out.println(directory.getEntry(n, Texture.class));
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
         }
 
@@ -512,7 +513,7 @@ public class GameController implements Screen {
 
 //		InputController.getInstance().writeTo("debug-input/recent.txt");
 //		InputController.getInstance().readFrom("debug-input/recent.txt");
-    }
+}
 
     /**
      * Handles respawning the cat after their death
@@ -558,7 +559,8 @@ public class GameController implements Screen {
 //        RayHandler.useDiffuseLight(false);
 
         rayHandler = new RayHandler(world);
-        rayHandler.setAmbientLight(0.85f);
+//        rayHandler.setAmbientLight(0.35f, 0.35f, 0.35f, 0.1f);
+        rayHandler.setAmbientLight(0.8f);
 //        rayHandler.setShadows(true);
 
         justRespawned = true;
@@ -894,14 +896,14 @@ public class GameController implements Screen {
     @Override
     public void render(float delta) {
         //FOR DEBUGGING
-//		delta = 1/60f;
-//		if (Gdx.input.isKeyPressed(Input.Keys.F)){
-//			try {
-//				Thread.sleep(500);
-//			} catch (InterruptedException e) {
-//				Thread.currentThread().interrupt();
-//			}
-//		}
+		delta = 1/60f;
+		if (Gdx.input.isKeyPressed(Input.Keys.F)){
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		}
 //        System.out.println("before:" + canvas.getCamera().getCamera().position);
         if (!paused) {
             if (preUpdate(delta)) {
@@ -1017,7 +1019,6 @@ public class GameController implements Screen {
         } else {
             background = textureRegionAssetMap.get("bg-forest").getTexture();
         }
-//        canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2, canvas.getCamera().getY()  - canvas.getHeight()/2, canvas.getWidth(), canvas.getHeight());
 
         if (effectSize > 0) { canvas.setGreyscaleShader(effectSize); }
         canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2f, canvas.getCamera().getY()  - canvas.getHeight()/2f, canvas.getWidth(), canvas.getHeight());
@@ -1033,7 +1034,7 @@ public class GameController implements Screen {
         canvas.drawLightsToBuffer(rayHandler);
 
         if (effectSize > 0) {
-            canvas.setSpiritModeShader(1.8f - 0.6f * effectSize, 0.3f,
+            canvas.setSpiritModeShader(1.8f - 0.525f * effectSize, 0.3f,
                     spiritModeColor, spiritModeColor, spiritModeTicks/60f);
         }
         canvas.drawFrameBuffer();

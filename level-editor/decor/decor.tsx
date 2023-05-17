@@ -82,4 +82,7 @@
  <tile id="34" type="Decoration">
   <image width="2048" height="2048" source="broken-robot.png"/>
  </tile>
+  <tile id="35" type="Decoration">
+   <image width="1024" height="1024" source="tutorial-climb.png"/>
+  </tile>
 </tileset>

@@ -450,7 +450,7 @@ public class GameController implements Screen {
                 // BUTTONS & SWITCHES
                 "button-base", "button-top", "switch-top", "switch-base",
                 // FLAMETHROWERS
-                "flamethrower", "flame", "flame-anim",
+                "flamethrower", "flame-anim",
                 // LASERS
                 "laser",
                 // CHECKPOINTS
@@ -474,7 +474,7 @@ public class GameController implements Screen {
                 // DECOR
                 "tutorial-burn", "tutorial-camera", "tutorial-checkpoint", "tutorial-dash", "tutorial-pause",
                 "tutorial-side-spikes", "tutorial-spikes", "tutorial-switch", "tutorial-walk-jump",
-                "tutorial-jump-dash", "tutorial-undo",
+                "tutorial-jump-dash", "tutorial-undo", "tutorial-climb",
                 "cabinet-left", "cabinet-mid", "cabinet-right", "goggles", "microscope",
                 "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf", "wall-bottom", "wall-top",
                 "tank", "test-tubes", "coke", "broken-robot", "coming-soon"
@@ -559,7 +559,8 @@ public class GameController implements Screen {
 //        RayHandler.useDiffuseLight(false);
 
         rayHandler = new RayHandler(world);
-        rayHandler.setAmbientLight(0.85f);
+//        rayHandler.setAmbientLight(0.35f, 0.35f, 0.35f, 0.1f);
+        rayHandler.setAmbientLight(0.8f);
 //        rayHandler.setShadows(true);
 
         justRespawned = true;

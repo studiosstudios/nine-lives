@@ -57,7 +57,6 @@ public class Spikes extends BoxObstacle implements Activatable {
      */
     public Spikes(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
         super(1, 1);
-        System.out.println(getDimension());
         setBodyType(properties.containsKey("attachName") ? BodyDef.BodyType.DynamicBody : BodyDef.BodyType.StaticBody);
         setSensor(true);
         setFixedRotation(true);

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="29" height="17" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="21" nextobjectid="111">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="29" height="17" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="21" nextobjectid="113">
  <editorsettings>
   <export target="../../../assets/levels/basic-body-switch.json" format="json"/>
  </editorsettings>
@@ -9,25 +9,26 @@
  <tileset firstgid="1" source="../../objects/objects.tsx"/>
  <tileset firstgid="15" source="../../tilesets/metal-walls.tsx"/>
  <tileset firstgid="63" source="../../tilesets/climbables.tsx"/>
+ <tileset firstgid="67" source="../../tilesets/default-metal-walls.tsx"/>
  <layer id="17" name="metalWalls" width="29" height="17">
   <data encoding="csv">
-28,29,29,29,29,29,29,29,29,29,29,29,29,29,29,29,44,17,17,17,17,17,17,17,46,29,29,29,30,
-40,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,42,0,0,0,0,0,0,0,40,41,41,41,42,
-40,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,42,0,0,0,0,0,0,0,40,41,41,41,42,
-52,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,57,17,17,17,17,17,17,17,55,53,53,53,54,
+80,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,82,
+92,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,94,
+92,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,94,
+104,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,106,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,28,30,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,40,42,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,40,42,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,40,42,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,40,42,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,40,42,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-28,29,29,29,29,29,29,29,29,29,30,0,0,40,59,29,29,30,0,0,0,0,0,0,28,29,29,29,30,
-40,41,41,41,41,41,41,41,41,41,59,29,29,60,41,41,41,59,29,29,29,29,29,29,60,41,41,41,42,
-52,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,54
+0,0,0,0,0,0,0,0,0,0,0,80,82,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,92,94,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,92,94,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,92,94,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,92,94,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,92,94,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+80,81,81,81,81,81,81,81,82,0,0,92,111,81,81,81,81,82,0,0,0,0,0,0,80,81,81,81,82,
+92,93,93,93,93,93,93,93,111,81,81,112,93,93,93,93,93,111,81,81,81,81,81,81,112,93,93,93,94,
+104,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,106
 </data>
  </layer>
  <layer id="18" name="climbables" width="29" height="17">
@@ -53,20 +54,11 @@
  </layer>
  <objectgroup id="19" name="cameraRegions"/>
  <objectgroup id="12" name="wallsPoly">
-  <object id="95" x="0" y="0">
-   <polygon points="0,0 0,4096 17408,4096 17408,0"/>
+  <object id="111" x="0" y="14336">
+   <polygon points="0,0 0,3072 29696,3072 29696,0 24576,0 24576,1024 18432,1024 18432,0 13312,0 13312,-6144 11264,-6144 11264,1024 9216,1024 9216,0"/>
   </object>
-  <object id="96" x="17408" y="0">
-   <polygon points="0,0 0,1024 7168,1024 7168,0"/>
-  </object>
-  <object id="97" x="17408" y="3072">
-   <polygon points="0,0 0,1024 7168,1024 7168,0"/>
-  </object>
-  <object id="98" x="24576" y="0">
-   <polygon points="0,0 0,4096 5120,4096 5120,0"/>
-  </object>
-  <object id="101" x="0" y="14336">
-   <polygon points="0,0 0,3072 29696,3072 29696,0 24576,0 24576,1024 18432,1024 18432,0 15360,0 15360,-6144 13312,-6144 13312,1024 11264,1024 11264,0"/>
+  <object id="112" x="0" y="0">
+   <polygon points="0,0 0,4096 29696,4096 29696,0"/>
   </object>
  </objectgroup>
  <objectgroup id="16" name="spiritRegions"/>
@@ -78,7 +70,7 @@
   <object id="104" x="27648" y="4096" width="1024" height="10240"/>
  </objectgroup>
  <objectgroup id="3" name="checkpoints">
-  <object id="66" type="Checkpoint" gid="3" x="14336" y="6144" width="1024" height="2048">
+  <object id="66" type="Checkpoint" gid="3" x="12288" y="6144" width="1024" height="2048">
    <properties>
     <property name="attachName" value=""/>
    </properties>
@@ -86,37 +78,35 @@
   <object id="103" gid="3" x="1024" y="12288" width="1024" height="2048"/>
  </objectgroup>
  <objectgroup id="6" name="lasers">
-  <object id="40" gid="5" x="16384" y="8192" width="1024" height="1024" rotation="90">
+  <object id="40" gid="5" x="14336" y="8192" width="1024" height="1024" rotation="90">
    <properties>
     <property name="activatorID" value="switch1"/>
    </properties>
   </object>
-  <object id="90" gid="5" x="16384" y="9216" width="1024" height="1024" rotation="90">
+  <object id="90" gid="5" x="14336" y="9216" width="1024" height="1024" rotation="90">
    <properties>
     <property name="activatorID" value="switch1"/>
-    <property name="active" type="bool" value="false"/>
+    <property name="active" type="bool" value="true"/>
    </properties>
   </object>
-  <object id="91" gid="5" x="16384" y="10240" width="1024" height="1024" rotation="90">
+  <object id="91" gid="5" x="14336" y="10240" width="1024" height="1024" rotation="90">
    <properties>
     <property name="activatorID" value="switch1"/>
    </properties>
   </object>
-  <object id="92" gid="5" x="16384" y="11264" width="1024" height="1024" rotation="90">
+  <object id="92" gid="5" x="14336" y="11264" width="1024" height="1024" rotation="90">
    <properties>
     <property name="activatorID" value="switch1"/>
-    <property name="active" type="bool" value="false"/>
+    <property name="active" type="bool" value="true"/>
    </properties>
   </object>
-  <object id="93" gid="5" x="3072" y="13312" width="1024" height="1024">
+  <object id="93" gid="5" x="4096" y="5120" width="1024" height="1024" rotation="-180">
    <properties>
     <property name="activatorID" value=""/>
    </properties>
   </object>
  </objectgroup>
- <objectgroup id="7" name="mobs">
-  <object id="102" gid="6" x="17408" y="1024" width="1024" height="2048"/>
- </objectgroup>
+ <objectgroup id="7" name="mobs"/>
  <objectgroup id="8" name="spikes">
   <object id="105" gid="12" x="19456" y="14336" width="1024" height="1024"/>
   <object id="106" gid="12" x="20480" y="14336" width="1024" height="1024"/>
@@ -126,13 +116,7 @@
   <object id="110" gid="10" x="18432" y="14336" width="1024" height="1024"/>
  </objectgroup>
  <objectgroup id="15" name="activators">
-  <object id="89" gid="1" x="20480" y="2048" width="1024" height="1024">
-   <properties>
-    <property name="id" value="switch1"/>
-    <property name="type" propertytype="activators" value="switch"/>
-   </properties>
-  </object>
-  <object id="100" gid="1" x="8192" y="13312" width="1024" height="1024">
+  <object id="100" gid="1" x="7168" y="13312" width="1024" height="1024">
    <properties>
     <property name="id" value="button2"/>
     <property name="type" propertytype="activators" value="button"/>
@@ -140,14 +124,14 @@
   </object>
  </objectgroup>
  <objectgroup id="9" name="doors">
-  <object id="53" type="Door" x="13312" y="4096" width="1024" height="4096">
+  <object id="53" type="Door" x="11264" y="4096" width="1024" height="4096">
    <properties>
     <property name="activatorID" value="button2"/>
    </properties>
   </object>
  </objectgroup>
  <objectgroup id="10" name="platforms">
-  <object id="51" name="platform1" type="Platform" x="11264" y="14336" width="2048" height="1024">
+  <object id="51" name="platform1" type="Platform" x="9216" y="14336" width="2048" height="1024">
    <properties>
     <property name="activatorID" value="button2"/>
     <property name="disp" type="class" propertytype="Vector2">

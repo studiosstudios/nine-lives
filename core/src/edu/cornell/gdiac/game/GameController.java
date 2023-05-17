@@ -738,7 +738,6 @@ public class GameController implements Screen {
         currLevel.getSpiritLine().setOuterColor(spiritModeColor);
         flashColor.a -= flashColor.a/10;
         updateCamera();
-        System.out.println(canvas.getViewport().getScreenWidth() + " " + canvas.getViewport().getScreenHeight());
 
         hud.lives = currLevel.getNumLives();
         hud.updateLives();

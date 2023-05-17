@@ -1373,7 +1373,7 @@ public class Level {
      * Spawns a dead body at the location of the cat
      * */
     public void spawnDeadBody(){
-        textureScaleCache.set(1/34f, 1/34f);
+        textureScaleCache.set(1/4f, 1/4f);
         double rand = Math.random();
         DeadBody deadBody;
         if(rand <0.33){
@@ -1396,7 +1396,7 @@ public class Level {
      * @param state Map of arguments for the dead body, called from storeState() in {@link DeadBody}.
      */
     public DeadBody loadDeadBodyState(ObjectMap<String, Object> state){
-        textureScaleCache.set(1/34f, 1/34f);
+        textureScaleCache.set(1/4f, 1/4f);
         DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("corpse2"), textureRegionAssetMap.get("corpse-burnt"),scale, Vector2.Zero, textureScaleCache);
         deadBody.loadState(state);
         addObject(deadBody);

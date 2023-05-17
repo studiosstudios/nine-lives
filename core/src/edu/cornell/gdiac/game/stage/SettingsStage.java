@@ -191,6 +191,9 @@ public class SettingsStage extends StageWrapper {
         controls.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                audioController.playSoundEffect("menu-select");
+                Save.setVolume(effectsSlider.getValue());
+                Save.setMusic(musicSlider.getValue());
                 table.clear();
 //                table = null;
                 controls();
@@ -325,6 +328,7 @@ public class SettingsStage extends StageWrapper {
         setDefault.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                audioController.playSoundEffect("menu-select");
                 resetControls();
             }
             @Override

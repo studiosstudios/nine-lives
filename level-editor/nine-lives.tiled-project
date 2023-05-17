@@ -439,6 +439,19 @@
             ]
         },
         {
+            "id": 23,
+            "name": "spikeType",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "left",
+                "center",
+                "right",
+                "alone"
+            ],
+            "valuesAsFlags": false
+        },
+        {
             "color": "#ffff798b",
             "drawFill": true,
             "id": 6,

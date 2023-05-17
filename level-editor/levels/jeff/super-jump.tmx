@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="26" height="26" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="26" nextobjectid="126">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="26" height="26" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="26" nextobjectid="131">
  <editorsettings>
   <export target="../nine-lives/assets/tiled/super-jump.json" format="json"/>
  </editorsettings>
@@ -11,8 +11,8 @@
  <tileset firstgid="20" source="../../tilesets/metal-walls.tsx"/>
  <tileset firstgid="68" source="../../tilesets/default-metal-walls.tsx"/>
  <tileset firstgid="116" source="../../decor/decor.tsx"/>
- <tileset firstgid="151" source="../../tilesets/windows.tsx"/>
- <tileset firstgid="167" source="../../tilesets/climbables.tsx"/>
+ <tileset firstgid="152" source="../../tilesets/windows.tsx"/>
+ <tileset firstgid="168" source="../../tilesets/climbables.tsx"/>
  <layer id="17" name="metalWalls" width="26" height="26">
   <data encoding="csv">
 81,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,83,
@@ -63,12 +63,12 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,156,157,157,157,157,157,157,157,157,157,158,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,160,161,161,161,161,161,161,161,161,161,162,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,160,161,161,161,161,161,161,161,161,161,162,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,160,161,161,161,161,161,161,161,161,161,162,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,160,161,161,161,161,161,161,161,161,161,162,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,164,165,165,165,165,165,165,165,165,165,166,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,157,158,158,158,158,158,158,158,158,158,159,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,161,162,162,162,162,162,162,162,162,162,163,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,161,162,162,162,162,162,162,162,162,162,163,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,161,162,162,162,162,162,162,162,162,162,163,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,161,162,162,162,162,162,162,162,162,162,163,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,165,166,166,166,166,166,166,166,166,166,167,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
@@ -87,16 +87,16 @@
  <objectgroup id="6" name="lasers"/>
  <objectgroup id="7" name="mobs"/>
  <objectgroup id="8" name="spikes">
-  <object id="75" gid="7" x="1024" y="21504" width="1024" height="1024" rotation="180"/>
-  <object id="76" gid="7" x="2048" y="21504" width="1024" height="1024" rotation="180"/>
-  <object id="77" gid="7" x="3072" y="21504" width="1024" height="1024" rotation="180"/>
-  <object id="78" gid="7" x="4096" y="21504" width="1024" height="1024" rotation="180"/>
-  <object id="79" gid="7" x="5120" y="21504" width="1024" height="1024" rotation="180"/>
   <object id="80" gid="7" x="12288" y="13312" width="1024" height="1024" rotation="180"/>
   <object id="81" gid="7" x="13312" y="13312" width="1024" height="1024" rotation="180"/>
   <object id="82" gid="7" x="14336" y="13312" width="1024" height="1024" rotation="180"/>
   <object id="83" gid="7" x="15360" y="13312" width="1024" height="1024" rotation="180"/>
   <object id="84" gid="7" x="16384" y="13312" width="1024" height="1024" rotation="180"/>
+  <object id="126" gid="12" x="2048" y="21504" width="1024" height="1024" rotation="180"/>
+  <object id="127" gid="12" x="3072" y="21504" width="1024" height="1024" rotation="180"/>
+  <object id="128" gid="12" x="4096" y="21504" width="1024" height="1024" rotation="180"/>
+  <object id="129" gid="10" x="5120" y="21504" width="1024" height="1024" rotation="180"/>
+  <object id="130" gid="11" x="1024" y="21504" width="1024" height="1024" rotation="180"/>
  </objectgroup>
  <objectgroup id="15" name="activators"/>
  <objectgroup id="9" name="doors"/>

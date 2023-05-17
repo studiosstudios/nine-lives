@@ -26,12 +26,21 @@
   <image width="1024" height="2048" source="goal.png"/>
  </tile>
  <tile id="9" type="Spikes">
+  <properties>
+   <property name="type" propertytype="spikeType" value="left"/>
+  </properties>
   <image width="1024" height="1024" source="spikes-left.png"/>
  </tile>
  <tile id="10" type="Spikes">
+  <properties>
+   <property name="type" propertytype="spikeType" value="right"/>
+  </properties>
   <image width="1024" height="1024" source="spikes-right.png"/>
  </tile>
  <tile id="11" type="Spikes">
+  <properties>
+   <property name="type" propertytype="spikeType" value="center"/>
+  </properties>
   <image width="1024" height="1024" source="spikes-center.png"/>
  </tile>
  <tile id="12">

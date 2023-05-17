@@ -39,7 +39,7 @@
       "corpse2" : "obstacles/corpse/corpse2.png",
       "corpse3" : "obstacles/corpse/corpse3.png",
       "corpse-burnt": "cat/corpse-burnt.png",
-      "spikes": "obstacles/spikes/spikes.png",
+      "spikes": "obstacles/spikes/spikes-tileset.png",
       "button-base": "obstacles/button/button-base.png",
       "button-top": "obstacles/button/button-top.png",
       "switch-top": "obstacles/button/switch-top.png",

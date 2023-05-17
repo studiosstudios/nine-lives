@@ -433,7 +433,11 @@ public class StageController implements Screen {
 	 */
 	private void changeStage(StageWrapper s) {
 		stage = s;
-		Gdx.input.setInputProcessor(s);
+		if (s == settingsStage) {
+			Gdx.input.setInputProcessor(settingsStage.inputMultiplexer);
+		} else {
+			Gdx.input.setInputProcessor(s);
+		}
 		resize(canvas.getWidth(), canvas.getHeight());
 	}
 }

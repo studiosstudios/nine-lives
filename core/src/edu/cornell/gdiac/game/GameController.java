@@ -808,7 +808,6 @@ public class GameController implements Screen {
      * Updates GameState and moves camera accordingly
      */
     public void updateCamera(){
-        System.out.println(gameState + " "+drawAdjacentLevels);
         Camera cam = canvas.getCamera();
         InputController input = InputController.getInstance();
         if(drawAdjacentLevels){

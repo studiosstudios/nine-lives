@@ -45,7 +45,7 @@
       "switch-top": "obstacles/button/switch-top.png",
       "switch-base": "obstacles/button/switch-base.png",
       "box": "obstacles/box/box.png",
-      "flamethrower": "obstacles/flamethrower/flame-throw.png",
+      "flamethrower": "obstacles/flamethrower/flame-throw-resize.png",
       "flame-anim": "obstacles/flamethrower/flame-anim.png",
       "laser": "obstacles/laser/laser.png",
       "laser-beam": "obstacles/laser/laser-beam.png", //UNUSED

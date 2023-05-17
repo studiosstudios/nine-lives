@@ -1,6 +1,9 @@
 package edu.cornell.gdiac.game.stage;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -13,9 +16,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.game.AudioController;
 import edu.cornell.gdiac.game.Save;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SettingsStage extends StageWrapper {
     private Table table;
@@ -38,6 +45,7 @@ public class SettingsStage extends StageWrapper {
     private TextButton cancelButton;
     private TextButton undoButton;
     private TextButton panButton;
+    private TextButton setDefault;
     public static final int[] defaultControls = new int[] {
         Input.Keys.UP,
         Input.Keys.DOWN,
@@ -52,6 +60,14 @@ public class SettingsStage extends StageWrapper {
         Input.Keys.TAB
     };
 
+    private static HashMap<TextButton, Integer> buttonToIndex = new HashMap<>();
+
+    private int[] bindings;
+    private TextButton[] buttons;
+    private TextButton changeButton;
+    private ControlsInputProcessor controlsInputProcessor;
+    public InputMultiplexer inputMultiplexer;
+
     public boolean isBack() { return backButtonState == 2; }
     public int getBackButtonState() { return backButtonState; }
     public void setBackButtonState(int state) { backButtonState = state; }
@@ -59,6 +75,12 @@ public class SettingsStage extends StageWrapper {
 
     public SettingsStage(AssetDirectory internal, boolean createActors) {
         super(internal, createActors);
+        bindings = Save.getControls();
+        controlsInputProcessor = new ControlsInputProcessor();
+        inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(this);
+        inputMultiplexer.addProcessor(controlsInputProcessor);
+//        Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
     /**
@@ -121,6 +143,8 @@ public class SettingsStage extends StageWrapper {
             backButtonActor.setColor(Color.WHITE);
         } else if (actor == fakeBackActor) {
             fakeBackActor.setColor(Color.WHITE);
+            Save.setControls(bindings);
+            // TODO: INPUT CONTROLLER UPDATE CONTROLS
             table.clear();
             settings();
             table.pack();
@@ -211,6 +235,9 @@ public class SettingsStage extends StageWrapper {
     private void controls() {
         table.align(Align.topLeft);
         table.setFillParent(true);
+        table.row().pad(100, 0, 0, 0);
+        Table leftTable = new Table();
+        Table rightTable = new Table();
 
         Label up = new Label("up", controlStyle);
         Label down = new Label("down", controlStyle);
@@ -226,6 +253,51 @@ public class SettingsStage extends StageWrapper {
 
         Label[] labels = new Label[]{up, down, right, left, jump, dash, climb, switchBody, cancel, undo, pan};
 
+        ClickListener buttonListener = new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                TextButton b = (TextButton) event.getListenerActor();
+//                changeButton = b;
+//                changeButton.setChecked(true);
+//                changeButton.getLabel().setColor(Color.LIGHT_GRAY);
+                if (changeButton != null) {
+                    changeButton.setChecked(false);
+                }
+                if (changeButton == b) {
+//                    Array<Integer> bindingsArray = new Array<>();
+//
+//                    for (int i = 0; i < bindings.length; i++) {
+//                        bindingsArray.add(Integer.valueOf(bindings[i]));
+//                    }
+//
+//                    if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.M || bindingsArray.contains(Integer.valueOf(keycode), false)) {
+//                        // TODO: PUT ERROR SOUND FOR BAD KEY BIND
+//                        return true;
+//                    }
+//
+//                    bindings[buttonToIndex.get(changeButton)] = keycode;
+//                    changeButton.setText(Input.Keys.toString(keycode).toUpperCase());
+                    changeButton.setChecked(false);
+                    changeButton = null;
+                } else {
+                    changeButton = b;
+//                    System.out.println(changeButton);
+                    changeButton.getLabel().setColor(new Color(226/255, 149/255, 73/255, 1));
+                }
+            }
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                TextButton b = (TextButton) event.getListenerActor();
+                b.getLabel().setColor(Color.LIGHT_GRAY);
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                TextButton b = (TextButton) event.getListenerActor();
+                b.getLabel().setColor(Color.WHITE);
+            }
+        };
+
         upButton = new TextButton("", controlButtonStyle);
         downButton = new TextButton("", controlButtonStyle);
         rightButton = new TextButton("", controlButtonStyle);
@@ -237,9 +309,51 @@ public class SettingsStage extends StageWrapper {
         cancelButton = new TextButton("", controlButtonStyle);
         undoButton = new TextButton("", controlButtonStyle);
         panButton = new TextButton("", controlButtonStyle);
+        setDefault = new TextButton("reset controls", controlButtonStyle);
 
-        TextButton[] buttons = new TextButton[]{upButton, downButton, rightButton, leftButton, jumpButton, dashButton,
+        upButton.addListener(buttonListener);
+        downButton.addListener(buttonListener);
+        rightButton.addListener(buttonListener);
+        leftButton.addListener(buttonListener);
+        jumpButton.addListener(buttonListener);
+        dashButton.addListener(buttonListener);
+        climbButton.addListener(buttonListener);
+        switchButton.addListener(buttonListener);
+        cancelButton.addListener(buttonListener);
+        undoButton.addListener(buttonListener);
+        panButton.addListener(buttonListener);
+        setDefault.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                resetControls();
+            }
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                TextButton b = (TextButton) event.getListenerActor();
+                b.getLabel().setColor(Color.LIGHT_GRAY);
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                TextButton b = (TextButton) event.getListenerActor();
+                b.getLabel().setColor(Color.WHITE);
+            }
+        });
+
+        buttons = new TextButton[]{upButton, downButton, rightButton, leftButton, jumpButton, dashButton,
                 climbButton, switchButton, cancelButton, undoButton, panButton};
+
+        buttonToIndex.put(upButton, 0);
+        buttonToIndex.put(downButton, 1);
+        buttonToIndex.put(rightButton, 2);
+        buttonToIndex.put(leftButton, 3);
+        buttonToIndex.put(jumpButton, 4);
+        buttonToIndex.put(dashButton, 5);
+        buttonToIndex.put(climbButton, 6);
+        buttonToIndex.put(switchButton, 7);
+        buttonToIndex.put(cancelButton, 8);
+        buttonToIndex.put(undoButton, 9);
+        buttonToIndex.put(panButton, 10);
 
         int[] bindings = Save.getControls();
 
@@ -247,18 +361,29 @@ public class SettingsStage extends StageWrapper {
             buttons[i].setText(Input.Keys.toString(bindings[i]).toUpperCase());
         }
 
-        for (int i = 0; i < bindings.length; i++) {
+        for (int i = 0; i < bindings.length/2 + 1; i++) {
             TextButton button = buttons[i];
-            table.row();
-            table.add(labels[i]).pad(0, 175, 0, 0);
-            table.add(button).pad(0, 15, 0, 0);
+            leftTable.row();
+            leftTable.add(labels[i]).pad(0, 20, 0, 0).align(Align.left);
+            leftTable.add(button).pad(0, 15, 0, 0).align(Align.left);
         }
+        for (int i = bindings.length/2 + 1; i < bindings.length; i++) {
+            TextButton button = buttons[i];
+            rightTable.row();
+            rightTable.add(labels[i]).pad(0, 20, 0, 0).align(Align.left);
+            rightTable.add(button).pad(0, 15, 0, 0).align(Align.left);
+        }
+
 
         for (Cell cell: table.getCells()) {
             cell.align(Align.left);
         }
-        table.columnDefaults(1).setActorWidth(400);
-        table.columnDefaults(1).fillX();
+//        table.columnDefaults(1).setActorWidth(400);
+//        table.columnDefaults(1).fillX();
+        table.add(leftTable);
+        table.add(rightTable);
+        table.row();
+        table.add(setDefault).pad(0, 20, 0, 0).align(Align.center);
 
         backButtonActor.setTouchable(Touchable.disabled);
         backButtonActor.setVisible(false);
@@ -267,7 +392,43 @@ public class SettingsStage extends StageWrapper {
         fakeBackActor.setVisible(true);
     }
 
-    private void resetControls() {
+    @Override
+    public void update(float delta) {
+        super.update(delta);
+        if (changeButton != null) {
+            changeButton.getLabel().setColor(new Color(226/255f, 149/255f, 73/255f, 1));
+        }
+    }
 
+    private void resetControls() {
+        for (int i = 0; i < defaultControls.length; i++) {
+            bindings[i] = defaultControls[i];
+            buttons[i].setText(Input.Keys.toString(defaultControls[i]).toUpperCase());
+        }
+    }
+
+    public class ControlsInputProcessor extends InputAdapter {
+        @Override
+        public boolean keyUp(int keycode) {
+            if (changeButton != null) {
+                Array<Integer> bindingsArray = new Array<>();
+
+                for (int i = 0; i < bindings.length; i++) {
+                    bindingsArray.add(Integer.valueOf(bindings[i]));
+                }
+
+                if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.M || bindingsArray.contains(Integer.valueOf(keycode), false)) {
+                    // TODO: PUT ERROR SOUND FOR BAD KEY BIND
+                    return true;
+                }
+
+                bindings[buttonToIndex.get(changeButton)] = keycode;
+                changeButton.setText(Input.Keys.toString(keycode).toUpperCase());
+                changeButton.setChecked(false);
+                changeButton = null;
+//                System.out.println(bindings);
+            }
+            return true;
+        }
     }
 }

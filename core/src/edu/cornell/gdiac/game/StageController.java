@@ -157,7 +157,8 @@ public class StageController implements Screen {
 		if(!Save.exists()) {
 			Save.create();
 		} else {
-			audioController.setVolume(Save.getVolume());
+			audioController.setVolume(Save.getMusic());
+			audioController.setSfxVolume(Save.getVolume());
 		}
 
 		mainMenuStage = new MainMenuStage(internal, true);

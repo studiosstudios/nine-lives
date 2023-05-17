@@ -221,8 +221,8 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
          */
         public Flame(TextureRegion texture, Vector2 scale, Vector2 pos, float angle, Vector2 textureScale) {
             super(texture.getRegionWidth()/scale.x*textureScale.x/7, texture.getRegionHeight()/scale.y*textureScale.y);
-            int spriteWidth = 2048;
-            int spriteHeight = 4096;
+            int spriteWidth = 128;
+            int spriteHeight = 256;
             spriteFrames = TextureRegion.split(texture.getTexture(), spriteWidth, spriteHeight);
             float frameDuration = 0.1f;
             animation = new Animation<>(frameDuration, spriteFrames[0]);

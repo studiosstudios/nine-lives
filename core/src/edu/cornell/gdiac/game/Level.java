@@ -599,8 +599,8 @@ public class Level {
             }
         }
 
-        tiles = new Tiles(tileData, 1024, levelWidth, levelHeight,
-                    tileset, bounds, fID, new Vector2(1/32f, 1/32f));
+        tiles = new Tiles(tileData, 128, levelWidth, levelHeight,
+                    tileset, bounds, fID, new Vector2(1/4f, 1/4f));
 
         if (climbableData != null) {
             climbables = new Tiles(climbableData, 1024, levelWidth, levelHeight,
@@ -734,7 +734,7 @@ public class Level {
      */
     private void populateCheckpoints(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
-        textureScaleCache.set(1/32f, 1/32f);
+        textureScaleCache.set(1/4f, 1/4f);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
             Checkpoint checkpoint = new Checkpoint(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
@@ -800,7 +800,7 @@ public class Level {
      */
     private void populateFlamethrowers(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
-        textureScaleCache.set(1/64f, 1/64f);
+        textureScaleCache.set(1/4f, 1/4f);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
             Flamethrower flamethrower = new Flamethrower(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
@@ -835,7 +835,6 @@ public class Level {
      */
     private void populateDoors(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
-        textureScaleCache.set(1/32f, 1/32f);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
             Door door = new Door(propertiesMap, textureRegionAssetMap, scale, 128);
@@ -1014,14 +1013,14 @@ public class Level {
         float angle = (360 - objectJV.getFloat("rotation")) % 360;
         propertiesMap.put("rotation", angle);
         propertiesMap.put("name", objectJV.getString("name"));
+        propertiesMap.put("gid", objectJV.getInt("gid", -1));
 
         //this is because tiled rotates about the top left corner
         float x, y;
+        x = objectJV.getFloat("x");
         if ((int) angle == 90) {
-            x = objectJV.getFloat("x");
             y = objectJV.getFloat("y") - objectJV.getFloat("width");
         } else {
-            x = objectJV.getFloat("x");
             y = objectJV.getFloat("y");
         }
         x = x/tileSize + bounds.x;
@@ -1506,11 +1505,17 @@ public class Level {
         private Vector2 textureScale = new Vector2();
         public Decoration(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale) {
             position.set((float) properties.get("x"), (float) properties.get("y"));
-            textureRegion = tMap.get((String) properties.get("name"));
-//            System.out.println(properties.get("name"));
-            this.scale.set(scale);
-            textureScale.set((float) properties.get("width") * scale.x/textureRegion.getRegionWidth(),
-                    (float) properties.get("height") * scale.y/textureRegion.getRegionHeight());
+            try {
+                textureRegion = new TextureRegion(tMap.get((String) properties.get("name")));
+                textureRegion.flip((boolean) properties.get("flipX", false),
+                        (boolean) properties.get("flipY", false));
+
+                this.scale.set(scale);
+                textureScale.set((float) properties.get("width") * scale.x / textureRegion.getRegionWidth(),
+                        (float) properties.get("height") * scale.y / textureRegion.getRegionHeight());
+            } catch (NullPointerException e) {
+                throw new InvalidTiledJSON("Failed to load in decoration " + properties.get("name"));
+            }
         }
         public void draw(GameCanvas canvas){
             canvas.draw(textureRegion, Color.WHITE, 0, 0, position.x * scale.x, position.y * scale.y, 0, textureScale.x, textureScale.y);

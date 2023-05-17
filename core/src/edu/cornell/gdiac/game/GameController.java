@@ -125,6 +125,7 @@ public class GameController implements Screen {
     private JsonValue quickLaunchLevel;
     private boolean LIGHTS_ACTIVE = true;
     private Color spiritModeColor = new Color(1, 1, 1, 1);
+    private boolean drawAdjacentLevels;
 
     /**
      * PLAY: User has all controls and is in game
@@ -136,7 +137,8 @@ public class GameController implements Screen {
         PLAY,
         PLAYER_PAN,
         PAN,
-        RESPAWN
+        RESPAWN,
+        LEVEL_SWITCH
     }
     /** State of gameplay used for camera */
     public static GameState gameState;
@@ -331,6 +333,8 @@ public class GameController implements Screen {
         panTime = 0;
         respawnDelay = 0;
 
+        drawAdjacentLevels = false;
+
         AssetDirectory internal = new AssetDirectory("jsons/loading.json");
         internal.loadAssets();
         internal.finishLoading();
@@ -366,6 +370,7 @@ public class GameController implements Screen {
         }
         initCurrLevel(true);
         collisionController.setDidChange(true);
+        drawAdjacentLevels = true;
 //        collisionController.setLevel(levels[currLevelIndex]);
 //        actionController.setLevel(levels[currLevelIndex]);
     }
@@ -399,6 +404,7 @@ public class GameController implements Screen {
 
         initCurrLevel(true);
         collisionController.setDidChange(true);
+        drawAdjacentLevels = true;
 //        collisionController.setLevel(levels[currLevelIndex]);
 //        actionController.setLevel(levels[currLevelIndex]);
     }
@@ -450,7 +456,7 @@ public class GameController implements Screen {
                 // BUTTONS & SWITCHES
                 "button-base", "button-top", "switch-top", "switch-base",
                 // FLAMETHROWERS
-                "flamethrower", "flame", "flame-anim",
+                "flamethrower", "flame-anim",
                 // LASERS
                 "laser",
                 // CHECKPOINTS
@@ -474,7 +480,7 @@ public class GameController implements Screen {
                 // DECOR
                 "tutorial-burn", "tutorial-camera", "tutorial-checkpoint", "tutorial-dash", "tutorial-pause",
                 "tutorial-side-spikes", "tutorial-spikes", "tutorial-switch", "tutorial-walk-jump",
-                "tutorial-jump-dash", "tutorial-undo",
+                "tutorial-jump-dash", "tutorial-undo", "tutorial-climb",
                 "cabinet-left", "cabinet-mid", "cabinet-right", "goggles", "microscope",
                 "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf", "wall-bottom", "wall-top",
                 "tank", "test-tubes", "coke", "broken-robot", "coming-soon"
@@ -805,6 +811,9 @@ public class GameController implements Screen {
     public void updateCamera(){
         Camera cam = canvas.getCamera();
         InputController input = InputController.getInstance();
+        if(drawAdjacentLevels){
+            gameState = GameState.LEVEL_SWITCH;
+        }
         //resetting automatically resets camera to cat
         if(justReset){
             gameState = GameState.PLAY;
@@ -817,7 +826,6 @@ public class GameController implements Screen {
         else if(gameState == GameState.PLAYER_PAN){
             gameState = GameState.PLAY;
         }
-
         for (Activator a : currLevel.getActivators()){
             if (a.isPressed() && a.getPan()){
                 a.setPan(false);
@@ -891,6 +899,18 @@ public class GameController implements Screen {
                 currLevel.getCat().setActive(true);
                 currLevel.getCat().setLightActive(true);
                 currLevel.getCat().setPosition(currLevel.getRespawnPos());
+            }
+        }
+        if(gameState == GameState.LEVEL_SWITCH){
+            drawAdjacentLevels = true;
+            input.setDisableAll(true);
+            cam.setZoom(false, -1f); //smoother level transition across different zooms
+            float x_pos = currLevel.getCat().getPosition().x*scale.x;
+            float y_pos = currLevel.getCat().getPosition().y*scale.y;
+            cam.updateCamera(x_pos, y_pos, true, cam.getGameplayBounds());
+            if(!cam.isGliding()){
+                gameState = GameState.PLAY;
+                drawAdjacentLevels = false;
             }
         }
     }
@@ -1024,7 +1044,7 @@ public class GameController implements Screen {
         if (effectSize > 0) { canvas.setGreyscaleShader(effectSize); }
         canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2f, canvas.getCamera().getY()  - canvas.getHeight()/2f, canvas.getWidth(), canvas.getHeight());
 
-        if (true) { //TODO: only draw when necessary
+        if (drawAdjacentLevels) { //TODO: only draw when necessary
             prevLevel.draw(canvas, false, effectSize);
             nextLevel.draw(canvas, false, effectSize);
         }

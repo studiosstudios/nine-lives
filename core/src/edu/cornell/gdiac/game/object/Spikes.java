@@ -44,7 +44,8 @@ public class Spikes extends BoxObstacle implements Activatable {
     private final float x;
     /** initial y position */
     private final float y;
-
+    private static HashMap<Integer, Integer> gidMap = new HashMap<>();
+    private static TextureRegion[][] tileset;
 
     /**
      * Creates a new Spikes object.
@@ -55,16 +56,15 @@ public class Spikes extends BoxObstacle implements Activatable {
      * @param textureScale   Texture scale for rescaling texture
      */
     public Spikes(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
-        super(tMap.get("spikes").getRegionWidth()/scale.x*textureScale.x,
-                tMap.get("spikes").getRegionHeight()/scale.y*textureScale.y);
-
+        super(1, 1);
         setBodyType(properties.containsKey("attachName") ? BodyDef.BodyType.DynamicBody : BodyDef.BodyType.StaticBody);
         setSensor(true);
         setFixedRotation(true);
         setName("spikes");
         setDrawScale(scale);
         setTextureScale(textureScale);
-        setTexture(tMap.get("spikes"));
+        if (tileset == null) tileset = tMap.get("spikes").split(tMap.get("spikes").getTexture(),(int) (scale.x/textureScale.x), (int) (scale.y/textureScale.y));
+        setTexture(tileset[0][gidMap.get(properties.get("gid"))]);
         setFriction(objectConstants.getFloat("friction"));
         fixtureShapes = new Array<>();
 
@@ -252,7 +252,13 @@ public class Spikes extends BoxObstacle implements Activatable {
      * Sets the shared constants for all instances of this class
      * @param constants JSON storing the shared constants.
      */
-    public static void setConstants(JsonValue constants) { objectConstants = constants; }
+    public static void setConstants(JsonValue constants) {
+        objectConstants = constants;
+        gidMap.put(7, 0);
+        gidMap.put(10, 1);
+        gidMap.put(11, 3);
+        gidMap.put(12, 2);
+    }
     public float getXPos(){
         return getX();
     }

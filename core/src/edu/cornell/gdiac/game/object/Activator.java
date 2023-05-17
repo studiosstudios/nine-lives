@@ -87,6 +87,7 @@ public abstract class Activator extends PolygonObstacle {
         bottomTexture = tMap.get(base_name);
         setTexture(bottomTexture);
         setTextureScale(textureScale);
+        setRestitution(0);
         spriteFrames = TextureRegion.split(tMap.get(texture_name).getTexture(), 1024,1024);
         float frameDuration = 0.2f;
         animation = new Animation<>(frameDuration, spriteFrames[0]);
@@ -160,6 +161,8 @@ public abstract class Activator extends PolygonObstacle {
         sensorDef.shape = sensorShape;
 
         Fixture sensorFixture = body.createFixture( sensorDef );
+        sensorFixture.setRestitution(0);
+        sensorFixture.setFriction(0);
         sensorFixture.setUserData(this);
 
         return true;

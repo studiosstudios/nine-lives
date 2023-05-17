@@ -60,8 +60,8 @@ public class Checkpoint extends BoxObstacle
         super(32/scale.x, 64/scale.y);
         current = false;
         setTextureScale(textureScale);
-        int spriteWidth = 1024;
-        int spriteHeight = 2048;
+        int spriteWidth = 128;
+        int spriteHeight = 256;
         this.baseTexture = tMap.get("checkpoint-base");
         this.activeBaseTexture = tMap.get("checkpoint-base-active");
         spriteFrames = TextureRegion.split(tMap.get("checkpoint-anim").getTexture(), spriteWidth, spriteHeight);

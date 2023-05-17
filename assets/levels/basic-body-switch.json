@@ -508,9 +508,9 @@
          "name":"spikes",
          "objects":[
                 {
-                 "gid":7,
+                 "gid":12,
                  "height":1024,
-                 "id":42,
+                 "id":105,
                  "name":"",
                  "rotation":0,
                  "type":"",
@@ -520,21 +520,9 @@
                  "y":14336
                 }, 
                 {
-                 "gid":7,
+                 "gid":12,
                  "height":1024,
-                 "id":43,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":1024,
-                 "x":18432,
-                 "y":14336
-                }, 
-                {
-                 "gid":7,
-                 "height":1024,
-                 "id":44,
+                 "id":106,
                  "name":"",
                  "rotation":0,
                  "type":"",
@@ -544,9 +532,9 @@
                  "y":14336
                 }, 
                 {
-                 "gid":7,
+                 "gid":12,
                  "height":1024,
-                 "id":45,
+                 "id":107,
                  "name":"",
                  "rotation":0,
                  "type":"",
@@ -556,9 +544,9 @@
                  "y":14336
                 }, 
                 {
-                 "gid":7,
+                 "gid":12,
                  "height":1024,
-                 "id":46,
+                 "id":108,
                  "name":"",
                  "rotation":0,
                  "type":"",
@@ -568,15 +556,27 @@
                  "y":14336
                 }, 
                 {
-                 "gid":7,
+                 "gid":11,
                  "height":1024,
-                 "id":47,
+                 "id":109,
                  "name":"",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":1024,
                  "x":23552,
+                 "y":14336
+                }, 
+                {
+                 "gid":10,
+                 "height":1024,
+                 "id":110,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":1024,
+                 "x":18432,
                  "y":14336
                 }],
          "opacity":1,
@@ -778,7 +778,7 @@
          "y":0
         }],
  "nextlayerid":21,
- "nextobjectid":105,
+ "nextobjectid":111,
  "orientation":"orthogonal",
  "properties":[
         {

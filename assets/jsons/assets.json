@@ -39,14 +39,13 @@
       "corpse2" : "obstacles/corpse/corpse2.png",
       "corpse3" : "obstacles/corpse/corpse3.png",
       "corpse-burnt": "cat/corpse-burnt.png",
-      "spikes": "obstacles/spikes/spikes.png",
+      "spikes": "obstacles/spikes/spikes-tileset.png",
       "button-base": "obstacles/button/button-base.png",
       "button-top": "obstacles/button/button-top.png",
       "switch-top": "obstacles/button/switch-top.png",
       "switch-base": "obstacles/button/switch-base.png",
       "box": "obstacles/box/box.png",
-      "flamethrower": "obstacles/flamethrower/flame-throw.png",
-      "flame": "obstacles/flamethrower/flame.png", //UNUSED
+      "flamethrower": "obstacles/flamethrower/flame-throw-resize.png",
       "flame-anim": "obstacles/flamethrower/flame-anim.png",
       "laser": "obstacles/laser/laser.png",
       "laser-beam": "obstacles/laser/laser-beam.png", //UNUSED
@@ -60,7 +59,7 @@
       "spirit-photon": "obstacles/spirit-region/spirit-photon.png",
       "spirit-photon-cat": "obstacles/spirit-region/spirit-photon-cat.png", //UNUSED
       "spirit-region": "obstacles/spirit-region/spirit-region.png",
-      "metal-tileset": "world/platforms/dark-metal-tileset.png",
+      "metal-tileset": "world/platforms/dark-metal-tileset-resized.png",
       "climbable-tileset": "world/platforms/climbable-tileset.png",
       "windows-tileset": "world/platforms/windows-tileset.png",
       "forest-tileset": "world/platforms/forest-tileset.png",
@@ -90,6 +89,7 @@
       "tutorial-walk-jump": "world/decor/tutorial-walk-jump.png",
       "tutorial-jump-dash": "world/decor/tutorial-jump-dash.png",
       "tutorial-undo": "world/decor/tutorial-undo.png",
+      "tutorial-climb": "world/decor/tutorial-climb.png",
       "cat-vinci": "world/decor/cat-vinci.png",
       "cat-tank-pink": "world/decor/cat-tank-pink.png",
       "cat-tank-green": "world/decor/cat-tank-green.png",

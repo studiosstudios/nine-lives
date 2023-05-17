@@ -288,4 +288,13 @@ public class Camera {
             System.out.println("oof");
         }
     }
+
+    /**
+     * SHOULD ONLY USE FOR DEBUGGING
+     *
+     * @return camera target zoom
+     */
+    public float getZoomGoal(){
+        return zoomGoal;
+    }
 }

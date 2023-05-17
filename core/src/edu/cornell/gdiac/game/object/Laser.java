@@ -38,8 +38,7 @@ public class Laser extends BoxObstacle implements Activatable{
     private float totalTime;
     /** The direction that this laser fires in */
     private Direction dir;
-    /** Array of ChainLights associated with this laser; should be exactly 2 lights, where
-     * the 0-index element is the light stored in the Obstacle field */
+    /** Array of ChainLights associated with this laser; should be exactly 2 lights. */
     private ChainLight[] lights;
 
     /**
@@ -86,6 +85,8 @@ public class Laser extends BoxObstacle implements Activatable{
      * @param rayHandler Ray Handler associated with the currently active box2d world
      */
     public void createLight(RayHandler rayHandler) {
+        // We use the parent createChainLight method to help instantiate the lights - ideally, we'd
+        // probably have a separate LightBuilder class, but this is more convenient
         createChainLight(objectConstants.get("light"), rayHandler, -1);
         getLight().setSoft(true);
         getLight().setXray(true);
@@ -94,6 +95,17 @@ public class Laser extends BoxObstacle implements Activatable{
         getLight().setSoft(true);
         getLight().setXray(true);
         lights[0] = getLightAsChain();
+
+        // Set the superclass light field to be null for future disposal
+        setLight(null);
+    }
+
+    @Override
+    public void destroyLight() {
+        for (int i = 0; i < lights.length; i++) {
+            lights[i].remove(true);
+            lights[i] = null;
+        }
     }
 
     /**

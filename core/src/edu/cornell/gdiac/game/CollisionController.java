@@ -373,6 +373,10 @@ public class CollisionController implements ContactListener, ContactFilter {
 
                 if (bd1 instanceof Wall && bd2 instanceof Platform) return false;
 
+                if (bd1 instanceof Door && bd2 instanceof Wall) return false;
+
+                if (bd1 instanceof Door && bd2 instanceof Platform) return false;
+
                 //spikes and dead bodies
                 if (bd1 instanceof Spikes && bd2 instanceof DeadBody) {
 //                    System.out.println(fd1 + " and " + fd2 + ": " + (fd2.equals(DeadBody.centerSensorName) && fd1.equals(Spikes.centerName)));
@@ -401,6 +405,9 @@ public class CollisionController implements ContactListener, ContactFilter {
                 fix1 = fix2;
                 fix2 = fixTemp;
             }
+
+            if (bd1 instanceof Door && bd2 instanceof Door) return false;
+
         } catch (Exception e) {
             e.printStackTrace();
         }

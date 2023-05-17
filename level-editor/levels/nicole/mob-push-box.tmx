@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="30" height="23" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="25" nextobjectid="161">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="30" height="23" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="25" nextobjectid="162">
  <editorsettings>
   <export target="../../../assets/levels/mob-push-box.json" format="json"/>
  </editorsettings>
@@ -9,7 +9,7 @@
  <tileset firstgid="1" source="../../objects/objects.tsx"/>
  <tileset firstgid="15" source="../../tilesets/metal-walls.tsx"/>
  <tileset firstgid="63" source="../../tilesets/climbables.tsx"/>
- <tileset firstgid="67" source="../../decor/decor.tsx"/>
+ <tileset firstgid="69" source="../../decor/decor.tsx"/>
  <tileset firstgid="102" source="../../tilesets/default-metal-walls.tsx"/>
  <tileset firstgid="150" source="../../tilesets/windows.tsx"/>
  <layer id="17" name="metalWalls" width="30" height="23">
@@ -80,7 +80,7 @@
   <object id="141" x="0" y="19456">
    <polygon points="0,0 0,4096 30720,4096 30720,0"/>
   </object>
-  <object id="142" x="0" y="0">
+  <object id="142" x="0" y="24.5902">
    <polygon points="0,0 0,13312 2048,13312 2048,2048 6144,2048 6144,16384 23552,16384 23552,2048 28672,2048 28672,13312 30720,13312 30720,0 21504,0 21504,14336 20480,14336 20480,12288 9216,12288 9216,14336 8192,14336 8192,0"/>
   </object>
   <object id="143" x="8192" y="0">
@@ -88,15 +88,15 @@
   </object>
  </objectgroup>
  <objectgroup id="21" name="decor">
-  <object id="148" name="cabinet-right" gid="92" x="16384" y="15360" width="1024" height="1024"/>
-  <object id="149" name="cabinet-mid" gid="93" x="15360" y="15360" width="1024" height="1024"/>
-  <object id="150" name="cabinet-left" gid="94" x="12288" y="15360" width="1024" height="1024"/>
-  <object id="151" name="cabinet-mid" gid="93" x="13312" y="15360" width="1024" height="1024"/>
-  <object id="152" name="cabinet-mid" gid="93" x="14336" y="15360" width="1024" height="1024"/>
-  <object id="157" name="test-tubes" gid="99" x="15736.8" y="14413" width="624.852" height="551.082"/>
-  <object id="158" name="test-tubes" gid="99" x="15105.6" y="14429.4" width="674.033" height="551.082"/>
-  <object id="159" name="coke" gid="97" x="14396.6" y="14367.9" width="518.295" height="542.885"/>
-  <object id="160" name="microscope" gid="95" x="13302.9" y="14394.1" width="902.32" height="785.623"/>
+  <object id="148" name="cabinet-right" gid="94" x="16384" y="15360" width="1024" height="1024"/>
+  <object id="149" name="cabinet-mid" gid="95" x="15360" y="15360" width="1024" height="1024"/>
+  <object id="150" name="cabinet-left" gid="96" x="12288" y="15360" width="1024" height="1024"/>
+  <object id="151" name="cabinet-mid" gid="95" x="13312" y="15360" width="1024" height="1024"/>
+  <object id="152" name="cabinet-mid" gid="95" x="14336" y="15360" width="1024" height="1024"/>
+  <object id="157" name="test-tubes" gid="101" x="15736.8" y="14413" width="624.852" height="551.082"/>
+  <object id="158" name="test-tubes" gid="101" x="15105.6" y="14429.4" width="674.033" height="551.082"/>
+  <object id="159" name="coke" gid="99" x="14396.6" y="14367.9" width="518.295" height="542.885"/>
+  <object id="160" name="microscope" gid="97" x="13302.9" y="14394.1" width="902.32" height="785.623"/>
  </objectgroup>
  <layer id="24" name="windows" width="30" height="23">
   <data encoding="csv">

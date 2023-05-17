@@ -40,7 +40,7 @@
     "disableWhenPan": true
   },
   "cancel": {
-    "key": "CONTROL_LEFT",
+    "key": "SPACE",
     "disableWhenPan": true
   },
   "undo": {

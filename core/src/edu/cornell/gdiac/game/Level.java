@@ -1013,14 +1013,14 @@ public class Level {
         float angle = (360 - objectJV.getFloat("rotation")) % 360;
         propertiesMap.put("rotation", angle);
         propertiesMap.put("name", objectJV.getString("name"));
+        propertiesMap.put("gid", objectJV.getInt("gid", -1));
 
         //this is because tiled rotates about the top left corner
         float x, y;
+        x = objectJV.getFloat("x");
         if ((int) angle == 90) {
-            x = objectJV.getFloat("x");
             y = objectJV.getFloat("y") - objectJV.getFloat("width");
         } else {
-            x = objectJV.getFloat("x");
             y = objectJV.getFloat("y");
         }
         x = x/tileSize + bounds.x;

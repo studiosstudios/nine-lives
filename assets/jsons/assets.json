@@ -45,9 +45,9 @@
       "switch-top": "obstacles/button/switch-top.png",
       "switch-base": "obstacles/button/switch-base.png",
       "box": "obstacles/box/box.png",
-      "flamethrower": "obstacles/flamethrower/flame-throw-resize.png",
+      "flamethrower": "obstacles/flamethrower/flame-throw.png",
       "flame-anim": "obstacles/flamethrower/flame-anim.png",
-      "laser": "obstacles/laser/laser.png",
+      "laser": "obstacles/laser/base.png",
       "laser-beam": "obstacles/laser/laser-beam.png", //UNUSED
       "checkpoint-anim" : "obstacles/checkpoint/checkpoint-anim.png",
       "checkpoint-active-anim" : "obstacles/checkpoint/checkpoint-active-anim.png",

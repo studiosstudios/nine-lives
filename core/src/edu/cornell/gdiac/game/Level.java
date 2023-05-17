@@ -817,7 +817,7 @@ public class Level {
      */
     private void populateLasers(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
-        textureScaleCache.set(1, 1);
+        textureScaleCache.set(1/8f, 1/8f);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
             Laser laser = new Laser(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);

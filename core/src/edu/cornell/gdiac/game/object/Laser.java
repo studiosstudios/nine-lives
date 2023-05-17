@@ -51,8 +51,8 @@ public class Laser extends BoxObstacle implements Activatable{
      * @param textureScale   Texture scale for rescaling texture
      */
     public Laser(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
-        super(tMap.get("laser").getRegionWidth()/scale.x,
-                tMap.get("laser").getRegionHeight()/scale.y);
+        super(tMap.get("laser").getRegionWidth()/scale.x*textureScale.x,
+                tMap.get("laser").getRegionHeight()/scale.y*textureScale.y);
 
         setBodyType(properties.containsKey("attachName") ? BodyDef.BodyType.DynamicBody : BodyDef.BodyType.StaticBody);
         setName("laser");

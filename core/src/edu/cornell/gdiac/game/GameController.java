@@ -903,6 +903,7 @@ public class GameController implements Screen {
         if(gameState == GameState.LEVEL_SWITCH){
             drawAdjacentLevels = true;
             input.setDisableAll(true);
+            cam.setZoom(false, -1f); //smoother level transition across different zooms
             float x_pos = currLevel.getCat().getPosition().x*scale.x;
             float y_pos = currLevel.getCat().getPosition().y*scale.y;
             cam.updateCamera(x_pos, y_pos, true, cam.getGameplayBounds());

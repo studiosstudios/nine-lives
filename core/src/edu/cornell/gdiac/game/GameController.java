@@ -936,6 +936,7 @@ public class GameController implements Screen {
      * in the combined matrix takes care of the transformation for us for all lights.
      */
     private void updateRayHandlerCombinedMatrix() {
+        canvas.applyViewport(false);
         OrthographicCamera c = canvas.getCamera().getCamera();
         Matrix4 combined = c.combined.cpy();
         combined.scl(DEFAULT_SCALE);

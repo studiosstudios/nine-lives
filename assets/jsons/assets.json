@@ -53,7 +53,6 @@
       "checkpoint-active-anim" : "obstacles/checkpoint/checkpoint-active-anim.png",
       "checkpoint-base" : "obstacles/checkpoint/checkpoint-base.png",
       "checkpoint-base-active" : "obstacles/checkpoint/checkpoint-base-active.png",
-      "robot": "mob/robot/robot.png",
       "robot-anim": "mob/robot/robot-anim.png",
       "spirit-anim": "obstacles/spirit-region/spirit-anim.png", //UNUSED
       "spirit-photon": "obstacles/spirit-region/spirit-photon.png",

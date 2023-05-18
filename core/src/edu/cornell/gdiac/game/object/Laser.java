@@ -167,7 +167,7 @@ public class Laser extends BoxObstacle implements Activatable{
     public void beginRayCast(){
         Vector2 beamStart = getBeamStart();
         points.clear();
-        points.add(beamStart);
+        points.add(new Vector2(beamStart));
         for (ChainLight l : lights) {
             l.chain.clear();
             l.chain.add(beamStart.x, beamStart.y);
@@ -215,7 +215,21 @@ public class Laser extends BoxObstacle implements Activatable{
 
         if (points.size > 0) {
             float length = points.get(0).dst(points.get(1));
-            hitbox.setDimension(0.15f, length, 0, -hitbox.getHeight()/2f+0.5f, false);
+            hitbox.setDimension(0.15f, length, false);
+            switch (dir) {
+                case UP:
+                    hitbox.setY(getY() + (length-1)/2f);
+                    break;
+                case LEFT:
+                    hitbox.setX(getX() - (length-1)/2f);
+                    break;
+                case RIGHT:
+                    hitbox.setX(getX() + (length-1)/2f);
+                    break;
+                case DOWN:
+                    hitbox.setY(getY() - (length-1)/2f);
+                    break;
+            }
         }
 
         totalTime += dt;
@@ -223,11 +237,11 @@ public class Laser extends BoxObstacle implements Activatable{
     }
 
     /**
-     * Turns on laser. Does nothing because beam raycasting is done in <code>ActionController</code>.
+     * Turns on laser.
      * @param world  Box2D world
      */
     @Override
-    public void activated(World world){}
+    public void activated(World world){ hitbox.setActive(true); }
 
     /**
      * Turns off laser.
@@ -236,6 +250,7 @@ public class Laser extends BoxObstacle implements Activatable{
     @Override
     public void deactivated(World world){
         points.clear();
+        hitbox.setActive(false);
         totalTime = 0;
     }
 

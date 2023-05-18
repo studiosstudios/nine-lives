@@ -43,7 +43,7 @@ public class LevelSelectStage extends StageWrapper {
         super(internal, createActors);
 //        selectedLevel = 1;
 //        levelChanged = true;
-        changeLevel(1);
+        changeLevel(Save.getProgress());
     }
 
     private void createBar() {

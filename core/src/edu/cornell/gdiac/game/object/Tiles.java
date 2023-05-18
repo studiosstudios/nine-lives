@@ -34,7 +34,7 @@ public class Tiles {
         // turn tileset into 1D texture arr for easy indexing
         // numbers in data correspond to numbers in tileset + 1
 
-        TextureRegion[][] tiles = tileset.split(tileset.getTexture(), tileSize, tileSize);
+        TextureRegion[][] tiles = TextureRegion.split(tileset.getTexture(), tileSize, tileSize);
 
         //flatten 2d array into 1d array
         int numTiles = 0;

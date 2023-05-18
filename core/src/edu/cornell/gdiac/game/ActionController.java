@@ -411,16 +411,6 @@ public class ActionController {
             }
         }
 
-        if (level.getCat().getBody().getFixtureList().contains(rayCastFixture, true)){
-            die(true);
-        }
-
-        //check deadbodies
-        for (DeadBody db : hitDeadbodies.keys()){
-            if (hitDeadbodies.get(db) < closestFraction) {
-                db.setTouchingLaser(true);
-            }
-        }
     }
 
     /**
@@ -600,9 +590,7 @@ public class ActionController {
         @Override
         public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
             Obstacle obs = (Obstacle) fixture.getBody().getUserData();
-            if (fixture.getUserData() != null && fixture.getUserData().equals(DeadBody.catBodyName)) {
-                hitDeadbodies.put((DeadBody) fixture.getBody().getUserData(), fraction);
-            } else if ( fraction < closestFraction && (!fixture.isSensor() || obs instanceof Cat)) {
+            if ( fraction < closestFraction && (!fixture.isSensor() || obs instanceof Cat)) {
                 closestFraction = fraction;
                 rayCastPoint.set(point);
                 rayCastFixture = fixture;

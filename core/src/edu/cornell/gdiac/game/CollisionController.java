@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.game;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.game.object.*;
@@ -127,6 +128,9 @@ public class CollisionController implements ContactListener, ContactFilter {
                     if (bd2 instanceof Flamethrower.Flame && fd2.equals(Flamethrower.flameSensorName)){
                         actionController.die(true);
                     }
+                    if (bd2 instanceof Laser && fd2.equals(Laser.laserHitboxName)) {
+                        actionController.die(true);
+                    }
                     if (bd2 instanceof Checkpoint && ((Checkpoint) bd2).getSensorName().equals(fd2)){
                         level.updateCheckpoints(((Checkpoint) bd2), true);
                     }
@@ -168,6 +172,8 @@ public class CollisionController implements ContactListener, ContactFilter {
                         }
                     } else if (bd2 instanceof Flamethrower.Flame) {
                         db.addFlame();
+                    } else if (bd2 instanceof Laser && fd1.equals(DeadBody.catBodyName) && fd2.equals(Laser.laserHitboxName)){
+                        db.addHazard();
                     } else if (bd2 instanceof SpiritRegion){
                         db.addSpiritRegion((SpiritRegion) bd2);
                     } else if (fd1.equals(DeadBody.centerSensorName) && !fix2.isSensor() && bd2 != level.getCat()) {
@@ -302,8 +308,9 @@ public class CollisionController implements ContactListener, ContactFilter {
                         }
                     } else if (bd2 instanceof Flamethrower.Flame) {
                         db.removeFlame();
-                    }
-                    if (bd2 instanceof SpiritRegion){
+                    } else if (bd2 instanceof Laser && fd1.equals(DeadBody.catBodyName) && fd2.equals(Laser.laserHitboxName)) {
+                        db.removeHazard();
+                    } else if (bd2 instanceof SpiritRegion){
                         db.removeSpiritRegion((SpiritRegion) bd2);
                     }
                 }

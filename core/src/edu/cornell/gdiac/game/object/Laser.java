@@ -6,14 +6,12 @@ import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.FloatArray;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
-import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.util.Direction;
 
 import java.util.HashMap;
@@ -41,6 +39,9 @@ public class Laser extends BoxObstacle implements Activatable{
     /** Array of ChainLights associated with this laser; should be exactly 2 lights, where
      * the 0-index element is the light stored in the Obstacle field */
     private ChainLight[] lights;
+    /** Hitbox of the Laser. This will not work if the laser is reflected. */
+    public BoxObstacle hitbox;
+    public static final String laserHitboxName = "laserHitbox";
 
     /**
      * Creates a new Laser object.
@@ -79,6 +80,28 @@ public class Laser extends BoxObstacle implements Activatable{
         points = new Array<>();
         lights = new ChainLight[2];
         initTiledActivations(properties);
+
+        hitbox = new BoxObstacle(0.15f, 1);
+        hitbox.setGravityScale(0);
+        hitbox.setFixedRotation(true);
+        hitbox.setDensity(0);
+        hitbox.setFriction(0);
+        hitbox.setRestitution(0);
+        hitbox.setDrawScale(scale);
+        hitbox.setAngle(getAngle());
+        hitbox.setPosition(getPosition());
+        hitbox.setSensor(true);
+    }
+
+    @Override
+    public boolean activatePhysics(World world){
+        if (!super.activatePhysics(world) || !hitbox.activatePhysics(world)) return false;
+
+        body.getFixtureList().get(0).setUserData("laserSensor");
+        hitbox.getBody().getFixtureList().get(0).setUserData(laserHitboxName);
+        hitbox.getBody().setUserData(this);
+
+        return true;
     }
 
     /**
@@ -165,12 +188,24 @@ public class Laser extends BoxObstacle implements Activatable{
         }
     }
 
+    @Override
+    public void drawDebug(GameCanvas canvas){
+        super.drawDebug(canvas);
+        hitbox.drawDebug(canvas);
+    }
+
     /**
      * Updates the object's physics state and the beam's color.
      * @param dt Timing values from parent loop
      */
     public void update(float dt){
         super.update(dt);
+
+        if (points.size > 0) {
+            float length = points.get(0).dst(points.get(1));
+            hitbox.setDimension(0.15f, length, 0, -hitbox.getHeight()/2f+0.5f, false);
+        }
+
         totalTime += dt;
         color.set(1, 0, 0, ((float) Math.cos((double) totalTime * 2)) * 0.25f + 0.75f);
     }

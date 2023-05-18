@@ -751,7 +751,7 @@ public class Level {
      */
     private void populateActivators(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
-        textureScaleCache.set(1, 1);
+        textureScaleCache.set(1/4f, 1/4f);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
             Activator activator;
@@ -1351,18 +1351,18 @@ public class Level {
     public void drawDebug(GameCanvas canvas){
         //draw grid
         Color lineColor = new Color(0.8f, 0.8f, 0.8f, 1);
-//        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/scale.x;
-//        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/scale.y;
-//        for (int x = 0; x < bounds.width; x++) {
-//            Vector2 p1 = new Vector2(x, 0);
-//            Vector2 p2 = new Vector2(x, bounds.height);
-//            canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
-//        }
-//        for (int y = 0; y < bounds.height; y++) {
-//            Vector2 p1 = new Vector2(0, y);
-//            Vector2 p2 = new Vector2(bounds.width, y);
-//            canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
-//        }
+        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/scale.x;
+        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/scale.y;
+        for (int x = 0; x < bounds.width; x++) {
+            Vector2 p1 = new Vector2(x, 0);
+            Vector2 p2 = new Vector2(x, bounds.height);
+            canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
+        }
+        for (int y = 0; y < bounds.height; y++) {
+            Vector2 p1 = new Vector2(0, y);
+            Vector2 p2 = new Vector2(bounds.width, y);
+            canvas.drawLineDebug(p1, p2, lineColor, scale.x, scale.y);
+        }
         for (Obstacle obj : objects) {
             obj.drawDebug(canvas);
         }

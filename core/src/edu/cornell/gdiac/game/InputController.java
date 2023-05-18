@@ -32,6 +32,9 @@ import java.io.*;
 public class InputController {
 	/** The singleton instance of the input controller */
 	private static InputController theController = null;
+	private static final String[] bindableControlNames = new String[] {
+			"up", "down", "right", "left", "jump", "dash", "climb", "switch", "cancel", "undo", "pan"
+	};
 	
 	/** 
 	 * Return the singleton instance of the input controller
@@ -82,6 +85,15 @@ public class InputController {
 			previousMap.put(entry.name, false);
 			pressedMap.put(entry.name, false);
 		}
+		int[] userControls = Save.getControls();
+		for (int i = 0; i < userControls.length; i++) {
+			controls.put(bindableControlNames[i], userControls[i]);
+		}
+
+	}
+
+	public void changeControls() {
+
 	}
 
 	/**

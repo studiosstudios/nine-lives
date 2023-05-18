@@ -353,6 +353,7 @@ public class GameController implements Screen {
      */
     public void nextLevel(){
         levelNum++;
+        Save.setProgress(levelNum);
         prevJV = getJSON();
         setJSON(nextJV);
         setRet(false);

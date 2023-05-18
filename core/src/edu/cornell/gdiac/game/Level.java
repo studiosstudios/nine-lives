@@ -505,7 +505,7 @@ public class Level {
         this.levelNum = levelNum;
 
         canDash = true;
-        canSwitch = false;
+        canSwitch = true;
         for (JsonValue property : tiledMap.get("properties")){
             switch (property.getString("name")) {
                 case "biome":

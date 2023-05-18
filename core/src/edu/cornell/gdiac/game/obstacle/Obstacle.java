@@ -1314,6 +1314,18 @@ public abstract class Obstacle {
 	public void createLight(RayHandler rayHandler) {}
 
 	/**
+	 * Removes the light stored in this Obstacle class.<br>
+	 * Note that some subclasses may also store lights within their own fields; for example, the
+	 * Laser class stores two ChainLights in an array. This destroyLights method should override
+	 * and handle those extraneous cases.<br>
+	 */
+	public void destroyLight() {
+		if (light != null) {
+			light.remove(true);
+		}
+	}
+
+	/**
 	 * Updates the object's physics state (NOT GAME LOGIC).
 	 *
 	 * This method is called AFTER the collision resolution state. Therefore, it 

@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.game.object.*;
 import edu.cornell.gdiac.game.obstacle.*;
@@ -903,6 +904,7 @@ public class GameController implements Screen {
         if(gameState == GameState.LEVEL_SWITCH){
             drawAdjacentLevels = true;
             input.setDisableAll(true);
+            cam.setZoom(false, -1f); //smoother level transition across different zooms
             float x_pos = currLevel.getCat().getPosition().x*scale.x;
             float y_pos = currLevel.getCat().getPosition().y*scale.y;
             cam.updateCamera(x_pos, y_pos, true, cam.getGameplayBounds());
@@ -923,23 +925,20 @@ public class GameController implements Screen {
 				Thread.currentThread().interrupt();
 			}
 		}
-//        System.out.println("before:" + canvas.getCamera().getCamera().position);
-        if (!paused) {
-            if (preUpdate(delta)) {
-                update(delta); // This is the one that must be defined.
-                postUpdate(delta);
-            }
+        if (!paused && preUpdate(delta)) {
+            update(delta); // This is the one that must be defined.
+            postUpdate(delta);
+        }
+        else {
+            updateCamera();
         }
 
-        if (LIGHTS_ACTIVE) {
-            updateRayHandlerCombinedMatrix();
-            rayHandler.update();
-        }
-
-        if (paused) { updateCamera(); }
         // Main game draw
         draw(delta);
 
+        if (LIGHTS_ACTIVE) {
+            updateAndRenderRayHandler();
+        }
 
         // Menu draw
         hud.draw();
@@ -954,17 +953,23 @@ public class GameController implements Screen {
      * scale every time they move, especially when they can be attached to bodies. Handling the scaling
      * in the combined matrix takes care of the transformation for us for all lights.
      */
-    private void updateRayHandlerCombinedMatrix() {
+    private void updateAndRenderRayHandler() {
         OrthographicCamera c = canvas.getCamera().getCamera();
-        Matrix4 combined = c.combined.cpy();
-        combined.scl(DEFAULT_SCALE);
         rayHandler.setCombinedMatrix(
-                combined,
-                c.position.x / 32,
-                c.position.y / 32,
-                c.viewportWidth / 32,
-                c.viewportHeight / 32
+                c.combined.cpy().scl(DEFAULT_SCALE),
+                c.position.x / DEFAULT_SCALE,
+                c.position.y / DEFAULT_SCALE,
+                c.viewportWidth * c.zoom,
+                c.viewportHeight * c.zoom
         );
+        Viewport vp = canvas.getViewport();
+        int bufferScale = Math.round(Gdx.graphics.getBackBufferScale());
+        rayHandler.useCustomViewport(
+                vp.getScreenX() * bufferScale,
+                vp.getScreenY() * bufferScale,
+                vp.getScreenWidth() * bufferScale,
+                vp.getScreenHeight() * bufferScale);
+        rayHandler.updateAndRender();
     }
 
     /**
@@ -1050,13 +1055,11 @@ public class GameController implements Screen {
 
         canvas.endFrameBuffer();
 
-        canvas.drawLightsToBuffer(rayHandler);
-
         if (effectSize > 0) {
             canvas.setSpiritModeShader(1.8f - 0.525f * effectSize, 0.3f,
                     spiritModeColor, spiritModeColor, spiritModeTicks/60f);
         }
-        canvas.drawFrameBuffer();
+        canvas.drawFrameBuffer(); //applyViewport within here
 
         if (effectSize > 0) canvas.setShader(null);
         canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2f, canvas.getCamera().getY()  - canvas.getHeight()/2f, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);

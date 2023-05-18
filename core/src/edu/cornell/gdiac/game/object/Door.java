@@ -223,6 +223,7 @@ public class Door extends BoxObstacle implements Activatable {
             deactivated(world);
             setActive(false);
             cap.setSensor(true);
+            cap.setPosition(capOpenPos);
         }
         cap.getBody().setUserData(this);
         return true;
@@ -356,15 +357,24 @@ public class Door extends BoxObstacle implements Activatable {
 
     public ObjectMap<String, Object> storeState(){
         ObjectMap<String, Object> stateMap = super.storeState();
-        stateMap.put("ticks", ticks);
         stateMap.put("closing", closing);
         stateMap.put("activated", activated);
+        stateMap.put("capState", cap.storeState());
         return stateMap;
     }
 
     public void loadState(ObjectMap<String, Object> stateMap){
         super.loadState(stateMap);
-        ticks = (int) stateMap.get("ticks");
         closing = (float) stateMap.get("closing");
+        activated = (boolean) stateMap.get("activated");
+        if (activated) {
+            closing = 1;
+            setActive(true);
+            cap.setSensor(false);
+        } else {
+            cap.setBodyType(BodyDef.BodyType.DynamicBody);
+            closing = -1;
+        }
+        cap.loadState((ObjectMap<String, Object>) stateMap.get("capState"));
     }
 }

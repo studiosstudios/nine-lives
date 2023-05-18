@@ -603,18 +603,18 @@ public class Level {
                     tileset, bounds, fID, new Vector2(1/4f, 1/4f));
 
         if (climbableData != null) {
-            climbables = new Tiles(climbableData, 1024, levelWidth, levelHeight,
-                    textureRegionAssetMap.get("climbable-tileset"), bounds, fID_climbable, new Vector2(1/32f, 1/32f));
+            climbables = new Tiles(climbableData, 128, levelWidth, levelHeight,
+                    textureRegionAssetMap.get("climbable-tileset"), bounds, fID_climbable, new Vector2(1/4f, 1/4f));
         }
 
         if (windowData != null) {
-            windows = new Tiles(windowData, 1024, levelWidth, levelHeight,
-                    textureRegionAssetMap.get("windows-tileset"), bounds, fID_window, new Vector2(1/32f, 1/32f));
+            windows = new Tiles(windowData, 128, levelWidth, levelHeight,
+                    textureRegionAssetMap.get("windows-tileset"), bounds, fID_window, new Vector2(1/4f, 1/4f));
         }
 
         if (leafData != null) {
-            leaves = new Tiles(leafData, 1024, levelWidth, levelHeight,
-                    textureRegionAssetMap.get("forestLeaves-tileset"), bounds, fID_leaves, new Vector2(1/32f, 1/32f));
+            leaves = new Tiles(leafData, 128, levelWidth, levelHeight,
+                    textureRegionAssetMap.get("forestLeaves-tileset"), bounds, fID_leaves, new Vector2(1/4f, 1/4f));
         }
 
         //make joints

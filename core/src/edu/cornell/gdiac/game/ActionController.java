@@ -141,7 +141,7 @@ public class ActionController {
         InputController ic = InputController.getInstance();
         Cat cat = level.getCat();
 
-        updateSpiritLine(dt, ic.holdSwitch() && !ic.didSwitch());
+        updateSpiritLine(dt, level.canSwitch && ic.holdSwitch() && !ic.didSwitch());
 
         for (SpiritRegion sr : level.getSpiritRegionArray()) {
             sr.setSpiritRegionColorOpacity(ic.holdSwitch());
@@ -152,7 +152,7 @@ public class ActionController {
             moveSpirits();
         }
 
-        if (ic.didSwitch()) {
+        if (level.canSwitch && ic.didSwitch()) {
             //switch body
             DeadBody body = level.getNextBody();
             if (body != null && body.isSwitchable()){
@@ -170,7 +170,7 @@ public class ActionController {
             cat.setVerticalMovement(ic.getVertical());
             cat.setJumpPressed(ic.didJump());
             cat.setClimbingPressed(ic.didClimb());
-            cat.setDashPressed(ic.didDash());
+            cat.setDashPressed(level.canDash && ic.didDash());
             cat.setMeowing(ic.didMeow());
 
             cat.updateState();

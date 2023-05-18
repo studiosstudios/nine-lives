@@ -686,7 +686,7 @@ public class GameController implements Screen {
             return false;
         }
 
-        if (input.holdSwitch()) {
+        if (currLevel.canSwitch && input.holdSwitch()) {
             spiritModeTicks++;
             updateVFX(true, input.switchPressed(), dt);
         } else {
@@ -849,11 +849,11 @@ public class GameController implements Screen {
             else {
                 currLevel.getCat().setActive(true);
                 //zoom normal when in play state and not panning and not switching bodies
-                if (!input.holdSwitch() && !input.didPan()) {
+                if (!(currLevel.canSwitch && input.holdSwitch()) && !input.didPan()) {
                     cam.setZoom(false, -1f);
                 }
                 DeadBody nextDeadBody = currLevel.getNextBody();
-                if (input.holdSwitch() && nextDeadBody != null) {
+                if (currLevel.canSwitch && input.holdSwitch() && nextDeadBody != null) {
                     cam.setGlideMode("SWITCH_BODY");
                     cam.switchBodyCam(nextDeadBody.getX() * scale.x, nextDeadBody.getY() * scale.y);
                 } else {

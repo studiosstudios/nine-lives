@@ -119,6 +119,8 @@ public class Level {
     private RayHandler rayHandler;
     private DeadBody nextBody;
     private Array<Decoration> decorations = new Array();
+    protected boolean canSwitch;
+    protected boolean canDash;
 
 
     /**
@@ -502,7 +504,21 @@ public class Level {
 
         this.levelNum = levelNum;
 
-        biome = tiledMap.get("properties").get(0).getString("value");
+        canDash = true;
+        canSwitch = false;
+        for (JsonValue property : tiledMap.get("properties")){
+            switch (property.getString("name")) {
+                case "biome":
+                    biome = property.getString("value");
+                    break;
+                case "canDash":
+                    canDash = property.getBoolean("value");
+                    break;
+                case "canSwitch":
+                    canSwitch = property.getBoolean("value");
+                    break;
+            }
+        }
 
         if (tiledMap == null) throw new InvalidTiledJSON("missing Tiled JSON");
 

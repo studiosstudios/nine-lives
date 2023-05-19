@@ -1174,7 +1174,7 @@ public class Level {
         if (propertiesMap.containsKey("name")) {
             objectNames.put((String) propertiesMap.get("name"), obj);
         }
-        if (propertiesMap.containsKey("attachName")) {
+        if (!propertiesMap.get("attachName", "").equals("")) {
             objectJoints.put(obj, (String) propertiesMap.get("attachName"));
         }
     }

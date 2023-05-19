@@ -168,6 +168,7 @@ public class StageController implements Screen {
 //		settingsStage.setViewport(canvas.getViewport());
 		pauseStage = new PauseStage(internal, true);
 		LevelSelectStage.setNumLevels(numLevels);
+		pauseStage.setAudioController(audioController);
 		levelSelectStage = new LevelSelectStage(internal, true);
 		loadingStage = new LoadingStage(internal, true);
 //		canvas.getViewport().apply(true);

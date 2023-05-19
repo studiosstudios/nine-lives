@@ -499,7 +499,7 @@ public class GameController implements Screen {
         names = new String[]{"bkg-lab-1", "bkg-forest-1"};
         audioController.createMusicMap(directory, names);
 
-//        audioController.playLab();
+        audioController.playLab();
 //        audioController.playLevelMusic();
 
         names = new String[]{"retro"};

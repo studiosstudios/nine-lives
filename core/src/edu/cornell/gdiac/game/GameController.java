@@ -487,7 +487,7 @@ public class GameController implements Screen {
                 "cabinet-left", "cabinet-mid", "cabinet-right", "goggles", "microscope",
                 "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf", "wall-bottom", "wall-top",
                 "tank", "test-tubes", "coke", "broken-robot", "coming-soon", "arrow-sign",
-                "tutorial-cancel-switch"
+                "tutorial-cancel-switch", "sign-stick", "arrow-sign-forest"
                 }; // Unsure if this is actually being used
         for (String n : names){
 //            System.out.println(n);

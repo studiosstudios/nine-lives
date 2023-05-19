@@ -438,11 +438,12 @@ public class Level {
     }
 
     /**
-     * Updates active checkpoints and cat respawning position
+     * Updates active checkpoints and cat respawning positionc
      *
      * @param c The most recent checkpoint the cat has come in contact with
      */
     public void updateCheckpoints(Checkpoint c, boolean shouldSave){
+        if (c == currCheckpoint) return;
         if(currCheckpoint != null){
             currCheckpoint.setCurrent(false, true);
         }

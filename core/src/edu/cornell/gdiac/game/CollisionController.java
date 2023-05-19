@@ -132,7 +132,9 @@ public class CollisionController implements ContactListener, ContactFilter {
                         actionController.die(true);
                     }
                     if (bd2 instanceof Checkpoint && ((Checkpoint) bd2).getSensorName().equals(fd2)){
-                        level.updateCheckpoints(((Checkpoint) bd2), true);
+                        Checkpoint checkpoint = (Checkpoint) bd2;
+                        checkpoint.addTouching();
+                        if (checkpoint.isFirstTouch()) level.updateCheckpoints(checkpoint, true);
                     }
                     if (bd2 instanceof Mob){
                         actionController.die(true);
@@ -269,6 +271,10 @@ public class CollisionController implements ContactListener, ContactFilter {
 
                     if (bd2 instanceof Exit) {
                         didChange = false;
+                    }
+
+                    if (bd2 instanceof Checkpoint && ((Checkpoint) bd2).getSensorName().equals(fd2)){
+                        ((Checkpoint) (bd2)).removeTouching();
                     }
 
                     if (bd2 instanceof CameraRegion) {

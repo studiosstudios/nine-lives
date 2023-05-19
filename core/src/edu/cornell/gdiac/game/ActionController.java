@@ -161,6 +161,7 @@ public class ActionController {
                 cat.setPosition(body.getSwitchPosition());
                 cat.setLinearVelocity(body.getLinearVelocity());
                 cat.setFacingRight(body.isFacingRight());
+                cat.setDashTimer(body.getDashTimer());
                 level.removeDeadBody(body);
             } else {
                 cat.failedSwitch();

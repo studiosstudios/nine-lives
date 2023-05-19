@@ -32,6 +32,9 @@ import java.io.*;
 public class InputController {
 	/** The singleton instance of the input controller */
 	private static InputController theController = null;
+	private static final String[] bindableControlNames = new String[] {
+			"up", "down", "right", "left", "jump", "dash", "climb", "switch", "cancel", "undo", "pan"
+	};
 	
 	/** 
 	 * Return the singleton instance of the input controller
@@ -82,6 +85,15 @@ public class InputController {
 			previousMap.put(entry.name, false);
 			pressedMap.put(entry.name, false);
 		}
+		int[] userControls = Save.getControls();
+		for (int i = 0; i < userControls.length; i++) {
+			controls.put(bindableControlNames[i], userControls[i]);
+		}
+
+	}
+
+	public void changeControls() {
+
 	}
 
 	/**
@@ -430,7 +442,10 @@ public class InputController {
 	private void readKeyboard() {
 		pressedMap.put("pan", Gdx.input.isKeyPressed(controls.get("pan")));
 		for (String control : controlNames){
-			if(disableAll){
+			if(control.equals("exit")){
+				pressedMap.put("exit", Gdx.input.isKeyPressed(controls.get("exit")));
+			}
+			else if(disableAll){
 				pressedMap.put(control, false);
 			}
 			else if(pressedMap.get("pan")) {

@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="35" height="35" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="24" nextobjectid="214">
+ <editorsettings>
+  <export target="../../../assets/levels/checkpoint-maze.json" format="json"/>
+ </editorsettings>
+ <properties>
+  <property name="biome" propertytype="biome" value="metal"/>
+  <property name="canDash" type="bool" value="true"/>
+  <property name="canSwitch" type="bool" value="false"/>
+ </properties>
+ <tileset firstgid="1" source="../../objects/objects.tsx"/>
+ <tileset firstgid="15" source="../../tilesets/default-metal-walls.tsx"/>
+ <tileset firstgid="63" source="../../tilesets/climbables.tsx"/>
+ <tileset firstgid="67" source="../../tilesets/windows.tsx"/>
+ <tileset firstgid="83" source="../../decor/decor.tsx"/>
+ <layer id="17" name="metalWalls" width="35" height="35">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,28,29,29,29,29,29,44,17,17,17,17,46,29,30,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,52,53,53,53,53,53,54,0,0,0,0,52,48,42,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,40,42,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,40,42,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,40,42,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,40,42,0,0,0,0,0,0,0,
+28,29,29,29,29,29,29,30,0,0,0,0,0,28,29,29,29,29,29,29,30,0,0,0,0,28,60,42,0,0,0,0,0,0,0,
+40,41,41,41,41,41,41,42,0,0,0,0,0,40,41,41,41,41,41,41,59,29,29,29,29,60,41,42,0,0,0,0,0,0,0,
+52,53,53,53,53,53,48,42,0,0,0,0,0,40,41,41,41,41,41,41,47,53,53,53,53,48,41,42,0,0,0,0,0,0,0,
+0,0,0,0,0,0,40,42,0,0,0,0,0,52,53,53,53,53,53,53,54,0,0,0,0,52,48,42,0,0,0,0,0,0,0,
+0,0,0,0,0,0,40,42,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,40,42,0,0,0,0,0,0,0,
+0,0,0,0,0,0,40,42,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,40,42,0,0,0,0,0,0,0,
+0,0,0,0,0,0,40,42,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,40,42,0,0,0,0,0,0,0,
+0,0,0,0,0,0,40,42,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,40,42,0,0,0,0,0,0,0,
+0,0,0,0,0,0,40,42,0,0,0,0,0,28,29,29,29,29,29,29,30,0,0,0,0,28,60,59,29,29,29,29,29,29,30,
+0,28,29,29,29,29,60,42,0,0,0,0,0,40,41,41,41,41,41,41,59,29,29,29,29,60,41,41,41,41,41,41,41,41,42,
+0,40,47,53,53,53,48,42,0,0,0,0,0,52,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,48,42,
+0,40,42,0,0,0,40,42,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,40,42,
+0,40,42,0,0,0,40,42,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,40,42,
+0,40,42,0,0,0,52,54,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,40,42,
+0,40,42,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,40,42,
+0,40,42,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,40,42,
+0,40,42,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,40,42,
+0,40,25,18,0,0,28,30,28,30,0,0,28,30,27,0,0,27,28,30,0,0,28,30,27,0,0,27,28,29,29,29,29,60,42,
+0,40,42,0,0,0,40,42,40,42,0,0,40,42,39,0,0,39,40,42,0,0,40,42,39,0,0,39,40,41,41,41,41,41,42,
+0,40,42,0,0,0,40,42,52,54,0,0,52,54,31,17,17,32,52,54,0,0,52,54,31,17,17,32,52,53,53,53,53,53,54,
+0,40,42,0,0,16,38,42,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,40,42,0,0,0,40,42,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,40,42,0,0,0,52,54,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,40,25,18,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,40,42,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,40,42,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,40,59,29,29,29,29,30,28,29,29,29,29,30,27,0,0,27,28,29,29,29,29,30,27,0,0,27,28,29,29,29,29,29,30,
+0,40,41,41,41,41,41,42,40,41,41,41,41,42,39,0,0,39,40,41,41,41,41,42,39,0,0,39,40,41,41,41,41,41,42,
+0,52,53,53,53,53,53,54,52,53,53,53,53,54,31,17,17,32,52,53,53,53,53,54,31,17,17,32,52,53,53,53,53,53,54
+</data>
+ </layer>
+ <layer id="23" name="windows" width="35" height="35">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="18" name="climbables" width="35" height="35">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="19" name="cameraRegions">
+  <object id="212" type="CameraRegion" x="2048" y="16384" width="32768" height="18432">
+   <properties>
+    <property name="snapCollisionArea" type="bool" value="false"/>
+    <property name="zoom" type="float" value="1"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="12" name="wallsPoly">
+  <object id="180" x="0" y="6144">
+   <polygon points="0,0 8192,0 8192,14336 6144,14336 6144,11264 3072,11264 3072,17408 4096,17408 4096,18432 3072,18432 3072,23552 4096,23552 4096,24576 3072,24576 3072,26624 14336,26624 14336,29696 1024,29696 1024,9216 6144,9216 6144,3072 0,3072"/>
+  </object>
+  <object id="181" x="14336" y="0">
+   <polygon points="0,0 0,2048 7168,2048 7168,1024 11264,1024 11264,2048 12288,2048 12288,6144 11264,6144 11264,7168 7168,7168 7168,6144 -1024,6144 -1024,10240 7168,10240 7168,9216 11264,9216 11264,10240 12288,10240 12288,14336 11264,14336 11264,15360 7168,15360 7168,14336 -1024,14336 -1024,17408 21504,17408 21504,14336 14336,14336 14336,0"/>
+  </object>
+  <object id="182" x="8192" y="23552">
+   <polygon points="0,0 2048,0 2048,3072 0,3072"/>
+  </object>
+  <object id="183" x="12288" y="23552">
+   <polygon points="0,0 0,3072 8192,3072 8192,0 5120,0 5120,2048 3072,2048 3072,0"/>
+  </object>
+  <object id="185" x="22528" y="23552">
+   <polygon points="0,0 0,3072 6144,3072 13312,3072 13312,0 5120,0 5120,2048 3072,2048 3072,0"/>
+  </object>
+  <object id="204" x="14336" y="32768">
+   <polygon points="0,0 1024,0 1024,2048 3072,2048 3072,0 11264,0 11264,2048 13312,2048 13312,0 21504,0 21504,3072 0,3072"/>
+  </object>
+  <object id="205" x="6144" y="23552">
+   <polygon points="0,0 2048,0 2048,6144 0,6144 0,4096 -1024,4096 -1024,3072 0,3072"/>
+  </object>
+  <object id="207" x="33792" y="17408">
+   <polygon points="0,0 0,6144 2048,6144 2048,0"/>
+  </object>
+ </objectgroup>
+ <objectgroup id="16" name="spiritRegions"/>
+ <objectgroup id="2" name="cat">
+  <object id="103" gid="2" x="1024" y="5120" width="1024" height="1024"/>
+ </objectgroup>
+ <objectgroup id="21" name="lights"/>
+ <objectgroup id="4" name="flamethrowers"/>
+ <objectgroup id="20" name="goal">
+  <object id="208" x="33792" y="26624" width="1024" height="6144"/>
+ </objectgroup>
+ <objectgroup id="3" name="checkpoints">
+  <object id="102" gid="3" x="1024" y="4096" width="1024" height="2048"/>
+  <object id="140" gid="3" x="16384" y="12288" width="1024" height="2048"/>
+  <object id="141" gid="3" x="10240" y="12288" width="1024" height="2048" rotation="90"/>
+  <object id="144" gid="3" x="10240" y="19456" width="1024" height="2048" rotation="90"/>
+  <object id="145" gid="3" x="22528" y="21504" width="1024" height="2048"/>
+ </objectgroup>
+ <objectgroup id="6" name="lasers"/>
+ <objectgroup id="7" name="mobs"/>
+ <objectgroup id="8" name="spikes">
+  <object id="116" gid="10" x="21504" y="6144" width="1024" height="1024"/>
+  <object id="135" gid="10" x="21504" y="14336" width="1024" height="1024"/>
+  <object id="117" gid="12" x="22528" y="6144" width="1024" height="1024"/>
+  <object id="134" gid="12" x="22528" y="14336" width="1024" height="1024"/>
+  <object id="118" gid="12" x="23552" y="6144" width="1024" height="1024"/>
+  <object id="133" gid="12" x="23552" y="14336" width="1024" height="1024"/>
+  <object id="119" gid="12" x="25600" y="5120" width="1024" height="1024" rotation="270"/>
+  <object id="136" gid="12" x="25600" y="13312" width="1024" height="1024" rotation="270"/>
+  <object id="120" gid="12" x="25600" y="4096" width="1024" height="1024" rotation="270"/>
+  <object id="137" gid="12" x="25600" y="12288" width="1024" height="1024" rotation="270"/>
+  <object id="121" gid="11" x="24576" y="6144" width="1024" height="1024"/>
+  <object id="132" gid="11" x="24576" y="14336" width="1024" height="1024"/>
+  <object id="122" gid="12" x="24576" y="2048" width="1024" height="1024" rotation="180"/>
+  <object id="139" gid="12" x="24576" y="10240" width="1024" height="1024" rotation="180"/>
+  <object id="123" gid="10" x="25600" y="6144" width="1024" height="1024" rotation="270"/>
+  <object id="131" gid="10" x="25600" y="14336" width="1024" height="1024" rotation="270"/>
+  <object id="124" gid="11" x="25600" y="3072" width="1024" height="1024" rotation="270"/>
+  <object id="138" gid="11" x="25600" y="11264" width="1024" height="1024" rotation="270"/>
+  <object id="157" gid="10" x="25600" y="2048" width="1024" height="1024" rotation="180"/>
+  <object id="158" gid="10" x="25600" y="10240" width="1024" height="1024" rotation="180"/>
+  <object id="159" gid="11" x="22528" y="2048" width="1024" height="1024" rotation="180"/>
+  <object id="160" gid="11" x="22528" y="10240" width="1024" height="1024" rotation="180"/>
+  <object id="161" gid="12" x="23552" y="2048" width="1024" height="1024" rotation="180"/>
+  <object id="162" gid="12" x="23552" y="10240" width="1024" height="1024" rotation="180"/>
+  <object id="196" gid="11" x="16384" y="24576" width="1024" height="1024"/>
+  <object id="197" gid="11" x="16384" y="33792" width="1024" height="1024"/>
+  <object id="198" gid="11" x="26624" y="33792" width="1024" height="1024"/>
+  <object id="199" gid="11" x="26624" y="24576" width="1024" height="1024"/>
+  <object id="200" gid="10" x="15360" y="24576" width="1024" height="1024"/>
+  <object id="201" gid="10" x="15360" y="33792" width="1024" height="1024"/>
+  <object id="202" gid="10" x="25600" y="33792" width="1024" height="1024"/>
+  <object id="203" gid="10" x="25600" y="24576" width="1024" height="1024"/>
+ </objectgroup>
+ <objectgroup id="15" name="activators">
+  <object id="106" gid="1" x="19456" y="5120" width="1024" height="1024">
+   <properties>
+    <property name="color" type="color" value="#ffffffff"/>
+    <property name="id" value="switch1"/>
+    <property name="type" propertytype="activators" value="switch"/>
+   </properties>
+  </object>
+  <object id="127" gid="1" x="20480" y="11264" width="1024" height="1024" rotation="180">
+   <properties>
+    <property name="color" type="color" value="#ff424242"/>
+    <property name="id" value="switch2"/>
+    <property name="type" propertytype="activators" value="switch"/>
+   </properties>
+  </object>
+  <object id="171" gid="1" x="9216" y="31744" width="1024" height="1024">
+   <properties>
+    <property name="color" type="color" value="#ff4b90ff"/>
+    <property name="id" value="mazeswitch3"/>
+    <property name="type" propertytype="activators" value="switch"/>
+   </properties>
+  </object>
+  <object id="164" gid="1" x="19456" y="22528" width="1024" height="1024">
+   <properties>
+    <property name="color" type="color" value="#ff213f87"/>
+    <property name="id" value="mazeswitch2"/>
+    <property name="type" propertytype="activators" value="switch"/>
+   </properties>
+  </object>
+  <object id="172" gid="1" x="19456" y="31744" width="1024" height="1024">
+   <properties>
+    <property name="color" type="color" value="#ff2da52b"/>
+    <property name="id" value="mazeswitch4"/>
+    <property name="type" propertytype="activators" value="switch"/>
+   </properties>
+  </object>
+  <object id="178" gid="1" x="3072" y="22528" width="1024" height="1024">
+   <properties>
+    <property name="baseColor" type="color" value="#ff51f32d"/>
+    <property name="color" type="color" value="#ff51f32d"/>
+    <property name="id" value="mazeswitch1"/>
+    <property name="type" propertytype="activators" value="switch"/>
+   </properties>
+  </object>
+  <object id="206" gid="1" x="30720" y="22528" width="1024" height="1024">
+   <properties>
+    <property name="baseColor" type="color" value="#fff3d739"/>
+    <property name="color" type="color" value="#fff3d739"/>
+    <property name="id" value="mazeswitch5"/>
+    <property name="type" propertytype="activators" value="switch"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="22" name="decor"/>
+ <objectgroup id="9" name="doors">
+  <object id="104" type="Door" x="14336" y="2048" width="1024" height="4096">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+    <property name="active" type="bool" value="false"/>
+    <property name="baseColor" type="color" value="#ffffffff"/>
+    <property name="totalTicks" type="int" value="20"/>
+   </properties>
+  </object>
+  <object id="126" type="Door" x="14336" y="10240" width="1024" height="4096">
+   <properties>
+    <property name="activatorID" value="switch2"/>
+    <property name="active" type="bool" value="false"/>
+    <property name="baseColor" type="color" value="#ff424242"/>
+    <property name="closeAngle" type="int" value="180"/>
+    <property name="totalTicks" type="int" value="20"/>
+   </properties>
+  </object>
+  <object id="112" type="Door" x="8192" y="6144" width="5120" height="3072">
+   <properties>
+    <property name="activatorID" value="switch1"/>
+    <property name="baseColor" type="color" value="#ffffffff"/>
+    <property name="closeAngle" type="int" value="90"/>
+    <property name="totalTicks" type="int" value="20"/>
+   </properties>
+  </object>
+  <object id="142" type="Door" x="8192" y="14336" width="5120" height="3072">
+   <properties>
+    <property name="activatorID" value="switch2"/>
+    <property name="baseColor" type="color" value="#ff424242"/>
+    <property name="closeAngle" type="int" value="90"/>
+    <property name="totalTicks" type="int" value="20"/>
+   </properties>
+  </object>
+  <object id="148" type="Door" x="14336" y="17408" width="1024" height="6144">
+   <properties>
+    <property name="activatorID" value="mazeswitch2"/>
+    <property name="active" type="bool" value="false"/>
+    <property name="baseColor" type="color" value="#ff213f87"/>
+    <property name="closeAngle" type="int" value="180"/>
+    <property name="totalTicks" type="int" value="20"/>
+   </properties>
+  </object>
+  <object id="213" type="Door" x="17408" y="17408" width="1024" height="6144">
+   <properties>
+    <property name="activatorID" value="mazeswitch3"/>
+    <property name="active" type="bool" value="false"/>
+    <property name="baseColor" type="color" value="#ff4a90ff"/>
+    <property name="closeAngle" type="int" value="180"/>
+    <property name="totalTicks" type="int" value="20"/>
+   </properties>
+  </object>
+  <object id="151" type="Door" x="24576" y="17408" width="1024" height="6144">
+   <properties>
+    <property name="activatorID" value="mazeswitch4"/>
+    <property name="baseColor" type="color" value="#ff2da52b"/>
+    <property name="closeAngle" type="int" value="180"/>
+    <property name="totalTicks" type="int" value="20"/>
+   </properties>
+  </object>
+  <object id="193" type="Door" x="27648" y="17408" width="1024" height="6144">
+   <properties>
+    <property name="activatorID" value="mazeswitch4"/>
+    <property name="baseColor" type="color" value="#ff2da52b"/>
+    <property name="closeAngle" type="int" value="180"/>
+    <property name="totalTicks" type="int" value="20"/>
+   </properties>
+  </object>
+  <object id="165" type="Door" x="20480" y="23552" width="2048" height="1024">
+   <properties>
+    <property name="activatorID" value="mazeswitch2"/>
+    <property name="baseColor" type="color" value="#ff213f87"/>
+    <property name="closeAngle" type="int" value="90"/>
+    <property name="totalTicks" type="int" value="20"/>
+   </properties>
+  </object>
+  <object id="195" type="Door" x="20480" y="25600" width="2048" height="1024">
+   <properties>
+    <property name="activatorID" value="mazeswitch2"/>
+    <property name="baseColor" type="color" value="#ff213f87"/>
+    <property name="closeAngle" type="int" value="90"/>
+    <property name="totalTicks" type="int" value="20"/>
+   </properties>
+  </object>
+  <object id="191" type="Door" x="17408" y="26624" width="1024" height="6144">
+   <properties>
+    <property name="activatorID" value="mazeswitch1"/>
+    <property name="active" type="bool" value="true"/>
+    <property name="baseColor" type="color" value="#ff51f32d"/>
+    <property name="closeAngle" type="int" value="180"/>
+    <property name="color" type="color" value="#ff51f32d"/>
+    <property name="totalTicks" type="int" value="20"/>
+   </properties>
+  </object>
+  <object id="192" type="Door" x="27648" y="26624" width="1024" height="6144">
+   <properties>
+    <property name="activatorID" value="mazeswitch1"/>
+    <property name="baseColor" type="color" value="#ff51f32d"/>
+    <property name="closeAngle" type="int" value="180"/>
+    <property name="color" type="color" value="#ff51f32d"/>
+    <property name="totalTicks" type="int" value="20"/>
+   </properties>
+  </object>
+  <object id="168" type="Door" x="10240" y="23552" width="2048" height="1024">
+   <properties>
+    <property name="activatorID" value="mazeswitch5"/>
+    <property name="baseColor" type="color" value="#fff3d739"/>
+    <property name="closeAngle" type="int" value="90"/>
+    <property name="color" type="color" value="#fff3d739"/>
+    <property name="totalTicks" type="int" value="20"/>
+   </properties>
+  </object>
+  <object id="194" type="Door" x="10240" y="25600" width="2048" height="1024">
+   <properties>
+    <property name="activatorID" value="mazeswitch5"/>
+    <property name="baseColor" type="color" value="#fff3d739"/>
+    <property name="closeAngle" type="int" value="90"/>
+    <property name="color" type="color" value="#fff3d739"/>
+    <property name="totalTicks" type="int" value="20"/>
+   </properties>
+  </object>
+  <object id="176" type="Door" x="6144" y="20480" width="2048" height="3072">
+   <properties>
+    <property name="activatorID" value="mazeswitch3"/>
+    <property name="baseColor" type="color" value="#ff4a90ff"/>
+    <property name="totalTicks" type="int" value="20"/>
+   </properties>
+  </object>
+  <object id="189" type="Door" x="6144" y="29696" width="2048" height="3072">
+   <properties>
+    <property name="activatorID" value="mazeswitch1"/>
+    <property name="baseColor" type="color" value="#ff51f32d"/>
+    <property name="closeAngle" type="int" value="180"/>
+    <property name="color" type="color" value="#ff51f32d"/>
+    <property name="totalTicks" type="int" value="20"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="10" name="platforms"/>
+ <objectgroup id="13" name="mirrors"/>
+ <objectgroup id="14" name="boxes"/>
+ <objectgroup id="11" name="exits">
+  <object id="186" type="Exit" x="-1024" y="2048" width="1024" height="4096">
+   <properties>
+    <property name="type" propertytype="exitType" value="return"/>
+   </properties>
+  </object>
+  <object id="209" type="Exit" x="35840" y="26624" width="1024" height="6144"/>
+ </objectgroup>
+</map>

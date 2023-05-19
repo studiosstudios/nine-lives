@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.game;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.game.object.*;
@@ -127,8 +128,13 @@ public class CollisionController implements ContactListener, ContactFilter {
                     if (bd2 instanceof Flamethrower.Flame && fd2.equals(Flamethrower.flameSensorName)){
                         actionController.die(true);
                     }
+                    if (bd2 instanceof Laser && fd2.equals(Laser.laserHitboxName)) {
+                        actionController.die(true);
+                    }
                     if (bd2 instanceof Checkpoint && ((Checkpoint) bd2).getSensorName().equals(fd2)){
-                        level.updateCheckpoints(((Checkpoint) bd2), true);
+                        Checkpoint checkpoint = (Checkpoint) bd2;
+                        checkpoint.addTouching();
+                        if (checkpoint.isFirstTouch()) level.updateCheckpoints(checkpoint, true);
                     }
                     if (bd2 instanceof Mob){
                         actionController.die(true);
@@ -137,6 +143,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                         cat.addSpiritRegion((SpiritRegion) bd2);
                     }
                     if (bd2 instanceof Goal) {
+                        ((Goal) bd2).activate();
                         //TODO: if not active then collect dead bodies with action controller
                         actionController.recombineLives();
                     }
@@ -168,6 +175,8 @@ public class CollisionController implements ContactListener, ContactFilter {
                         }
                     } else if (bd2 instanceof Flamethrower.Flame) {
                         db.addFlame();
+                    } else if (bd2 instanceof Laser && fd1.equals(DeadBody.catBodyName) && fd2.equals(Laser.laserHitboxName)){
+                        db.addHazard();
                     } else if (bd2 instanceof SpiritRegion){
                         db.addSpiritRegion((SpiritRegion) bd2);
                     } else if (fd1.equals(DeadBody.centerSensorName) && !fix2.isSensor() && bd2 != level.getCat()) {
@@ -265,6 +274,10 @@ public class CollisionController implements ContactListener, ContactFilter {
                         didChange = false;
                     }
 
+                    if (bd2 instanceof Checkpoint && ((Checkpoint) bd2).getSensorName().equals(fd2)){
+                        ((Checkpoint) (bd2)).removeTouching();
+                    }
+
                     if (bd2 instanceof CameraRegion) {
                         ((CameraRegion) bd2).removeFixture();
                         Array<CameraRegion> cameraRegions = level.getCameraRegions();
@@ -302,8 +315,9 @@ public class CollisionController implements ContactListener, ContactFilter {
                         }
                     } else if (bd2 instanceof Flamethrower.Flame) {
                         db.removeFlame();
-                    }
-                    if (bd2 instanceof SpiritRegion){
+                    } else if (bd2 instanceof Laser && fd1.equals(DeadBody.catBodyName) && fd2.equals(Laser.laserHitboxName)) {
+                        db.removeHazard();
+                    } else if (bd2 instanceof SpiritRegion){
                         db.removeSpiritRegion((SpiritRegion) bd2);
                     }
                 }
@@ -371,7 +385,15 @@ public class CollisionController implements ContactListener, ContactFilter {
                     return false;
                 }
 
+                if (bd1 instanceof Door && bd2 instanceof Door) return false;
+
+                if (bd1 instanceof Platform && bd2 instanceof Platform) return false;
+
                 if (bd1 instanceof Wall && bd2 instanceof Platform) return false;
+
+                if (bd1 instanceof Door && bd2 instanceof Wall) return false;
+
+                if (bd1 instanceof Door && bd2 instanceof Platform) return false;
 
                 //spikes and dead bodies
                 if (bd1 instanceof Spikes && bd2 instanceof DeadBody) {
@@ -401,6 +423,8 @@ public class CollisionController implements ContactListener, ContactFilter {
                 fix1 = fix2;
                 fix2 = fixTemp;
             }
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }

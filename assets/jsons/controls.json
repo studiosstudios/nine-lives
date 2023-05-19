@@ -40,7 +40,7 @@
     "disableWhenPan": true
   },
   "cancel": {
-    "key": "CONTROL_LEFT",
+    "key": "SPACE",
     "disableWhenPan": true
   },
   "undo": {
@@ -49,7 +49,7 @@
   },
   "exit": {
     "key": "ESCAPE",
-    "disableWhenPan": true
+    "disableWhenPan": false
   },
   "meow": {
     "key": "M",

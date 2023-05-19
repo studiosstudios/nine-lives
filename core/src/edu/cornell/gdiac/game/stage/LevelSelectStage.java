@@ -5,24 +5,32 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.game.Save;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class LevelSelectStage extends StageWrapper {
-    private Actor selectedActor;
+    private static int numLevels;
+    private static final int BAR_WIDTH = 800;
+    private static final int BAR_HEIGHT = STANDARD_HEIGHT - 150;
+    private static final int SEGMENT_GAP = 5;
+    private static final int SEGMENT_HEIGHT = 10;
     private Actor backButtonActor;
     private Actor playButtonActor;
-//    private Actor oneActor;
-//    private Actor twoActor;
-//    private List<Actor> actorList = new ArrayList<>(2);
-//    actorList.add(oneActor);
+    private Actor levelImage;
+    private Actor leftArrowActor;
+    private Actor rightArrowActor;
     /** State to keep track of whether the main menu button has been clicked */
     private int backButtonState;
     private int playButtonState;
-//    private int oneState;
-//    private int twoState;
+    private Array<Actor> barActors;
+    private HashMap<Actor, Integer> segmentIndex;
+    private int selectedLevel = 0;
+    private int progress;
+//    private boolean levelChanged;
 
     public boolean isBack() { return backButtonState == 2; }
     public int getBackButtonState() { return backButtonState; }
@@ -30,13 +38,67 @@ public class LevelSelectStage extends StageWrapper {
     public boolean isPlay() { return playButtonState == 2; }
     public int getPlayButtonState() { return playButtonState; }
     public void setPlayButtonState(int state) { playButtonState = state; }
+    public int getSelectedLevel() { return selectedLevel; }
+    public static void setNumLevels(int numLevels) { LevelSelectStage.numLevels = numLevels; }
     public LevelSelectStage(AssetDirectory internal, boolean createActors) {
         super(internal, createActors);
+//        selectedLevel = 1;
+//        levelChanged = true;
+        changeLevel(Save.getProgress());
     }
-//    public int getSelectedLevel() {
-//        int l = (oneState == 1 && twoState == 0) ? 1 : 2;
-//        return l;
-//    }
+
+    private void createBar() {
+        barActors = new Array<>(numLevels);
+        segmentIndex = new HashMap<>(numLevels);
+        float segmentWidth = (BAR_WIDTH / numLevels) - SEGMENT_GAP*2;
+        float barStart = (STANDARD_WIDTH - BAR_WIDTH) * 2 / 3;
+        for (int i = 0; i < numLevels; i++) {
+            Actor temp = addBarSegment(internal.getEntry("bar-segment", Texture.class), barStart+segmentWidth*i+SEGMENT_GAP*(i+1), BAR_HEIGHT, segmentWidth, SEGMENT_HEIGHT);
+            if (i+1 > progress) {
+                temp.setColor(Color.GRAY);
+            }
+            barActors.add(temp);
+            segmentIndex.put(temp, i);
+        }
+    }
+
+    private void createLevelImages() {
+
+    }
+
+    private Actor addBarSegment(Texture texture, float x, float y, float sx, float sy) {
+        Actor actor = new Image(texture);
+        actor.setSize(sx, sy);
+        actor.setWidth(sx);
+        actor.setHeight(sy);
+        actor.setPosition(x, y);
+        actor.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Actor a = event.getListenerActor();
+                if (segmentIndex.get(a) + 1 <= progress) {
+                    changeLevel(segmentIndex.get(a) + 1);
+                }
+//                selectedLevel = segmentIndex.get(a) + 1;
+//                a.setColor(Color.BROWN);
+//                levelChanged = true;
+            }
+
+//            @Override
+//            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+//                Actor a = event.getListenerActor();
+//                a.setColor(Color.GRAY);
+//            }
+//
+//            @Override
+//            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+//                Actor a = event.getListenerActor();
+//                a.setColor(Color.WHITE);
+//            }
+        });
+        super.addActor(actor);
+        return actor;
+    }
 
     /**
      *
@@ -44,6 +106,7 @@ public class LevelSelectStage extends StageWrapper {
     @Override
     public void createActors() {
 //        addActor(new Image(internal.getEntry("bg-lab", Texture.class)));
+        progress = Save.getProgress();
         Actor background = addActor(internal.getEntry("bg-level-select", Texture.class), 0, 0);
         background.setScale(0.5f);
         backButtonActor = addActor(internal.getEntry("back", Texture.class),940,buttonY-225);
@@ -51,12 +114,51 @@ public class LevelSelectStage extends StageWrapper {
         playButtonActor = addActor(internal.getEntry("play", Texture.class), 940, buttonY-175);
         playButtonActor.setScale(0.5f);
 
+        leftArrowActor = addActor(internal.getEntry("left-arrow", Texture.class), 150, 0);
+        leftArrowActor.setScale(0.75f);
+        leftArrowActor.setY(STANDARD_HEIGHT/2f-(leftArrowActor.getHeight()/2f));
+        leftArrowActor.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (selectedLevel > 1) {
+//                    selectedLevel--;
+                    changeLevel(selectedLevel - 1);
+//                    levelChanged = true;
+                }
+            }
+        });
+
+        rightArrowActor = addActor(internal.getEntry("right-arrow", Texture.class), 0, 0);
+        rightArrowActor.setScale(0.75f);
+        rightArrowActor.setPosition(STANDARD_WIDTH-rightArrowActor.getWidth()-150, STANDARD_HEIGHT/2f-(rightArrowActor.getHeight()/2f));
+        rightArrowActor.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (selectedLevel < numLevels && selectedLevel < progress) {
+//                    selectedLevel++;
+                    changeLevel(selectedLevel + 1);
+//                    levelChanged = true;
+                }
+            }
+        });
+
+        createBar();
+
         backButtonActor.addListener(createHoverListener(backButtonActor));
         playButtonActor.addListener(createHoverListener(playButtonActor));
 
-//        oneActor = addActor(internal.getEntry("one", Texture.class), xHalf-(18.5f*18)-5f, yHalf+(29*3));
-//        twoActor = addActor(internal.getEntry("two", Texture.class), xHalf-(22.5f*11), yHalf+(29*3));
+        leftArrowActor.addListener(createHoverListener(leftArrowActor));
+        rightArrowActor.addListener(createHoverListener(rightArrowActor));
     }
+
+//    @Override
+//    public void update(float delta) {
+//        super.update(delta);
+//        if (levelChanged) {
+//            barActors.get(selectedLevel-1).setColor(Color.BROWN);
+//            levelChanged = false;
+//        }
+//    }
 
     /**
      * @param event
@@ -76,17 +178,6 @@ public class LevelSelectStage extends StageWrapper {
             playButtonState = 1;
             playButtonActor.setColor(Color.LIGHT_GRAY);
         }
-//        else if (actor == oneActor) {
-//            oneState = 1;
-//            oneActor.setColor(Color.LIGHT_GRAY);
-//            twoState = 0;
-//            twoActor.setColor(Color.WHITE);
-//        } else if (actor == twoActor) {
-//            twoState = 1;
-//            twoActor.setColor(Color.LIGHT_GRAY);
-//            oneState = 0;
-//            oneActor.setColor(Color.WHITE);
-//        }
         return true;
     }
 
@@ -106,5 +197,13 @@ public class LevelSelectStage extends StageWrapper {
             playButtonState = 2;
             playButtonActor.setColor(Color.WHITE);
         }
+    }
+    private void changeLevel(int level) {
+        if (selectedLevel != 0) {
+            barActors.get(selectedLevel-1).setColor(Color.WHITE);
+        }
+        selectedLevel = level;
+        barActors.get(selectedLevel-1).setColor(Color.BROWN);
+        System.out.println(selectedLevel);
     }
 }

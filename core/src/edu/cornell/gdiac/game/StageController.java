@@ -126,8 +126,8 @@ public class StageController implements Screen {
 	 * @param file  	The asset directory to load in the background
 	 * @param canvas 	The game canvas to draw to
 	 */
-	public StageController(String file, GameCanvas canvas, AudioController audioController) {
-		this(file, canvas, DEFAULT_BUDGET, false, false,  audioController);
+	public StageController(String file, GameCanvas canvas, AudioController audioController, int numLevels) {
+		this(file, canvas, DEFAULT_BUDGET, false, false,  audioController, numLevels);
 	}
 
 	/**
@@ -142,7 +142,7 @@ public class StageController implements Screen {
 	 * @param canvas 	The game canvas to draw to
 	 * @param millis 	The loading budget in milliseconds
 	 */
-	public StageController(String file, GameCanvas canvas, int millis, boolean start, boolean paused, AudioController audioController) {
+	public StageController(String file, GameCanvas canvas, int millis, boolean start, boolean paused, AudioController audioController, int numLevels) {
 		this.canvas  = canvas;
 		this.audioController = audioController;
 		budget = millis;
@@ -157,7 +157,8 @@ public class StageController implements Screen {
 		if(!Save.exists()) {
 			Save.create();
 		} else {
-			audioController.setVolume(Save.getVolume());
+			audioController.setVolume(Save.getMusic());
+			audioController.setSfxVolume(Save.getVolume());
 		}
 
 		mainMenuStage = new MainMenuStage(internal, true);
@@ -166,6 +167,7 @@ public class StageController implements Screen {
 		settingsStage.setAudioController(audioController);
 //		settingsStage.setViewport(canvas.getViewport());
 		pauseStage = new PauseStage(internal, true);
+		LevelSelectStage.setNumLevels(numLevels);
 		levelSelectStage = new LevelSelectStage(internal, true);
 		loadingStage = new LoadingStage(internal, true);
 //		canvas.getViewport().apply(true);
@@ -337,7 +339,7 @@ public class StageController implements Screen {
 				getStage().act();
 				getStage().draw();
 				levelSelectStage.setPlayButtonState(0);
-				selectedLevel = 1;
+				selectedLevel = levelSelectStage.getSelectedLevel();
 //				listener.exitScreen(this, 69);
 			} else if (pauseStage.isResume() && listener != null) {
 				audioController.playSoundEffect("menu-select");

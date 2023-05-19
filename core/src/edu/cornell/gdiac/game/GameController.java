@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.game.object.*;
 import edu.cornell.gdiac.game.obstacle.*;
@@ -125,6 +126,7 @@ public class GameController implements Screen {
     private JsonValue quickLaunchLevel;
     private boolean LIGHTS_ACTIVE = true;
     private Color spiritModeColor = new Color(1, 1, 1, 1);
+    private boolean drawAdjacentLevels;
 
     /**
      * PLAY: User has all controls and is in game
@@ -136,7 +138,8 @@ public class GameController implements Screen {
         PLAY,
         PLAYER_PAN,
         PAN,
-        RESPAWN
+        RESPAWN,
+        LEVEL_SWITCH
     }
     /** State of gameplay used for camera */
     public static GameState gameState;
@@ -331,6 +334,8 @@ public class GameController implements Screen {
         panTime = 0;
         respawnDelay = 0;
 
+        drawAdjacentLevels = false;
+
         AssetDirectory internal = new AssetDirectory("jsons/loading.json");
         internal.loadAssets();
         internal.finishLoading();
@@ -348,6 +353,7 @@ public class GameController implements Screen {
      */
     public void nextLevel(){
         levelNum++;
+        Save.setProgress(levelNum);
         prevJV = getJSON();
         setJSON(nextJV);
         setRet(false);
@@ -357,6 +363,7 @@ public class GameController implements Screen {
         setLevels();
 //        respawn();
         currLevel.setCat(prevLevel.getCat());
+        currLevel.updateCheckpoints(prevLevel.getCheckpoint(), true); //because checkpoints and exits lie on the same position
         prevLevel.removeCat();
 
         nextLevel.dispose();
@@ -366,6 +373,7 @@ public class GameController implements Screen {
         }
         initCurrLevel(true);
         collisionController.setDidChange(true);
+        drawAdjacentLevels = true;
 //        collisionController.setLevel(levels[currLevelIndex]);
 //        actionController.setLevel(levels[currLevelIndex]);
     }
@@ -399,6 +407,7 @@ public class GameController implements Screen {
 
         initCurrLevel(true);
         collisionController.setDidChange(true);
+        drawAdjacentLevels = true;
 //        collisionController.setLevel(levels[currLevelIndex]);
 //        actionController.setLevel(levels[currLevelIndex]);
     }
@@ -454,11 +463,11 @@ public class GameController implements Screen {
                 // LASERS
                 "laser",
                 // CHECKPOINTS
-                "checkpoint-anim", "checkpoint-active-anim", "checkpoint-base", "checkpoint-base-active",
+                "checkpoint-anim", "checkpoint-active-anim", "checkpoint-base", "checkpoint-base-active", "checkpoint-activation-anim",
                 // GOAL
-                "goal", "goal-active",
+                "goal", "goal-active", "goal-bases", "goal-idle-anim", "goal-inactive",
                 // ROBOT & MOBS
-                "robot", "robot-anim",
+                "robot-anim",
                 // SPIRIT BOUNDARIES
                 "spirit-anim", "spirit-photon", "spirit-photon-cat", "spirit-region",
                 // ACTIVATABLE LIGHTS
@@ -477,7 +486,9 @@ public class GameController implements Screen {
                 "tutorial-jump-dash", "tutorial-undo", "tutorial-climb",
                 "cabinet-left", "cabinet-mid", "cabinet-right", "goggles", "microscope",
                 "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf", "wall-bottom", "wall-top",
-                "tank", "test-tubes", "coke", "broken-robot", "coming-soon"
+                "tank", "test-tubes", "coke", "broken-robot", "coming-soon", "arrow-sign",
+                "cat-tank","cat-tank-purple","chair","dandelions","desktop","firefly","flowers",
+                "mushrooms","pin-board","robo","window-robo","x-ray"
                 }; // Unsure if this is actually being used
         for (String n : names){
 //            System.out.println(n);
@@ -491,7 +502,7 @@ public class GameController implements Screen {
         names = new String[]{"bkg-lab-1", "bkg-forest-1"};
         audioController.createMusicMap(directory, names);
 
-//        audioController.playLab();
+        audioController.playLab();
 //        audioController.playLevelMusic();
 
         names = new String[]{"retro"};
@@ -655,7 +666,6 @@ public class GameController implements Screen {
      * @return whether to process the update loop
      */
     public boolean preUpdate(float dt) {
-
         if (listener == null) {
             return true;
         }
@@ -679,7 +689,7 @@ public class GameController implements Screen {
             return false;
         }
 
-        if (input.holdSwitch()) {
+        if (currLevel.canSwitch && input.holdSwitch()) {
             spiritModeTicks++;
             updateVFX(true, input.switchPressed(), dt);
         } else {
@@ -804,6 +814,9 @@ public class GameController implements Screen {
     public void updateCamera(){
         Camera cam = canvas.getCamera();
         InputController input = InputController.getInstance();
+        if(drawAdjacentLevels){
+            gameState = GameState.LEVEL_SWITCH;
+        }
         //resetting automatically resets camera to cat
         if(justReset){
             gameState = GameState.PLAY;
@@ -816,7 +829,6 @@ public class GameController implements Screen {
         else if(gameState == GameState.PLAYER_PAN){
             gameState = GameState.PLAY;
         }
-
         for (Activator a : currLevel.getActivators()){
             if (a.isPressed() && a.getPan()){
                 a.setPan(false);
@@ -840,11 +852,11 @@ public class GameController implements Screen {
             else {
                 currLevel.getCat().setActive(true);
                 //zoom normal when in play state and not panning and not switching bodies
-                if (!input.holdSwitch() && !input.didPan()) {
+                if (!(currLevel.canSwitch && input.holdSwitch()) && !input.didPan()) {
                     cam.setZoom(false, -1f);
                 }
                 DeadBody nextDeadBody = currLevel.getNextBody();
-                if (input.holdSwitch() && nextDeadBody != null) {
+                if (currLevel.canSwitch && input.holdSwitch() && nextDeadBody != null) {
                     cam.setGlideMode("SWITCH_BODY");
                     cam.switchBodyCam(nextDeadBody.getX() * scale.x, nextDeadBody.getY() * scale.y);
                 } else {
@@ -862,6 +874,7 @@ public class GameController implements Screen {
         }
         if(gameState == GameState.PAN) {
             cam.updateCamera(panTarget.get(0).getXPos() * scale.x, panTarget.get(0).getYPos() * scale.y, true, cam.getLevelBounds());
+            input.setDisableAll(true);
             if (!cam.isGliding()) {
                 panTime += 1;
                 if (panTime == PAN_HOLD) {
@@ -892,6 +905,18 @@ public class GameController implements Screen {
                 currLevel.getCat().setPosition(currLevel.getRespawnPos());
             }
         }
+        if(gameState == GameState.LEVEL_SWITCH){
+            drawAdjacentLevels = true;
+            input.setDisableAll(true);
+            cam.setZoom(false, -1f); //smoother level transition across different zooms
+            float x_pos = currLevel.getCat().getPosition().x*scale.x;
+            float y_pos = currLevel.getCat().getPosition().y*scale.y;
+            cam.updateCamera(x_pos, y_pos, true, cam.getGameplayBounds());
+            if(!cam.isGliding()){
+                gameState = GameState.PLAY;
+                drawAdjacentLevels = false;
+            }
+        }
     }
     @Override
     public void render(float delta) {
@@ -904,23 +929,20 @@ public class GameController implements Screen {
 				Thread.currentThread().interrupt();
 			}
 		}
-//        System.out.println("before:" + canvas.getCamera().getCamera().position);
-        if (!paused) {
-            if (preUpdate(delta)) {
-                update(delta); // This is the one that must be defined.
-                postUpdate(delta);
-            }
+        if (!paused && preUpdate(delta)) {
+            update(delta); // This is the one that must be defined.
+            postUpdate(delta);
+        }
+        else {
+            updateCamera();
         }
 
-        if (LIGHTS_ACTIVE) {
-            updateRayHandlerCombinedMatrix();
-            rayHandler.update();
-        }
-
-        if (paused) { updateCamera(); }
         // Main game draw
         draw(delta);
 
+        if (LIGHTS_ACTIVE) {
+            updateAndRenderRayHandler();
+        }
 
         // Menu draw
         hud.draw();
@@ -935,17 +957,23 @@ public class GameController implements Screen {
      * scale every time they move, especially when they can be attached to bodies. Handling the scaling
      * in the combined matrix takes care of the transformation for us for all lights.
      */
-    private void updateRayHandlerCombinedMatrix() {
+    private void updateAndRenderRayHandler() {
         OrthographicCamera c = canvas.getCamera().getCamera();
-        Matrix4 combined = c.combined.cpy();
-        combined.scl(DEFAULT_SCALE);
         rayHandler.setCombinedMatrix(
-                combined,
-                c.position.x / 32,
-                c.position.y / 32,
-                c.viewportWidth / 32,
-                c.viewportHeight / 32
+                c.combined.cpy().scl(DEFAULT_SCALE),
+                c.position.x / DEFAULT_SCALE,
+                c.position.y / DEFAULT_SCALE,
+                c.viewportWidth * c.zoom,
+                c.viewportHeight * c.zoom
         );
+        Viewport vp = canvas.getViewport();
+        int bufferScale = Math.round(Gdx.graphics.getBackBufferScale());
+        rayHandler.useCustomViewport(
+                vp.getScreenX() * bufferScale,
+                vp.getScreenY() * bufferScale,
+                vp.getScreenWidth() * bufferScale,
+                vp.getScreenHeight() * bufferScale);
+        rayHandler.updateAndRender();
     }
 
     /**
@@ -1023,7 +1051,7 @@ public class GameController implements Screen {
         if (effectSize > 0) { canvas.setGreyscaleShader(effectSize); }
         canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2f, canvas.getCamera().getY()  - canvas.getHeight()/2f, canvas.getWidth(), canvas.getHeight());
 
-        if (true) { //TODO: only draw when necessary
+        if (drawAdjacentLevels) { //TODO: only draw when necessary
             prevLevel.draw(canvas, false, effectSize);
             nextLevel.draw(canvas, false, effectSize);
         }
@@ -1031,13 +1059,11 @@ public class GameController implements Screen {
 
         canvas.endFrameBuffer();
 
-        canvas.drawLightsToBuffer(rayHandler);
-
         if (effectSize > 0) {
             canvas.setSpiritModeShader(1.8f - 0.525f * effectSize, 0.3f,
                     spiritModeColor, spiritModeColor, spiritModeTicks/60f);
         }
-        canvas.drawFrameBuffer();
+        canvas.drawFrameBuffer(); //applyViewport within here
 
         if (effectSize > 0) canvas.setShader(null);
         canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2f, canvas.getCamera().getY()  - canvas.getHeight()/2f, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);

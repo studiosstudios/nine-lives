@@ -138,6 +138,35 @@
             ]
         },
         {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 22,
+            "members": [
+                {
+                    "name": "flipX",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "flipY",
+                    "type": "bool",
+                    "value": false
+                }
+            ],
+            "name": "Decoration",
+            "type": "class",
+            "useAs": [
+                "property",
+                "map",
+                "layer",
+                "object",
+                "tile",
+                "tileset",
+                "wangcolor",
+                "wangset"
+            ]
+        },
+        {
             "color": "#ffa45a19",
             "drawFill": true,
             "id": 7,
@@ -151,6 +180,11 @@
                     "name": "active",
                     "type": "bool",
                     "value": true
+                },
+                {
+                    "name": "baseColor",
+                    "type": "color",
+                    "value": "#ffffffff"
                 },
                 {
                     "name": "closeAngle",
@@ -408,6 +442,19 @@
                 "object",
                 "tile"
             ]
+        },
+        {
+            "id": 23,
+            "name": "spikeType",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "left",
+                "center",
+                "right",
+                "alone"
+            ],
+            "valuesAsFlags": false
         },
         {
             "color": "#ffff798b",

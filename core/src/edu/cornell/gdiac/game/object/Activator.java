@@ -25,7 +25,7 @@ public abstract class Activator extends PolygonObstacle {
     /** Filmstrip */
     protected Animation<TextureRegion> animation;
     /** If the activator is activating objects */
-    protected boolean active;
+    protected boolean activating;
     /** The unique string id of this Activator */
     protected String id;
     /** Array of animation frames */
@@ -49,7 +49,7 @@ public abstract class Activator extends PolygonObstacle {
     /**
      * @return true if the activator is currently activating
      */
-    public boolean isActivating(){ return active; }
+    public boolean isActivating(){ return activating; }
 
     /**
      * @return true if an object is pressing this activator
@@ -87,7 +87,8 @@ public abstract class Activator extends PolygonObstacle {
         bottomTexture = tMap.get(base_name);
         setTexture(bottomTexture);
         setTextureScale(textureScale);
-        spriteFrames = TextureRegion.split(tMap.get(texture_name).getTexture(), 1024,1024);
+        setRestitution(0);
+        spriteFrames = TextureRegion.split(tMap.get(texture_name).getTexture(), 256,256);
         float frameDuration = 0.2f;
         animation = new Animation<>(frameDuration, spriteFrames[0]);
         setBodyType(BodyDef.BodyType.StaticBody);
@@ -109,7 +110,7 @@ public abstract class Activator extends PolygonObstacle {
 //        setY((float) properties.get("y")+objectConstants.get("offset").getFloat(1));
         color.set((Color) properties.get("color", Color.RED));
         pan = (boolean) properties.get("shouldPan", false);
-        active = false;
+        activating = false;
     }
 
     @Override
@@ -125,16 +126,15 @@ public abstract class Activator extends PolygonObstacle {
             animationTime += Gdx.graphics.getDeltaTime();
             currentFrame = animation.getKeyFrame(animationTime);
         }
-        float x = getX()*drawScale.x-currentFrame.getRegionWidth()/drawScale.x/2;
-        float scale = 64f/currentFrame.getRegionWidth();
+        float x = (getX() - 0.5f)*drawScale.x;
 
 //        System.out.println();
         if (Math.round(Math.toDegrees(getAngle())) == 180) {
             x = x + drawScale.x;
         }
 
-        canvas.draw(currentFrame, color, origin.x, origin.y, x, getY()*drawScale.y, getAngle(), scale,scale);
-        canvas.draw(bottomTexture, Color.WHITE, origin.x, origin.y, x, (getY())*drawScale.y, getAngle(), scale, scale);
+        canvas.draw(currentFrame, color, origin.x, origin.y, x, getY()*drawScale.y, getAngle(), textureScale.x,textureScale.y);
+        canvas.draw(bottomTexture, Color.WHITE, origin.x, origin.y, x, (getY())*drawScale.y, getAngle(), textureScale.x, textureScale.y);
     }
 
     /**
@@ -160,6 +160,8 @@ public abstract class Activator extends PolygonObstacle {
         sensorDef.shape = sensorShape;
 
         Fixture sensorFixture = body.createFixture( sensorDef );
+        sensorFixture.setRestitution(0);
+        sensorFixture.setFriction(0);
         sensorFixture.setUserData(this);
 
         return true;
@@ -191,5 +193,17 @@ public abstract class Activator extends PolygonObstacle {
     }
     public void setPan(boolean p){
         pan = p;
+    }
+
+    @Override
+    public ObjectMap<String, Object> storeState(){
+        ObjectMap<String, Object> stateMap = super.storeState();
+        stateMap.put("activating", activating);
+        return stateMap;
+    }
+
+    public void loadState(ObjectMap<String, Object> stateMap) {
+        super.loadState(stateMap);
+        activating = (boolean) stateMap.get("activating");
     }
 }

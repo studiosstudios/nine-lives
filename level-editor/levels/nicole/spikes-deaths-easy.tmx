@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="53" height="23" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="24" nextobjectid="326">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="53" height="25" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="25" nextobjectid="340">
  <editorsettings>
   <export target="../../../assets/levels/spikes-deaths-easy.json" format="json"/>
  </editorsettings>
@@ -10,18 +10,21 @@
  <tileset firstgid="15" source=":/automap-tiles.tsx"/>
  <tileset firstgid="20" source="../../tilesets/metal-walls.tsx"/>
  <tileset firstgid="68" source="../../tilesets/default-metal-walls.tsx"/>
- <layer id="17" name="metalWalls" width="53" height="23">
+ <tileset firstgid="116" source="../../decor/decor.tsx"/>
+ <layer id="17" name="metalWalls" width="53" height="25">
   <data encoding="csv">
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,81,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,83,
-81,82,82,82,83,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,93,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,95,
-93,94,94,94,95,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,107,
+81,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,82,83,
+93,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,95,
+93,100,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,101,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,95,
+93,95,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,93,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,95,
+93,95,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,107,
+93,95,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+93,95,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+93,112,82,82,82,82,82,82,83,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+93,94,94,94,100,106,106,106,107,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 93,94,94,94,95,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 93,94,94,94,95,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-93,94,94,94,95,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-93,94,94,94,95,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-93,94,94,94,95,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-93,94,94,94,95,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-93,94,94,94,95,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+93,94,94,94,95,0,0,0,0,0,69,70,70,70,70,70,71,0,0,0,0,0,69,70,70,70,70,70,71,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 93,94,94,94,95,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 93,94,94,94,95,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 105,106,106,106,107,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,81,82,82,82,82,82,82,82,82,82,83,
@@ -37,80 +40,95 @@
 105,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,107
 </data>
  </layer>
+ <objectgroup id="24" name="decor">
+  <object id="327" name="tutorial-side-spikes" gid="129" x="34568.7" y="20172.7" width="6154.84" height="3060.73"/>
+  <object id="333" name="coke" gid="146" x="2314.9" y="6232.97" width="632.541" height="694.819"/>
+  <object id="328" name="cabinet-left" gid="143" x="2048" y="7168" width="1024" height="1024"/>
+  <object id="329" name="cabinet-mid" gid="142" x="3072" y="7168" width="1024" height="1024"/>
+  <object id="330" name="cabinet-mid" gid="142" x="4096" y="7168" width="1024" height="1024"/>
+  <object id="331" name="cabinet-right" gid="141" x="5120" y="7168" width="1024" height="1024"/>
+  <object id="332" name="test-tubes" gid="148" x="3090.66" y="6313.04" width="819.374" height="837.167"/>
+  <object id="334" name="goggles" gid="145" x="5431.39" y="4542.58" width="703.715" height="668.128"/>
+  <object id="335" name="shelf" gid="133" x="5120" y="5120" width="2048" height="1024"/>
+  <object id="336" name="test-tubes" gid="148" x="3976.43" y="6309.13" width="819.374" height="837.167"/>
+ </objectgroup>
  <objectgroup id="16" name="spiritRegions"/>
  <objectgroup id="11" name="exits">
-  <object id="276" type="Exit" x="54272" y="3072" width="1024" height="9216"/>
-  <object id="287" type="Exit" x="-1024" y="13312" width="1024" height="6144">
+  <object id="276" type="Exit" x="54272" y="5120" width="1024" height="9216"/>
+  <object id="287" type="Exit" x="-1024" y="15360" width="1024" height="6144">
    <properties>
     <property name="type" propertytype="exitType" value="return"/>
    </properties>
   </object>
  </objectgroup>
  <objectgroup id="12" name="wallsPoly">
-  <object id="277" x="0" y="19456">
+  <object id="277" x="0" y="21504">
    <polygon points="0,0 0,4096 54272,4096 54272,-7168 43008,-7168 43008,0 34816,0 34816,2048 7168,2048 7168,0"/>
   </object>
-  <object id="278" x="30720" y="13312">
+  <object id="278" x="30720" y="15360">
    <polygon points="0,0 0,1024 7168,1024 7168,0"/>
   </object>
-  <object id="279" x="30720" y="1024">
-   <polygon points="0,-1024 0,2048 23552,2048 23552,-1024"/>
+  <object id="337" x="22528" y="11264">
+   <polygon points="0,0 0,1024 7168,1024 7168,0"/>
   </object>
-  <object id="286" x="0" y="1024">
-   <polygon points="0,0 0,12288 5120,12288 5120,0"/>
+  <object id="338" x="17408" y="11264">
+   <polygon points="0,0 0,1024 -7168,1024 -7168,0"/>
+  </object>
+  <object id="339" x="0" y="15360">
+   <polygon points="0,0 5120,0 5120,-6144 9216,-6144 9216,-8192 2048,-8192 2048,-12288 30720,-12288 30720,-10240 54272,-10240 54272,-15360 0,-15360"/>
   </object>
  </objectgroup>
  <objectgroup id="10" name="platforms"/>
  <objectgroup id="9" name="doors"/>
  <objectgroup id="2" name="cat">
-  <object id="281" gid="2" x="1024" y="18432" width="1024" height="1024"/>
+  <object id="281" gid="2" x="1024" y="20480" width="1024" height="1024"/>
  </objectgroup>
  <objectgroup id="4" name="flamethrowers"/>
  <objectgroup id="3" name="checkpoints">
-  <object id="261" gid="3" x="35840" y="17408" width="1024" height="2048"/>
-  <object id="288" gid="3" x="1024" y="17408" width="1024" height="2048"/>
+  <object id="261" gid="3" x="35840" y="19456" width="1024" height="2048"/>
+  <object id="288" gid="3" x="1024" y="19456" width="1024" height="2048"/>
  </objectgroup>
  <objectgroup id="23" name="goal">
-  <object id="285" x="49152" y="3072" width="1024" height="9216"/>
+  <object id="285" x="49152" y="5120" width="1024" height="9216"/>
  </objectgroup>
  <objectgroup id="6" name="lasers"/>
  <objectgroup id="7" name="mobs"/>
  <objectgroup id="8" name="spikes">
-  <object id="289" gid="10" x="7168" y="20480" width="1024" height="1024"/>
-  <object id="290" gid="12" x="8192" y="20480" width="1024" height="1024"/>
-  <object id="291" gid="12" x="9216" y="20480" width="1024" height="1024"/>
-  <object id="292" gid="12" x="10240" y="20480" width="1024" height="1024"/>
-  <object id="293" gid="12" x="11264" y="20480" width="1024" height="1024"/>
-  <object id="294" gid="12" x="12288" y="20480" width="1024" height="1024"/>
-  <object id="295" gid="12" x="13312" y="20480" width="1024" height="1024"/>
-  <object id="296" gid="12" x="14336" y="20480" width="1024" height="1024"/>
-  <object id="297" gid="12" x="15360" y="20480" width="1024" height="1024"/>
-  <object id="298" gid="12" x="16384" y="20480" width="1024" height="1024"/>
-  <object id="299" gid="12" x="17408" y="20480" width="1024" height="1024"/>
-  <object id="300" gid="12" x="19456" y="20480" width="1024" height="1024"/>
-  <object id="301" gid="12" x="18432" y="20480" width="1024" height="1024"/>
-  <object id="302" gid="12" x="20480" y="20480" width="1024" height="1024"/>
-  <object id="303" gid="12" x="21504" y="20480" width="1024" height="1024"/>
-  <object id="304" gid="12" x="24576" y="20480" width="1024" height="1024"/>
-  <object id="305" gid="12" x="22528" y="20480" width="1024" height="1024"/>
-  <object id="306" gid="12" x="22528" y="20480" width="1024" height="1024"/>
-  <object id="307" gid="12" x="23552" y="20480" width="1024" height="1024"/>
-  <object id="308" gid="12" x="25600" y="20480" width="1024" height="1024"/>
-  <object id="309" gid="12" x="26624" y="20480" width="1024" height="1024"/>
-  <object id="310" gid="12" x="27648" y="20480" width="1024" height="1024"/>
-  <object id="311" gid="12" x="27648" y="20480" width="1024" height="1024"/>
-  <object id="312" gid="12" x="28672" y="20480" width="1024" height="1024"/>
-  <object id="313" gid="12" x="29696" y="20480" width="1024" height="1024"/>
-  <object id="314" gid="12" x="30720" y="20480" width="1024" height="1024"/>
-  <object id="315" gid="12" x="31744" y="20480" width="1024" height="1024"/>
-  <object id="316" gid="12" x="32768" y="20480" width="1024" height="1024"/>
-  <object id="317" gid="11" x="33792" y="20480" width="1024" height="1024"/>
-  <object id="318" gid="11" x="41984" y="14336" width="1024" height="1024" rotation="270"/>
-  <object id="319" gid="12" x="41984" y="18432" width="1024" height="1024" rotation="270"/>
-  <object id="320" gid="12" x="41984" y="17408" width="1024" height="1024" rotation="270"/>
-  <object id="321" gid="12" x="41984" y="16384" width="1024" height="1024" rotation="270"/>
-  <object id="322" gid="12" x="41984" y="15360" width="1024" height="1024" rotation="270"/>
-  <object id="325" gid="10" x="41984" y="19456" width="1024" height="1024" rotation="270"/>
+  <object id="289" gid="10" x="7168" y="22528" width="1024" height="1024"/>
+  <object id="290" gid="12" x="8192" y="22528" width="1024" height="1024"/>
+  <object id="291" gid="12" x="9216" y="22528" width="1024" height="1024"/>
+  <object id="292" gid="12" x="10240" y="22528" width="1024" height="1024"/>
+  <object id="293" gid="12" x="11264" y="22528" width="1024" height="1024"/>
+  <object id="294" gid="12" x="12288" y="22528" width="1024" height="1024"/>
+  <object id="295" gid="12" x="13312" y="22528" width="1024" height="1024"/>
+  <object id="296" gid="12" x="14336" y="22528" width="1024" height="1024"/>
+  <object id="297" gid="12" x="15360" y="22528" width="1024" height="1024"/>
+  <object id="298" gid="12" x="16384" y="22528" width="1024" height="1024"/>
+  <object id="299" gid="12" x="17408" y="22528" width="1024" height="1024"/>
+  <object id="300" gid="12" x="19456" y="22528" width="1024" height="1024"/>
+  <object id="301" gid="12" x="18432" y="22528" width="1024" height="1024"/>
+  <object id="302" gid="12" x="20480" y="22528" width="1024" height="1024"/>
+  <object id="303" gid="12" x="21504" y="22528" width="1024" height="1024"/>
+  <object id="304" gid="12" x="24576" y="22528" width="1024" height="1024"/>
+  <object id="305" gid="12" x="22528" y="22528" width="1024" height="1024"/>
+  <object id="306" gid="12" x="22528" y="22528" width="1024" height="1024"/>
+  <object id="307" gid="12" x="23552" y="22528" width="1024" height="1024"/>
+  <object id="308" gid="12" x="25600" y="22528" width="1024" height="1024"/>
+  <object id="309" gid="12" x="26624" y="22528" width="1024" height="1024"/>
+  <object id="310" gid="12" x="27648" y="22528" width="1024" height="1024"/>
+  <object id="311" gid="12" x="27648" y="22528" width="1024" height="1024"/>
+  <object id="312" gid="12" x="28672" y="22528" width="1024" height="1024"/>
+  <object id="313" gid="12" x="29696" y="22528" width="1024" height="1024"/>
+  <object id="314" gid="12" x="30720" y="22528" width="1024" height="1024"/>
+  <object id="315" gid="12" x="31744" y="22528" width="1024" height="1024"/>
+  <object id="316" gid="12" x="32768" y="22528" width="1024" height="1024"/>
+  <object id="317" gid="11" x="33792" y="22528" width="1024" height="1024"/>
+  <object id="318" gid="11" x="41984" y="16384" width="1024" height="1024" rotation="270"/>
+  <object id="319" gid="12" x="41984" y="20480" width="1024" height="1024" rotation="270"/>
+  <object id="320" gid="12" x="41984" y="19456" width="1024" height="1024" rotation="270"/>
+  <object id="321" gid="12" x="41984" y="18432" width="1024" height="1024" rotation="270"/>
+  <object id="322" gid="12" x="41984" y="17408" width="1024" height="1024" rotation="270"/>
+  <object id="325" gid="10" x="41984" y="21504" width="1024" height="1024" rotation="270"/>
  </objectgroup>
  <objectgroup id="15" name="activators"/>
  <objectgroup id="13" name="mirrors"/>

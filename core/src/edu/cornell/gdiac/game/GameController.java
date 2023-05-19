@@ -363,6 +363,7 @@ public class GameController implements Screen {
         setLevels();
 //        respawn();
         currLevel.setCat(prevLevel.getCat());
+        currLevel.updateCheckpoints(prevLevel.getCheckpoint(), true); //because checkpoints and exits lie on the same position
         prevLevel.removeCat();
 
         nextLevel.dispose();
@@ -462,7 +463,7 @@ public class GameController implements Screen {
                 // LASERS
                 "laser",
                 // CHECKPOINTS
-                "checkpoint-anim", "checkpoint-active-anim", "checkpoint-base", "checkpoint-base-active",
+                "checkpoint-anim", "checkpoint-active-anim", "checkpoint-base", "checkpoint-base-active", "checkpoint-activation-anim",
                 // GOAL
                 "goal", "goal-active",
                 // ROBOT & MOBS
@@ -485,7 +486,7 @@ public class GameController implements Screen {
                 "tutorial-jump-dash", "tutorial-undo", "tutorial-climb",
                 "cabinet-left", "cabinet-mid", "cabinet-right", "goggles", "microscope",
                 "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf", "wall-bottom", "wall-top",
-                "tank", "test-tubes", "coke", "broken-robot", "coming-soon"
+                "tank", "test-tubes", "coke", "broken-robot", "coming-soon", "arrow-sign"
                 }; // Unsure if this is actually being used
         for (String n : names){
 //            System.out.println(n);
@@ -663,7 +664,6 @@ public class GameController implements Screen {
      * @return whether to process the update loop
      */
     public boolean preUpdate(float dt) {
-
         if (listener == null) {
             return true;
         }

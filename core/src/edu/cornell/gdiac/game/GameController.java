@@ -465,7 +465,7 @@ public class GameController implements Screen {
                 // CHECKPOINTS
                 "checkpoint-anim", "checkpoint-active-anim", "checkpoint-base", "checkpoint-base-active", "checkpoint-activation-anim",
                 // GOAL
-                "goal", "goal-active", "goal-bases", "goal-idle-anim", "goal-inactive",
+                "goal", "goal-active", "goal-bases", "goal-idle-anim", "goal-inactive", "goal-final",
                 // ROBOT & MOBS
                 "robot-anim",
                 // SPIRIT BOUNDARIES

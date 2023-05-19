@@ -1282,6 +1282,10 @@ public class Level {
 
         for (Decoration d : decorations) { d.draw(canvas); }
 
+        if (goal.isFinal()) {
+            goal.draw(canvas);
+        }
+
         for (Laser l : lasers){
             l.drawLaser(canvas);
         }
@@ -1353,7 +1357,7 @@ public class Level {
             currCheckpoint.drawBase(canvas);
         }
 
-        if (goal != null) {
+        if (!goal.isFinal() && goal != null) {
             goal.draw(canvas);
         }
 

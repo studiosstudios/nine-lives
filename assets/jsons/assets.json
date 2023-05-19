@@ -109,7 +109,19 @@
       "tank": "world/decor/tank.png",
       "broken-robot": "world/decor/broken-robot.png",
       "coming-soon": "world/decor/coming-soon.png",
-      "arrow-sign": "world/decor/arrow-sign.png"
+      "arrow-sign": "world/decor/arrow-sign.png",
+      "cat-tank": "world/decor/cat-tank-pink-2.png",
+      "cat-tank-purple": "world/decor/cat-tank-purple.png",
+      "chair": "world/decor/chair.png",
+      "dandelions": "world/decor/dandelions.png",
+      "desktop": "world/decor/desktop.png",
+      "firefly": "world/decor/firefly.png",
+      "flowers": "world/decor/flowers.png",
+      "mushrooms": "world/decor/mushrooms.png",
+      "pin-board": "world/decor/pin-board.png",
+      "robo": "world/decor/robo.png",
+      "window-robo": "world/decor/window-robo.png",
+      "x-ray": "world/decor/x-ray.png"
     },
     "jsons"  : {
         "constants": "jsons/constants.json",
@@ -134,7 +146,7 @@
         "tiledLevel14": "levels/super-jump.json",
 //        "tiledLevel5": "levels/level-beta-hard.json",
 //        "tiledLevel14": "levels/party-room.json",
-        "tiledLevel15": "levels/test-forest.json"
+        "tiledLevel14": "levels/test-forest.json"
     },
     "soundfx" : {
         "jump" : "sounds/jump-CELESTE.wav",

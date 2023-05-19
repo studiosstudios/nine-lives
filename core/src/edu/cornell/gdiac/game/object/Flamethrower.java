@@ -135,6 +135,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
     @Override
     public void activated(World world){
         flame.setActive(true);
+        getLight().setActive(true);
         flame.setPosition(flameBase.getX()+flameOffset.x, flameBase.getY()+flameOffset.y);
         createJoints(world);
     }
@@ -143,6 +144,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
     @Override
     public void deactivated(World world){
         flame.setActive(false);
+        getLight().setActive(false);
         for (Joint j : joints){
             world.destroyJoint(j);
         }

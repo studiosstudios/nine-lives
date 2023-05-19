@@ -802,18 +802,6 @@
                 {
                  "gid":3,
                  "height":2048,
-                 "id":170,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":1024,
-                 "x":12288,
-                 "y":30720
-                }, 
-                {
-                 "gid":3,
-                 "height":2048,
                  "id":145,
                  "name":"",
                  "rotation":0,
@@ -822,18 +810,6 @@
                  "width":1024,
                  "x":22528,
                  "y":21504
-                }, 
-                {
-                 "gid":3,
-                 "height":2048,
-                 "id":173,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":1024,
-                 "x":22528,
-                 "y":30720
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1270,6 +1246,11 @@
                  "name":"",
                  "properties":[
                         {
+                         "name":"color",
+                         "type":"color",
+                         "value":"#ffffffff"
+                        }, 
+                        {
                          "name":"id",
                          "type":"string",
                          "value":"switch1"
@@ -1293,6 +1274,11 @@
                  "id":127,
                  "name":"",
                  "properties":[
+                        {
+                         "name":"color",
+                         "type":"color",
+                         "value":"#ff424242"
+                        }, 
                         {
                          "name":"id",
                          "type":"string",
@@ -1318,6 +1304,11 @@
                  "name":"",
                  "properties":[
                         {
+                         "name":"color",
+                         "type":"color",
+                         "value":"#ff4b90ff"
+                        }, 
+                        {
                          "name":"id",
                          "type":"string",
                          "value":"mazeswitch3"
@@ -1341,6 +1332,11 @@
                  "id":164,
                  "name":"",
                  "properties":[
+                        {
+                         "name":"color",
+                         "type":"color",
+                         "value":"#ff213f87"
+                        }, 
                         {
                          "name":"id",
                          "type":"string",
@@ -1366,6 +1362,11 @@
                  "name":"",
                  "properties":[
                         {
+                         "name":"color",
+                         "type":"color",
+                         "value":"#ff2da52b"
+                        }, 
+                        {
                          "name":"id",
                          "type":"string",
                          "value":"mazeswitch4"
@@ -1390,6 +1391,16 @@
                  "name":"",
                  "properties":[
                         {
+                         "name":"baseColor",
+                         "type":"color",
+                         "value":"#ff51f32d"
+                        }, 
+                        {
+                         "name":"color",
+                         "type":"color",
+                         "value":"#ff51f32d"
+                        }, 
+                        {
                          "name":"id",
                          "type":"string",
                          "value":"mazeswitch1"
@@ -1413,6 +1424,16 @@
                  "id":206,
                  "name":"",
                  "properties":[
+                        {
+                         "name":"baseColor",
+                         "type":"color",
+                         "value":"#fff3d739"
+                        }, 
+                        {
+                         "name":"color",
+                         "type":"color",
+                         "value":"#fff3d739"
+                        }, 
                         {
                          "name":"id",
                          "type":"string",
@@ -1469,6 +1490,11 @@
                          "value":false
                         }, 
                         {
+                         "name":"baseColor",
+                         "type":"color",
+                         "value":"#ffffffff"
+                        }, 
+                        {
                          "name":"totalTicks",
                          "type":"int",
                          "value":20
@@ -1494,6 +1520,11 @@
                          "name":"active",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"baseColor",
+                         "type":"color",
+                         "value":"#ff424242"
                         }, 
                         {
                          "name":"closeAngle",
@@ -1523,6 +1554,11 @@
                          "value":"switch1"
                         }, 
                         {
+                         "name":"baseColor",
+                         "type":"color",
+                         "value":"#ffffffff"
+                        }, 
+                        {
                          "name":"closeAngle",
                          "type":"int",
                          "value":90
@@ -1548,6 +1584,11 @@
                          "name":"activatorID",
                          "type":"string",
                          "value":"switch2"
+                        }, 
+                        {
+                         "name":"baseColor",
+                         "type":"color",
+                         "value":"#ff424242"
                         }, 
                         {
                          "name":"closeAngle",
@@ -1582,6 +1623,11 @@
                          "value":false
                         }, 
                         {
+                         "name":"baseColor",
+                         "type":"color",
+                         "value":"#ff213f87"
+                        }, 
+                        {
                          "name":"closeAngle",
                          "type":"int",
                          "value":180
@@ -1614,6 +1660,11 @@
                          "value":false
                         }, 
                         {
+                         "name":"baseColor",
+                         "type":"color",
+                         "value":"#ff4a90ff"
+                        }, 
+                        {
                          "name":"closeAngle",
                          "type":"int",
                          "value":180
@@ -1639,6 +1690,11 @@
                          "name":"activatorID",
                          "type":"string",
                          "value":"mazeswitch4"
+                        }, 
+                        {
+                         "name":"baseColor",
+                         "type":"color",
+                         "value":"#ff2da52b"
                         }, 
                         {
                          "name":"closeAngle",
@@ -1668,6 +1724,11 @@
                          "value":"mazeswitch4"
                         }, 
                         {
+                         "name":"baseColor",
+                         "type":"color",
+                         "value":"#ff2da52b"
+                        }, 
+                        {
                          "name":"closeAngle",
                          "type":"int",
                          "value":180
@@ -1695,6 +1756,11 @@
                          "value":"mazeswitch2"
                         }, 
                         {
+                         "name":"baseColor",
+                         "type":"color",
+                         "value":"#ff213f87"
+                        }, 
+                        {
                          "name":"closeAngle",
                          "type":"int",
                          "value":90
@@ -1720,6 +1786,11 @@
                          "name":"activatorID",
                          "type":"string",
                          "value":"mazeswitch2"
+                        }, 
+                        {
+                         "name":"baseColor",
+                         "type":"color",
+                         "value":"#ff213f87"
                         }, 
                         {
                          "name":"closeAngle",
@@ -1754,9 +1825,19 @@
                          "value":true
                         }, 
                         {
+                         "name":"baseColor",
+                         "type":"color",
+                         "value":"#ff51f32d"
+                        }, 
+                        {
                          "name":"closeAngle",
                          "type":"int",
                          "value":180
+                        }, 
+                        {
+                         "name":"color",
+                         "type":"color",
+                         "value":"#ff51f32d"
                         }, 
                         {
                          "name":"totalTicks",
@@ -1781,9 +1862,19 @@
                          "value":"mazeswitch1"
                         }, 
                         {
+                         "name":"baseColor",
+                         "type":"color",
+                         "value":"#ff51f32d"
+                        }, 
+                        {
                          "name":"closeAngle",
                          "type":"int",
                          "value":180
+                        }, 
+                        {
+                         "name":"color",
+                         "type":"color",
+                         "value":"#ff51f32d"
                         }, 
                         {
                          "name":"totalTicks",
@@ -1808,9 +1899,19 @@
                          "value":"mazeswitch5"
                         }, 
                         {
+                         "name":"baseColor",
+                         "type":"color",
+                         "value":"#fff3d739"
+                        }, 
+                        {
                          "name":"closeAngle",
                          "type":"int",
                          "value":90
+                        }, 
+                        {
+                         "name":"color",
+                         "type":"color",
+                         "value":"#fff3d739"
                         }, 
                         {
                          "name":"totalTicks",
@@ -1835,9 +1936,19 @@
                          "value":"mazeswitch5"
                         }, 
                         {
+                         "name":"baseColor",
+                         "type":"color",
+                         "value":"#fff3d739"
+                        }, 
+                        {
                          "name":"closeAngle",
                          "type":"int",
                          "value":90
+                        }, 
+                        {
+                         "name":"color",
+                         "type":"color",
+                         "value":"#fff3d739"
                         }, 
                         {
                          "name":"totalTicks",
@@ -1862,6 +1973,11 @@
                          "value":"mazeswitch3"
                         }, 
                         {
+                         "name":"baseColor",
+                         "type":"color",
+                         "value":"#ff4a90ff"
+                        }, 
+                        {
                          "name":"totalTicks",
                          "type":"int",
                          "value":20
@@ -1884,9 +2000,19 @@
                          "value":"mazeswitch1"
                         }, 
                         {
+                         "name":"baseColor",
+                         "type":"color",
+                         "value":"#ff51f32d"
+                        }, 
+                        {
                          "name":"closeAngle",
                          "type":"int",
                          "value":180
+                        }, 
+                        {
+                         "name":"color",
+                         "type":"color",
+                         "value":"#ff51f32d"
                         }, 
                         {
                          "name":"totalTicks",

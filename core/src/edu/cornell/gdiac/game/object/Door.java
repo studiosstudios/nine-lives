@@ -50,6 +50,7 @@ public class Door extends BoxObstacle implements Activatable {
     private TextureRegion bottom;
     private TextureRegion middle;
     private static float shrink;
+    private Color baseColor = new Color();
 
     private class Cap extends BoxObstacle {
         public Cap(float width, float height) {
@@ -76,6 +77,7 @@ public class Door extends BoxObstacle implements Activatable {
         middle = tiles[0][2];
         bottom = tiles[0][0];
         bottom.setRegion(0, textureSize/2, textureSize, textureSize/2); //remove weird line
+        baseColor.set((Color) properties.get("baseColor",  Color.WHITE));
         this.textureSize = textureSize;
         setDrawScale(scale);
         setDensity(objectConstants.getFloat( "density", 0.0f ));
@@ -308,7 +310,7 @@ public class Door extends BoxObstacle implements Activatable {
                     canvas.draw(top, Color.WHITE, 0, 0, (topX+dx)*drawScale.x, topY*drawScale.y, rotation, scale, scale);
                     canvas.draw(middle, Color.WHITE, 0, 0, (midX+dx)*drawScale.x, midY*drawScale.y, rotation, scale, scale);
                 }
-                canvas.draw(bottom, Color.WHITE, 0, 0, (botX+dx)*drawScale.x, botY*drawScale.y, rotation, scale, scale);
+                canvas.draw(bottom, baseColor, 0, 0, (botX+dx)*drawScale.x, botY*drawScale.y, rotation, scale, scale);
             }
         } else {
             if (angle == Direction.RIGHT) {
@@ -330,7 +332,7 @@ public class Door extends BoxObstacle implements Activatable {
                     canvas.draw(top, Color.WHITE, 0, 0, topX * drawScale.x, (topY + dy) * drawScale.y, rotation, scale, scale);
                     canvas.draw(middle, Color.WHITE, 0, 0, midX * drawScale.x, (midY + dy) * drawScale.y, rotation, scale, scale);
                 }
-                canvas.draw(bottom, Color.WHITE, 0, 0, botX*drawScale.x, (botY+dy)*drawScale.y, rotation, scale, scale);
+                canvas.draw(bottom, baseColor, 0, 0, botX*drawScale.x, (botY+dy)*drawScale.y, rotation, scale, scale);
             }
         }
 

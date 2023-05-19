@@ -178,9 +178,7 @@
   <object id="140" gid="3" x="16384" y="12288" width="1024" height="2048"/>
   <object id="141" gid="3" x="10240" y="12288" width="1024" height="2048" rotation="90"/>
   <object id="144" gid="3" x="10240" y="19456" width="1024" height="2048" rotation="90"/>
-  <object id="170" gid="3" x="12288" y="30720" width="1024" height="2048"/>
   <object id="145" gid="3" x="22528" y="21504" width="1024" height="2048"/>
-  <object id="173" gid="3" x="22528" y="30720" width="1024" height="2048"/>
  </objectgroup>
  <objectgroup id="6" name="lasers"/>
  <objectgroup id="7" name="mobs"/>
@@ -221,42 +219,51 @@
  <objectgroup id="15" name="activators">
   <object id="106" gid="1" x="19456" y="5120" width="1024" height="1024">
    <properties>
+    <property name="color" type="color" value="#ffffffff"/>
     <property name="id" value="switch1"/>
     <property name="type" propertytype="activators" value="switch"/>
    </properties>
   </object>
   <object id="127" gid="1" x="20480" y="11264" width="1024" height="1024" rotation="180">
    <properties>
+    <property name="color" type="color" value="#ff424242"/>
     <property name="id" value="switch2"/>
     <property name="type" propertytype="activators" value="switch"/>
    </properties>
   </object>
   <object id="171" gid="1" x="9216" y="31744" width="1024" height="1024">
    <properties>
+    <property name="color" type="color" value="#ff4b90ff"/>
     <property name="id" value="mazeswitch3"/>
     <property name="type" propertytype="activators" value="switch"/>
    </properties>
   </object>
   <object id="164" gid="1" x="19456" y="22528" width="1024" height="1024">
    <properties>
+    <property name="color" type="color" value="#ff213f87"/>
     <property name="id" value="mazeswitch2"/>
     <property name="type" propertytype="activators" value="switch"/>
    </properties>
   </object>
   <object id="172" gid="1" x="19456" y="31744" width="1024" height="1024">
    <properties>
+    <property name="color" type="color" value="#ff2da52b"/>
     <property name="id" value="mazeswitch4"/>
     <property name="type" propertytype="activators" value="switch"/>
    </properties>
   </object>
   <object id="178" gid="1" x="3072" y="22528" width="1024" height="1024">
    <properties>
+    <property name="baseColor" type="color" value="#ff51f32d"/>
+    <property name="color" type="color" value="#ff51f32d"/>
     <property name="id" value="mazeswitch1"/>
     <property name="type" propertytype="activators" value="switch"/>
    </properties>
   </object>
   <object id="206" gid="1" x="30720" y="22528" width="1024" height="1024">
    <properties>
+    <property name="baseColor" type="color" value="#fff3d739"/>
+    <property name="color" type="color" value="#fff3d739"/>
     <property name="id" value="mazeswitch5"/>
     <property name="type" propertytype="activators" value="switch"/>
    </properties>
@@ -268,6 +275,7 @@
    <properties>
     <property name="activatorID" value="switch1"/>
     <property name="active" type="bool" value="false"/>
+    <property name="baseColor" type="color" value="#ffffffff"/>
     <property name="totalTicks" type="int" value="20"/>
    </properties>
   </object>
@@ -275,6 +283,7 @@
    <properties>
     <property name="activatorID" value="switch2"/>
     <property name="active" type="bool" value="false"/>
+    <property name="baseColor" type="color" value="#ff424242"/>
     <property name="closeAngle" type="int" value="180"/>
     <property name="totalTicks" type="int" value="20"/>
    </properties>
@@ -282,6 +291,7 @@
   <object id="112" type="Door" x="8192" y="6144" width="5120" height="3072">
    <properties>
     <property name="activatorID" value="switch1"/>
+    <property name="baseColor" type="color" value="#ffffffff"/>
     <property name="closeAngle" type="int" value="90"/>
     <property name="totalTicks" type="int" value="20"/>
    </properties>
@@ -289,6 +299,7 @@
   <object id="142" type="Door" x="8192" y="14336" width="5120" height="3072">
    <properties>
     <property name="activatorID" value="switch2"/>
+    <property name="baseColor" type="color" value="#ff424242"/>
     <property name="closeAngle" type="int" value="90"/>
     <property name="totalTicks" type="int" value="20"/>
    </properties>
@@ -297,6 +308,7 @@
    <properties>
     <property name="activatorID" value="mazeswitch2"/>
     <property name="active" type="bool" value="false"/>
+    <property name="baseColor" type="color" value="#ff213f87"/>
     <property name="closeAngle" type="int" value="180"/>
     <property name="totalTicks" type="int" value="20"/>
    </properties>
@@ -305,6 +317,7 @@
    <properties>
     <property name="activatorID" value="mazeswitch3"/>
     <property name="active" type="bool" value="false"/>
+    <property name="baseColor" type="color" value="#ff4a90ff"/>
     <property name="closeAngle" type="int" value="180"/>
     <property name="totalTicks" type="int" value="20"/>
    </properties>
@@ -312,6 +325,7 @@
   <object id="151" type="Door" x="24576" y="17408" width="1024" height="6144">
    <properties>
     <property name="activatorID" value="mazeswitch4"/>
+    <property name="baseColor" type="color" value="#ff2da52b"/>
     <property name="closeAngle" type="int" value="180"/>
     <property name="totalTicks" type="int" value="20"/>
    </properties>
@@ -319,6 +333,7 @@
   <object id="193" type="Door" x="27648" y="17408" width="1024" height="6144">
    <properties>
     <property name="activatorID" value="mazeswitch4"/>
+    <property name="baseColor" type="color" value="#ff2da52b"/>
     <property name="closeAngle" type="int" value="180"/>
     <property name="totalTicks" type="int" value="20"/>
    </properties>
@@ -326,6 +341,7 @@
   <object id="165" type="Door" x="20480" y="23552" width="2048" height="1024">
    <properties>
     <property name="activatorID" value="mazeswitch2"/>
+    <property name="baseColor" type="color" value="#ff213f87"/>
     <property name="closeAngle" type="int" value="90"/>
     <property name="totalTicks" type="int" value="20"/>
    </properties>
@@ -333,6 +349,7 @@
   <object id="195" type="Door" x="20480" y="25600" width="2048" height="1024">
    <properties>
     <property name="activatorID" value="mazeswitch2"/>
+    <property name="baseColor" type="color" value="#ff213f87"/>
     <property name="closeAngle" type="int" value="90"/>
     <property name="totalTicks" type="int" value="20"/>
    </properties>
@@ -341,41 +358,52 @@
    <properties>
     <property name="activatorID" value="mazeswitch1"/>
     <property name="active" type="bool" value="true"/>
+    <property name="baseColor" type="color" value="#ff51f32d"/>
     <property name="closeAngle" type="int" value="180"/>
+    <property name="color" type="color" value="#ff51f32d"/>
     <property name="totalTicks" type="int" value="20"/>
    </properties>
   </object>
   <object id="192" type="Door" x="27648" y="26624" width="1024" height="6144">
    <properties>
     <property name="activatorID" value="mazeswitch1"/>
+    <property name="baseColor" type="color" value="#ff51f32d"/>
     <property name="closeAngle" type="int" value="180"/>
+    <property name="color" type="color" value="#ff51f32d"/>
     <property name="totalTicks" type="int" value="20"/>
    </properties>
   </object>
   <object id="168" type="Door" x="10240" y="23552" width="2048" height="1024">
    <properties>
     <property name="activatorID" value="mazeswitch5"/>
+    <property name="baseColor" type="color" value="#fff3d739"/>
     <property name="closeAngle" type="int" value="90"/>
+    <property name="color" type="color" value="#fff3d739"/>
     <property name="totalTicks" type="int" value="20"/>
    </properties>
   </object>
   <object id="194" type="Door" x="10240" y="25600" width="2048" height="1024">
    <properties>
     <property name="activatorID" value="mazeswitch5"/>
+    <property name="baseColor" type="color" value="#fff3d739"/>
     <property name="closeAngle" type="int" value="90"/>
+    <property name="color" type="color" value="#fff3d739"/>
     <property name="totalTicks" type="int" value="20"/>
    </properties>
   </object>
   <object id="176" type="Door" x="6144" y="20480" width="2048" height="3072">
    <properties>
     <property name="activatorID" value="mazeswitch3"/>
+    <property name="baseColor" type="color" value="#ff4a90ff"/>
     <property name="totalTicks" type="int" value="20"/>
    </properties>
   </object>
   <object id="189" type="Door" x="6144" y="29696" width="2048" height="3072">
    <properties>
     <property name="activatorID" value="mazeswitch1"/>
+    <property name="baseColor" type="color" value="#ff51f32d"/>
     <property name="closeAngle" type="int" value="180"/>
+    <property name="color" type="color" value="#ff51f32d"/>
     <property name="totalTicks" type="int" value="20"/>
    </properties>
   </object>

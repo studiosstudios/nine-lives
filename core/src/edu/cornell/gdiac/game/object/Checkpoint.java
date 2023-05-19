@@ -82,7 +82,7 @@ public class Checkpoint extends BoxObstacle
 
         animation = new Animation<>(frameDuration, spriteFrames[0]);
         activeAnimation = new Animation<>(frameDuration, activeSpriteFrames[0]);
-        activationAnimation = new Animation<>(1/15f, activationSpriteFrames[0]);
+        activationAnimation = new Animation<>(1/12f, activationSpriteFrames[0]);
 
         animation.setPlayMode(Animation.PlayMode.LOOP);
         animationTime = 0f;

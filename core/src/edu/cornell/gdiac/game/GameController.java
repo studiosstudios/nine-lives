@@ -363,6 +363,7 @@ public class GameController implements Screen {
         setLevels();
 //        respawn();
         currLevel.setCat(prevLevel.getCat());
+        currLevel.updateCheckpoints(prevLevel.getCheckpoint(), true); //because checkpoints and exits lie on the same position
         prevLevel.removeCat();
 
         nextLevel.dispose();
@@ -663,7 +664,6 @@ public class GameController implements Screen {
      * @return whether to process the update loop
      */
     public boolean preUpdate(float dt) {
-
         if (listener == null) {
             return true;
         }

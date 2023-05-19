@@ -119,6 +119,8 @@ public class Level {
     private RayHandler rayHandler;
     private DeadBody nextBody;
     private Array<Decoration> decorations = new Array();
+    protected boolean canSwitch;
+    protected boolean canDash;
 
 
     /**
@@ -502,7 +504,21 @@ public class Level {
 
         this.levelNum = levelNum;
 
-        biome = tiledMap.get("properties").get(0).getString("value");
+        canDash = true;
+        canSwitch = true;
+        for (JsonValue property : tiledMap.get("properties")){
+            switch (property.getString("name")) {
+                case "biome":
+                    biome = property.getString("value");
+                    break;
+                case "canDash":
+                    canDash = property.getBoolean("value");
+                    break;
+                case "canSwitch":
+                    canSwitch = property.getBoolean("value");
+                    break;
+            }
+        }
 
         if (tiledMap == null) throw new InvalidTiledJSON("missing Tiled JSON");
 
@@ -513,14 +529,10 @@ public class Level {
         levelStates = new Array<>();
 
         JsonValue layers = tiledMap.get("layers");
-        JsonValue tileData = layers.get(0);
-
-        if (biome.equals("forest")) {
-            tileData = layers.get(1);
-        }
         JsonValue climbableData = null;
         JsonValue windowData = null;
         JsonValue leafData = null;
+        JsonValue tileData = null;
 
         tileSize = tiledMap.getInt("tilewidth");
         int levelWidth = tiledMap.getInt("width");
@@ -543,6 +555,10 @@ public class Level {
             }
             else if (layer.getString("name").equals("forestLeaves")) {
                 leafData = layer;
+            }
+            else if (layer.getString("name").equals("forestWalls") && biome.equals("forest") ||
+                    layer.getString("name").equals("metalWalls") && biome.equals("metal")) {
+                tileData = layer;
             }
         }
         if (next != null) {
@@ -603,18 +619,18 @@ public class Level {
                     tileset, bounds, fID, new Vector2(1/4f, 1/4f));
 
         if (climbableData != null) {
-            climbables = new Tiles(climbableData, 1024, levelWidth, levelHeight,
-                    textureRegionAssetMap.get("climbable-tileset"), bounds, fID_climbable, new Vector2(1/32f, 1/32f));
+            climbables = new Tiles(climbableData, 128, levelWidth, levelHeight,
+                    textureRegionAssetMap.get("climbable-tileset"), bounds, fID_climbable, new Vector2(1/4f, 1/4f));
         }
 
         if (windowData != null) {
-            windows = new Tiles(windowData, 1024, levelWidth, levelHeight,
-                    textureRegionAssetMap.get("windows-tileset"), bounds, fID_window, new Vector2(1/32f, 1/32f));
+            windows = new Tiles(windowData, 128, levelWidth, levelHeight,
+                    textureRegionAssetMap.get("windows-tileset"), bounds, fID_window, new Vector2(1/4f, 1/4f));
         }
 
         if (leafData != null) {
-            leaves = new Tiles(leafData, 1024, levelWidth, levelHeight,
-                    textureRegionAssetMap.get("forestLeaves-tileset"), bounds, fID_leaves, new Vector2(1/32f, 1/32f));
+            leaves = new Tiles(leafData, 128, levelWidth, levelHeight,
+                    textureRegionAssetMap.get("forestLeaves-tileset"), bounds, fID_leaves, new Vector2(1/4f, 1/4f));
         }
 
         //make joints
@@ -734,7 +750,7 @@ public class Level {
      */
     private void populateCheckpoints(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
-        textureScaleCache.set(1/32f, 1/32f);
+        textureScaleCache.set(1/4f, 1/4f);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
             Checkpoint checkpoint = new Checkpoint(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
@@ -751,7 +767,7 @@ public class Level {
      */
     private void populateActivators(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
-        textureScaleCache.set(1, 1);
+        textureScaleCache.set(1/4f, 1/4f);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
             Activator activator;
@@ -800,7 +816,7 @@ public class Level {
      */
     private void populateFlamethrowers(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
-        textureScaleCache.set(1/64f, 1/64f);
+        textureScaleCache.set(1/4f, 1/4f);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
             Flamethrower flamethrower = new Flamethrower(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
@@ -817,7 +833,7 @@ public class Level {
      */
     private void populateLasers(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
-        textureScaleCache.set(1, 1);
+        textureScaleCache.set(1/8f, 1/8f);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
             Laser laser = new Laser(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
@@ -886,7 +902,7 @@ public class Level {
      */
     private void populateMobs(JsonValue data, int tileSize, int levelHeight) {
         JsonValue objects = data.get("objects");
-        textureScaleCache.set(1/32f, 1/32f);
+        textureScaleCache.set(1/4f, 1/4f);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
             Mob mob = new Mob(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
@@ -1093,6 +1109,7 @@ public class Level {
         }
         for(Obstacle obj : objects) {
             obj.deactivatePhysics(world);
+            obj.destroyLight();
         }
         cat = null;
         addQueue.clear();
@@ -1294,7 +1311,16 @@ public class Level {
 
         spiritLine.draw(canvas);
 
+        String spiritRegionColor = "";
+        if (cat != null)  spiritRegionColor = cat.getSpiritRegionColor().toString().substring(0, 6);
         for (SpiritRegion s : spiritRegionArray) {
+            if (greyscale > 0) {
+                if (!s.getColorString().equals(spiritRegionColor)) {
+                    s.setGreyscale(greyscale);
+                } else {
+                    s.setGreyscale(0);
+                }
+            }
             s.draw(canvas);
         }
 
@@ -1349,7 +1375,7 @@ public class Level {
      */
     public void drawDebug(GameCanvas canvas){
         //draw grid
-        Color lineColor = new Color(0.8f, 0.8f, 0.8f, 1);
+//        Color lineColor = new Color(0.8f, 0.8f, 0.8f, 1);
 //        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/scale.x;
 //        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/scale.y;
 //        for (int x = 0; x < bounds.width; x++) {
@@ -1373,7 +1399,7 @@ public class Level {
      * Spawns a dead body at the location of the cat
      * */
     public void spawnDeadBody(){
-        textureScaleCache.set(1/34f, 1/34f);
+        textureScaleCache.set(1/4f, 1/4f);
         double rand = Math.random();
         DeadBody deadBody;
         if(rand <0.33){
@@ -1396,7 +1422,7 @@ public class Level {
      * @param state Map of arguments for the dead body, called from storeState() in {@link DeadBody}.
      */
     public DeadBody loadDeadBodyState(ObjectMap<String, Object> state){
-        textureScaleCache.set(1/34f, 1/34f);
+        textureScaleCache.set(1/4f, 1/4f);
         DeadBody deadBody = new DeadBody(textureRegionAssetMap.get("corpse2"), textureRegionAssetMap.get("corpse-burnt"),scale, Vector2.Zero, textureScaleCache);
         deadBody.loadState(state);
         addObject(deadBody);

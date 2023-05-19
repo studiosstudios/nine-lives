@@ -89,7 +89,7 @@ public class GameCanvas {
 	private Camera camera;
 
 	/** ExtendViewport, used during gameplay */
-	private Viewport viewport;
+	private FitViewport viewport;
 
 	/** Value to cache window width (if we are currently full screen) */
 	int width;
@@ -104,7 +104,6 @@ public class GameCanvas {
 	private Vector2 vertex;
 	/** Cache object to handle raw textures */
 	private TextureRegion holder;
-	private final float CAMERA_ZOOM = 0.6f;
 	protected ShaderProgram spiritModeShader;
 	protected ShaderProgram greyscaleShader;
 	private FrameBuffer mainFrameBuffer;
@@ -148,7 +147,6 @@ public class GameCanvas {
 				Gdx.files.internal("shaders/portal.frag").readString());
 		greyscaleShader = new ShaderProgram(spriteBatch.getShader().getVertexShaderSource(),
 				Gdx.files.internal("shaders/greyscale.frag").readString());
-		System.out.println(spiritModeShader.getLog());
 
 		mainFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
 
@@ -167,6 +165,10 @@ public class GameCanvas {
 		spriteBatch = null;
 		debugRender.dispose();
 		mainFrameBuffer.dispose();
+		spiritModeShader.dispose();
+		greyscaleShader.dispose();
+		greyscaleShader = null;
+		spiritModeShader = null;
 		debugRender = null;
 		mainFrameBuffer = null;
 		local  = null;
@@ -329,13 +331,12 @@ ef	 * <br><br>
 		 width = getWidth();
 		 height = getHeight();
 		 spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
+		 viewport.update(width, height, true);
 
 		 if (getWidth() != 0 && getHeight() != 0) {
 			 mainFrameBuffer.dispose();
 			 mainFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
 		 }
-
-		 viewport.update(width, height, true);
 	}
 	
 	/**
@@ -531,6 +532,7 @@ ef	 * <br><br>
 	 */
 	public void drawLightsToBuffer(RayHandler rayHandler) {
 		//TODO: try with changing blend state instead of ending batch
+		// 5/15 adding all of these applyViewports breaks debug again for some reason
 		spriteBatch.end();
 		rayHandler.prepareRender();
 		mainFrameBuffer.begin();
@@ -547,9 +549,10 @@ ef	 * <br><br>
 		setBlendState(BlendState.ALPHA_BLEND);
 		spriteBatch.setProjectionMatrix(FBO_PROJECTION);
 		spriteBatch.draw(mainFrameBuffer.getColorBufferTexture(), 0, 0, 1, 1, 0, 0, 1, 1);
-		spriteBatch.flush();
+		spriteBatch.flush(); //this is problem line for debug...
 		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
 		setBlendState(BlendState.NO_PREMULT);
+		applyViewport(false);
 	}
 
 	/**
@@ -1116,7 +1119,7 @@ ef	 * <br><br>
 	 * <br><br>
 	 * Nothing is flushed to the graphics card until the method end() is called.
 	 */
-	public void beginDebug() {
+	public void  beginDebug() {
 		debugRender.setProjectionMatrix(camera.getCamera().combined);
 		debugRender.begin(ShapeRenderer.ShapeType.Filled);
 		debugRender.setColor(Color.RED);

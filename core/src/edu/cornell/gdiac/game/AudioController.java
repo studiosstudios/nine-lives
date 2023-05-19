@@ -178,12 +178,9 @@ public class AudioController {
      * Plays the lab music
      */
     public void playLab() {
-//        for (int i = 0; i < levelMusicMap.size(); i++) {
-//            levelMusic.setSource(i, levelMusicMap.get("bkg-lab"));
-//        }
         levelMusic.pause();
         levelMusic = labMusic;
-//        levelMusic.reset();
+        levelMusic.setVolume(musicVolume);
         currMusic = "metal";
     }
 
@@ -192,8 +189,8 @@ public class AudioController {
      */
     public void playForest() {
         levelMusic.pause();
-        System.out.println(forestMusic);
         levelMusic = forestMusic;
+        levelMusic.setVolume(musicVolume);
         currMusic = "forest";
     }
 
@@ -217,6 +214,7 @@ public class AudioController {
      * Plays the current stage music
      */
     public void playStageMusic() {
+        stageMusic.setVolume(musicVolume);
         stageMusic.play();
 //        currMusic = "stage";
     }

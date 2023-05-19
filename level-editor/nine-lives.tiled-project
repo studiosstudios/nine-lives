@@ -182,6 +182,11 @@
                     "value": true
                 },
                 {
+                    "name": "baseColor",
+                    "type": "color",
+                    "value": "#ffffffff"
+                },
+                {
                     "name": "closeAngle",
                     "type": "int",
                     "value": 0

@@ -57,6 +57,7 @@ public class CameraRegion extends BoxObstacle {
         relativeZoom = (boolean) properties.get("isZoomRelative", false);
         if(relativeZoom)
             zoom = Math.min(expectedWidth*scale.x/GameCanvas.STANDARD_WIDTH, expectedHeight*scale.y/GameCanvas.STANDARD_HEIGHT);
+        zoom = Math.round(zoom*100)/100f;
     }
 
     /**

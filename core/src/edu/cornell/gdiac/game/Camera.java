@@ -117,9 +117,7 @@ public class Camera {
         else{
             isGliding = true;
         }
-//        System.out.println("Before update: "+camera.position+" "+camera);
         camera.position.set(x, y, 0);
-//        System.out.println("After update: "+camera.position+" "+camera);
         camera.update();
     }
 
@@ -289,5 +287,14 @@ public class Camera {
         else{
             System.out.println("oof");
         }
+    }
+
+    /**
+     * SHOULD ONLY USE FOR DEBUGGING
+     *
+     * @return camera target zoom
+     */
+    public float getZoomGoal(){
+        return zoomGoal;
     }
 }

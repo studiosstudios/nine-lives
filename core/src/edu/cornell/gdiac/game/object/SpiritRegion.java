@@ -2,11 +2,10 @@ package edu.cornell.gdiac.game.object;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.GameCanvas;
@@ -17,29 +16,22 @@ import java.util.Random;
 
 public class SpiritRegion extends BoxObstacle {
 
+    /** Base color without greyscale */
+    private final Color baseColor = new Color();
     /** Color of spirit region particles */
     private Color particleColor = new Color();
     /** Color of spirit region background */
     private Color regionColor = new Color();
     /** The frames of the spirit animation */
-    private TextureRegion[][] spriteFrames;
-    /** How long the flame has been animating */
-    private float animationTime;
-    /** Filmstrip of spirit animation */
-    private Animation<TextureRegion>[] animations;
-    /** Texture image for the region */
     private Texture regionTexture;
-    /** float offsets for randomizing animation frames */
-    private float[] timeOffsets;
-    /** List of angles to rotate texture */
-    private final int[] listAngles = {0, 90, 180, 270};
-
     /** Vector2 position of bottom left corner of spirit region */
     private Vector2 pos;
     /** width of spirit region */
     private float width;
     /** height of spirit region */
     private float height;
+    private float greyScaleTarget;
+    private float greyscale;
 
     /** PARTICLE VARS */
 
@@ -66,11 +58,9 @@ public class SpiritRegion extends BoxObstacle {
     private ParticlePool memory;
     /** Simple field to slow down the allocation of photons */
     private int cooldown = 0;
-
     private Random random;
 
-
-    public String getColorString(){ return regionColor.toString().substring(0, 6); }
+    public String getColorString(){ return baseColor.toString().substring(0, 6); }
 
     /**
      * Creates a new SpiritRegion Model.
@@ -85,10 +75,12 @@ public class SpiritRegion extends BoxObstacle {
         this.photonTexture = tMap.get("spirit-photon").getTexture();
         this.regionTexture = tMap.get("spirit-region").getTexture();
 
-        particleColor.set((Color) properties.get("color", Color.RED));
+        baseColor.set((Color) properties.get("color", Color.RED));
+
+        particleColor.set(baseColor);
         particleColor.a = PARTICLE_OPACITY_INACTIVE;
 
-        regionColor.set((Color) properties.get("color", Color.RED));
+        regionColor.set(baseColor);
         regionColor.a = REGION_OPACITY_INACTIVE;
 
         setTextureScale(textureScale);
@@ -184,6 +176,20 @@ public class SpiritRegion extends BoxObstacle {
      * @param val true if spirit region is less opaque, false if more opaque
      */
     public void setSpiritRegionColorOpacity(boolean val) {
+        if (Math.abs(greyScaleTarget - greyscale) < 0.01f) {
+            greyscale = greyScaleTarget;
+        } else {
+            greyscale += (greyScaleTarget - greyscale) * 0.15f;
+        }
+
+        if (greyscale > 0) {
+            float greyColor = greyColor(baseColor);
+            particleColor.set(baseColor.r * (1-greyscale) + greyColor * greyscale,
+                    baseColor.g * (1-greyscale) + greyColor * greyscale,
+                    baseColor.b * (1-greyscale) + greyColor * greyscale, baseColor.a);
+            regionColor.set(particleColor.r, particleColor.g, particleColor.b, regionColor.a);
+        }
+
         if (val) {
             particleColor.a += (PARTICLE_OPACITY_ACTIVE - particleColor.a)*0.07;
             regionColor.a += (REGION_OPACITY_ACTIVE - regionColor.a)*0.07;
@@ -192,6 +198,8 @@ public class SpiritRegion extends BoxObstacle {
             regionColor.a += (REGION_OPACITY_INACTIVE - regionColor.a)*0.07;
         }
     }
+
+    public void setGreyscale(float greyscale){ greyScaleTarget = greyscale; }
 
     /**
      * Updates the status of the particles.

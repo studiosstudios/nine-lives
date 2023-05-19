@@ -169,7 +169,7 @@ public class Door extends BoxObstacle implements Activatable {
 
         if (closing == -1 && cap.getPosition().dst(capClosedPos) > capOpenPos.dst(capClosedPos)) {
             cap.setPosition(capOpenPos);
-            cap.setActive(false);
+            cap.setSensor(true);
             setActive(false);
             closing = 0;
         } else if (closing == 1 && cap.getPosition().dst(capOpenPos) > capOpenPos.dst(capClosedPos)){
@@ -216,15 +216,13 @@ public class Door extends BoxObstacle implements Activatable {
      * @return      true if object allocation succeeded
      */
     public boolean activatePhysics(World world){
-        if (!super.activatePhysics(world)) {
+        if (!super.activatePhysics(world) || !cap.activatePhysics(world)) {
             return false;
         }
         if (!activated) {
             deactivated(world);
             setActive(false);
-        }
-        if (!cap.activatePhysics(world)) {
-            return false;
+            cap.setSensor(true);
         }
         cap.getBody().setUserData(this);
         return true;
@@ -237,7 +235,7 @@ public class Door extends BoxObstacle implements Activatable {
     public void activated(World world){
         closing = 1;
         setActive(true);
-        cap.setActive(true);
+        cap.setSensor(false);
     }
 
     /**

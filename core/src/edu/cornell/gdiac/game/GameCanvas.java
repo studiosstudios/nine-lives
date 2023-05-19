@@ -104,7 +104,6 @@ public class GameCanvas {
 	private Vector2 vertex;
 	/** Cache object to handle raw textures */
 	private TextureRegion holder;
-	private final float CAMERA_ZOOM = 0.6f;
 	protected ShaderProgram spiritModeShader;
 	protected ShaderProgram greyscaleShader;
 	private FrameBuffer mainFrameBuffer;
@@ -148,7 +147,6 @@ public class GameCanvas {
 				Gdx.files.internal("shaders/portal.frag").readString());
 		greyscaleShader = new ShaderProgram(spriteBatch.getShader().getVertexShaderSource(),
 				Gdx.files.internal("shaders/greyscale.frag").readString());
-//		System.out.println(spiritModeShader.getLog());
 
 		mainFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
 
@@ -167,6 +165,10 @@ public class GameCanvas {
 		spriteBatch = null;
 		debugRender.dispose();
 		mainFrameBuffer.dispose();
+		spiritModeShader.dispose();
+		greyscaleShader.dispose();
+		greyscaleShader = null;
+		spiritModeShader = null;
 		debugRender = null;
 		mainFrameBuffer = null;
 		local  = null;

@@ -139,8 +139,7 @@ public class Mob extends CapsuleObstacle {
      */
 
     public Mob(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
-        super(tMap.get("robot").getRegionWidth()/scale.x*textureScale.x/2f,
-                tMap.get("robot").getRegionHeight()/scale.y*textureScale.y*H_SCALE);
+        super(objectConstants.get("scale").getFloat(0), 2*objectConstants.get("scale").getFloat(1));
 
         setFixedRotation(true);
         setName("mob");
@@ -149,9 +148,9 @@ public class Mob extends CapsuleObstacle {
         setDrawScale(scale);
         setTextureScale(textureScale);
         walkTime = 0f;
-        spriteFrames = TextureRegion.split(tMap.get("robot-anim").getTexture(), 2058, 2058);
+        spriteFrames = TextureRegion.split(tMap.get("robot-anim").getTexture(), 256, 256);
         walkAnimation = new Animation<>(0.15f, spriteFrames[0]);
-        setTexture(tMap.get("robot"));
+        setTexture(walkAnimation.getKeyFrames()[0]);
 
         setDensity(objectConstants.getFloat("density", 0));
         setFriction(objectConstants.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
@@ -264,7 +263,7 @@ public class Mob extends CapsuleObstacle {
         walkAnimation.setPlayMode(Animation.PlayMode.LOOP_REVERSED);
         walkTime += Gdx.graphics.getDeltaTime();
         TextureRegion currentFrame = walkAnimation.getKeyFrame(walkTime);
-        canvas.draw(currentFrame,Color.WHITE, origin.x, origin.y,x,y, getAngle(),effect * textureScale.x,textureScale.y*H_SCALE);
+        canvas.draw(currentFrame,Color.WHITE, origin.x, origin.y,x,y, getAngle(),effect * textureScale.x,textureScale.y * 0.9f);
     }
 
     /**

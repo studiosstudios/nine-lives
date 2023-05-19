@@ -87,9 +87,20 @@ public class BoxObstacle extends SimpleObstacle {
 	 * @param markDirty  If the fixture should be recreated
 	 */
 	public void setDimension(float width, float height, boolean markDirty) {
+		setDimension(width, height, 0, 0, markDirty);
+	}
+
+	/**
+	 * Sets the dimensions of this box
+	 *
+	 * @param width   The width of this box
+	 * @param height  The height of this box
+	 * @param markDirty  If the fixture should be recreated
+	 */
+	public void setDimension(float width, float height, float x, float y, boolean markDirty) {
 		dimension.set(width, height);
 		markDirty(markDirty);
-		resize(width, height);
+		resize(width, height, x, y);
 		if (!markDirty) { ((PolygonShape) geometry.getShape()).set(vertices); }
 	}
 
@@ -166,22 +177,22 @@ public class BoxObstacle extends SimpleObstacle {
 		geometry = null;
 		
 		// Initialize
-		resize(width, height);	
+		resize(width, height, 0, 0);
 	}
 	
 	/**
 	 * Reset the polygon vertices in the shape to match the dimension.
 	 */
-	private void resize(float width, float height) {
+	private void resize(float width, float height, float x, float y) {
 		// Make the box with the center in the center
-		vertices[0] = -width/2.0f;
-		vertices[1] = -height/2.0f;
-		vertices[2] = -width/2.0f;
-		vertices[3] =  height/2.0f;
-		vertices[4] =  width/2.0f;
-		vertices[5] =  height/2.0f;
-		vertices[6] =  width/2.0f;
-		vertices[7] = -height/2.0f;
+		vertices[0] = -width/2.0f - x;
+		vertices[1] = -height/2.0f - y;
+		vertices[2] = -width/2.0f - x;
+		vertices[3] =  height/2.0f - y;
+		vertices[4] =  width/2.0f - x;
+		vertices[5] =  height/2.0f - y;
+		vertices[6] =  width/2.0f - x;
+		vertices[7] = -height/2.0f - y;
 		shape.set(vertices);
 	}
 

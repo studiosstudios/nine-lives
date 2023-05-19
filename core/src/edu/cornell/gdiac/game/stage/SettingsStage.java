@@ -34,6 +34,17 @@ public class SettingsStage extends StageWrapper {
     /** State to keep track of whether the main menu button has been clicked */
     private int backButtonState;
     private AudioController audioController;
+//    key0: up - up
+//    key1: down - down
+//    key2: right - right
+//    key3: left - left
+//    key4: jump - c
+//    key5: dash - x
+//    key6: climb - z
+//    key7: switch - shift_left
+//    key8: cancel - control_left
+//    key9: undo - u
+//    key10: pan - tab
     private TextButton upButton;
     private TextButton downButton;
     private TextButton rightButton;

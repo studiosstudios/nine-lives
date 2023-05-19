@@ -338,7 +338,7 @@ public class StageController implements Screen {
 				getStage().act();
 				getStage().draw();
 				levelSelectStage.setPlayButtonState(0);
-				selectedLevel = 1;
+				selectedLevel = levelSelectStage.getSelectedLevel();
 //				listener.exitScreen(this, 69);
 			} else if (pauseStage.isResume() && listener != null) {
 				audioController.playSoundEffect("menu-select");

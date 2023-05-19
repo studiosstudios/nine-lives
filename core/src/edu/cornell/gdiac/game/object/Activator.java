@@ -88,7 +88,7 @@ public abstract class Activator extends PolygonObstacle {
         setTexture(bottomTexture);
         setTextureScale(textureScale);
         setRestitution(0);
-        spriteFrames = TextureRegion.split(tMap.get(texture_name).getTexture(), 1024,1024);
+        spriteFrames = TextureRegion.split(tMap.get(texture_name).getTexture(), 256,256);
         float frameDuration = 0.2f;
         animation = new Animation<>(frameDuration, spriteFrames[0]);
         setBodyType(BodyDef.BodyType.StaticBody);
@@ -126,16 +126,15 @@ public abstract class Activator extends PolygonObstacle {
             animationTime += Gdx.graphics.getDeltaTime();
             currentFrame = animation.getKeyFrame(animationTime);
         }
-        float x = getX()*drawScale.x-currentFrame.getRegionWidth()/drawScale.x/2;
-        float scale = 64f/currentFrame.getRegionWidth();
+        float x = (getX() - 0.5f)*drawScale.x;
 
 //        System.out.println();
         if (Math.round(Math.toDegrees(getAngle())) == 180) {
             x = x + drawScale.x;
         }
 
-        canvas.draw(currentFrame, color, origin.x, origin.y, x, getY()*drawScale.y, getAngle(), scale,scale);
-        canvas.draw(bottomTexture, Color.WHITE, origin.x, origin.y, x, (getY())*drawScale.y, getAngle(), scale, scale);
+        canvas.draw(currentFrame, color, origin.x, origin.y, x, getY()*drawScale.y, getAngle(), textureScale.x,textureScale.y);
+        canvas.draw(bottomTexture, Color.WHITE, origin.x, origin.y, x, (getY())*drawScale.y, getAngle(), textureScale.x, textureScale.y);
     }
 
     /**

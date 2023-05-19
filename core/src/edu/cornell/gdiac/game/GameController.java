@@ -340,6 +340,8 @@ public class GameController implements Screen {
         internal.loadAssets();
         internal.finishLoading();
 
+        RayHandler.useDiffuseLight(true);
+
         hud = new HudStage(internal, true);
         hud.lives = currLevel.getNumLives();
     }
@@ -564,13 +566,9 @@ public class GameController implements Screen {
         if (rayHandler != null) {
             rayHandler.dispose();
         }
-//        RayHandler.useDiffuseLight(true);
-//        RayHandler.useDiffuseLight(false);
 
         rayHandler = new RayHandler(world);
-//        rayHandler.setAmbientLight(0.35f, 0.35f, 0.35f, 0.1f);
-        rayHandler.setAmbientLight(0.8f);
-//        rayHandler.setShadows(true);
+        rayHandler.setAmbientLight(0.5f, 0.5f, 0.5f, 1f);
 
         justRespawned = true;
         justReset = true;

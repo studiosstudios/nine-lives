@@ -88,8 +88,8 @@
     "solid_width_scale": 1,
     "light": {
       "distance": 2.5,
-      "color": "#0000ffaa",
-      "activated_color": "#ffff00aa",
+      "color": "#0000ff88",
+      "activated_color": "#ffff0088",
       "offset": [0, 0]
     }
   },
@@ -179,7 +179,7 @@
     "light": {
       "distance": 2,
 //      "color": "#ffff008c",
-      "color": "#ffd700aa",
+      "color": "#F2F0DF88",
       "offset": [0, 0]
     }
   },

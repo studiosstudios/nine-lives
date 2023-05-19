@@ -1080,7 +1080,10 @@ public class Level {
                 case "color":
                     //tiles parses colors as ARGB >:(
                     String color = property.getString("value");
-                    propertiesMap.put(name, Color.valueOf("#" + color.substring(3) + color.substring(1, 3)));
+                    if (color.length() == 9) { // If a color property is left blank on tiled, sometimes it still presents a weird string which is guarded here
+                        propertiesMap.put(name,
+                                Color.valueOf("#" + color.substring(3) + color.substring(1, 3)));
+                    }
                     break;
                 case "class":
                     switch (property.getString("propertytype")){

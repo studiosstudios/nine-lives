@@ -425,6 +425,22 @@ public abstract class Obstacle {
 	}
 
 	/**
+	 * Creates a box2dlight PointLight. The additional parameters are optional; the lightData JsonValue
+	 * should be valid, but the additional parameters allow for more customization when desired.
+	 * @param lightData valid JSON of object constants corresponding to this obstacle
+	 * @param rayHandler Ray handler currently associated with the active world
+	 * @param color Color this box2dlight should adopt. If null, will draw from lightData instead
+	 * @param distance Distance this box2dlight should adopt. If 0, will draw from lightData instead
+	 * @param offset Offset vector this box2dlight should adopt. If 0, will draw from lightData instead
+	 */
+	public void createPointLight(JsonValue lightData, RayHandler rayHandler, Color color, int distance, Vector2 offset) {
+		float xOffset = offset.x != 0 ? offset.x : lightData.get("offset").getFloat(0), yOffset = offset.y != 0 ? offset.y : lightData.get("offset").getFloat(1);
+		lightColor.set(color != null ? color : Color.valueOf(lightData.getString("color")));
+		greyColor = greyColor(lightColor);
+		light = new PointLight(rayHandler, 100, lightColor, distance != 0 ? distance : lightData.getFloat("distance"), xOffset, yOffset);
+	}
+
+	/**
 	 * Creates a box2dlight ConeLight given a valid objectConstants and rayHandler
 	 * <br><br>
 	 * The objectConstants should contain the following fields:<br>

@@ -310,6 +310,23 @@
                     "value": true
                 },
                 {
+                    "name": "color",
+                    "type": "color",
+                    "value": ""
+                },
+                {
+                    "name": "distance",
+                    "type": "int",
+                    "value": 0
+                },
+                {
+                    "name": "offset",
+                    "propertyType": "Vector2",
+                    "type": "class",
+                    "value": {
+                    }
+                },
+                {
                     "name": "type",
                     "propertyType": "lightType",
                     "type": "string",

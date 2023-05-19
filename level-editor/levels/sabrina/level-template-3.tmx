@@ -96,7 +96,7 @@
  </objectgroup>
  <objectgroup id="4" name="flamethrowers"/>
  <objectgroup id="20" name="goal">
-  <object id="184" gid="8" x="28672" y="3072" width="1024" height="2048"/>
+  <object id="184" gid="8" x="28672" y="0" width="1024" height="5120"/>
  </objectgroup>
  <objectgroup id="3" name="checkpoints">
   <object id="175" gid="3" x="14336" y="10240" width="1024" height="2048"/>

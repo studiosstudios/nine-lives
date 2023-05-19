@@ -50,6 +50,7 @@ public class Door extends BoxObstacle implements Activatable {
     private TextureRegion bottom;
     private TextureRegion middle;
     private static float shrink;
+    private Color baseColor = new Color();
 
     private class Cap extends BoxObstacle {
         public Cap(float width, float height) {
@@ -76,6 +77,7 @@ public class Door extends BoxObstacle implements Activatable {
         middle = tiles[0][2];
         bottom = tiles[0][0];
         bottom.setRegion(0, textureSize/2, textureSize, textureSize/2); //remove weird line
+        baseColor.set((Color) properties.get("baseColor",  Color.WHITE));
         this.textureSize = textureSize;
         setDrawScale(scale);
         setDensity(objectConstants.getFloat( "density", 0.0f ));
@@ -169,7 +171,7 @@ public class Door extends BoxObstacle implements Activatable {
 
         if (closing == -1 && cap.getPosition().dst(capClosedPos) > capOpenPos.dst(capClosedPos)) {
             cap.setPosition(capOpenPos);
-            cap.setActive(false);
+            cap.setSensor(true);
             setActive(false);
             closing = 0;
         } else if (closing == 1 && cap.getPosition().dst(capOpenPos) > capOpenPos.dst(capClosedPos)){
@@ -216,15 +218,14 @@ public class Door extends BoxObstacle implements Activatable {
      * @return      true if object allocation succeeded
      */
     public boolean activatePhysics(World world){
-        if (!super.activatePhysics(world)) {
+        if (!super.activatePhysics(world) || !cap.activatePhysics(world)) {
             return false;
         }
         if (!activated) {
             deactivated(world);
             setActive(false);
-        }
-        if (!cap.activatePhysics(world)) {
-            return false;
+            cap.setSensor(true);
+            cap.setPosition(capOpenPos);
         }
         cap.getBody().setUserData(this);
         return true;
@@ -237,7 +238,7 @@ public class Door extends BoxObstacle implements Activatable {
     public void activated(World world){
         closing = 1;
         setActive(true);
-        cap.setActive(true);
+        cap.setSensor(false);
     }
 
     /**
@@ -309,7 +310,7 @@ public class Door extends BoxObstacle implements Activatable {
                     canvas.draw(top, Color.WHITE, 0, 0, (topX+dx)*drawScale.x, topY*drawScale.y, rotation, scale, scale);
                     canvas.draw(middle, Color.WHITE, 0, 0, (midX+dx)*drawScale.x, midY*drawScale.y, rotation, scale, scale);
                 }
-                canvas.draw(bottom, Color.WHITE, 0, 0, (botX+dx)*drawScale.x, botY*drawScale.y, rotation, scale, scale);
+                canvas.draw(bottom, baseColor, 0, 0, (botX+dx)*drawScale.x, botY*drawScale.y, rotation, scale, scale);
             }
         } else {
             if (angle == Direction.RIGHT) {
@@ -331,7 +332,7 @@ public class Door extends BoxObstacle implements Activatable {
                     canvas.draw(top, Color.WHITE, 0, 0, topX * drawScale.x, (topY + dy) * drawScale.y, rotation, scale, scale);
                     canvas.draw(middle, Color.WHITE, 0, 0, midX * drawScale.x, (midY + dy) * drawScale.y, rotation, scale, scale);
                 }
-                canvas.draw(bottom, Color.WHITE, 0, 0, botX*drawScale.x, (botY+dy)*drawScale.y, rotation, scale, scale);
+                canvas.draw(bottom, baseColor, 0, 0, botX*drawScale.x, (botY+dy)*drawScale.y, rotation, scale, scale);
             }
         }
 
@@ -358,15 +359,24 @@ public class Door extends BoxObstacle implements Activatable {
 
     public ObjectMap<String, Object> storeState(){
         ObjectMap<String, Object> stateMap = super.storeState();
-        stateMap.put("ticks", ticks);
         stateMap.put("closing", closing);
         stateMap.put("activated", activated);
+        stateMap.put("capState", cap.storeState());
         return stateMap;
     }
 
     public void loadState(ObjectMap<String, Object> stateMap){
         super.loadState(stateMap);
-        ticks = (int) stateMap.get("ticks");
         closing = (float) stateMap.get("closing");
+        activated = (boolean) stateMap.get("activated");
+        if (activated) {
+            closing = 1;
+            setActive(true);
+            cap.setSensor(false);
+        } else {
+            cap.setBodyType(BodyDef.BodyType.DynamicBody);
+            closing = -1;
+        }
+        cap.loadState((ObjectMap<String, Object>) stateMap.get("capState"));
     }
 }

@@ -141,7 +141,7 @@ public class ActionController {
         InputController ic = InputController.getInstance();
         Cat cat = level.getCat();
 
-        updateSpiritLine(dt, ic.holdSwitch() && !ic.didSwitch());
+        updateSpiritLine(dt, level.canSwitch && ic.holdSwitch() && !ic.didSwitch());
 
         for (SpiritRegion sr : level.getSpiritRegionArray()) {
             sr.setSpiritRegionColorOpacity(ic.holdSwitch());
@@ -152,7 +152,7 @@ public class ActionController {
             moveSpirits();
         }
 
-        if (ic.didSwitch()) {
+        if (level.canSwitch && ic.didSwitch()) {
             //switch body
             DeadBody body = level.getNextBody();
             if (body != null && body.isSwitchable()){
@@ -170,7 +170,7 @@ public class ActionController {
             cat.setVerticalMovement(ic.getVertical());
             cat.setJumpPressed(ic.didJump());
             cat.setClimbingPressed(ic.didClimb());
-            cat.setDashPressed(ic.didDash());
+            cat.setDashPressed(level.canDash && ic.didDash());
             cat.setMeowing(ic.didMeow());
 
             cat.updateState();
@@ -411,16 +411,6 @@ public class ActionController {
             }
         }
 
-        if (level.getCat().getBody().getFixtureList().contains(rayCastFixture, true)){
-            die(true);
-        }
-
-        //check deadbodies
-        for (DeadBody db : hitDeadbodies.keys()){
-            if (hitDeadbodies.get(db) < closestFraction) {
-                db.setTouchingLaser(true);
-            }
-        }
     }
 
     /**
@@ -600,9 +590,7 @@ public class ActionController {
         @Override
         public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
             Obstacle obs = (Obstacle) fixture.getBody().getUserData();
-            if (fixture.getUserData() != null && fixture.getUserData().equals(DeadBody.catBodyName)) {
-                hitDeadbodies.put((DeadBody) fixture.getBody().getUserData(), fraction);
-            } else if ( fraction < closestFraction && (!fixture.isSensor() || obs instanceof Cat)) {
+            if ( fraction < closestFraction && (!fixture.isSensor() || obs instanceof Cat)) {
                 closestFraction = fraction;
                 rayCastPoint.set(point);
                 rayCastFixture = fixture;

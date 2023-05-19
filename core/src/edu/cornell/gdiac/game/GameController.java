@@ -363,6 +363,7 @@ public class GameController implements Screen {
         setLevels();
 //        respawn();
         currLevel.setCat(prevLevel.getCat());
+        currLevel.updateCheckpoints(prevLevel.getCheckpoint(), true); //because checkpoints and exits lie on the same position
         prevLevel.removeCat();
 
         nextLevel.dispose();
@@ -462,11 +463,11 @@ public class GameController implements Screen {
                 // LASERS
                 "laser",
                 // CHECKPOINTS
-                "checkpoint-anim", "checkpoint-active-anim", "checkpoint-base", "checkpoint-base-active",
+                "checkpoint-anim", "checkpoint-active-anim", "checkpoint-base", "checkpoint-base-active", "checkpoint-activation-anim",
                 // GOAL
-                "goal", "goal-active",
+                "goal", "goal-active", "goal-bases", "goal-idle-anim", "goal-inactive",
                 // ROBOT & MOBS
-                "robot", "robot-anim",
+                "robot-anim",
                 // SPIRIT BOUNDARIES
                 "spirit-anim", "spirit-photon", "spirit-photon-cat", "spirit-region",
                 // ACTIVATABLE LIGHTS
@@ -485,7 +486,9 @@ public class GameController implements Screen {
                 "tutorial-jump-dash", "tutorial-undo", "tutorial-climb",
                 "cabinet-left", "cabinet-mid", "cabinet-right", "goggles", "microscope",
                 "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf", "wall-bottom", "wall-top",
-                "tank", "test-tubes", "coke", "broken-robot", "coming-soon"
+                "tank", "test-tubes", "coke", "broken-robot", "coming-soon", "arrow-sign",
+                "cat-tank","cat-tank-purple","chair","dandelions","desktop","firefly","flowers",
+                "mushrooms","pin-board","robo","window-robo","x-ray"
                 }; // Unsure if this is actually being used
         for (String n : names){
 //            System.out.println(n);
@@ -499,7 +502,7 @@ public class GameController implements Screen {
         names = new String[]{"bkg-lab-1", "bkg-forest-1"};
         audioController.createMusicMap(directory, names);
 
-//        audioController.playLab();
+        audioController.playLab();
 //        audioController.playLevelMusic();
 
         names = new String[]{"retro"};
@@ -663,7 +666,6 @@ public class GameController implements Screen {
      * @return whether to process the update loop
      */
     public boolean preUpdate(float dt) {
-
         if (listener == null) {
             return true;
         }
@@ -687,7 +689,7 @@ public class GameController implements Screen {
             return false;
         }
 
-        if (input.holdSwitch()) {
+        if (currLevel.canSwitch && input.holdSwitch()) {
             spiritModeTicks++;
             updateVFX(true, input.switchPressed(), dt);
         } else {
@@ -850,11 +852,11 @@ public class GameController implements Screen {
             else {
                 currLevel.getCat().setActive(true);
                 //zoom normal when in play state and not panning and not switching bodies
-                if (!input.holdSwitch() && !input.didPan()) {
+                if (!(currLevel.canSwitch && input.holdSwitch()) && !input.didPan()) {
                     cam.setZoom(false, -1f);
                 }
                 DeadBody nextDeadBody = currLevel.getNextBody();
-                if (input.holdSwitch() && nextDeadBody != null) {
+                if (currLevel.canSwitch && input.holdSwitch() && nextDeadBody != null) {
                     cam.setGlideMode("SWITCH_BODY");
                     cam.switchBodyCam(nextDeadBody.getX() * scale.x, nextDeadBody.getY() * scale.y);
                 } else {
@@ -872,6 +874,7 @@ public class GameController implements Screen {
         }
         if(gameState == GameState.PAN) {
             cam.updateCamera(panTarget.get(0).getXPos() * scale.x, panTarget.get(0).getYPos() * scale.y, true, cam.getLevelBounds());
+            input.setDisableAll(true);
             if (!cam.isGliding()) {
                 panTime += 1;
                 if (panTime == PAN_HOLD) {

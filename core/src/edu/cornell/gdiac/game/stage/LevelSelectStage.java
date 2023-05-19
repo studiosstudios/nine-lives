@@ -13,7 +13,7 @@ import edu.cornell.gdiac.game.Save;
 import java.util.HashMap;
 
 public class LevelSelectStage extends StageWrapper {
-    private static final int NUM_LEVELS = 14;
+    private static int numLevels;
     private static final int BAR_WIDTH = 800;
     private static final int BAR_HEIGHT = STANDARD_HEIGHT - 150;
     private static final int SEGMENT_GAP = 5;
@@ -39,6 +39,7 @@ public class LevelSelectStage extends StageWrapper {
     public int getPlayButtonState() { return playButtonState; }
     public void setPlayButtonState(int state) { playButtonState = state; }
     public int getSelectedLevel() { return selectedLevel; }
+    public static void setNumLevels(int numLevels) { LevelSelectStage.numLevels = numLevels; }
     public LevelSelectStage(AssetDirectory internal, boolean createActors) {
         super(internal, createActors);
 //        selectedLevel = 1;
@@ -47,11 +48,11 @@ public class LevelSelectStage extends StageWrapper {
     }
 
     private void createBar() {
-        barActors = new Array<>(NUM_LEVELS);
-        segmentIndex = new HashMap<>(NUM_LEVELS);
-        float segmentWidth = (BAR_WIDTH / NUM_LEVELS) - SEGMENT_GAP*2;
+        barActors = new Array<>(numLevels);
+        segmentIndex = new HashMap<>(numLevels);
+        float segmentWidth = (BAR_WIDTH / numLevels) - SEGMENT_GAP*2;
         float barStart = (STANDARD_WIDTH - BAR_WIDTH) * 2 / 3;
-        for (int i = 0; i < NUM_LEVELS; i++) {
+        for (int i = 0; i < numLevels; i++) {
             Actor temp = addBarSegment(internal.getEntry("bar-segment", Texture.class), barStart+segmentWidth*i+SEGMENT_GAP*(i+1), BAR_HEIGHT, segmentWidth, SEGMENT_HEIGHT);
             if (i+1 > progress) {
                 temp.setColor(Color.GRAY);
@@ -133,7 +134,7 @@ public class LevelSelectStage extends StageWrapper {
         rightArrowActor.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (selectedLevel < NUM_LEVELS && selectedLevel < progress) {
+                if (selectedLevel < numLevels && selectedLevel < progress) {
 //                    selectedLevel++;
                     changeLevel(selectedLevel + 1);
 //                    levelChanged = true;

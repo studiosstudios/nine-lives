@@ -442,7 +442,10 @@ public class InputController {
 	private void readKeyboard() {
 		pressedMap.put("pan", Gdx.input.isKeyPressed(controls.get("pan")));
 		for (String control : controlNames){
-			if(disableAll){
+			if(control.equals("exit")){
+				pressedMap.put("exit", Gdx.input.isKeyPressed(controls.get("exit")));
+			}
+			else if(disableAll){
 				pressedMap.put(control, false);
 			}
 			else if(pressedMap.get("pan")) {

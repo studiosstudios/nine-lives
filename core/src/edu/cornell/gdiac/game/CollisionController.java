@@ -384,6 +384,10 @@ public class CollisionController implements ContactListener, ContactFilter {
                     return false;
                 }
 
+                if (bd1 instanceof Door && bd2 instanceof Door) return false;
+
+                if (bd1 instanceof Platform && bd2 instanceof Platform) return false;
+
                 if (bd1 instanceof Wall && bd2 instanceof Platform) return false;
 
                 if (bd1 instanceof Door && bd2 instanceof Wall) return false;
@@ -419,7 +423,6 @@ public class CollisionController implements ContactListener, ContactFilter {
                 fix2 = fixTemp;
             }
 
-            if (bd1 instanceof Door && bd2 instanceof Door) return false;
 
         } catch (Exception e) {
             e.printStackTrace();

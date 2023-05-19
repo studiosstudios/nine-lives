@@ -25,7 +25,7 @@ public abstract class Activator extends PolygonObstacle {
     /** Filmstrip */
     protected Animation<TextureRegion> animation;
     /** If the activator is activating objects */
-    protected boolean active;
+    protected boolean activating;
     /** The unique string id of this Activator */
     protected String id;
     /** Array of animation frames */
@@ -49,7 +49,7 @@ public abstract class Activator extends PolygonObstacle {
     /**
      * @return true if the activator is currently activating
      */
-    public boolean isActivating(){ return active; }
+    public boolean isActivating(){ return activating; }
 
     /**
      * @return true if an object is pressing this activator
@@ -110,7 +110,7 @@ public abstract class Activator extends PolygonObstacle {
 //        setY((float) properties.get("y")+objectConstants.get("offset").getFloat(1));
         color.set((Color) properties.get("color", Color.RED));
         pan = (boolean) properties.get("shouldPan", false);
-        active = false;
+        activating = false;
     }
 
     @Override
@@ -193,5 +193,17 @@ public abstract class Activator extends PolygonObstacle {
     }
     public void setPan(boolean p){
         pan = p;
+    }
+
+    @Override
+    public ObjectMap<String, Object> storeState(){
+        ObjectMap<String, Object> stateMap = super.storeState();
+        stateMap.put("activating", activating);
+        return stateMap;
+    }
+
+    public void loadState(ObjectMap<String, Object> stateMap) {
+        super.loadState(stateMap);
+        activating = (boolean) stateMap.get("activating");
     }
 }

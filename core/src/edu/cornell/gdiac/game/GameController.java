@@ -499,7 +499,7 @@ public class GameController implements Screen {
         names = new String[]{"bkg-lab-1", "bkg-forest-1"};
         audioController.createMusicMap(directory, names);
 
-//        audioController.playLab();
+        audioController.playLab();
 //        audioController.playLevelMusic();
 
         names = new String[]{"retro"};
@@ -872,6 +872,7 @@ public class GameController implements Screen {
         }
         if(gameState == GameState.PAN) {
             cam.updateCamera(panTarget.get(0).getXPos() * scale.x, panTarget.get(0).getYPos() * scale.y, true, cam.getLevelBounds());
+            input.setDisableAll(true);
             if (!cam.isGliding()) {
                 panTime += 1;
                 if (panTime == PAN_HOLD) {

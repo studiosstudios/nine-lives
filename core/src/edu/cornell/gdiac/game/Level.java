@@ -530,14 +530,10 @@ public class Level {
         levelStates = new Array<>();
 
         JsonValue layers = tiledMap.get("layers");
-        JsonValue tileData = layers.get(0);
-
-        if (biome.equals("forest")) {
-            tileData = layers.get(1);
-        }
         JsonValue climbableData = null;
         JsonValue windowData = null;
         JsonValue leafData = null;
+        JsonValue tileData = null;
 
         tileSize = tiledMap.getInt("tilewidth");
         int levelWidth = tiledMap.getInt("width");
@@ -560,6 +556,10 @@ public class Level {
             }
             else if (layer.getString("name").equals("forestLeaves")) {
                 leafData = layer;
+            }
+            else if (layer.getString("name").equals("forestWalls") && biome.equals("forest") ||
+                    layer.getString("name").equals("metalWalls") && biome.equals("metal")) {
+                tileData = layer;
             }
         }
         if (next != null) {
@@ -1312,7 +1312,16 @@ public class Level {
 
         spiritLine.draw(canvas);
 
+        String spiritRegionColor = "";
+        if (cat != null)  spiritRegionColor = cat.getSpiritRegionColor().toString().substring(0, 6);
         for (SpiritRegion s : spiritRegionArray) {
+            if (greyscale > 0) {
+                if (!s.getColorString().equals(spiritRegionColor)) {
+                    s.setGreyscale(greyscale);
+                } else {
+                    s.setGreyscale(0);
+                }
+            }
             s.draw(canvas);
         }
 

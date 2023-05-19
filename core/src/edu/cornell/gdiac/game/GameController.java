@@ -462,7 +462,7 @@ public class GameController implements Screen {
                 // LASERS
                 "laser",
                 // CHECKPOINTS
-                "checkpoint-anim", "checkpoint-active-anim", "checkpoint-base", "checkpoint-base-active",
+                "checkpoint-anim", "checkpoint-active-anim", "checkpoint-base", "checkpoint-base-active", "checkpoint-activation-anim",
                 // GOAL
                 "goal", "goal-active",
                 // ROBOT & MOBS

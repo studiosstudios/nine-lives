@@ -34,18 +34,24 @@ public class Checkpoint extends BoxObstacle
     private TextureRegion[][] spriteFrames;
     /** The frames of the active checkpoint animation */
     private TextureRegion[][] activeSpriteFrames;
+    /** The frames of the checkpoint activation animation */
+    private TextureRegion[][] activationSpriteFrames;
     /** How long the checkpoint has been animating */
     private float animationTime;
     /** Filmstrip of non-active checkpoint animation */
     private Animation<TextureRegion> animation;
     /** Filmstrip of active checkpoint animation */
     private Animation<TextureRegion> activeAnimation;
+    /** Filmstrip of checkpoint activation animation */
+    private Animation<TextureRegion> activationAnimation;
     /** if the player was facing right when getting this checkpoint */
     private boolean facingRight;
     /** direction of this checkpoint */
     private Direction dir;
     private Vector2 baseOffset;
     private Vector2 respawnOffset;
+    private boolean activate;
+//    private boolean active;
 
     /**
      * Creates a new Checkpoint object.
@@ -59,6 +65,8 @@ public class Checkpoint extends BoxObstacle
 
         super(32/scale.x, 64/scale.y);
         current = false;
+        activate = false;
+//        active = false;
         setTextureScale(textureScale);
         int spriteWidth = 128;
         int spriteHeight = 256;
@@ -66,10 +74,13 @@ public class Checkpoint extends BoxObstacle
         this.activeBaseTexture = tMap.get("checkpoint-base-active");
         spriteFrames = TextureRegion.split(tMap.get("checkpoint-anim").getTexture(), spriteWidth, spriteHeight);
         activeSpriteFrames = TextureRegion.split(tMap.get("checkpoint-active-anim").getTexture(), spriteWidth, spriteHeight);
+        activationSpriteFrames = TextureRegion.split(tMap.get("checkpoint-activation-anim").getTexture(), spriteWidth, spriteHeight+spriteHeight/2);
+
         float frameDuration = 0.1f;
 
         animation = new Animation<>(frameDuration, spriteFrames[0]);
         activeAnimation = new Animation<>(frameDuration, activeSpriteFrames[0]);
+        activationAnimation = new Animation<>(frameDuration, activationSpriteFrames[0]);
 
         animation.setPlayMode(Animation.PlayMode.LOOP);
         animationTime = 0f;
@@ -156,14 +167,33 @@ public class Checkpoint extends BoxObstacle
      * @param facingRight     if the player was facing right when getting this checkpoint
      */
     public void setCurrent(boolean b, boolean facingRight){
+        System.out.println(activate);
         current = b;
+//        active = b;
         this.facingRight = facingRight;
         JsonValue lightData = objectConstants.get("light");
-        if (b) {
+
+        if (!activate) {
+            activate = true;
+            activationAnimation = new Animation<>(0.1f, activationSpriteFrames[0]);
+
+//            activationAnimation.setPlayMode(Animation.PlayMode.LOOP);
+            lightColor = Color.valueOf(lightData.getString("activated_color"));
+            greyColor = greyColor(lightColor);
+        }
+        else if (b) {
+//            active = true;
+//            if (!activate) {
+//                activationAnimation.setPlayMode(Animation.PlayMode.LOOP);
+//                activate = true;
+//            }
+//            activate = false;
             animation.setPlayMode(Animation.PlayMode.LOOP);
             lightColor = Color.valueOf(lightData.getString("activated_color"));
             greyColor = greyColor(lightColor);
         } else {
+//            active = false;
+            activate = false;
             activeAnimation.setPlayMode(Animation.PlayMode.LOOP);
             lightColor = Color.valueOf(lightData.getString("color"));
             greyColor = greyColor(lightColor);
@@ -195,7 +225,29 @@ public class Checkpoint extends BoxObstacle
     @Override
     public void draw(GameCanvas canvas){
         animationTime += Gdx.graphics.getDeltaTime();
-        if (current) {
+////        setTexture(activationAnimation.getKeyFrame(0f));
+        if (activate) {
+//            animationTime = 0;
+            setTexture(activationAnimation.getKeyFrame(animationTime));
+                activationAnimation.setPlayMode(Animation.PlayMode.NORMAL);
+            if (activationAnimation.isAnimationFinished(animationTime)) {
+                setTexture(animation.getKeyFrame(animationTime));
+                animation.setPlayMode(Animation.PlayMode.LOOP);
+//                activate = false;
+
+            }
+//            if (activationAnimation.getKeyFrameIndex(animationTime) == activationSpriteFrames.length-1) {
+//                activate = false;
+//            }
+        }
+        else if (current) {
+//                setTexture(activationAnimation.getKeyFrame(animationTime));
+//                activationAnimation.setPlayMode(Animation.PlayMode.NORMAL);
+//                if (activationAnimation.isAnimationFinished(animationTime)) {
+////                    activationAnimation.
+//                    setTexture(animation.getKeyFrame(animationTime));
+//                    animation.setPlayMode(Animation.PlayMode.LOOP);
+//            }
             setTexture(animation.getKeyFrame(animationTime));
             animation.setPlayMode(Animation.PlayMode.LOOP);
         } else {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.10.1" name="decor" tilewidth="3840" tileheight="2946" tilecount="27" columns="0">
+<tileset version="1.10" tiledversion="1.10.1" name="decor" tilewidth="3840" tileheight="2946" tilecount="29" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="8" type="Decoration">
   <image width="1024" height="1024" source="tutorial-burn.png"/>
@@ -33,6 +33,12 @@
  </tile>
  <tile id="20" type="Decoration">
   <image width="2048" height="1024" source="tutorial-spikes.png"/>
+ </tile>
+ <tile id="35" type="Decoration">
+  <image width="1024" height="1024" source="tutorial-climb.png"/>
+ </tile>
+ <tile id="36">
+  <image width="128" height="128" source="arrow-sign.png"/>
  </tile>
  <tile id="16" type="Decoration">
   <image width="2048" height="2048" source="cat-vinci.png"/>
@@ -82,7 +88,4 @@
  <tile id="34" type="Decoration">
   <image width="2048" height="2048" source="broken-robot.png"/>
  </tile>
-  <tile id="35" type="Decoration">
-   <image width="1024" height="1024" source="tutorial-climb.png"/>
-  </tile>
 </tileset>

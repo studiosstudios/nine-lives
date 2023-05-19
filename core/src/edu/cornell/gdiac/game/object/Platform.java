@@ -60,7 +60,7 @@ public class Platform extends BoxObstacle implements Activatable {
         this.width = width;
         this.height = height;
         setName("platform");
-        setBodyType(BodyDef.BodyType.StaticBody);
+        setBodyType(BodyDef.BodyType.KinematicBody);
         setGravityScale(0);
         setFixedRotation(true);
         setDensity(objectConstants.getFloat( "density", 0.0f ));
@@ -169,7 +169,7 @@ public class Platform extends BoxObstacle implements Activatable {
         if (getPosition().epsilonEquals(target, 0.01f)){
             moving = 0;
             setPosition(target);
-            setBodyType(BodyDef.BodyType.StaticBody);
+            setBodyType(BodyDef.BodyType.KinematicBody);
             targetVel.set(0, 0);
             setVX(0);
             setVY(0);
@@ -179,7 +179,7 @@ public class Platform extends BoxObstacle implements Activatable {
         if (other.dst(getPosition()) > other.dst(target)) {
             moving = 0;
             setPosition(target);
-            setBodyType(BodyDef.BodyType.StaticBody);
+            setBodyType(BodyDef.BodyType.KinematicBody);
             setVX(0);
             setVY(0);
             targetVel.set(0, 0);

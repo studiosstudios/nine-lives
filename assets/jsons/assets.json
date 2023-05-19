@@ -55,6 +55,7 @@
       "checkpoint-active-anim" : "obstacles/checkpoint/checkpoint-active-anim.png",
       "checkpoint-base" : "obstacles/checkpoint/checkpoint-base.png",
       "checkpoint-base-active" : "obstacles/checkpoint/checkpoint-base-active.png",
+      "checkpoint-activation-anim": "obstacles/checkpoint/checkpoint-activation-anim.png",
       "robot-anim": "mob/robot/robot-anim.png",
       "spirit-anim": "obstacles/spirit-region/spirit-anim.png", //UNUSED
       "spirit-photon": "obstacles/spirit-region/spirit-photon.png",
@@ -106,7 +107,8 @@
       "test-tubes": "world/decor/test-tubes.png",
       "tank": "world/decor/tank.png",
       "broken-robot": "world/decor/broken-robot.png",
-      "coming-soon": "world/decor/coming-soon.png"
+      "coming-soon": "world/decor/coming-soon.png",
+      "arrow-sign": "world/decor/arrow-sign.png"
     },
     "jsons"  : {
         "constants": "jsons/constants.json",
@@ -120,17 +122,18 @@
       //        "tiledLevel2": "levels/test-windows.json",
       //        "tiledLevel1": "levels/lights.json",
         "tiledLevel5": "levels/activator-door-tutorial.json",
-      "tiledLevel6": "levels/tutorial-flamethrower.json",
-        "tiledLevel7": "levels/tutorial-camera.json",
-        "tiledLevel8": "levels/spikes-deaths-easy.json",
-        "tiledLevel9": "levels/mob-push-box.json",
-      "tiledLevel10": "levels/basic-body-switch.json",
-        "tiledLevel11": "levels/triple-body-deposits.json",
-        "tiledLevel12": "levels/level-beta-med1.json",
-        "tiledLevel13": "levels/super-jump.json",
+      "tiledLevel6": "levels/checkpoint-maze.json",
+      "tiledLevel7": "levels/tutorial-flamethrower.json",
+        "tiledLevel8": "levels/tutorial-camera.json",
+        "tiledLevel9": "levels/spikes-deaths-easy.json",
+        "tiledLevel10": "levels/mob-push-box.json",
+      "tiledLevel11": "levels/basic-body-switch.json",
+        "tiledLevel12": "levels/triple-body-deposits.json",
+        "tiledLevel13": "levels/level-beta-med1.json",
+        "tiledLevel14": "levels/super-jump.json",
 //        "tiledLevel5": "levels/level-beta-hard.json",
 //        "tiledLevel14": "levels/party-room.json",
-        "tiledLevel14": "levels/test-forest.json"
+        "tiledLevel15": "levels/test-forest.json"
     },
     "soundfx" : {
         "jump" : "sounds/jump-CELESTE.wav",

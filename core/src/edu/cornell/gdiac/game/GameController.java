@@ -363,6 +363,7 @@ public class GameController implements Screen {
         setLevels();
 //        respawn();
         currLevel.setCat(prevLevel.getCat());
+        currLevel.updateCheckpoints(prevLevel.getCheckpoint(), true); //because checkpoints and exits lie on the same position
         prevLevel.removeCat();
 
         nextLevel.dispose();
@@ -462,7 +463,7 @@ public class GameController implements Screen {
                 // LASERS
                 "laser",
                 // CHECKPOINTS
-                "checkpoint-anim", "checkpoint-active-anim", "checkpoint-base", "checkpoint-base-active",
+                "checkpoint-anim", "checkpoint-active-anim", "checkpoint-base", "checkpoint-base-active", "checkpoint-activation-anim",
                 // GOAL
                 "goal", "goal-active", "goal-bases", "goal-idle-anim",
                 // ROBOT & MOBS
@@ -485,7 +486,7 @@ public class GameController implements Screen {
                 "tutorial-jump-dash", "tutorial-undo", "tutorial-climb",
                 "cabinet-left", "cabinet-mid", "cabinet-right", "goggles", "microscope",
                 "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf", "wall-bottom", "wall-top",
-                "tank", "test-tubes", "coke", "broken-robot", "coming-soon"
+                "tank", "test-tubes", "coke", "broken-robot", "coming-soon", "arrow-sign"
                 }; // Unsure if this is actually being used
         for (String n : names){
 //            System.out.println(n);
@@ -499,7 +500,7 @@ public class GameController implements Screen {
         names = new String[]{"bkg-lab-1", "bkg-forest-1"};
         audioController.createMusicMap(directory, names);
 
-//        audioController.playLab();
+        audioController.playLab();
 //        audioController.playLevelMusic();
 
         names = new String[]{"retro"};
@@ -663,7 +664,6 @@ public class GameController implements Screen {
      * @return whether to process the update loop
      */
     public boolean preUpdate(float dt) {
-
         if (listener == null) {
             return true;
         }
@@ -872,6 +872,7 @@ public class GameController implements Screen {
         }
         if(gameState == GameState.PAN) {
             cam.updateCamera(panTarget.get(0).getXPos() * scale.x, panTarget.get(0).getYPos() * scale.y, true, cam.getLevelBounds());
+            input.setDisableAll(true);
             if (!cam.isGliding()) {
                 panTime += 1;
                 if (panTime == PAN_HOLD) {

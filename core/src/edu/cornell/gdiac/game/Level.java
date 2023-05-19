@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.game.object.*;
 
 import edu.cornell.gdiac.game.obstacle.*;
+import edu.cornell.gdiac.util.Direction;
 import edu.cornell.gdiac.util.PooledList;
 
 import java.util.HashMap;
@@ -438,11 +439,12 @@ public class Level {
     }
 
     /**
-     * Updates active checkpoints and cat respawning position
+     * Updates active checkpoints and cat respawning positionc
      *
      * @param c The most recent checkpoint the cat has come in contact with
      */
     public void updateCheckpoints(Checkpoint c, boolean shouldSave){
+        if (c == currCheckpoint) return;
         if(currCheckpoint != null){
             currCheckpoint.setCurrent(false, true);
         }
@@ -529,14 +531,10 @@ public class Level {
         levelStates = new Array<>();
 
         JsonValue layers = tiledMap.get("layers");
-        JsonValue tileData = layers.get(0);
-
-        if (biome.equals("forest")) {
-            tileData = layers.get(1);
-        }
         JsonValue climbableData = null;
         JsonValue windowData = null;
         JsonValue leafData = null;
+        JsonValue tileData = null;
 
         tileSize = tiledMap.getInt("tilewidth");
         int levelWidth = tiledMap.getInt("width");
@@ -559,6 +557,10 @@ public class Level {
             }
             else if (layer.getString("name").equals("forestLeaves")) {
                 leafData = layer;
+            }
+            else if (layer.getString("name").equals("forestWalls") && biome.equals("forest") ||
+                    layer.getString("name").equals("metalWalls") && biome.equals("metal")) {
+                tileData = layer;
             }
         }
         if (next != null) {
@@ -1311,7 +1313,16 @@ public class Level {
 
         spiritLine.draw(canvas);
 
+        String spiritRegionColor = "";
+        if (cat != null)  spiritRegionColor = cat.getSpiritRegionColor().toString().substring(0, 6);
         for (SpiritRegion s : spiritRegionArray) {
+            if (greyscale > 0) {
+                if (!s.getColorString().equals(spiritRegionColor)) {
+                    s.setGreyscale(greyscale);
+                } else {
+                    s.setGreyscale(0);
+                }
+            }
             s.draw(canvas);
         }
 
@@ -1519,6 +1530,8 @@ public class Level {
         private TextureRegion textureRegion;
         private Vector2 scale = new Vector2();
         private Vector2 textureScale = new Vector2();
+        /** direction of this button */
+        private float angle;
         public Decoration(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale) {
             position.set((float) properties.get("x"), (float) properties.get("y"));
             try {
@@ -1532,9 +1545,16 @@ public class Level {
             } catch (NullPointerException e) {
                 throw new InvalidTiledJSON("Failed to load in decoration " + properties.get("name"));
             }
+
+            // Rotation:
+            angle = ((float) ((float) properties.get("rotation") * Math.PI/180));
         }
         public void draw(GameCanvas canvas){
-            canvas.draw(textureRegion, Color.WHITE, 0, 0, position.x * scale.x, position.y * scale.y, 0, textureScale.x, textureScale.y);
+//            float x = position.x * scale.x;
+//            if (Math.round(Math.toDegrees(angle)) == 180) {
+//                x = x + scale.x;
+//            }
+            canvas.draw(textureRegion, Color.WHITE, 0, 0, position.x * scale.x, position.y * scale.y, angle, textureScale.x, textureScale.y);
         }
     }
 

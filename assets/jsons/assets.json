@@ -128,7 +128,8 @@
         "controls": "jsons/controls.json",
         "tiledSuperJump": "levels/super-jump.json",
         "tiledLevelTutorial": "levels/tiledLevelTutorial1.json",
-        "tiledLevel1": "levels/tutorial-walk-jump.json",
+      "tiledLevel1": "levels/tutorial-walk-jump.json",
+      "tiledLevel15": "levels/sabrina3.json",
         "tiledLevel2": "levels/tutorial-dash.json",
         "tiledLevel3": "levels/tutorial-first-death.json",
         "tiledLevel4": "levels/tutorial-undo.json",
@@ -146,7 +147,7 @@
         "tiledLevel14": "levels/super-jump.json",
 //        "tiledLevel5": "levels/level-beta-hard.json",
 //        "tiledLevel14": "levels/party-room.json",
-        "tiledLevel14": "levels/test-forest.json"
+        "tiledLevel15": "levels/test-forest.json"
     },
     "soundfx" : {
         "jump" : "sounds/jump-CELESTE.wav",

@@ -105,7 +105,8 @@
       "test-tubes": "world/decor/test-tubes.png",
       "tank": "world/decor/tank.png",
       "broken-robot": "world/decor/broken-robot.png",
-      "coming-soon": "world/decor/coming-soon.png"
+      "coming-soon": "world/decor/coming-soon.png",
+      "arrow-sign": "world/decor/arrow-sign.png"
     },
     "jsons"  : {
         "constants": "jsons/constants.json",

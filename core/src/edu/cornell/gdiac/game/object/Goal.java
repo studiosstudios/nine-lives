@@ -35,6 +35,9 @@ public class Goal extends BoxObstacle
 
     private TextureRegion middle;
 
+    private TextureRegion topBase;
+    private TextureRegion bottomBase;
+
     private static float shrink;
     /** The sensor shape for this goal */
     private PolygonShape sensorShape;
@@ -82,6 +85,28 @@ public class Goal extends BoxObstacle
     public Goal(float width, float height, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int textureSize){
         super(width, height);
 
+        // Get the bases, split texture
+        TextureRegion[][] bases = tMap.get("goal-bases").split(tMap.get("goal-bases").getTexture(), textureSize, textureSize);
+        bottomBase = bases[0][0];
+        topBase = bases[0][1];
+
+        // Get animations
+        int spriteWidth = 512;
+        int spriteHeight = 512;
+//        this.texture = tMap.get("goal");
+//        this.activeTexture = tMap.get("goal");
+        spriteFrames = TextureRegion.split(tMap.get("goal-idle-anim").getTexture(), spriteWidth, spriteHeight);
+//        activeSpriteFrames = TextureRegion.split(tMap.get("checkpoint-active-anim").getTexture(), spriteWidth, spriteHeight);
+        float frameDuration = 0.1f;
+//
+        animation = new Animation<>(frameDuration, spriteFrames[0]);
+//        active_animation = new Animation<>(frameDuration, activeSpriteFrames[0]);
+
+        animation.setPlayMode(Animation.PlayMode.LOOP);
+        animationTime = 0f;
+
+
+
         // Split the texture
         TextureRegion[][] tiles = tMap.get("goal-active").split(tMap.get("goal-active").getTexture(), textureSize, textureSize);
         top = tiles[0][2];
@@ -90,19 +115,8 @@ public class Goal extends BoxObstacle
 
         active = false;
         setTextureScale(textureScale);
-        int spriteWidth = 1024;
-        int spriteHeight = 2048;
-//        this.texture = tMap.get("goal");
-//        this.activeTexture = tMap.get("goal");
-//        spriteFrames = TextureRegion.split(tMap.get("checkpoint-anim").getTexture(), spriteWidth, spriteHeight);
-//        activeSpriteFrames = TextureRegion.split(tMap.get("checkpoint-active-anim").getTexture(), spriteWidth, spriteHeight);
-//        float frameDuration = 0.1f;
-//
-//        animation = new Animation<>(frameDuration, spriteFrames[0]);
-//        active_animation = new Animation<>(frameDuration, activeSpriteFrames[0]);
 
-//        animation.setPlayMode(Animation.PlayMode.LOOP);
-//        animationTime = 0f;
+
         setMass(0);
         setName("goal");
         setDrawScale(scale);
@@ -175,16 +189,34 @@ public class Goal extends BoxObstacle
 
     @Override
     public void draw(GameCanvas canvas){
+        animationTime += Gdx.graphics.getDeltaTime();
+        setTexture(animation.getKeyFrame(animationTime));
+        animation.setPlayMode(Animation.PlayMode.LOOP);
+
         float scale = 32f/textureSize;
 
-        canvas.draw(bottom, Color.WHITE, 0, 0, (x-0.5f)*drawScale.x, y*drawScale.y, 0, scale, scale);
-        for (float dy = 1; dy < height-1; dy+= 1){
+        for (float dy = 0; dy < height; dy+= 1){
+//            canvas.draw(animation.getKeyFrame(animationTime), Color.WHITE, (x-0.5f)*drawScale.x, (y + dy) * drawScale.y, 0, scale, scale);
+//            setY((y + dy) * drawScale.y);
 //            if (isActive()) {}
-            canvas.draw(middle, Color.WHITE, 0, 0, (x-0.5f)*drawScale.x, (y + dy) * drawScale.y, 0, scale, scale);
+            canvas.draw(animation.getKeyFrame(animationTime), Color.WHITE, 0, 0, (x-0.5f)*drawScale.x, (y + dy) * drawScale.y, 0, scale, scale);
         }
-        canvas.draw(top, Color.WHITE, 0, 0, (x-0.5f)*drawScale.x, (y + height - 1) * drawScale.y, 0, scale, scale);
-
+        canvas.draw(bottomBase, Color.WHITE, 0, 0, (x-0.5f)*drawScale.x, y*drawScale.y, 0, scale, scale);
+        canvas.draw(topBase, Color.WHITE, 0, 0, (x-0.5f)*drawScale.x, (y + height - 1) * drawScale.y, 0, scale, scale);
     }
+
+//    @Override
+//    public void draw(GameCanvas canvas){
+//        float scale = 32f/textureSize;
+//
+//        for (float dy = 0; dy < height; dy+= 1){
+////            if (isActive()) {}
+//            canvas.draw(middle, Color.WHITE, 0, 0, (x-0.5f)*drawScale.x, (y + dy) * drawScale.y, 0, scale, scale);
+//        }
+//        canvas.draw(bottomBase, Color.WHITE, 0, 0, (x-0.5f)*drawScale.x, y*drawScale.y, 0, scale, scale);
+//        canvas.draw(topBase, Color.WHITE, 0, 0, (x-0.5f)*drawScale.x, (y + height - 1) * drawScale.y, 0, scale, scale);
+//
+//    }
 //    public void draw(GameCanvas canvas) {
 //        if (active) {
 ////           TextureRegion singleFrame = spriteFrames[0][0];

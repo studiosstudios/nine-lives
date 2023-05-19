@@ -14,9 +14,6 @@
         "bg-blur": "ui/shared/bg-blur.png", //UNUSED
         "bg-pause": "ui/pause/bg-pause.png",
         "bg-lab": "world/backgrounds/bg-lab.png", //UNUSED
-        "bg-select": "ui/level-select/bg-select.png", //UNUSED
-        "one": "ui/level-select/one.png",
-        "two": "ui/level-select/two.png",
         "loading-tutorial": "ui/loading/loading-tutorial.png",
         "loading-text-1": "ui/loading/loading-text-1.png",
         "loading-text-2": "ui/loading/loading-text-2.png",
@@ -28,7 +25,10 @@
         "bell": "ui/hud/bell.png",
         "cracked-bell": "ui/hud/cracked.png",
         "slider-empty": "ui/settings/slider-empty.png",
-        "slider-full": "ui/settings/slider-full.png"
+        "slider-full": "ui/settings/slider-full.png",
+        "left-arrow": "ui/level-select/left-arrow.png",
+        "right-arrow": "ui/level-select/right-arrow.png",
+        "bar-segment": "ui/level-select/bar-segment.png"
 	},
     "fonts": {
         "chewy": {

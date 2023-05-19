@@ -5,6 +5,8 @@
  </editorsettings>
  <properties>
   <property name="biome" propertytype="biome" value="metal"/>
+  <property name="canDash" type="bool" value="false"/>
+  <property name="canSwitch" type="bool" value="true"/>
  </properties>
  <tileset firstgid="1" source="../../objects/objects.tsx"/>
  <tileset firstgid="15" source=":/automap-tiles.tsx"/>

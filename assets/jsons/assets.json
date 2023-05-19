@@ -108,8 +108,8 @@
       "broken-robot": "world/decor/broken-robot.png",
       "coming-soon": "world/decor/coming-soon.png",
       "arrow-sign": "world/decor/arrow-sign.png",
-      "sign-stick": "world/decor/sign-stick.png",
-      "arrow-sign-forest": "world/decor/arrow-sign-forest.png"
+      "wood-sign": "world/decor/wood-sign.png",
+      "wood-arrow": "world/decor/wood-arrow.png"
     },
     "jsons"  : {
         "constants": "jsons/constants.json",

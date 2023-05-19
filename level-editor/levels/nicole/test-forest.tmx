@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="22" height="12" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="25" nextobjectid="115">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="22" height="12" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="25" nextobjectid="117">
  <editorsettings>
   <export target="../../../assets/levels/test-forest.json" format="json"/>
  </editorsettings>
@@ -10,10 +10,10 @@
  <tileset firstgid="15" source="../../tilesets/metal-walls.tsx"/>
  <tileset firstgid="63" source="../../tilesets/climbables.tsx"/>
  <tileset firstgid="67" source="../../decor/decor.tsx"/>
- <tileset firstgid="107" source="../../tilesets/default-metal-walls.tsx"/>
- <tileset firstgid="155" source="../../tilesets/windows.tsx"/>
- <tileset firstgid="171" source="../../tilesets/forest-walls.tsx"/>
- <tileset firstgid="183" source="../../tilesets/forestLeaves.tsx"/>
+ <tileset firstgid="109" source="../../tilesets/default-metal-walls.tsx"/>
+ <tileset firstgid="157" source="../../tilesets/windows.tsx"/>
+ <tileset firstgid="173" source="../../tilesets/forest-walls.tsx"/>
+ <tileset firstgid="185" source="../../tilesets/forestLeaves.tsx"/>
  <layer id="17" name="metalWalls" width="22" height="12">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -40,19 +40,19 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-171,172,173,172,173,172,173,172,173,172,173,172,173,172,173,172,173,172,173,172,173,174,
-175,176,177,176,177,176,177,176,177,176,177,176,177,176,177,176,177,176,177,176,177,178,
-179,180,181,180,181,180,181,180,181,180,181,180,181,180,181,180,181,180,181,180,181,182,
-179,180,181,180,181,180,181,180,181,180,181,180,181,180,181,180,181,180,181,180,181,182
+173,174,175,174,175,174,175,174,175,174,175,174,175,174,175,174,175,174,175,174,175,176,
+177,178,179,178,179,178,179,178,179,178,179,178,179,178,179,178,179,178,179,178,179,180,
+181,182,183,182,183,182,183,182,183,182,183,182,183,182,183,182,183,182,183,182,183,184,
+181,182,183,182,183,182,183,182,183,182,183,182,183,182,183,182,183,182,183,182,183,184
 </data>
  </layer>
  <layer id="24" name="forestLeaves" width="22" height="12">
   <data encoding="csv">
-198,199,200,201,202,203,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-205,206,207,208,209,210,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-212,213,214,215,216,217,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-219,220,221,222,223,224,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-226,227,228,229,230,231,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+200,201,202,203,204,205,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+207,208,209,210,211,212,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+214,215,216,217,218,219,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+221,222,223,224,225,226,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+228,229,230,231,232,233,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -109,8 +109,8 @@
  <objectgroup id="21" name="decor">
   <object id="111" name="coming-soon" gid="100" x="9216" y="7168" width="7168" height="3072"/>
   <object id="112" name="tutorial-cancel-switch" gid="104" x="15360" y="9216" width="6144" height="3072"/>
-  <object id="113" name="sign-stick" gid="105" x="6144" y="9216" width="1024" height="1024"/>
-  <object id="114" name="arrow-sign-forest" gid="106" x="5648.64" y="8666.72" width="2048" height="2048"/>
+  <object id="115" name="wood-sign" gid="107" x="6840.72" y="9195.23" width="1359.09" height="1441.57"/>
+  <object id="116" name="wood-arrow" gid="108" x="7050.28" y="8724.21" width="930.721" height="835.583"/>
  </objectgroup>
  <objectgroup id="16" name="spiritRegions"/>
  <objectgroup id="2" name="cat">

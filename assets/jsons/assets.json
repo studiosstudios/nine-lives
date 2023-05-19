@@ -22,6 +22,7 @@
       },
       "goal-bases": "obstacles/goal/goal-bases.png",
       "goal-idle-anim": "obstacles/goal/goal-idle-anim.png",
+      "goal-inactive": "obstacles/goal/goal-inactive.png",
       "goal-active": {
         "file": "obstacles/goal/goal-active.png",
         "wrapU": "repeated",

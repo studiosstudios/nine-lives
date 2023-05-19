@@ -738,7 +738,6 @@ public class GameController implements Screen {
         currLevel.getSpiritLine().setOuterColor(spiritModeColor);
         flashColor.a -= flashColor.a/10;
         updateCamera();
-        System.out.println(canvas.getViewport().getScreenWidth() + " " + canvas.getViewport().getScreenHeight());
 
         hud.lives = currLevel.getNumLives();
         hud.updateLives();
@@ -871,6 +870,7 @@ public class GameController implements Screen {
         }
         if(gameState == GameState.PAN) {
             cam.updateCamera(panTarget.get(0).getXPos() * scale.x, panTarget.get(0).getYPos() * scale.y, true, cam.getLevelBounds());
+            input.setDisableAll(true);
             if (!cam.isGliding()) {
                 panTime += 1;
                 if (panTime == PAN_HOLD) {

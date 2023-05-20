@@ -175,10 +175,14 @@
         "tiledLevel19": "levels/laser-level.json",
         "tiledLevel20": "levels/mob-push-box.json",
         "tiledLevel21": "levels/fire-laser-activators.json",
-        "tiledLevel22": "levels/cat-shape-climb.json",
-        "tiledLevel24": "levels/side-spikes-activators.json",
-        "tiledLevel23": "levels/moving-checkpoints.json",
-        "tiledLevel25": "levels/test-forest.json"
+//        "tiledLevel22": "levels/cat-shape-climb.json",
+        "tiledLevel22": "levels/moving-checkpoints.json",
+        "tiledLevel23": "levels/side-spikes-activators.json",
+        "tiledLevel24": "levels/forest-intro.json",
+        "tiledLevel25": "levels/tutorial-body-switch.json",
+        "tiledLevel26": "levels/basic-body-switch.json",
+//        "tiledLevel27": "levels/falling-switch-dash.json",
+        "tiledLevel27": "levels/test-forest.json"
 
       //        "tiledLevel2": "levels/test-windows.json",
       //        "tiledLevel1": "levels/lights.json",

@@ -40,7 +40,8 @@ public class LevelSelectStage extends StageWrapper {
 //    public static void setNumLevels(int numLevels) { LevelSelectStage.numLevels = numLevels; }
     public LevelSelectStage(String internal, boolean createActors, int numLevels) {
         super(internal, createActors, false, numLevels);
-        changeLevel(Save.getProgress());
+//        changeLevel(Save.getProgress());
+        changeLevel(numLevels);
     }
 
     private void createBar() {
@@ -98,7 +99,9 @@ public class LevelSelectStage extends StageWrapper {
      */
     @Override
     public void createActors() {
-        progress = Save.getProgress();
+//        progress = Save.getProgress();
+        progress = numLevels;
+        levelImage = new Actor();
         Actor background = addActor(internal.getEntry("bg-level-select", Texture.class), 0, 0);
         background.setScale(0.5f);
         backButtonActor = addActor(internal.getEntry("back", Texture.class),60,buttonY-225);
@@ -182,7 +185,13 @@ public class LevelSelectStage extends StageWrapper {
             barActors.get(selectedLevel-1).setColor(Color.WHITE);
         }
         selectedLevel = level;
+        AssetDirectory i = new AssetDirectory("jsons/images/level" + selectedLevel + ".json");
+        i.loadAssets();
+        i.finishLoading();
+        levelImage = createActor(i.getEntry("image", Texture.class),0,0);
+        levelImage.setScale(0.35f);
+        levelImage.setPosition(STANDARD_WIDTH/2f-levelImage.getWidth()*7f/40f, STANDARD_HEIGHT/2f-levelImage.getHeight()*7f/40f);
+        addActor(levelImage);
         barActors.get(selectedLevel-1).setColor(Color.BROWN);
-        System.out.println(selectedLevel);
     }
 }

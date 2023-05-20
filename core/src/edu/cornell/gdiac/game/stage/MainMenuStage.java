@@ -58,7 +58,7 @@ public class MainMenuStage extends StageWrapper{
         animations = new AssetDirectory("jsons/ui-animations.json");
         animations.loadAssets();
         animations.finishLoading();
-        Animation<TextureRegion> anim = new Animation<>(0.65f, TextureRegion.split(animations.getEntry("main-menu-cat-anim", Texture.class),1024,1024)[0]);
+        Animation<TextureRegion> anim = new Animation<>(0.75f, TextureRegion.split(animations.getEntry("main-menu-cat-anim", Texture.class),1024,1024)[0]);
         anim.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
         animation = new AnimationDrawable(anim);
         Actor backgroundActor = addActor(internal.getEntry("background", Texture.class), 0,0);

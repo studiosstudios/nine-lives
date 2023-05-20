@@ -980,7 +980,7 @@
                  "type":"",
                  "visible":true,
                  "width":1024,
-                 "x":2048,
+                 "x":1024,
                  "y":16384
                 }],
          "opacity":1,
@@ -1036,7 +1036,7 @@
                  "type":"",
                  "visible":true,
                  "width":1024,
-                 "x":2048,
+                 "x":1024,
                  "y":15360
                 }, 
                 {
@@ -1458,17 +1458,7 @@
          "propertytype":"biome",
          "type":"string",
          "value":"metal"
-        },
-   {
-     "name":"canDash",
-     "type":"bool",
-     "value":false
-   },
-   {
-     "name":"canSwitch",
-     "type":"bool",
-     "value":false
-   }],
+        }],
  "renderorder":"right-down",
  "tiledversion":"1.10.1",
  "tileheight":1024,

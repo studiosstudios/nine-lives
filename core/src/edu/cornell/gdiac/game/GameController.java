@@ -685,10 +685,9 @@ public class GameController implements Screen {
         InputController input = InputController.getInstance();
         input.readInput();
         // Toggle debug
-        if (input.didDebug()) {
-            debug = !debug;
-//            canvas.getCamera().debugCamera(debug);
-        }
+//        if (input.didDebug()) {
+//            debug = !debug;
+//        }
 
         if (!currLevel.isFailure() && currLevel.getDied()) {
             flashColor.set(0, 0, 0, 1);
@@ -709,7 +708,7 @@ public class GameController implements Screen {
             spiritModeTicks = 0;
         }
 
-        if (currLevel.isFailure() || input.didReset()) {
+        if (currLevel.isFailure()) {
             if (currLevel.isFailure()) flashColor.set(1, 0, 0, 1);
             reset();
         } else if (currLevel.isComplete() && levelNum < numLevels) {
@@ -720,16 +719,16 @@ public class GameController implements Screen {
             pause();
             prevLevel();
             return false;
-        }  else if (input.didNext() && levelNum < numLevels) {
-            pause();
-//            nextLevel();
-            init(levelNum + 1);
-            return false;
-        }  else if (input.didPrev() && levelNum > 1) {
-            pause();
-//            prevLevel();
-            init(levelNum - 1);
-            return false;
+//        }  else if (input.didNext() && levelNum < numLevels) {
+//            pause();
+////            nextLevel();
+//            init(levelNum + 1);
+//            return false;
+//        }  else if (input.didPrev() && levelNum > 1) {
+//            pause();
+////            prevLevel();
+//            init(levelNum - 1);
+//            return false;
         }
         return true;
     }

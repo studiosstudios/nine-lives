@@ -246,14 +246,14 @@
  <objectgroup id="22" name="background"/>
  <objectgroup id="16" name="spiritRegions"/>
  <objectgroup id="2" name="cat">
-  <object id="38" gid="2" x="2048" y="16384" width="1024" height="1024"/>
+  <object id="38" gid="2" x="1024" y="16384" width="1024" height="1024"/>
  </objectgroup>
  <objectgroup id="4" name="flamethrowers"/>
  <objectgroup id="20" name="goal">
   <object id="254" x="72704" y="12288" width="1024" height="4096"/>
  </objectgroup>
  <objectgroup id="3" name="checkpoints">
-  <object id="162" gid="3" x="2048" y="15360" width="1024" height="2048"/>
+  <object id="162" gid="3" x="1024" y="15360" width="1024" height="2048"/>
   <object id="246" gid="3" x="43008" y="14336" width="1024" height="2048"/>
  </objectgroup>
  <objectgroup id="6" name="lasers"/>

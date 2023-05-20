@@ -339,7 +339,7 @@ public class StageController implements Screen {
 				} else if (mainMenuStage.isLevelSelect()) {
 					audioController.playSoundEffect("menu-select");
 					mainMenuStage.setLevelSelectState(0);
-					levelSelectStage = new LevelSelectStage("jsons/level-select-stage.json", true, numLevels);
+					levelSelectStage = new LevelSelectStage("jsons/level-select-stage.json", true, 32);
 //					levelSelectStage.setNumLevels(numLevels);
 					changeStage(levelSelectStage);
 					currentStage = Stages.LEVEL_SELECT;

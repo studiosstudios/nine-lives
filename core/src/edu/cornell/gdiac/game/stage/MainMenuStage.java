@@ -146,41 +146,41 @@ public class MainMenuStage extends StageWrapper{
     }
 }
 
-class AnimatedActor extends Image {
-    private final AnimationDrawable drawable;
-
-    public AnimatedActor(AnimationDrawable drawable) {
-        super(drawable);
-        this.drawable = drawable;
-    }
-
-    @Override
-    public void act(float delta) {
-        drawable.act(delta);
-        super.act(delta);
-    }
-}
-
-class AnimationDrawable extends BaseDrawable {
-    public final Animation<TextureRegion> animation;
-    private float stateTime = 0;
-
-    public AnimationDrawable(Animation<TextureRegion> animation) {
-        this.animation = animation;
-        setMinWidth(animation.getKeyFrame(0).getRegionWidth());
-        setMinHeight(animation.getKeyFrame(0).getRegionHeight());
-    }
-
-    public void act(float delta) {
-        stateTime += delta;
-    }
-
-    public void reset() {
-        stateTime = 0;
-    }
-
-    @Override
-    public void draw(Batch batch, float x, float y, float width, float height) {
-        batch.draw(animation.getKeyFrame(stateTime), x, y, width, height);
-    }
-}
+//class AnimatedActor extends Image {
+//    private final AnimationDrawable drawable;
+//
+//    public AnimatedActor(AnimationDrawable drawable) {
+//        super(drawable);
+//        this.drawable = drawable;
+//    }
+//
+//    @Override
+//    public void act(float delta) {
+//        drawable.act(delta);
+//        super.act(delta);
+//    }
+//}
+//
+//class AnimationDrawable extends BaseDrawable {
+//    public final Animation<TextureRegion> animation;
+//    private float stateTime = 0;
+//
+//    public AnimationDrawable(Animation<TextureRegion> animation) {
+//        this.animation = animation;
+//        setMinWidth(animation.getKeyFrame(0).getRegionWidth());
+//        setMinHeight(animation.getKeyFrame(0).getRegionHeight());
+//    }
+//
+//    public void act(float delta) {
+//        stateTime += delta;
+//    }
+//
+//    public void reset() {
+//        stateTime = 0;
+//    }
+//
+//    @Override
+//    public void draw(Batch batch, float x, float y, float width, float height) {
+//        batch.draw(animation.getKeyFrame(stateTime), x, y, width, height);
+//    }
+//}

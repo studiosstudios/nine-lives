@@ -252,7 +252,7 @@
          "name":"spiritRegions",
          "objects":[
                 {
-                 "height":2048,
+                 "height":2318.27027027027,
                  "id":118,
                  "name":"",
                  "properties":[
@@ -270,8 +270,8 @@
                  "type":"SpiritRegion",
                  "visible":true,
                  "width":2048,
-                 "x":17408,
-                 "y":7168
+                 "x":17435.027027027,
+                 "y":7478.81081081081
                 }],
          "opacity":1,
          "type":"objectgroup",

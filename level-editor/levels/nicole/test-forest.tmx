@@ -112,7 +112,7 @@
   <object id="111" name="coming-soon" gid="100" x="9216" y="7168" width="7168" height="3072"/>
  </objectgroup>
  <objectgroup id="16" name="spiritRegions">
-  <object id="118" type="SpiritRegion" x="17408" y="7168" width="2048" height="2048">
+  <object id="118" type="SpiritRegion" x="17435" y="7478.81" width="2048" height="2318.27">
    <properties>
     <property name="color" type="color" value="#ffecebe8"/>
     <property name="hideBkg" type="bool" value="true"/>

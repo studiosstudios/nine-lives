@@ -279,6 +279,9 @@ public class SpiritRegion extends BoxObstacle {
             float x = item.getX();
             c.a = c.a * (float) (Math.max(Math.pow(y-bot, ySharpness) * Math.pow(top-y, ySharpness)/Math.pow((top-bot)/2, 2*ySharpness), 0));
             c.a = c.a * (float) (Math.max(Math.pow(x-left, xSharpness) * Math.pow(right-x, xSharpness)/Math.pow((right-left)/2, 2*xSharpness), 0));
+            if (hideBackground) {
+                c.a = c.a * 2;
+            }
             canvas.draw(photonTexture, c, x - (width/2f)*drawScale.x,
                       y - (height/2f)*drawScale.y, PARTICLE_SIZE, PARTICLE_SIZE);
         }

@@ -45,27 +45,27 @@
          "objects":[
                 {
                  "gid":129,
-                 "height":3060.72787979967,
+                 "height":3060.73,
                  "id":327,
                  "name":"tutorial-side-spikes",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":6154.8447412354,
-                 "x":34568.6544240401,
-                 "y":20172.6878130217
+                 "width":6154.84,
+                 "x":34568.7,
+                 "y":20172.7
                 }, 
                 {
                  "gid":146,
-                 "height":694.818505338078,
+                 "height":694.819,
                  "id":333,
                  "name":"coke",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":632.540925266904,
-                 "x":2314.90391459075,
-                 "y":6232.96797153025
+                 "width":632.541,
+                 "x":2314.9,
+                 "y":6232.97
                 }, 
                 {
                  "gid":143,
@@ -117,27 +117,27 @@
                 }, 
                 {
                  "gid":148,
-                 "height":837.167259786477,
+                 "height":837.167,
                  "id":332,
                  "name":"test-tubes",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":819.373665480427,
-                 "x":3090.66192170819,
-                 "y":6313.03914590747
+                 "width":819.374,
+                 "x":3090.66,
+                 "y":6313.04
                 }, 
                 {
                  "gid":145,
-                 "height":668.128113879004,
+                 "height":668.128,
                  "id":334,
                  "name":"goggles",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":703.715302491103,
-                 "x":5431.38790035587,
-                 "y":4542.57651245552
+                 "width":703.715,
+                 "x":5431.39,
+                 "y":4542.58
                 }, 
                 {
                  "gid":133,
@@ -160,8 +160,8 @@
                  "type":"",
                  "visible":true,
                  "width":819.374,
-                 "x":3976.43399644128,
-                 "y":6309.1318024911
+                 "x":3976.43,
+                 "y":6309.13
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1035,6 +1035,16 @@
          "propertytype":"biome",
          "type":"string",
          "value":"metal"
+        }, 
+        {
+         "name":"canDash",
+         "type":"bool",
+         "value":true
+        }, 
+        {
+         "name":"canSwitch",
+         "type":"bool",
+         "value":false
         }],
  "renderorder":"right-down",
  "tiledversion":"1.10.1",

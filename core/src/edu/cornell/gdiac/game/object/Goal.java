@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.game.object;
 
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -59,7 +60,9 @@ public class Goal extends BoxObstacle
     /** Filmstrip of active goal animation */
     private Animation<TextureRegion> active_animation;
     private TextureRegion inactiveFrame;
+    private TextureRegion finalGoal;
     private boolean activated;
+    private boolean isFinal;
 
     /**
      * Creates a new Door object.
@@ -88,6 +91,15 @@ public class Goal extends BoxObstacle
         super(width, height);
 
         activated = false;
+        if (properties.get("final") != null) {
+            isFinal = (boolean) properties.get("final");
+            if (isFinal) {
+//                System.out.println("final goal");
+                finalGoal = tMap.get("goal-final");
+                textureScale.set((float) properties.get("width") * scale.x / finalGoal.getRegionWidth(),
+                        (float) properties.get("height") * scale.y / finalGoal.getRegionHeight());
+            }
+        }
 
         // Get the bases, split texture
         TextureRegion[][] bases = tMap.get("goal-bases").split(tMap.get("goal-bases").getTexture(), textureSize, textureSize);
@@ -145,16 +157,18 @@ public class Goal extends BoxObstacle
         setBodyType(BodyDef.BodyType.StaticBody);
         Vector2 solidCenter = new Vector2(0,0);
         sensorShape = new PolygonShape();
-        sensorShape.setAsBox(width/2, height, solidCenter, 0.0f);
+        sensorShape.setAsBox(width/3.8f, height, solidCenter, 0.0f);
     }
 
     @Override
-    /**
+    /**x
      * @return position of checkpoint base rather than goal origin
      */
     public Vector2 getPosition(){
         return new Vector2(getX()-objectConstants.get("base_offset").getFloat(0),getY()-objectConstants.get("base_offset").getFloat(1));
     }
+
+    public boolean isFinal() { return isFinal; }
 
     public void activate() { activated = true; }
 
@@ -184,22 +198,26 @@ public class Goal extends BoxObstacle
     @Override
     public void draw(GameCanvas canvas){
         animationTime += Gdx.graphics.getDeltaTime();
-        setTexture(animation.getKeyFrame(animationTime));
-        animation.setPlayMode(Animation.PlayMode.LOOP);
-
         float scale = 32f/textureSize;
 
-        for (float dy = 0; dy < height; dy+= 1){
-            if (activated) {
-                canvas.draw(animation.getKeyFrame(animationTime), Color.WHITE, 0, 0,
-                        (x-0.5f)*drawScale.x, (y + dy) * drawScale.y, 0, scale, scale);
-            } else {
-                canvas.draw(inactiveFrame, Color.WHITE, 0, 0,
-                        (x-0.5f)*drawScale.x, (y + dy) * drawScale.y, 0, scale, scale);
+        if (isFinal) {
+            canvas.draw(finalGoal, Color.WHITE, 0, 0, (x-1f)*drawScale.x, (y-0.2f)*drawScale.y, 0, textureScale.x, textureScale.y);
+        } else {
+            setTexture(animation.getKeyFrame(animationTime));
+            animation.setPlayMode(Animation.PlayMode.LOOP);
+
+            for (float dy = 0; dy < height; dy+= 1){
+                if (activated) {
+                    canvas.draw(animation.getKeyFrame(animationTime), Color.WHITE, 0, 0,
+                            (x-0.5f)*drawScale.x, (y + dy) * drawScale.y, 0, scale, scale);
+                } else {
+                    canvas.draw(inactiveFrame, Color.WHITE, 0, 0,
+                            (x-0.5f)*drawScale.x, (y + dy) * drawScale.y, 0, scale, scale);
+                }
             }
+            canvas.draw(bottomBase, Color.WHITE, 0, 0, (x-0.5f)*drawScale.x, y*drawScale.y, 0, scale, scale);
+            canvas.draw(topBase, Color.WHITE, 0, 0, (x-0.5f)*drawScale.x, (y + height - 1) * drawScale.y, 0, scale, scale);
         }
-        canvas.draw(bottomBase, Color.WHITE, 0, 0, (x-0.5f)*drawScale.x, y*drawScale.y, 0, scale, scale);
-        canvas.draw(topBase, Color.WHITE, 0, 0, (x-0.5f)*drawScale.x, (y + height - 1) * drawScale.y, 0, scale, scale);
     }
 
     /**
@@ -219,6 +237,19 @@ public class Goal extends BoxObstacle
     }
 
     public String getSensorName(){ return sensorName; }
+
+    /**
+     * Creates PointLight for final goal with soft and xray true
+     * @param rayHandler Ray Handler associated with the currently active box2d world
+     */
+    public void createLight(RayHandler rayHandler) {
+        if (isFinal) {
+            createPointLight(objectConstants.get("light"), rayHandler);
+            getLight().attachToBody(getBody());
+            getLight().setSoft(true);
+            getLight().setXray(true);
+        }
+    }
 
     @Override
     public void loadState(ObjectMap<String, Object> state){

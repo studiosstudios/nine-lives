@@ -31,6 +31,7 @@ public class StageController implements Screen {
 	// There are TWO asset managers.  One to load the loading screen.  The other to load the assets
 	/** Internal assets for this loading screen */
 	private final AssetDirectory internal;
+	protected AssetDirectory startAssets;
 	/** The actual assets to be loaded */
 	private AssetDirectory assets;
 	/** Standard window size (for scaling) */
@@ -144,14 +145,23 @@ public class StageController implements Screen {
 	 */
 	public StageController(String file, GameCanvas canvas, int millis, boolean start, boolean paused, AudioController audioController, int numLevels) {
 		this.canvas  = canvas;
-		this.audioController = audioController;
 		budget = millis;
+
+		if (start) {
+			startAssets = new AssetDirectory("jsons/start-stage.json");
+			startAssets.loadAssets();
+			startAssets.finishLoading();
+			starting = true;
+			startStage = new StartStage(startAssets, true);
+			stage = startStage;
+		}
 
 		// We need these files loaded immediately
 		internal = new AssetDirectory( "jsons/loading.json" );
 		internal.loadAssets();
 		internal.finishLoading();
 
+		this.audioController = audioController;
 		startMusic();
 
 		if(!Save.exists()) {
@@ -162,21 +172,18 @@ public class StageController implements Screen {
 		}
 
 		mainMenuStage = new MainMenuStage(internal, true);
-//		mainMenuStage.setViewport(canvas.getViewport());
 		pauseStage = new PauseStage(internal, true);
 		LevelSelectStage.setNumLevels(numLevels);
 		levelSelectStage = new LevelSelectStage(internal, true);
 		loadingStage = new LoadingStage(internal, true);
 //		canvas.getViewport().apply(true);
 
-		if (start) {
-			starting = true;
-			startStage = new StartStage(internal, true);
-			stage = startStage;
-		} else if (paused) {
-			stage = pauseStage;
-		} else {
-			stage = mainMenuStage;
+		if (!start) {
+			if (paused) {
+				stage = pauseStage;
+			} else {
+				stage = mainMenuStage;
+			}
 		}
 
 		settingsStage = new SettingsStage(internal, true);
@@ -185,9 +192,13 @@ public class StageController implements Screen {
 
 		Gdx.input.setInputProcessor( stage );
 
-		// Start loading the real assets
-		assets = new AssetDirectory( file );
-		assets.loadAssets();
+		if (start) {
+			// Start loading the real assets
+			assets = new AssetDirectory( file );
+			assets.loadAssets();
+		}
+//		assets = new AssetDirectory( file );
+//		assets.loadAssets();
 		active = true;
 	}
 

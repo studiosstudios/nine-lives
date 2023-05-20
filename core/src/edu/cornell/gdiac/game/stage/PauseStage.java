@@ -34,7 +34,7 @@ public class PauseStage extends StageWrapper {
 
     public GameController currLevel;
     public PauseStage(AssetDirectory internal, boolean createActors) {
-        super(internal, createActors);
+        super(internal, createActors, false);
     }
 
     /**

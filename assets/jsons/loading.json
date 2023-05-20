@@ -11,16 +11,10 @@
         "back" : "ui/shared/back.png",
         "exit" : "ui/main/exit-game.png",
         "main-menu-cat": "ui/main/main-menu-cat.png",
-      "main-menu-cat-anim": "ui/main/idle_calico.png",
-        "bg-blur": "ui/shared/bg-blur.png", //UNUSED
         "bg-pause": "ui/pause/bg-pause.png",
-        "bg-lab": "world/backgrounds/bg-lab.png", //UNUSED
         "loading-tutorial": "ui/loading/loading-tutorial.png",
-        "loading-text-1": "ui/loading/loading-text-1.png",
-        "loading-text-2": "ui/loading/loading-text-2.png",
-        "loading-text-3": "ui/loading/loading-text-3.png",
+        "loading-text": "ui/loading/loading-text.png",
         "paw": "ui/shared/paw.png",
-        "splash-screen": "ui/loading/splash-screen.png",
         "bg-level-select": "ui/level-select/bg-level-select.png",
         "bar": "ui/hud/bar.png",
         "bell": "ui/hud/bell.png",
@@ -34,12 +28,6 @@
         "restart": "ui/pause/restart.png",
         "pause-settings": "ui/pause/settings.png"
 	},
-    "fonts": {
-        "chewy": {
-            "file": "fonts/chewy.ttf",
-            "size": 36
-        }
-    },
     "soundfx" : {
       "menu-select" : "sounds/menu-select.wav"
     },

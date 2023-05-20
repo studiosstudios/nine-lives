@@ -132,7 +132,9 @@
       "pin-board": "world/decor/pin-board.png",
       "robo": "world/decor/robo.png",
       "window-robo": "world/decor/window-robo.png",
-      "x-ray": "world/decor/x-ray.png"
+      "x-ray": "world/decor/x-ray.png",
+      "shelf2": "world/decor/shelf2.png",
+      "tree": "world/decor/tree.png"
     },
     "jsons"  : {
         "constants": "jsons/constants.json",
@@ -159,7 +161,8 @@
         "tiledLevel15": "levels/super-jump.json",
 //        "tiledLevel5": "levels/level-beta-hard.json",
 //        "tiledLevel14": "levels/party-room.json",
-        "tiledLevel16": "levels/split-spirit-regions.json"
+        "tiledLevel16": "levels/split-spirit-regions.json",
+        "tiledLevel17": "levels/test-forest.json"
     },
     "soundfx" : {
         "jump" : "sounds/jump-CELESTE.wav",

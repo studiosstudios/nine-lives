@@ -41,7 +41,7 @@ public class LevelSelectStage extends StageWrapper {
     public int getSelectedLevel() { return selectedLevel; }
     public static void setNumLevels(int numLevels) { LevelSelectStage.numLevels = numLevels; }
     public LevelSelectStage(AssetDirectory internal, boolean createActors) {
-        super(internal, createActors);
+        super(internal, createActors, false);
 //        selectedLevel = 1;
 //        levelChanged = true;
         changeLevel(Save.getProgress());

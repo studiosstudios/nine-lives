@@ -164,7 +164,7 @@
                         {
                          "name":"bWidth",
                          "type":"float",
-                         "value":38
+                         "value":39
                         }, 
                         {
                          "name":"bY",
@@ -189,7 +189,7 @@
                  "rotation":0,
                  "type":"CameraRegion",
                  "visible":true,
-                 "width":38912,
+                 "width":39936,
                  "x":0,
                  "y":0
                 }, 
@@ -206,7 +206,7 @@
                         {
                          "name":"bWidth",
                          "type":"float",
-                         "value":38
+                         "value":39
                         }, 
                         {
                          "name":"shouldSnap",
@@ -226,13 +226,13 @@
                  "rotation":0,
                  "type":"CameraRegion",
                  "visible":true,
-                 "width":38912,
+                 "width":39936,
                  "x":0,
                  "y":29696
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":false,
+         "visible":true,
          "x":0,
          "y":0
         }, 
@@ -703,7 +703,7 @@
                  "type":"",
                  "visible":true,
                  "width":1024,
-                 "x":37888,
+                 "x":35840,
                  "y":31744
                 }],
          "opacity":1,

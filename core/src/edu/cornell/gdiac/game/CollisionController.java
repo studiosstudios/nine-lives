@@ -380,7 +380,9 @@ public class CollisionController implements ContactListener, ContactFilter {
             for (int i = 0; i < 2; i++) {
 
                 //sensors do not turn on activators
-                if (fd1 instanceof Activator && fix2.isSensor()) { return false; }
+                if (bd1 instanceof Activator && fix2.isSensor()) { return false; }
+
+                if (fd1 != null && fd1.equals(level.getCat().getGroundSensorName()) && fix2.isSensor()) { return false; }
 
                 if (bd1 instanceof Door && bd2 instanceof Door) return false;
 

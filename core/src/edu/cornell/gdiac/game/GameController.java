@@ -470,7 +470,7 @@ public class GameController implements Screen {
                 // GOAL
                 "goal", "goal-active", "goal-bases", "goal-idle-anim", "goal-inactive", "goal-final",
                 // ROBOT & MOBS
-                "robot-anim",
+                "robot-anim", "forest-mob-anim",
                 // SPIRIT BOUNDARIES
                 "spirit-anim", "spirit-photon", "spirit-photon-cat", "spirit-region",
                 // ACTIVATABLE LIGHTS

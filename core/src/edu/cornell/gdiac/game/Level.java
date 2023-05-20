@@ -907,7 +907,7 @@ public class Level {
         textureScaleCache.set(1/4f, 1/4f);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
-            Mob mob = new Mob(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
+            Mob mob = new Mob(propertiesMap, textureRegionAssetMap, scale, textureScaleCache, biome);
             mobArray.add(mob);
             addObject(mob);
         }

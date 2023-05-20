@@ -968,9 +968,11 @@ public class GameController implements Screen {
         }
 
         if (gameFinished) {
-            System.out.println("fuck yeah u done");
-            if (!credits.finished) {
-                credits.draw();
+            credits.draw();
+            if (credits.finished) {
+                gameFinished = false;
+                credits.finished = false;
+                listener.exitScreen(this, 89);
             }
         } else {
             // Menu draw

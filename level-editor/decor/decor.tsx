@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.10.1" name="decor" tilewidth="3840" tileheight="2388" tilecount="41" columns="0">
+<tileset version="1.10" tiledversion="1.10.1" name="decor" tilewidth="3840" tileheight="2388" tilecount="44" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="8" type="Decoration">
   <image width="1024" height="1024" source="tutorial-burn.png"/>
@@ -123,5 +123,14 @@
  </tile>
  <tile id="48">
   <image width="2048" height="1024" source="shelf2.png"/>
+ </tile>
+ <tile id="49">
+  <image width="1024" height="512" source="tutorial-leaves.png"/>
+ </tile>
+ <tile id="50">
+  <image width="256" height="256" source="wood-arrow.png"/>
+ </tile>
+ <tile id="51">
+  <image width="256" height="256" source="wood-sign.png"/>
  </tile>
 </tileset>

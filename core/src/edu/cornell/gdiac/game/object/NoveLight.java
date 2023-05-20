@@ -26,6 +26,9 @@ public class NoveLight extends BoxObstacle implements Activatable {
     private boolean activated;
     private boolean initialActivation;
     private LightType type;
+    private int distance;
+    private Vector2 offset;
+    private Color color;
 
 
     /**
@@ -40,6 +43,12 @@ public class NoveLight extends BoxObstacle implements Activatable {
         super(1, 1); // Width and height of this obstacle won't actually matter, as it cannot be collidable
 
         type = properties.get("type", "ceiling").equals("ceiling") ? LightType.CEILING : LightType.WALL;
+        distance = (int) properties.get("distance", 0);
+        offset = (Vector2) properties.get("offset", Vector2.Zero);
+        color = (Color) properties.get("color", null);
+        if (color != null) {
+            color.a = 136; // Full alpha is too imposing for lights, so we tone it down.
+        }
         setBodyType(BodyDef.BodyType.StaticBody);
         setName("lights");
         setDrawScale(scale);
@@ -78,7 +87,7 @@ public class NoveLight extends BoxObstacle implements Activatable {
         // We can instead draw from the level tiled instead, and can be done if needed (for example, if we want certain lights to have different colors)
         JsonValue lightConstants = objectConstants.get(type == LightType.CEILING ? "ceiling" : "wall");
         // ConeLights don't really look good for the ceiling lights
-        createPointLight(lightConstants.get("light"), rayHandler);
+        createPointLight(lightConstants.get("light"), rayHandler, color, distance, offset);
 //        createConeLight(lightConstants.get("light"), rayHandler);
         getLight().setSoft(true);
         getLight().setXray(true);

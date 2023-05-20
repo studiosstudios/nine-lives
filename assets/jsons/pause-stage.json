@@ -1,0 +1,9 @@
+{
+  "textures": {
+    "bg-pause": "ui/pause/bg-pause.png",
+    "resume": "ui/pause/resume.png",
+    "restart": "ui/pause/restart.png",
+    "pause-settings": "ui/pause/settings.png",
+    "main-menu": "ui/pause/main-menu.png"
+  }
+}

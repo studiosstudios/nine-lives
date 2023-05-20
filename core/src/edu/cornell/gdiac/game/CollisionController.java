@@ -203,7 +203,7 @@ public class CollisionController implements ContactListener, ContactFilter {
 
                 // TODO: fix collisions when obstacles collide with top and bottom
                 // Mob changes direction when hits a wall
-                if (bd1 instanceof Mob && !(fd2 instanceof Activator) && !(fd2 instanceof Checkpoint)) {
+                if (bd1 instanceof Mob && !(fix2.isSensor()) && !(bd2 instanceof Movable)) {
                     ((Mob) bd1).setFacingRight(!((Mob) bd1).isFacingRight());
                 }
 

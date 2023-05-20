@@ -109,7 +109,7 @@
     "solid_width_scale": 1,
     "light": {
       "distance": 2,
-      "color": "#ffd700aa",
+      "color": "#f7bebc",
       "offset": [0, 5]
     }
   },

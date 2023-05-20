@@ -196,6 +196,8 @@ public abstract class StageWrapper extends Stage {
             drawable.act(delta);
             super.act(delta);
         }
+
+        public boolean isAnimationFinished() { return drawable.isAnimationFinished(); }
     }
 
     class AnimationDrawable extends BaseDrawable {
@@ -207,6 +209,8 @@ public abstract class StageWrapper extends Stage {
             setMinWidth(animation.getKeyFrame(0).getRegionWidth());
             setMinHeight(animation.getKeyFrame(0).getRegionHeight());
         }
+
+        public boolean isAnimationFinished() { return  animation.isAnimationFinished(stateTime); }
 
         public void act(float delta) {
             stateTime += delta;

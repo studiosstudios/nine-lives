@@ -4,13 +4,16 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -18,7 +21,7 @@ import edu.cornell.gdiac.game.Save;
 
 public class MainMenuStage extends StageWrapper{
     private Table table;
-    private Actor catActor;
+    private AnimatedActor catActor;
     private Actor playButtonActor;
     private Actor levelSelectActor;
     private Actor settingsActor;
@@ -29,9 +32,8 @@ public class MainMenuStage extends StageWrapper{
 //    private Actor settingsCatpawActor;
 //    private Actor exitCatpawActor;
     private int playButtonState;
-    private Animation<TextureRegion> animation;
+    private AnimationDrawable animation;
     private int levelSelectState;
-    private float time;
 
     private int settingsState;
     private int exitButtonState;
@@ -66,9 +68,9 @@ public class MainMenuStage extends StageWrapper{
      */
     @Override
     public void createActors() {
-        animation = new Animation<>(0.15f, TextureRegion.split(internal.getEntry("main-menu-cat-anim", Texture.class),2048,2048)[0]);
-        animation.setPlayMode(Animation.PlayMode.LOOP);
-        time = 0.0f;
+        Animation<TextureRegion> anim = new Animation<>(0.15f, TextureRegion.split(internal.getEntry("main-menu-cat-anim", Texture.class),2048,2048)[0]);
+        anim.setPlayMode(Animation.PlayMode.LOOP);
+        animation = new AnimationDrawable(anim);
         Actor backgroundActor = addActor(internal.getEntry("background", Texture.class), 0,0);
         backgroundActor.setScale(0.5f);
 //        table = new Table();
@@ -87,8 +89,10 @@ public class MainMenuStage extends StageWrapper{
 //        table.add(settings);
 //        table.row();
 //        table.add(exitGame);
-//        catActor = addActor(animation.getKeyFrame(time).getTexture(),0,0);
-//        catActor.setScale(0.1f);
+        catActor = new AnimatedActor(animation);
+        addActor(catActor);
+        catActor.setScale(0.25f);
+        catActor.setPosition(15,15);
         addActor(internal.getEntry("main-menu-cat", Texture.class),15,15);
         if (Save.getStarted()) {
             playButtonActor = addActor(internal.getEntry("continue-game", Texture.class),buttonX+215-19-50, buttonY);
@@ -133,13 +137,12 @@ public class MainMenuStage extends StageWrapper{
         exitButtonActor.addListener(createHoverListener(exitButtonActor));
     }
 
-//    @Override
-//    public void update(float delta) {
-//        super.update(delta);
-//        float d = Gdx.graphics.getDeltaTime();
-//        time += d;
+    @Override
+    public void update(float delta) {
+        super.update(delta);
+        catActor.act(delta);
 //        addActor(animation.getKeyFrame(time).getTexture(),15,15);
-//    }
+    }
 
     /**
      * @param event
@@ -220,4 +223,43 @@ public class MainMenuStage extends StageWrapper{
 //        stateArray.set(index, 1);
 //        buttonArray.get(index).setColor(Color.LIGHT_GRAY);
 //    }
+}
+
+class AnimatedActor extends Image {
+    private final AnimationDrawable drawable;
+
+    public AnimatedActor(AnimationDrawable drawable) {
+        super(drawable);
+        this.drawable = drawable;
+    }
+
+    @Override
+    public void act(float delta) {
+        drawable.act(delta);
+        super.act(delta);
+    }
+}
+
+class AnimationDrawable extends BaseDrawable {
+    public final Animation<TextureRegion> animation;
+    private float stateTime = 0;
+
+    public AnimationDrawable(Animation<TextureRegion> animation) {
+        this.animation = animation;
+        setMinWidth(animation.getKeyFrame(0).getRegionWidth());
+        setMinHeight(animation.getKeyFrame(0).getRegionHeight());
+    }
+
+    public void act(float delta) {
+        stateTime += delta;
+    }
+
+    public void reset() {
+        stateTime = 0;
+    }
+
+    @Override
+    public void draw(Batch batch, float x, float y, float width, float height) {
+        batch.draw(animation.getKeyFrame(stateTime), x, y, width, height);
+    }
 }

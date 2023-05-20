@@ -81,9 +81,14 @@ public abstract class StageWrapper extends Stage {
     }
     public void draw() {
         super.getViewport().apply();
-//        update();
         super.act();
         super.draw();
+    }
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+        update(delta);
     }
 
     public Actor addActor(Texture texture, float x, float y) {

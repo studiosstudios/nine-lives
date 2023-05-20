@@ -164,7 +164,8 @@
         "tiledLevel8": "levels/tutorial-camera.json",
         "tiledLevel9": "levels/spikes-deaths-easy.json",
         "tiledLevel10": "levels/tutorial-undo.json",
-
+        "tiledLevel11": "levels/activator-door-tutorial.json",
+        "tiledLevel12": "levels/wall-jump-intro.json",
       //        "tiledLevel4": "levels/tutorial-undo.json",
       //        "tiledLevel2": "levels/test-windows.json",
       //        "tiledLevel1": "levels/lights.json",
@@ -174,8 +175,7 @@
 //      "tiledLevel9": "levels/avoiding-a-mob.json",
 
 //        "tiledLevel10": "levels/mob-push-box.json",
-       "tiledLevel11": "levels/basic-body-switch.json",
-        "tiledLevel12": "levels/triple-body-deposits.json",
+//        "tiledLevel12": "levels/triple-body-deposits.json",
 //        "tiledLevel13": "levels/level-beta-med1.json",
       "tiledLevel13": "levels/wall-jump-intro.json",
       "tiledLevel14": "levels/tutorial-body-switch.json",

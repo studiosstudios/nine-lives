@@ -143,8 +143,10 @@ public class CollisionController implements ContactListener, ContactFilter {
                         cat.addSpiritRegion((SpiritRegion) bd2);
                     }
                     if (bd2 instanceof Goal) {
+//                        if (((Goal) bd2).isFinal()) {
+//                            //TODO: finished the game. go to credits!
+//                        }
                         ((Goal) bd2).activate();
-                        //TODO: if not active then collect dead bodies with action controller
                         actionController.recombineLives();
                     }
                     if (bd2 instanceof CameraRegion){

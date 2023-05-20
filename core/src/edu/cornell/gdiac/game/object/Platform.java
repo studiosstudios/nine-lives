@@ -44,6 +44,8 @@ public class Platform extends BoxObstacle implements Activatable {
     private Vector2 other;
     private float width;
     private float height;
+    private static TextureRegion[][] labTileset;
+    private static TextureRegion[][] forestTileset;
 
     /**
      * Creates a new Door object.
@@ -55,7 +57,7 @@ public class Platform extends BoxObstacle implements Activatable {
      * @param scale          Draw scale for drawing
      * @param tileSize       Size in pixels of tileset tiles
      */
-    public Platform(float width, float height, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize){
+    public Platform(float width, float height, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, String biome){
         super(width, height);
         this.width = width;
         this.height = height;
@@ -69,7 +71,13 @@ public class Platform extends BoxObstacle implements Activatable {
         setDrawScale(scale);
         setTexture(tMap.get("steel"));
         this.tileSize = tileSize;
-        initTextures(tMap.get("platform"), (int) width, (int) height);
+        if (labTileset == null) {
+            labTileset = tMap.get("platform").split(tileSize, tileSize);
+        }
+        if (forestTileset == null) {
+            forestTileset = tMap.get("forest-platform").split(tileSize, tileSize);
+        }
+        initTextures(biome.equals("metal") ? labTileset : forestTileset, (int) width, (int) height);
         setX((float) properties.get("x") + width/2f);
         setY((float) properties.get("y") - height/2f);
         startPos = getPosition().cpy();
@@ -85,13 +93,12 @@ public class Platform extends BoxObstacle implements Activatable {
     /**
      * Initializes the tileset TextureRegion array for this platform based on its width and height.
      *
-     * @param tileset   Platform tileset (16 tiles)
+     * @param tiles     Platform tileset (16 tiles)
      * @param width     Width in world units
      * @param height    Height in world units
      */
-    private void initTextures(TextureRegion tileset, int width, int height){
+    private void initTextures(TextureRegion[][] tiles, int width, int height){
         textures = new TextureRegion[width][height];
-        TextureRegion[][] tiles = tileset.split(tileSize, tileSize);
 
         if (width == 1 && height == 1){
             textures[0][0] = tiles[0][0];
@@ -143,8 +150,8 @@ public class Platform extends BoxObstacle implements Activatable {
      * @param scale          Draw scale for drawing
      * @param tileSize       Size in pixels of tileset tiles
      */
-    public Platform(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize){
-        this((float) properties.get("width"), (float) properties.get("height"), properties, tMap, scale, tileSize);
+    public Platform(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, String biome){
+        this((float) properties.get("width"), (float) properties.get("height"), properties, tMap, scale, tileSize, biome);
     }
 
     /**

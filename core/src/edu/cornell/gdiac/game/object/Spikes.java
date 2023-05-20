@@ -45,7 +45,8 @@ public class Spikes extends BoxObstacle implements Activatable {
     /** initial y position */
     private final float y;
     private static HashMap<Integer, Integer> gidMap = new HashMap<>();
-    private static TextureRegion[][] tileset;
+    private static TextureRegion[][] labTileset;
+    private static TextureRegion[][] forestTileset;
 
     /**
      * Creates a new Spikes object.
@@ -54,8 +55,9 @@ public class Spikes extends BoxObstacle implements Activatable {
      * @param tMap           Texture map for loading textures
      * @param scale          Draw scale for drawing
      * @param textureScale   Texture scale for rescaling texture
+     * @param biome          biome
      */
-    public Spikes(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
+    public Spikes(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale, String biome){
         super(1, 1);
         setBodyType(properties.containsKey("attachName") ? BodyDef.BodyType.DynamicBody : BodyDef.BodyType.StaticBody);
         setSensor(true);
@@ -63,8 +65,17 @@ public class Spikes extends BoxObstacle implements Activatable {
         setName("spikes");
         setDrawScale(scale);
         setTextureScale(textureScale);
-        if (tileset == null) tileset = tMap.get("spikes").split(tMap.get("spikes").getTexture(),(int) (scale.x/textureScale.x), (int) (scale.y/textureScale.y));
-        setTexture(tileset[0][gidMap.get(properties.get("gid"))]);
+        if (labTileset == null) {
+            labTileset = tMap.get("spikes").split(tMap.get("spikes").getTexture(),(int) (scale.x/textureScale.x), (int) (scale.y/textureScale.y));
+        }
+        if (forestTileset == null) {
+            forestTileset = tMap.get("forest-spikes").split(tMap.get("forest-spikes").getTexture(),(int) (scale.x/textureScale.x), (int) (scale.y/textureScale.y));
+        }
+        if (biome.equals("metal")) {
+            setTexture(labTileset[0][gidMap.get(properties.get("gid"))]);
+        } else {
+            setTexture(forestTileset[0][gidMap.get(properties.get("gid"))]);
+        }
         setFriction(objectConstants.getFloat("friction"));
         fixtureShapes = new Array<>();
 

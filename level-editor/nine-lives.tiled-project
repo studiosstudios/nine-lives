@@ -14,6 +14,11 @@
             "id": 14,
             "members": [
                 {
+                    "name": "attachName",
+                    "type": "string",
+                    "value": ""
+                },
+                {
                     "name": "color",
                     "type": "color",
                     "value": "#ffff0000"

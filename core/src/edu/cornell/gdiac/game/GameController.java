@@ -172,6 +172,7 @@ public class GameController implements Screen {
     public void setCanvas(GameCanvas canvas) {
         this.canvas = canvas;
         collisionController.setCamera(canvas.getCamera());
+        actionController.setCamera(canvas.getCamera());
     }
 
     /**
@@ -457,7 +458,7 @@ public class GameController implements Screen {
                 "cat", "walk-anim", "jump-anim", "idle-sit-anim", "idle-stand-anim", "meow-anim",
                 "trans-anim","climb-anim","corpse", "corpse2", "corpse3","corpse-burnt","trans2-anim","jump-mid",
                 // SPIKES
-                "spikes",
+                "spikes", "forest-spikes",
                 // BUTTONS & SWITCHES
                 "button-base", "button-top", "switch-top", "switch-base",
                 // FLAMETHROWERS
@@ -467,7 +468,7 @@ public class GameController implements Screen {
                 // CHECKPOINTS
                 "checkpoint-anim", "checkpoint-active-anim", "checkpoint-base", "checkpoint-base-active", "checkpoint-activation-anim",
                 // GOAL
-                "goal", "goal-active", "goal-bases", "goal-idle-anim", "goal-inactive",
+                "goal", "goal-active", "goal-bases", "goal-idle-anim", "goal-inactive", "goal-final",
                 // ROBOT & MOBS
                 "robot-anim",
                 // SPIRIT BOUNDARIES
@@ -477,7 +478,7 @@ public class GameController implements Screen {
                 // TILESETS
                 "metal-tileset", "climbable-tileset", "steel", "windows-tileset", "forest-tileset", "forestLeaves-tileset",
                 // DOORS & PLATFORMS
-                "door", "platform",
+                "door", "platform", "forest-platform",
                 // BOX
                 "box",
                 // BACKGROUNDS
@@ -488,7 +489,10 @@ public class GameController implements Screen {
                 "tutorial-jump-dash", "tutorial-undo", "tutorial-climb",
                 "cabinet-left", "cabinet-mid", "cabinet-right", "goggles", "microscope",
                 "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf", "wall-bottom", "wall-top",
-                "tank", "test-tubes", "coke", "broken-robot", "coming-soon", "arrow-sign"
+                "tank", "test-tubes", "coke", "broken-robot", "coming-soon", "arrow-sign",
+                "tutorial-cancel-switch", "wood-arrow", "wood-sign",
+                "cat-tank","cat-tank-purple","chair","dandelions","desktop","firefly","flowers",
+                "mushrooms","pin-board","robo","window-robo","x-ray"
                 }; // Unsure if this is actually being used
         for (String n : names){
 //            System.out.println(n);
@@ -810,6 +814,7 @@ public class GameController implements Screen {
     public void updateCamera(){
         Camera cam = canvas.getCamera();
         InputController input = InputController.getInstance();
+
         if(drawAdjacentLevels){
             gameState = GameState.LEVEL_SWITCH;
         }
@@ -912,6 +917,15 @@ public class GameController implements Screen {
                 gameState = GameState.PLAY;
                 drawAdjacentLevels = false;
             }
+        }
+
+        if (actionController.isCombiningLives()) {
+            cam.setZoom(true, 0.9f);
+            float x_pos = currLevel.getCat().getPosition().x*scale.x;
+            float y_pos = currLevel.getCat().getPosition().y*scale.y;
+            cam.updateCamera(x_pos, y_pos, true, cam.getGameplayBounds());
+            actionController.moveCat(1.2f, 1.2f);
+            input.setDisableAll(true);
         }
     }
     @Override

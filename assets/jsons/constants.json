@@ -38,6 +38,7 @@
   },
   "flamethrowers": {
     "flame_sensor_scale": [0.45, 0.5],
+    "solid_scale": [1, 0.6],
     "base_offset" : [0.5, -0.5],
     "flame_offset" : [-0.05, 1.1],
     "friction": 1,
@@ -104,7 +105,12 @@
     "offset": [0, 0],
 //    "offset": [0.5, -1],
     "solid_height_scale": 0.5,
-    "solid_width_scale": 1
+    "solid_width_scale": 1,
+    "light": {
+      "distance": 2,
+      "color": "#ffd700aa",
+      "offset": [0, 5]
+    }
   },
   "deadBody": {
     "friction": 1,
@@ -112,7 +118,7 @@
     "mass" : 1,
     "damping" : 1.2,
     "offset": [0, 0],
-    "burnTicks" : 300,
+    "burnTicks" : 450,
     "capsuleWidth": 0.875,
     "capsuleHeight": 0.90312505,
     "shrink": [0.65, 0.3],

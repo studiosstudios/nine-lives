@@ -738,7 +738,7 @@ public class Level {
         JsonValue objects = data.get("objects");
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
-            Platform platform = new Platform(propertiesMap, textureRegionAssetMap, scale, 128);
+            Platform platform = new Platform(propertiesMap, textureRegionAssetMap, scale, 128, biome);
             loadTiledActivatable(platform);
         }
     }
@@ -804,7 +804,7 @@ public class Level {
         textureScaleCache.set(1/4f, 1/4f);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
-            Spikes spikes = new Spikes(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
+            Spikes spikes = new Spikes(propertiesMap, textureRegionAssetMap, scale, textureScaleCache, biome);
             loadTiledActivatable(spikes);
         }
     }
@@ -1178,7 +1178,7 @@ public class Level {
         if (propertiesMap.containsKey("name")) {
             objectNames.put((String) propertiesMap.get("name"), obj);
         }
-        if (propertiesMap.containsKey("attachName")) {
+        if (!propertiesMap.get("attachName", "").equals("")) {
             objectJoints.put(obj, (String) propertiesMap.get("attachName"));
         }
     }
@@ -1285,6 +1285,10 @@ public class Level {
 
         for (Decoration d : decorations) { d.draw(canvas); }
 
+        if (goal != null && goal.isFinal()) {
+            goal.draw(canvas);
+        }
+
         for (Laser l : lasers){
             l.drawLaser(canvas);
         }
@@ -1356,7 +1360,7 @@ public class Level {
             currCheckpoint.drawBase(canvas);
         }
 
-        if (goal != null) {
+        if (goal != null && !goal.isFinal()) {
             goal.draw(canvas);
         }
 
@@ -1408,13 +1412,13 @@ public class Level {
         double rand = Math.random();
         DeadBody deadBody;
         if(rand <0.33){
-            deadBody = new DeadBody(textureRegionAssetMap.get("corpse2"),textureRegionAssetMap.get("corpse-burnt"), scale, cat.getPosition(), textureScaleCache);
+            deadBody = new DeadBody(textureRegionAssetMap.get("corpse2"),textureRegionAssetMap.get("corpse-burnt"), scale, cat.getPosition(), textureScaleCache,cat.getDashTimer());
         }
         else if(rand < 0.66){
-            deadBody = new DeadBody(textureRegionAssetMap.get("corpse3"),textureRegionAssetMap.get("corpse-burnt"), scale, cat.getPosition(), textureScaleCache);
+            deadBody = new DeadBody(textureRegionAssetMap.get("corpse3"),textureRegionAssetMap.get("corpse-burnt"), scale, cat.getPosition(), textureScaleCache, cat.getDashTimer());
         }
         else{
-            deadBody = new DeadBody(textureRegionAssetMap.get("corpse"),textureRegionAssetMap.get("corpse-burnt"), scale, cat.getPosition(), textureScaleCache);
+            deadBody = new DeadBody(textureRegionAssetMap.get("corpse"),textureRegionAssetMap.get("corpse-burnt"), scale, cat.getPosition(), textureScaleCache, cat.getDashTimer());
         }
         deadBody.setLinearVelocity(cat.getLinearVelocity());
         deadBody.setFacingRight(cat.isFacingRight());

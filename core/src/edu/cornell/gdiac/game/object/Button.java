@@ -24,6 +24,8 @@ public class Button extends Activator {
         super(properties, "button-top", "button-base",tMap,scale, textureScale);
     }
 
+
+
     /** For a button, active = isPressed() */
     public void updateActivated(){
         activating = isPressed();

@@ -528,7 +528,11 @@ public class GameController implements Screen {
 
 //		InputController.getInstance().writeTo("debug-input/recent.txt");
 //		InputController.getInstance().readFrom("debug-input/recent.txt");
-}
+    }
+
+    public void updateControls() {
+        InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
+    }
 
     /**
      * Handles respawning the cat after their death

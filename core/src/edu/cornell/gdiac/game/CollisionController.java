@@ -124,12 +124,15 @@ public class CollisionController implements ContactListener, ContactFilter {
 
                     if (bd2 instanceof Spikes && fd2.equals(Spikes.pointyName) && fd1.equals(Cat.bodyName)) {
                         actionController.die(true);
+                        actionController.audioController.playSoundEffect("death-spike");
                     }
                     if (bd2 instanceof Flamethrower.Flame && fd2.equals(Flamethrower.flameSensorName)){
                         actionController.die(true);
+                        actionController.audioController.playSoundEffect("death-fire");
                     }
                     if (bd2 instanceof Laser && fd2.equals(Laser.laserHitboxName)) {
                         actionController.die(true);
+                        actionController.audioController.playSoundEffect("death-laser");
                     }
                     if (bd2 instanceof Checkpoint && ((Checkpoint) bd2).getSensorName().equals(fd2)){
                         Checkpoint checkpoint = (Checkpoint) bd2;
@@ -138,6 +141,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                     }
                     if (bd2 instanceof Mob){
                         actionController.die(true);
+                        actionController.audioController.playSoundEffect("death-mob");
                     }
                     if (bd2 instanceof SpiritRegion){
                         cat.addSpiritRegion((SpiritRegion) bd2);
@@ -201,7 +205,7 @@ public class CollisionController implements ContactListener, ContactFilter {
                 // Activator
                 if (fd1 instanceof Activator) {
                     ((Activator) fd1).addPress();
-
+                    actionController.audioController.playSoundEffect("button-click");
                 }
                 //swap everything
                 Body bodyTemp = body1;

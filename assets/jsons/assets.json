@@ -175,13 +175,19 @@
         "tiledLevel17": "levels/test-forest.json"
     },
     "soundfx" : {
-        "jump" : "sounds/jump-CELESTE.wav",
-        "dash" : "sounds/dash-CELESTE.wav",
-        "metal-landing" : "sounds/metal-landing-CELESTE.wav",
+        "jump" : "sounds/jump.wav",
+        "dash" : "sounds/dash.wav",
+        "metal-landing" : "sounds/landing.wav",
         "meow-3" : "sounds/meow.mp3",
         "meow-1": "sounds/meow-1.wav",
         "meow-2": "sounds/meow-2.wav",
-//        "menu-select": "sounds/menu-select.wav"
+        "death-fall": "sounds/death-fall.wav",
+        "death-spike": "sounds/death-spike.wav",
+        "death-fire": "sounds/death-fire.wav",
+        "death-laser": "sounds/death-laser.wav",
+        "death-mob": "sounds/death-mob.wav",
+        "button-click": "sounds/button-click.wav",
+      //        "menu-select": "sounds/menu-select.wav"
     },
    "samples": {
         "bkg-intro": "sounds/bkg-intro.ogg",

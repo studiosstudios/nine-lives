@@ -65,7 +65,7 @@
          "name":"background",
          "opacity":1,
          "type":"tilelayer",
-         "visible":true,
+         "visible":false,
          "width":30,
          "x":0,
          "y":0
@@ -140,6 +140,103 @@
                  "width":23552,
                  "x":3072,
                  "y":0
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":26,
+         "name":"lights",
+         "objects":[
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":162,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":18432,
+                 "y":2048
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":163,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":8192,
+                 "y":2048
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":164,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":3072,
+                 "y":2048
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":165,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":23552,
+                 "y":2048
+                }, 
+                {
+                 "gid":14,
+                 "height":1024,
+                 "id":166,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"type",
+                         "propertytype":"lightType",
+                         "type":"string",
+                         "value":"wall"
+                        }],
+                 "rotation":0,
+                 "type":"Light",
+                 "visible":true,
+                 "width":1024,
+                 "x":3072,
+                 "y":14336
+                }, 
+                {
+                 "gid":14,
+                 "height":1024,
+                 "id":168,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"type",
+                         "propertytype":"lightType",
+                         "type":"string",
+                         "value":"wall"
+                        }],
+                 "rotation":0,
+                 "type":"Light",
+                 "visible":true,
+                 "width":1024,
+                 "x":28672,
+                 "y":14336
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -915,8 +1012,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":26,
- "nextobjectid":162,
+ "nextlayerid":27,
+ "nextobjectid":169,
  "orientation":"orthogonal",
  "properties":[
         {

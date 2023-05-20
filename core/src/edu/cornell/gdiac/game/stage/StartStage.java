@@ -11,7 +11,7 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 public class StartStage extends StageWrapper{
     public Actor paw;
     public StartStage(AssetDirectory internal, boolean createActors) {
-        super(internal, createActors);
+        super(internal, createActors, false);
     }
 
     /**

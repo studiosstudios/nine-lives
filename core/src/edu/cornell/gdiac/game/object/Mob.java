@@ -149,7 +149,7 @@ public class Mob extends CapsuleObstacle {
         walkTime = 0f;
         if (labSpriteFrames == null) labSpriteFrames = TextureRegion.split(tMap.get("robot-anim").getTexture(), 256, 256);
         if (forestSpriteFrames == null) forestSpriteFrames = TextureRegion.split(tMap.get("forest-mob-anim").getTexture(), 208, 256);
-        if (biome.equals("lab")) {
+        if (biome.equals("metal")) {
             walkAnimation = new Animation<>(0.15f, labSpriteFrames[0]);
         } else {
             walkAnimation = new Animation<>(0.15f, forestSpriteFrames[0]);

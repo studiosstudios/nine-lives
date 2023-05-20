@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="30" height="23" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="22" nextobjectid="210">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="30" height="23" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="22" nextobjectid="211">
  <editorsettings>
   <export target="../../../assets/levels/sabrina3.json" format="json"/>
  </editorsettings>
@@ -45,6 +45,7 @@
   <object id="206" name="chair" gid="170" x="6818.46" y="16420.6" width="2587.01" height="2724.87"/>
   <object id="208" name="pin-board" gid="176" x="4391.23" y="14935.7" width="2275.23" height="2488.91"/>
   <object id="209" name="desktop" gid="172" x="6022.18" y="14647.5" width="1929.99" height="1303.2"/>
+  <object id="210" name="cat-tank-purple" gid="169" x="5487.3" y="7177.7" width="2133.66" height="3074.85"/>
  </objectgroup>
  <layer id="18" name="climbables" width="30" height="23">
   <data encoding="csv">

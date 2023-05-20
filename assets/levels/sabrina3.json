@@ -50,44 +50,44 @@
                  "type":"",
                  "visible":true,
                  "width":2048,
-                 "x":8046.54545454546,
-                 "y":6662.18181818182
+                 "x":8046.55,
+                 "y":6662.18
                 }, 
                 {
                  "gid":157,
-                 "height":1786.0410022779,
+                 "height":1786.04,
                  "id":205,
                  "name":"cabinet-mid",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":2048,
-                 "x":5926.99818511797,
-                 "y":16396.0508166969
+                 "x":5927,
+                 "y":16396.1
                 }, 
                 {
                  "gid":170,
-                 "height":2724.86505279619,
+                 "height":2724.87,
                  "id":206,
                  "name":"chair",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":2587.01424851783,
-                 "x":6818.45781822091,
-                 "y":16420.60704326
+                 "width":2587.01,
+                 "x":6818.46,
+                 "y":16420.6
                 }, 
                 {
                  "gid":176,
-                 "height":2488.90598290598,
+                 "height":2488.91,
                  "id":208,
                  "name":"pin-board",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":2275.23076923077,
-                 "x":4391.23076923077,
-                 "y":14935.6923076923
+                 "width":2275.23,
+                 "x":4391.23,
+                 "y":14935.7
                 }, 
                 {
                  "gid":172,
@@ -98,8 +98,20 @@
                  "type":"",
                  "visible":true,
                  "width":1929.99,
-                 "x":6022.18448717949,
-                 "y":14647.5452991453
+                 "x":6022.18,
+                 "y":14647.5
+                }, 
+                {
+                 "gid":169,
+                 "height":3074.84516880093,
+                 "id":210,
+                 "name":"cat-tank-purple",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":2133.65774155995,
+                 "x":5487.30384167637,
+                 "y":7177.7019790454
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -722,7 +734,7 @@
          "y":0
         }],
  "nextlayerid":22,
- "nextobjectid":210,
+ "nextobjectid":211,
  "orientation":"orthogonal",
  "properties":[
         {

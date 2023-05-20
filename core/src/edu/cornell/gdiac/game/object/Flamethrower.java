@@ -45,7 +45,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
      * @param drawScale      Draw scale for drawing
      * @param textureScale   Texture scale for rescaling texture
      */
-    public Flamethrower(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 drawScale, Vector2 textureScale) {
+    public Flamethrower(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 drawScale, Vector2 textureScale, String biome) {
         super();
 
 
@@ -56,7 +56,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
         setDrawScale(drawScale);
         flameBase.setDrawScale(drawScale);
         flameBase.setTextureScale(textureScale);
-        flameBase.setTexture(tMap.get("flamethrower"));
+        flameBase.setTexture(biome.equals("metal") ? tMap.get("flamethrower") : tMap.get("forest-flamethrower"));
         flameBase.setFriction(objectConstants.getFloat("friction", 0));
         flameBase.setRestitution(objectConstants.getFloat("restitution", 0));
         flameBase.setDensity(objectConstants.getFloat("density", 0));

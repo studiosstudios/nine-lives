@@ -172,7 +172,11 @@
         "tiledLevel16": "levels/tutorial-flamethrower.json",
         "tiledLevel17": "levels/flamethrow-level.json",
         "tiledLevel18": "levels/tutorial-lasers.json",
-
+        "tiledLevel19": "levels/laser-level.json",
+        "tiledLevel20": "levels/mob-push-box.json",
+        "tiledLevel21": "levels/fire-laser-activators.json",
+        "tiledLevel22": "levels/cat-shape-climb.json",
+        "tiledLevel23": "levels/test-forest.json"
 
       //        "tiledLevel2": "levels/test-windows.json",
       //        "tiledLevel1": "levels/lights.json",
@@ -188,7 +192,6 @@
 //        "tiledLevel5": "levels/level-beta-hard.json",
 //        "tiledLevel14": "levels/party-room.json",
 //        "tiledLevel16": "levels/split-spirit-regions.json",
-        "tiledLevel19": "levels/test-forest.json"
     },
     "soundfx" : {
         "jump" : "sounds/jump.wav",

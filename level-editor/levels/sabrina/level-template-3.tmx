@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="28" height="23" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="22" nextobjectid="212">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="28" height="23" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="23" nextobjectid="212">
  <editorsettings>
   <export target="../../../assets/levels/sabrina3.json" format="json"/>
  </editorsettings>
@@ -11,7 +11,8 @@
  <tileset firstgid="63" source="../../tilesets/climbables.tsx"/>
  <tileset firstgid="67" source="../../tilesets/default-metal-walls.tsx"/>
  <tileset firstgid="115" source="plat.tsx"/>
- <tileset firstgid="131" source="../../decor/decor.tsx"/>
+ <tileset firstgid="115" source="../../decor/decor.tsx"/>
+ <tileset firstgid="168" source="../../tilesets/lab-bkg.tsx"/>
  <layer id="17" name="metalWalls" width="28" height="23">
   <data encoding="csv">
 93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,94,0,0,0,
@@ -39,12 +40,39 @@
 105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,106
 </data>
  </layer>
+ <layer id="22" name="background" width="28" height="23">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,171,0,0,0,171,0,0,0,168,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,170,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+169,0,0,0,170,0,0,0,169,0,0,0,170,0,0,0,170,0,0,0,171,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,170,0,0,0,170,0,0,0,170,0,0,0,170,0,0,0,171,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+170,0,0,0,169,0,0,0,0,0,0,0,170,0,0,0,170,0,0,0,170,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
  <objectgroup id="21" name="decor">
-  <object id="204" name="x-ray" gid="178" x="5998.55" y="6662.18" width="2048" height="2304"/>
-  <object id="205" name="cabinet-mid" gid="157" x="3879" y="16396.1" width="2048" height="1786.04"/>
-  <object id="206" name="chair" gid="170" x="4770.46" y="16420.6" width="2587.01" height="2724.87"/>
-  <object id="208" name="pin-board" gid="176" x="2343.23" y="14935.7" width="2275.23" height="2488.91"/>
-  <object id="209" name="desktop" gid="172" x="3974.18" y="14647.5" width="1929.99" height="1303.2"/>
+  <object id="204" name="x-ray" gid="162" x="5998.55" y="6662.18" width="2048" height="2304"/>
+  <object id="205" name="cabinet-mid" gid="141" x="3879" y="16396.1" width="2048" height="1786.04"/>
+  <object id="206" name="chair" gid="154" x="4770.46" y="16420.6" width="2587.01" height="2724.87"/>
+  <object id="208" name="pin-board" gid="160" x="2343.23" y="14935.7" width="2275.23" height="2488.91"/>
+  <object id="209" name="desktop" gid="156" x="3974.18" y="14647.5" width="1929.99" height="1303.2"/>
  </objectgroup>
  <layer id="18" name="climbables" width="28" height="23">
   <data encoding="csv">

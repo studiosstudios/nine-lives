@@ -460,9 +460,9 @@ public class GameController implements Screen {
                 // SPIKES
                 "spikes", "forest-spikes",
                 // BUTTONS & SWITCHES
-                "button-base", "button-top", "switch-top", "switch-base",
+                "button-base", "button-top", "switch-top", "switch-base", "forest-button-top", "forest-switch-top",
                 // FLAMETHROWERS
-                "flamethrower", "flame-anim",
+                "flamethrower", "flame-anim", "forest-flamethrower",
                 // LASERS
                 "laser",
                 // CHECKPOINTS

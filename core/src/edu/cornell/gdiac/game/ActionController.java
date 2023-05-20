@@ -57,6 +57,9 @@ public class ActionController {
     private Vector2 endPointCache = new Vector2();
     private ObjectMap<DeadBody, Float> hitDeadbodies = new ObjectMap<>();
     private AudioController audioController;
+    /** Camera to set zoom for CameraRegions*/
+    private Camera camera;
+    private boolean combiningLives;
 
     /**
      * Creates and initialize a new instance of a ActionController
@@ -68,6 +71,7 @@ public class ActionController {
         this.scale = scale;
 //        this.volume = volume;
         this.audioController = audioController;
+        combiningLives = false;
         mobControllers = new Array<>();
     }
 //
@@ -84,6 +88,14 @@ public class ActionController {
     public void setLevel(Level level){
         this.level = level;
         this.bounds = level.bounds;
+    }
+
+    /**
+     * Set camera for current instance of collisionController
+     * @param camera camera for current canvas
+     */
+    public void setCamera(Camera camera){
+        this.camera = camera;
     }
 
     /**
@@ -106,6 +118,8 @@ public class ActionController {
     public Array<AIController> getMobControllers() {
         return mobControllers;
     }
+
+    public boolean isCombiningLives() { return combiningLives; }
 
 //    /**
 //     * Sets the hashmaps for Texture Regions, Sounds, Fonts, and sets JSON value constants
@@ -149,7 +163,10 @@ public class ActionController {
         }
 
         if (level.getSpiritParticles().size != 0 && level.getdeadBodyArray().size == 0) {
+            combiningLives = true;
             moveSpirits();
+        } else {
+            combiningLives = false;
         }
 
         if (level.canSwitch && ic.didSwitch()) {
@@ -232,6 +249,12 @@ public class ActionController {
             mob.setPosition(mob.getX() + mobControl.getAction(), mob.getY());
             mob.applyForce();
         }
+
+//        // combing lives
+//        if (combiningLives) {
+//            System.out.println("combining lives");
+//            ic.setDisableAll(true);
+//        }
 
     }
 
@@ -523,7 +546,7 @@ public class ActionController {
                 float x = level.getCat().getX() - spirit.getX();
                 float y = level.getCat().getY() - spirit.getY();
                 float angle = (float) Math.atan((double)y/(double)x);
-                spirit.setAngle(angle, 0.28f);
+                spirit.setAngle(angle, 0.2f);
                 spirit.move();
                 if (Math.abs(spirit.getX() - level.getCat().getX()) <= 1f &&
                     Math.abs(spirit.getY() - level.getCat().getY()) <= 1f) {

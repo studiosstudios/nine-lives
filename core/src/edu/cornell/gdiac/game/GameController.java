@@ -172,6 +172,7 @@ public class GameController implements Screen {
     public void setCanvas(GameCanvas canvas) {
         this.canvas = canvas;
         collisionController.setCamera(canvas.getCamera());
+        actionController.setCamera(canvas.getCamera());
     }
 
     /**
@@ -814,6 +815,7 @@ public class GameController implements Screen {
     public void updateCamera(){
         Camera cam = canvas.getCamera();
         InputController input = InputController.getInstance();
+
         if(drawAdjacentLevels){
             gameState = GameState.LEVEL_SWITCH;
         }
@@ -916,6 +918,19 @@ public class GameController implements Screen {
                 gameState = GameState.PLAY;
                 drawAdjacentLevels = false;
             }
+        }
+
+        if (actionController.isCombiningLives()) {
+            //TODO: transition the cat
+            cam.setZoom(true, 0.9f);
+//            cam.setZoom(false, 1.0f);
+            float x_pos = currLevel.getCat().getPosition().x*scale.x;
+            float y_pos = currLevel.getCat().getPosition().y*scale.y;
+            cam.updateCamera(x_pos, y_pos, true, cam.getGameplayBounds());
+
+//            currLevel.getCat().setHorizontalMovement(1000f);
+//            currLevel.getCat().updateState();
+            input.setDisableAll(true);
         }
     }
     @Override

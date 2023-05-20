@@ -1,7 +1,4 @@
 ./DefaultLab_rules.tmx
 ./window_rules.tmx
-<<<<<<< HEAD
 ./lab-bkg-rules.tmx
-=======
 ./forest-wall-rules.tmx
->>>>>>> golden

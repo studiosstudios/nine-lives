@@ -136,7 +136,7 @@
  <objectgroup id="16" name="spiritRegions">
   <object id="222" type="SpiritRegion" x="5120" y="6144" width="4096" height="10240"/>
   <object id="223" type="SpiritRegion" x="11264" y="6144" width="4096" height="11264"/>
-  <object id="224" type="SpiritRegion" x="5120" y="2048" width="12288" height="4096">
+  <object id="224" type="SpiritRegion" x="0" y="2048" width="17408" height="4096">
    <properties>
     <property name="color" type="color" value="#ff42cc5f"/>
    </properties>

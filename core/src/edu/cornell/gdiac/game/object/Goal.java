@@ -12,7 +12,6 @@ import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
 import edu.cornell.gdiac.util.Direction;
-import sun.security.provider.ConfigFile;
 
 import java.util.HashMap;
 

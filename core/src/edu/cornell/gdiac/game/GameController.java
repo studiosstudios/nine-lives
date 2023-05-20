@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.game.object.*;
 import edu.cornell.gdiac.game.obstacle.*;
+import edu.cornell.gdiac.game.stage.CreditsStage;
 import edu.cornell.gdiac.game.stage.HudStage;
 import edu.cornell.gdiac.util.ScreenListener;
 
@@ -127,8 +128,8 @@ public class GameController implements Screen {
     private boolean LIGHTS_ACTIVE = true;
     private Color spiritModeColor = new Color(1, 1, 1, 1);
     private boolean drawAdjacentLevels;
-
     private boolean gameFinished;
+    public CreditsStage credits;
 
     /**
      * PLAY: User has all controls and is in game
@@ -745,7 +746,10 @@ public class GameController implements Screen {
      */
     public void update(float dt) {
 
-        gameFinished = collisionController.isGameFinished();
+        if (collisionController.isGameFinished() && !gameFinished) {
+            credits = new CreditsStage("jsons/credits-stage.json", true, false);
+            gameFinished = true;
+        }
 
         if (collisionController.getReturn()) {
             setRet(true);
@@ -967,9 +971,18 @@ public class GameController implements Screen {
             updateAndRenderRayHandler();
         }
 
-        // Menu draw
-        hud.draw();
-        if (paused && stageController != null) { stageController.render(delta); }
+        if (gameFinished) {
+            credits.draw();
+            if (credits.finished) {
+                gameFinished = false;
+                credits.finished = false;
+                listener.exitScreen(this, 89);
+            }
+        } else {
+            // Menu draw
+            hud.draw();
+            if (paused && stageController != null) { stageController.render(delta); }
+        }
     }
 
     /**

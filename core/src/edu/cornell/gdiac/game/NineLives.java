@@ -171,6 +171,10 @@ public class NineLives extends Game implements ScreenListener {
 			if (menu != null) {
 				setScreen(menu);
 			}
+		} else if (exitCode == 89) {
+			menu = new StageController("jsons/assets.json", canvas, 1, false, false, audioController, TOTAL_LEVELS);
+			menu.setScreenListener(this);
+			setScreen(menu);
 		} else if (exitCode == 99) {
 			Gdx.app.exit();
 		}

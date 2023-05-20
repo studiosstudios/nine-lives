@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="99" height="32" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="23" nextobjectid="265">
+ <editorsettings>
+  <export target="../../../assets/levels/moving-checkpoint.json" format="json"/>
+ </editorsettings>
  <properties>
   <property name="biome" propertytype="biome" value="metal"/>
  </properties>

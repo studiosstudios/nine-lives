@@ -316,7 +316,7 @@
                 },
                 {
                     "name": "color",
-                    "type": "color",
+                    "type": "string",
                     "value": ""
                 },
                 {

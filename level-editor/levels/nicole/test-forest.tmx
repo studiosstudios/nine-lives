@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="22" height="12" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="25" nextobjectid="112">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="22" height="12" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="25" nextobjectid="113">
  <editorsettings>
   <export target="../../../assets/levels/test-forest.json" format="json"/>
  </editorsettings>
@@ -10,10 +10,10 @@
  <tileset firstgid="15" source="../../tilesets/metal-walls.tsx"/>
  <tileset firstgid="63" source="../../tilesets/climbables.tsx"/>
  <tileset firstgid="67" source="../../decor/decor.tsx"/>
- <tileset firstgid="103" source="../../tilesets/default-metal-walls.tsx"/>
- <tileset firstgid="151" source="../../tilesets/windows.tsx"/>
- <tileset firstgid="167" source="../../tilesets/forest-walls.tsx"/>
- <tileset firstgid="179" source="../../tilesets/forestLeaves.tsx"/>
+ <tileset firstgid="110" source="../../tilesets/default-metal-walls.tsx"/>
+ <tileset firstgid="158" source="../../tilesets/windows.tsx"/>
+ <tileset firstgid="174" source="../../tilesets/forest-walls.tsx"/>
+ <tileset firstgid="186" source="../../tilesets/forestLeaves.tsx"/>
  <layer id="17" name="metalWalls" width="22" height="12">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -40,19 +40,19 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-167,168,169,168,169,168,169,168,169,168,169,168,169,168,169,168,169,168,169,168,169,170,
-171,172,173,172,173,172,173,172,173,172,173,172,173,172,173,172,173,172,173,172,173,174,
-175,176,177,176,177,176,177,176,177,176,177,176,177,176,177,176,177,176,177,176,177,178,
-175,176,177,176,177,176,177,176,177,176,177,176,177,176,177,176,177,176,177,176,177,178
+174,175,176,175,176,175,176,175,176,175,176,175,176,175,176,175,176,175,176,175,176,177,
+178,179,180,179,180,179,180,179,180,179,180,179,180,179,180,179,180,179,180,179,180,181,
+182,183,184,183,184,183,184,183,184,183,184,183,184,183,184,183,184,183,184,183,184,185,
+182,183,184,183,184,183,184,183,184,183,184,183,184,183,184,183,184,183,184,183,184,185
 </data>
  </layer>
  <layer id="24" name="forestLeaves" width="22" height="12">
   <data encoding="csv">
-194,195,196,197,198,199,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 201,202,203,204,205,206,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 208,209,210,211,212,213,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 215,216,217,218,219,220,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 222,223,224,225,226,227,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+229,230,231,232,233,234,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -114,7 +114,13 @@
   <object id="38" gid="2" x="1024" y="8192" width="1024" height="1024"/>
  </objectgroup>
  <objectgroup id="4" name="flamethrowers"/>
- <objectgroup id="20" name="goal"/>
+ <objectgroup id="20" name="goal">
+  <object id="112" x="18432" y="7168" width="2048" height="2048">
+   <properties>
+    <property name="final" type="bool" value="true"/>
+   </properties>
+  </object>
+ </objectgroup>
  <objectgroup id="3" name="checkpoints">
   <object id="109" gid="3" x="1024" y="7168" width="1024" height="2048"/>
  </objectgroup>

@@ -23,6 +23,7 @@
       "goal-bases": "obstacles/goal/goal-bases.png",
       "goal-idle-anim": "obstacles/goal/goal-idle-anim.png",
       "goal-inactive": "obstacles/goal/goal-inactive.png",
+      "goal-final": "obstacles/goal/goal-final.png",
       "goal-active": {
         "file": "obstacles/goal/goal-active.png",
         "wrapU": "repeated",
@@ -129,7 +130,6 @@
         "tiledSuperJump": "levels/super-jump.json",
         "tiledLevelTutorial": "levels/tiledLevelTutorial1.json",
       "tiledLevel1": "levels/tutorial-walk-jump.json",
-      "tiledLevel15": "levels/sabrina3.json",
         "tiledLevel2": "levels/tutorial-dash.json",
         "tiledLevel3": "levels/tutorial-first-death.json",
         "tiledLevel4": "levels/tutorial-undo.json",

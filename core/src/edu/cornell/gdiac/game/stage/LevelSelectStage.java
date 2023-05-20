@@ -13,7 +13,7 @@ import edu.cornell.gdiac.game.Save;
 import java.util.HashMap;
 
 public class LevelSelectStage extends StageWrapper {
-    private static final int BAR_WIDTH = 800;
+    private static final int BAR_WIDTH = 768;
     private static final int BAR_HEIGHT = STANDARD_HEIGHT - 100;
     private static final int SEGMENT_GAP = 5;
     private static final int SEGMENT_HEIGHT = 10;
@@ -48,7 +48,7 @@ public class LevelSelectStage extends StageWrapper {
         barActors = new Array<>(numLevels);
         segmentIndex = new HashMap<>(numLevels);
         float segmentWidth = (BAR_WIDTH / numLevels) - SEGMENT_GAP*2;
-        float barStart = (STANDARD_WIDTH - BAR_WIDTH) * 2 / 3;
+        float barStart = ((STANDARD_WIDTH - BAR_WIDTH) * 3 / 4) + SEGMENT_GAP*2;
         for (int i = 0; i < numLevels; i++) {
             Actor temp = addBarSegment(internal.getEntry("bar-segment", Texture.class), barStart+segmentWidth*i+SEGMENT_GAP*(i+1), BAR_HEIGHT, segmentWidth, SEGMENT_HEIGHT);
             if (i+1 > progress) {

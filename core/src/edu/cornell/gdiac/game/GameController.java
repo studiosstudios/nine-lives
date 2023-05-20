@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.game.object.*;
 import edu.cornell.gdiac.game.obstacle.*;
+import edu.cornell.gdiac.game.stage.CreditsStage;
 import edu.cornell.gdiac.game.stage.HudStage;
 import edu.cornell.gdiac.util.ScreenListener;
 
@@ -127,8 +128,8 @@ public class GameController implements Screen {
     private boolean LIGHTS_ACTIVE = true;
     private Color spiritModeColor = new Color(1, 1, 1, 1);
     private boolean drawAdjacentLevels;
-
     private boolean gameFinished;
+    public CreditsStage credits;
 
     /**
      * PLAY: User has all controls and is in game
@@ -479,9 +480,10 @@ public class GameController implements Screen {
                 // ACTIVATABLE LIGHTS
                 "ceiling-light", "wall-light",
                 // TILESETS
-                "metal-tileset", "climbable-tileset", "steel", "windows-tileset", "forest-tileset", "forestLeaves-tileset",
+                "metal-tileset", "climbable-tileset", "steel", "windows-tileset", "forest-tileset",
+                "forestLeaves-tileset", "forest-climbable-tileset",
                 // DOORS & PLATFORMS
-                "door", "platform", "forest-platform",
+                "door", "platform", "forest-platform", "forest-door",
                 // BOX
                 "box",
                 // BACKGROUNDS
@@ -490,8 +492,9 @@ public class GameController implements Screen {
                 "tutorial-burn", "tutorial-camera", "tutorial-checkpoint", "tutorial-dash", "tutorial-pause",
                 "tutorial-side-spikes", "tutorial-spikes", "tutorial-switch", "tutorial-walk-jump",
                 "tutorial-jump-dash", "tutorial-undo", "tutorial-climb", "tutorial-cancel-switch",
+                "tutorial-spirit-region",
                 "cabinet-left", "cabinet-mid", "cabinet-right", "goggles", "microscope",
-                "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf", "wall-bottom", "wall-top",
+                "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf",
                 "tank", "test-tubes", "coke", "broken-robot", "coming-soon", "arrow-sign",
                 "tutorial-cancel-switch", "wood-arrow", "wood-sign",
                 "cat-tank","cat-tank-purple","chair","dandelions","desktop","firefly","flowers",
@@ -742,7 +745,10 @@ public class GameController implements Screen {
      */
     public void update(float dt) {
 
-        gameFinished = collisionController.isGameFinished();
+        if (collisionController.isGameFinished() && !gameFinished) {
+            credits = new CreditsStage("jsons/credits-stage.json", true, false);
+            gameFinished = true;
+        }
 
         if (collisionController.getReturn()) {
             setRet(true);
@@ -964,9 +970,18 @@ public class GameController implements Screen {
             updateAndRenderRayHandler();
         }
 
-        // Menu draw
-        hud.draw();
-        if (paused && stageController != null) { stageController.render(delta); }
+        if (gameFinished) {
+            credits.draw();
+            if (credits.finished) {
+                gameFinished = false;
+                credits.finished = false;
+                listener.exitScreen(this, 89);
+            }
+        } else {
+            // Menu draw
+            hud.draw();
+            if (paused && stageController != null) { stageController.render(delta); }
+        }
     }
 
     /**

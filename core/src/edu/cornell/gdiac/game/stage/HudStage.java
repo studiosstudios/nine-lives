@@ -9,7 +9,6 @@ import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.assets.AssetDirectory;
 
 public class HudStage extends StageWrapper {
-    protected AssetDirectory stageAssets;
     public int lives = 9;
 
     private float bellHeight;

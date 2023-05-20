@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
+import edu.cornell.gdiac.util.Direction;
 
 import java.util.HashMap;
 

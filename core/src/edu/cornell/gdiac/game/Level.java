@@ -622,7 +622,8 @@ public class Level {
 
         if (climbableData != null) {
             climbables = new Tiles(climbableData, 128, levelWidth, levelHeight,
-                    textureRegionAssetMap.get("climbable-tileset"), bounds, fID_climbable, new Vector2(1/4f, 1/4f));
+                    biome.equals("metal") ? textureRegionAssetMap.get("climbable-tileset") : textureRegionAssetMap.get("forest-climbable-tileset"),
+                    bounds, fID_climbable, new Vector2(1/4f, 1/4f));
         }
 
         if (windowData != null) {
@@ -855,7 +856,7 @@ public class Level {
         JsonValue objects = data.get("objects");
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
-            Door door = new Door(propertiesMap, textureRegionAssetMap, scale, 128);
+            Door door = new Door(propertiesMap, textureRegionAssetMap, scale, 128, biome);
             loadTiledActivatable(door);
         }
     }
@@ -1306,7 +1307,7 @@ public class Level {
             if (tiles != null) tiles.draw(canvas);
         }
 
-        if (climbables != null) climbables.draw(canvas);
+        if (climbables != null && biome.equals("metal")) climbables.draw(canvas);
 
         for (Activator a : activators) {
             a.draw(canvas);
@@ -1317,8 +1318,6 @@ public class Level {
         }
 
         if (greyscale > 0) {canvas.setShader(null);}
-
-        spiritLine.draw(canvas);
 
         String spiritRegionColor = "";
         if (cat != null)  spiritRegionColor = cat.getSpiritRegionColor().toString().substring(0, 6);
@@ -1366,6 +1365,7 @@ public class Level {
 
         if (biome != null && biome.equals("forest")) {
             if (tiles != null) tiles.draw(canvas);
+            if (climbables != null) climbables.draw(canvas);
         }
 
         if (windows != null) {
@@ -1375,6 +1375,10 @@ public class Level {
         if (leaves != null) {
             leaves.draw(canvas);
         }
+
+        if (greyscale > 0) {canvas.setShader(null);}
+
+        spiritLine.draw(canvas);
     }
 
     /**

@@ -1,2 +1,3 @@
 ./DefaultLab_rules.tmx
 ./window_rules.tmx
+./forest-wall-rules.tmx

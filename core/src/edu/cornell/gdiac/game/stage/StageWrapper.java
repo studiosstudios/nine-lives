@@ -3,6 +3,7 @@ package edu.cornell.gdiac.game.stage;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -180,5 +182,43 @@ public abstract class StageWrapper extends Stage {
                 actor.setColor(Color.WHITE);
             }
         };
+    }
+    class AnimatedActor extends Image {
+        private final AnimationDrawable drawable;
+
+        public AnimatedActor(AnimationDrawable drawable) {
+            super(drawable);
+            this.drawable = drawable;
+        }
+
+        @Override
+        public void act(float delta) {
+            drawable.act(delta);
+            super.act(delta);
+        }
+    }
+
+    class AnimationDrawable extends BaseDrawable {
+        public final Animation<TextureRegion> animation;
+        private float stateTime = 0;
+
+        public AnimationDrawable(Animation<TextureRegion> animation) {
+            this.animation = animation;
+            setMinWidth(animation.getKeyFrame(0).getRegionWidth());
+            setMinHeight(animation.getKeyFrame(0).getRegionHeight());
+        }
+
+        public void act(float delta) {
+            stateTime += delta;
+        }
+
+        public void reset() {
+            stateTime = 0;
+        }
+
+        @Override
+        public void draw(Batch batch, float x, float y, float width, float height) {
+            batch.draw(animation.getKeyFrame(stateTime), x, y, width, height);
+        }
     }
 }

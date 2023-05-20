@@ -51,6 +51,8 @@ public class Door extends BoxObstacle implements Activatable {
     private TextureRegion middle;
     private static float shrink;
     private Color baseColor = new Color();
+    private static TextureRegion[][] labTileset;
+    private static TextureRegion[][] forestTileset;
 
     private class Cap extends BoxObstacle {
         public Cap(float width, float height) {
@@ -70,9 +72,15 @@ public class Door extends BoxObstacle implements Activatable {
      * @param scale          Draw scale for drawing
      * @param textureSize    Size of texture in pixels
      */
-    public Door(float width, float height, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int textureSize){
+    public Door(float width, float height, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int textureSize, String biome){
         super(width, height);
-        TextureRegion[][] tiles = tMap.get("door").split(tMap.get("door").getTexture(), textureSize, textureSize);
+        if (labTileset == null) {
+            labTileset = tMap.get("door").split(textureSize, textureSize);
+        }
+        if (forestTileset == null) {
+            forestTileset = tMap.get("forest-door").split(textureSize, textureSize);
+        }
+        TextureRegion[][] tiles = biome.equals("metal") ? labTileset : forestTileset;
         top = tiles[0][1];
         middle = tiles[0][2];
         bottom = tiles[0][0];
@@ -156,9 +164,9 @@ public class Door extends BoxObstacle implements Activatable {
      * @param scale          Draw scale for drawing
      * @param textureSize    Size of texture in pixels
      */
-    public Door(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int textureSize){
+    public Door(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int textureSize, String biome){
         this((float) properties.get("width"), (float) properties.get("height"),
-                properties, tMap, scale, textureSize);
+                properties, tMap, scale, textureSize, biome);
     }
 
     /**

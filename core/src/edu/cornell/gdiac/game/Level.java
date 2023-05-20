@@ -874,7 +874,7 @@ public class Level {
         JsonValue objects = data.get("objects");
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
-            Door door = new Door(propertiesMap, textureRegionAssetMap, scale, 128);
+            Door door = new Door(propertiesMap, textureRegionAssetMap, scale, 128, biome);
             loadTiledActivatable(door);
         }
     }
@@ -1342,8 +1342,6 @@ public class Level {
 
         if (greyscale > 0) {canvas.setShader(null);}
 
-        spiritLine.draw(canvas);
-
         String spiritRegionColor = "";
         if (cat != null)  spiritRegionColor = cat.getSpiritRegionColor().toString().substring(0, 6);
         for (SpiritRegion s : spiritRegionArray) {
@@ -1400,6 +1398,10 @@ public class Level {
         if (leaves != null) {
             leaves.draw(canvas);
         }
+
+        if (greyscale > 0) {canvas.setShader(null);}
+
+        spiritLine.draw(canvas);
     }
 
     /**

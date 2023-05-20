@@ -483,7 +483,7 @@ public class GameController implements Screen {
                 "metal-tileset", "climbable-tileset", "steel", "windows-tileset", "forest-tileset",
                 "forestLeaves-tileset", "forest-climbable-tileset", "lab-bkg-tileset",
                 // DOORS & PLATFORMS
-                "door", "platform", "forest-platform",
+                "door", "platform", "forest-platform", "forest-door",
                 // BOX
                 "box",
                 // BACKGROUNDS

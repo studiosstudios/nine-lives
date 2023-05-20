@@ -1,4 +1,12 @@
 { "compressionlevel":-1,
+ "editorsettings":
+    {
+     "export":
+        {
+         "format":"json",
+         "target":"..\/..\/..\/assets\/levels\/challenge-level.json"
+        }
+    },
  "height":43,
  "infinite":false,
  "layers":[

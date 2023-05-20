@@ -128,6 +128,8 @@ public class GameController implements Screen {
     private Color spiritModeColor = new Color(1, 1, 1, 1);
     private boolean drawAdjacentLevels;
 
+    private boolean gameFinished;
+
     /**
      * PLAY: User has all controls and is in game
      * PLAYER_PAN: Camera zooms out and player is free to pan around the level (all other gameplay controls stripped from user)
@@ -313,6 +315,7 @@ public class GameController implements Screen {
     protected GameController(Vector2 gravity, Vector2 scale, int numLevels, AudioController audioController) {
         this.audioController = audioController;
         this.scale = scale;
+        gameFinished = false;
         debug = false;
         setRet(false);
         world = new World(gravity, true);
@@ -737,7 +740,9 @@ public class GameController implements Screen {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt) {
-//        System.out.println(currLevel.getGoal());
+
+        gameFinished = collisionController.isGameFinished();
+
         if (collisionController.getReturn()) {
             setRet(true);
         }

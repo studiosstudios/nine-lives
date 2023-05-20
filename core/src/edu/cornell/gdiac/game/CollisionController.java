@@ -20,6 +20,7 @@ public class CollisionController implements ContactListener, ContactFilter {
 
     /** Camera to set zoom for CameraRegions*/
     private Camera camera;
+    private boolean gameFinished;
 
     /**
      * Creates and initialize a new instance of a CollisionController
@@ -30,6 +31,7 @@ public class CollisionController implements ContactListener, ContactFilter {
         this.actionController = actionController;
         shouldReturn = false;
         didChange = false;
+        gameFinished = false;
     }
 
     /**
@@ -48,6 +50,8 @@ public class CollisionController implements ContactListener, ContactFilter {
      * @return shouldReturn
      */
     public boolean getReturn() { return shouldReturn; }
+
+    public boolean isGameFinished() { return gameFinished; }
 
     /**
      * Sets whether to return to previous level
@@ -143,9 +147,10 @@ public class CollisionController implements ContactListener, ContactFilter {
                         cat.addSpiritRegion((SpiritRegion) bd2);
                     }
                     if (bd2 instanceof Goal) {
-//                        if (((Goal) bd2).isFinal()) {
-//                            //TODO: finished the game. go to credits!
-//                        }
+                        if (((Goal) bd2).isFinal()) {
+                            //TODO: finished the game. go to credits!
+                            gameFinished = true;
+                        }
                         ((Goal) bd2).activate();
                         actionController.recombineLives();
                     }

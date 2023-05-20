@@ -557,6 +557,12 @@ public class ActionController {
         }
     }
 
+    /**
+     * Moves the cat a certain distance horizontally
+     *
+     * @param dist to move horizontally
+     * @param maxDist the maximum distance from the goal
+     */
     public void moveCat(float dist, float maxDist) {
         Cat cat = level.getCat();
         if (cat.getX() <= level.getGoal().getX() + maxDist) {

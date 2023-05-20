@@ -147,7 +147,6 @@ public class CollisionController implements ContactListener, ContactFilter {
 //                            //TODO: finished the game. go to credits!
 //                        }
                         ((Goal) bd2).activate();
-                        //TODO: if not active then collect dead bodies with action controller
                         actionController.recombineLives();
                     }
                     if (bd2 instanceof CameraRegion){

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="22" height="12" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="25" nextobjectid="118">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="22" height="12" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="25" nextobjectid="119">
  <editorsettings>
   <export target="../../../assets/levels/test-forest.json" format="json"/>
  </editorsettings>
  <properties>
   <property name="biome" propertytype="biome" value="forest"/>
+  <property name="canDash" type="bool" value="true"/>
+  <property name="canSwitch" type="bool" value="false"/>
  </properties>
  <tileset firstgid="1" source="../../objects/objects.tsx"/>
  <tileset firstgid="15" source="../../tilesets/metal-walls.tsx"/>
@@ -109,7 +111,14 @@
  <objectgroup id="21" name="decor">
   <object id="111" name="coming-soon" gid="100" x="9216" y="7168" width="7168" height="3072"/>
  </objectgroup>
- <objectgroup id="16" name="spiritRegions"/>
+ <objectgroup id="16" name="spiritRegions">
+  <object id="118" type="SpiritRegion" x="17408" y="7168" width="2048" height="2048">
+   <properties>
+    <property name="color" type="color" value="#ffecebe8"/>
+    <property name="hideBkg" type="bool" value="true"/>
+   </properties>
+  </object>
+ </objectgroup>
  <objectgroup id="2" name="cat">
   <object id="38" gid="2" x="1024" y="8192" width="1024" height="1024"/>
  </objectgroup>

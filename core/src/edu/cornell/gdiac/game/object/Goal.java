@@ -98,7 +98,6 @@ public class Goal extends BoxObstacle
                 finalGoal = tMap.get("goal-final");
                 textureScale.set((float) properties.get("width") * scale.x / finalGoal.getRegionWidth(),
                         (float) properties.get("height") * scale.y / finalGoal.getRegionHeight());
-//                SpiritRegion glow = new SpiritRegion()
             }
         }
 

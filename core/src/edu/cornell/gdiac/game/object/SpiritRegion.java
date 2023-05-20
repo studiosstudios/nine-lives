@@ -59,6 +59,7 @@ public class SpiritRegion extends BoxObstacle {
     /** Simple field to slow down the allocation of photons */
     private int cooldown = 0;
     private Random random;
+    private boolean hideBackground;
 
     public String getColorString(){ return baseColor.toString().substring(0, 6); }
 
@@ -74,6 +75,7 @@ public class SpiritRegion extends BoxObstacle {
         super((float) properties.get("width"), (float) properties.get("height"));
         this.photonTexture = tMap.get("spirit-photon").getTexture();
         this.regionTexture = tMap.get("spirit-region").getTexture();
+        hideBackground = false;
 
         baseColor.set((Color) properties.get("color", Color.RED));
 
@@ -110,11 +112,10 @@ public class SpiritRegion extends BoxObstacle {
             item.setY(random.nextFloat()*(high-low)+low);
         }
 
-//        Particle item = addParticle();
-//        float low = item.getBottom() * drawScale.y;
-//        float high = item.getTop() * drawScale.y - PARTICLE_SIZE;
-//        item.setY(random.nextFloat()*(high-low)+low);
-
+        if (properties.get("hideBkg") != null) {
+            hideBackground = (boolean) properties.get("hideBkg");
+            particleColor.a = PARTICLE_OPACITY_ACTIVE;
+        }
 
 
     }
@@ -253,8 +254,10 @@ public class SpiritRegion extends BoxObstacle {
 //        }
 
         // Spirit Region Background
-        canvas.draw(regionTexture, regionColor, (pos.x - width/2)*drawScale.x, (pos.y-height/2)*drawScale.y,
-                width*drawScale.x, height*drawScale.y);
+        if (!hideBackground) {
+            canvas.draw(regionTexture, regionColor, (pos.x - width/2)*drawScale.x, (pos.y-height/2)*drawScale.y,
+                    width*drawScale.x, height*drawScale.y);
+        }
 
         // Draw particles
 //        float bot = pos.y* drawScale.y ;

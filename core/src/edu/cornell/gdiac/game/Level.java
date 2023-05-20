@@ -649,8 +649,8 @@ public class Level {
         }
 
         if (leafData != null) {
-            leaves = new Tiles(leafData, 256, levelWidth, levelHeight,
-                    textureRegionAssetMap.get("forestLeaves-tileset"), bounds, fID_leaves, new Vector2(1/2f, 1/2f));
+            leaves = new Tiles(leafData, 128, levelWidth, levelHeight,
+                    textureRegionAssetMap.get("forestLeaves-tileset"), bounds, fID_leaves, new Vector2(1/4f, 1/4f));
         }
 
         //make joints

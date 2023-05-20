@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
 import edu.cornell.gdiac.util.Direction;
+import sun.security.provider.ConfigFile;
 
 import java.util.HashMap;
 
@@ -94,10 +95,10 @@ public class Goal extends BoxObstacle
         if (properties.get("final") != null) {
             isFinal = (boolean) properties.get("final");
             if (isFinal) {
-//                System.out.println("final goal");
                 finalGoal = tMap.get("goal-final");
                 textureScale.set((float) properties.get("width") * scale.x / finalGoal.getRegionWidth(),
                         (float) properties.get("height") * scale.y / finalGoal.getRegionHeight());
+//                SpiritRegion glow = new SpiritRegion()
             }
         }
 

@@ -2233,7 +2233,7 @@
         {
          "draworder":"topdown",
          "id":25,
-         "name":"background",
+         "name":"blah",
          "objects":[],
          "opacity":1,
          "type":"objectgroup",

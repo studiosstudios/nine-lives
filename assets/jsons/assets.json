@@ -176,7 +176,9 @@
         "tiledLevel20": "levels/mob-push-box.json",
         "tiledLevel21": "levels/fire-laser-activators.json",
         "tiledLevel22": "levels/cat-shape-climb.json",
-        "tiledLevel23": "levels/test-forest.json"
+        "tiledLevel23": "levels/side-spikes-activators.json",
+        "tiledLevel24": "levels/moving-checkpoints.json",
+        "tiledLevel25": "levels/test-forest.json"
 
       //        "tiledLevel2": "levels/test-windows.json",
       //        "tiledLevel1": "levels/lights.json",

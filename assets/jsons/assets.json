@@ -181,9 +181,13 @@
         "tiledLevel24": "levels/forest-intro.json",
         "tiledLevel25": "levels/tutorial-body-switch.json",
         "tiledLevel26": "levels/basic-body-switch.json",
-//        "tiledLevel27": "levels/falling-switch-dash.json",
-        "tiledLevel27": "levels/test-forest.json",
-        "tiledLevel28": "levels/hard-platforming-robot-office.json"
+        //        "tiledLevel27": "levels/falling-switch-dash.json",
+        "tiledLevel27": "levels/super-jump.json",
+        //        "tiledLevel28": "levels/forest-laser-switch.json",
+        //        "tiledLevel29": "levels/split-spirit-regions.json",
+        //        "tiledLevel30": "levels/t-level.json",
+        "tiledLevel28": "levels/test-forest.json",
+        "tiledLevel29": "levels/hard-platforming-robot-office.json"
     },
     "soundfx" : {
         "jump" : "sounds/jump.wav",

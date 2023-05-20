@@ -56,7 +56,7 @@ public class ActionController {
     private Vector2 startPointCache = new Vector2();
     private Vector2 endPointCache = new Vector2();
     private ObjectMap<DeadBody, Float> hitDeadbodies = new ObjectMap<>();
-    private AudioController audioController;
+    public AudioController audioController;
     /** Camera to set zoom for CameraRegions*/
     private Camera camera;
     private boolean combiningLives;
@@ -203,6 +203,7 @@ public class ActionController {
         //Die if off-screen
         if (level.bounds.y - cat.getY() > 10){
             die(false);
+            audioController.playSoundEffect("death-fall");
         }
 
         //Prepare dead bodies for raycasting

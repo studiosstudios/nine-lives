@@ -48,6 +48,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
     public static final String hitboxSensorName = "deadBodyHitBox";
     public static final String spikesSensorName = "deadBodySpikes";
     private int flameCounter;
+    private int dashTimer;
     private PolygonShape hitboxShape;
     /** List of shapes corresponding to the sensors attached to this body */
     private Array<Shape> sensorShapes;
@@ -118,6 +119,10 @@ public class DeadBody extends CapsuleObstacle implements Movable {
         }
     }
 
+    public DeadBody(TextureRegion texture, TextureRegion burnTexture, Vector2 scale, Vector2 position, Vector2 textureScale) {
+        this(texture, burnTexture, scale, position, textureScale, 0);
+    }
+
     /**
      * Creates a new dead body. Note that the Box2D body created in this constructor is not the actual solid part of the
      * dead body, it is a sensor body that is identical to the body of the Cat. This is so that we have a reference for
@@ -129,7 +134,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
      * @param scale         Draw scale.
      * @param position      Position
      */
-    public DeadBody(TextureRegion texture, TextureRegion burnTexture, Vector2 scale, Vector2 position, Vector2 textureScale) {
+    public DeadBody(TextureRegion texture, TextureRegion burnTexture, Vector2 scale, Vector2 position, Vector2 textureScale, int dashTimer) {
         super(0, 0, objectConstants.getFloat("capsuleWidth"), objectConstants.getFloat("capsuleHeight"), Orientation.TOP);
 
         spriteFrames = TextureRegion.split(burnTexture.getTexture(), 256,256);
@@ -157,10 +162,13 @@ public class DeadBody extends CapsuleObstacle implements Movable {
         burning = false;
         faceRight = true;
         spiritRegions = new ObjectMap<>();
+        this.dashTimer = dashTimer;
         //create centre sensor (for fixing to spikes)
 
         setName("deadBody");
     }
+
+    public int getDashTimer() { return dashTimer; }
 
     /**
      * Creates the physics Body(s) for this object, adding them to the world.
@@ -388,6 +396,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
             jointInfo.put((Spikes) j.getBodyB().getUserData(), j.getAnchorA());
         }
         stateMap.put("jointInfo", jointInfo);
+        stateMap.put("dashTimer", dashTimer);
         return stateMap;
     }
 
@@ -399,6 +408,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
         super.loadState(stateMap);
         burnTicks = (int) stateMap.get("burnTicks");
         faceRight = (boolean) stateMap.get("faceRight");
+        dashTimer = (int) stateMap.get("dashTimer");
         joints.clear();
     }
 }

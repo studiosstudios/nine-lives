@@ -341,6 +341,8 @@ public class GameController implements Screen {
         internal.loadAssets();
         internal.finishLoading();
 
+        RayHandler.useDiffuseLight(true);
+
         hud = new HudStage(internal, true);
         hud.lives = currLevel.getNumLives();
     }
@@ -456,7 +458,7 @@ public class GameController implements Screen {
                 "cat", "walk-anim", "jump-anim", "idle-sit-anim", "idle-stand-anim", "meow-anim",
                 "trans-anim","climb-anim","corpse", "corpse2", "corpse3","corpse-burnt","trans2-anim","jump-mid",
                 // SPIKES
-                "spikes",
+                "spikes", "forest-spikes",
                 // BUTTONS & SWITCHES
                 "button-base", "button-top", "switch-top", "switch-base",
                 // FLAMETHROWERS
@@ -468,7 +470,7 @@ public class GameController implements Screen {
                 // GOAL
                 "goal", "goal-active", "goal-bases", "goal-idle-anim", "goal-inactive", "goal-final",
                 // ROBOT & MOBS
-                "robot-anim",
+                "robot-anim", "forest-mob-anim",
                 // SPIRIT BOUNDARIES
                 "spirit-anim", "spirit-photon", "spirit-photon-cat", "spirit-region",
                 // ACTIVATABLE LIGHTS
@@ -476,7 +478,7 @@ public class GameController implements Screen {
                 // TILESETS
                 "metal-tileset", "climbable-tileset", "steel", "windows-tileset", "forest-tileset", "forestLeaves-tileset",
                 // DOORS & PLATFORMS
-                "door", "platform",
+                "door", "platform", "forest-platform",
                 // BOX
                 "box",
                 // BACKGROUNDS
@@ -526,7 +528,11 @@ public class GameController implements Screen {
 
 //		InputController.getInstance().writeTo("debug-input/recent.txt");
 //		InputController.getInstance().readFrom("debug-input/recent.txt");
-}
+    }
+
+    public void updateControls() {
+        InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
+    }
 
     /**
      * Handles respawning the cat after their death
@@ -568,13 +574,9 @@ public class GameController implements Screen {
         if (rayHandler != null) {
             rayHandler.dispose();
         }
-//        RayHandler.useDiffuseLight(true);
-//        RayHandler.useDiffuseLight(false);
 
         rayHandler = new RayHandler(world);
-//        rayHandler.setAmbientLight(0.35f, 0.35f, 0.35f, 0.1f);
-        rayHandler.setAmbientLight(0.8f);
-//        rayHandler.setShadows(true);
+        rayHandler.setAmbientLight(0.5f, 0.5f, 0.5f, 1f);
 
         justRespawned = true;
         justReset = true;

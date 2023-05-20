@@ -622,7 +622,8 @@ public class Level {
 
         if (climbableData != null) {
             climbables = new Tiles(climbableData, 128, levelWidth, levelHeight,
-                    textureRegionAssetMap.get("climbable-tileset"), bounds, fID_climbable, new Vector2(1/4f, 1/4f));
+                    biome.equals("metal") ? textureRegionAssetMap.get("climbable-tileset") : textureRegionAssetMap.get("forest-climbable-tileset"),
+                    bounds, fID_climbable, new Vector2(1/4f, 1/4f));
         }
 
         if (windowData != null) {
@@ -1306,7 +1307,7 @@ public class Level {
             if (tiles != null) tiles.draw(canvas);
         }
 
-        if (climbables != null) climbables.draw(canvas);
+        if (climbables != null && biome.equals("metal")) climbables.draw(canvas);
 
         for (Activator a : activators) {
             a.draw(canvas);
@@ -1366,6 +1367,7 @@ public class Level {
 
         if (biome != null && biome.equals("forest")) {
             if (tiles != null) tiles.draw(canvas);
+            if (climbables != null) climbables.draw(canvas);
         }
 
         if (windows != null) {

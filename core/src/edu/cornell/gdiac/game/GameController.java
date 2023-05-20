@@ -476,7 +476,8 @@ public class GameController implements Screen {
                 // ACTIVATABLE LIGHTS
                 "ceiling-light", "wall-light",
                 // TILESETS
-                "metal-tileset", "climbable-tileset", "steel", "windows-tileset", "forest-tileset", "forestLeaves-tileset",
+                "metal-tileset", "climbable-tileset", "steel", "windows-tileset", "forest-tileset",
+                "forestLeaves-tileset", "forest-climbable-tileset",
                 // DOORS & PLATFORMS
                 "door", "platform", "forest-platform",
                 // BOX

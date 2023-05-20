@@ -152,9 +152,6 @@ public class StageController implements Screen {
 		budget = millis;
 
 		if (start) {
-//			startAssets = new AssetDirectory("jsons/start-stage.json");
-//			startAssets.loadAssets();
-//			startAssets.finishLoading();
 			starting = true;
 			startStage = new StartStage("jsons/start-stage.json", true);
 			stage = startStage;
@@ -176,13 +173,6 @@ public class StageController implements Screen {
 			audioController.setSfxVolume(Save.getVolume());
 		}
 
-//		mainMenuStage = new MainMenuStage(internal, true);
-//		pauseStage = new PauseStage(internal, true);
-//		LevelSelectStage.setNumLevels(numLevels);
-//		levelSelectStage = new LevelSelectStage(internal, true);
-//		loadingStage = new LoadingStage(internal, true);
-//		canvas.getViewport().apply(true);
-
 		if (!start) {
 			if (paused) {
 				pauseStage = new PauseStage("jsons/pause-stage.json", true);
@@ -195,10 +185,6 @@ public class StageController implements Screen {
 			}
 		}
 
-//		settingsStage = new SettingsStage("jsons/settings-stage.json", true);
-//		settingsStage.setAudioController(audioController);
-//		settingsStage.setViewport(canvas.getViewport());
-
 		Gdx.input.setInputProcessor( stage );
 
 		if (start) {
@@ -206,8 +192,6 @@ public class StageController implements Screen {
 			assets = new AssetDirectory( file );
 			assets.loadAssets();
 		}
-//		assets = new AssetDirectory( file );
-//		assets.loadAssets();
 		active = true;
 	}
 
@@ -347,6 +331,7 @@ public class StageController implements Screen {
 					audioController.playSoundEffect("menu-select");
 					mainMenuStage.setSettingsState(0);
 					settingsStage = new SettingsStage("jsons/settings-stage.json", true);
+					settingsStage.setAudioController(this.audioController);
 					changeStage(settingsStage);
 					currentStage = Stages.SETTINGS;
 					mainMenuStage.dispose();
@@ -432,6 +417,7 @@ public class StageController implements Screen {
 						audioController.playSoundEffect("menu-select");
 						pauseStage.setSettingsState(0);
 						settingsStage = new SettingsStage("jsons/settings-stage.json", true);
+						settingsStage.setAudioController(this.audioController);
 						changeStage(settingsStage);
 						currentStage = Stages.SETTINGS;
 //						pauseStage.dispose();

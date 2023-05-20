@@ -58,14 +58,14 @@ public class MainMenuStage extends StageWrapper{
         animations = new AssetDirectory("jsons/ui-animations.json");
         animations.loadAssets();
         animations.finishLoading();
-        Animation<TextureRegion> anim = new Animation<>(0.65f, TextureRegion.split(animations.getEntry("main-menu-cat-anim", Texture.class),2048,2048)[0]);
+        Animation<TextureRegion> anim = new Animation<>(0.65f, TextureRegion.split(animations.getEntry("main-menu-cat-anim", Texture.class),1024,1024)[0]);
         anim.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
         animation = new AnimationDrawable(anim);
         Actor backgroundActor = addActor(internal.getEntry("background", Texture.class), 0,0);
         backgroundActor.setScale(0.5f);
         catActor = new AnimatedActor(animation);
         addActor(catActor);
-        catActor.setScale(0.25f);
+        catActor.setScale(0.5f);
         catActor.setPosition(15,15);
         if (Save.getStarted()) {
             playButtonActor = addActor(internal.getEntry("continue-game", Texture.class),buttonX+215-19-50, buttonY);
@@ -143,44 +143,5 @@ public class MainMenuStage extends StageWrapper{
             exitButtonState = 2;
             exitButtonActor.setColor(Color.WHITE);
         }
-    }
-}
-
-class AnimatedActor extends Image {
-    private final AnimationDrawable drawable;
-
-    public AnimatedActor(AnimationDrawable drawable) {
-        super(drawable);
-        this.drawable = drawable;
-    }
-
-    @Override
-    public void act(float delta) {
-        drawable.act(delta);
-        super.act(delta);
-    }
-}
-
-class AnimationDrawable extends BaseDrawable {
-    public final Animation<TextureRegion> animation;
-    private float stateTime = 0;
-
-    public AnimationDrawable(Animation<TextureRegion> animation) {
-        this.animation = animation;
-        setMinWidth(animation.getKeyFrame(0).getRegionWidth());
-        setMinHeight(animation.getKeyFrame(0).getRegionHeight());
-    }
-
-    public void act(float delta) {
-        stateTime += delta;
-    }
-
-    public void reset() {
-        stateTime = 0;
-    }
-
-    @Override
-    public void draw(Batch batch, float x, float y, float width, float height) {
-        batch.draw(animation.getKeyFrame(stateTime), x, y, width, height);
     }
 }

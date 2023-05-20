@@ -84,29 +84,29 @@ public class Mob extends CapsuleObstacle {
 
 
     /**
-     * Returns ow hard the brakes are applied to get a cat to stop moving
+     * Returns ow hard the brakes are applied to get a mob to stop moving
      *
-     * @return ow hard the brakes are applied to get a cat to stop moving
+     * @return ow hard the brakes are applied to get a mob to stop moving
      */
     public float getDamping() {
         return damping;
     }
 
     /**
-     * Returns the upper limit on cat left-right movement.
+     * Returns the upper limit on mob left-right movement.
      *
      * This does NOT apply to vertical movement.
      *
-     * @return the upper limit on cat left-right movement.
+     * @return the upper limit on mob left-right movement.
      */
     public float getMaxSpeed() {
         return maxspeed;
     }
 
     /**
-     * Returns true if this character is facing right
+     * Returns true if this mob is facing right
      *
-     * @return true if this character is facing right
+     * @return true if this mob is facing right
      */
     public boolean isFacingRight() {
         return faceRight;
@@ -114,14 +114,14 @@ public class Mob extends CapsuleObstacle {
 
     /**
      * Manually force cat to face right
-     * @param faceRight true if we want the cat to face right
+     * @param faceRight true if we want the mob to face right
      */
     public void setFacingRight(boolean faceRight) { this.faceRight = faceRight; }
 
     /**
-     * Returns true if this character is aggressive
+     * Returns true if this mob is aggressive
      *
-     * @return true if this character is aggressive
+     * @return true if this mob is aggressive
      */
     public boolean isAggressive() {
         return isAggressive;
@@ -170,11 +170,11 @@ public class Mob extends CapsuleObstacle {
     }
 
 
-        /**
-         * Returns the sensor name of the mob
-         *
-         * @return sensorName
-         */
+    /**
+     * Returns the sensor name of the mob
+     *
+     * @return sensorName
+     */
     public static String getSensorName() {
         return sensorName;
     }

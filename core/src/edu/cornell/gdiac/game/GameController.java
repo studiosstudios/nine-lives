@@ -924,10 +924,10 @@ public class GameController implements Screen {
         }
 
         if (actionController.isCombiningLives()) {
-            cam.setZoom(true, 0.9f);
-            float x_pos = currLevel.getCat().getPosition().x*scale.x;
-            float y_pos = currLevel.getCat().getPosition().y*scale.y;
-            cam.updateCamera(x_pos, y_pos, true, cam.getGameplayBounds());
+//            cam.setZoom(true, 0.9f);
+//            float x_pos = currLevel.getCat().getPosition().x*scale.x;
+//            float y_pos = currLevel.getCat().getPosition().y*scale.y;
+//            cam.updateCamera(x_pos, y_pos, true, cam.getGameplayBounds());
             actionController.moveCat(1.2f, 1.2f);
             input.setDisableAll(true);
         }

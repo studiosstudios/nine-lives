@@ -154,11 +154,12 @@
        "tiledLevel11": "levels/basic-body-switch.json",
         "tiledLevel12": "levels/triple-body-deposits.json",
         "tiledLevel13": "levels/level-beta-med1.json",
+        "tiledLevel14": "levels/forest-intro.json",
 //        "tiledLevel14": "levels/climb-spikes.json",
-        "tiledLevel14": "levels/super-jump.json",
+        "tiledLevel15": "levels/super-jump.json",
 //        "tiledLevel5": "levels/level-beta-hard.json",
 //        "tiledLevel14": "levels/party-room.json",
-        "tiledLevel15": "levels/split-spirit-regions.json"
+        "tiledLevel16": "levels/split-spirit-regions.json"
     },
     "soundfx" : {
         "jump" : "sounds/jump-CELESTE.wav",

@@ -34,7 +34,6 @@ public class MainMenuStage extends StageWrapper{
     private int playButtonState;
     private AnimationDrawable animation;
     private int levelSelectState;
-    private float time;
 
     private int settingsState;
     private int exitButtonState;
@@ -69,10 +68,9 @@ public class MainMenuStage extends StageWrapper{
      */
     @Override
     public void createActors() {
-        Animation<TextureRegion> anim = new Animation<>(0.15f, TextureRegion.split(internal.getEntry("main-menu-cat-anim", Texture.class),2048,2048)[0]);
-        anim.setPlayMode(Animation.PlayMode.LOOP);
+        Animation<TextureRegion> anim = new Animation<>(0.65f, TextureRegion.split(internal.getEntry("main-menu-cat-anim", Texture.class),2048,2048)[0]);
+        anim.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
         animation = new AnimationDrawable(anim);
-        time = 0.0f;
         Actor backgroundActor = addActor(internal.getEntry("background", Texture.class), 0,0);
         backgroundActor.setScale(0.5f);
 //        table = new Table();
@@ -141,8 +139,7 @@ public class MainMenuStage extends StageWrapper{
     @Override
     public void update(float delta) {
         super.update(delta);
-        time += delta;
-        catActor.act(time);
+        catActor.act(delta);
 //        addActor(animation.getKeyFrame(time).getTexture(),15,15);
     }
 
@@ -262,6 +259,6 @@ class AnimationDrawable extends BaseDrawable {
 
     @Override
     public void draw(Batch batch, float x, float y, float width, float height) {
-        batch.draw(animation.getKeyFrame(0), x, y, width, height);
+        batch.draw(animation.getKeyFrame(stateTime), x, y, width, height);
     }
 }

@@ -163,9 +163,6 @@ public class StageController implements Screen {
 
 		mainMenuStage = new MainMenuStage(internal, true);
 //		mainMenuStage.setViewport(canvas.getViewport());
-		settingsStage = new SettingsStage(internal, true);
-		settingsStage.setAudioController(audioController);
-//		settingsStage.setViewport(canvas.getViewport());
 		pauseStage = new PauseStage(internal, true);
 		LevelSelectStage.setNumLevels(numLevels);
 		levelSelectStage = new LevelSelectStage(internal, true);
@@ -181,6 +178,10 @@ public class StageController implements Screen {
 		} else {
 			stage = mainMenuStage;
 		}
+
+		settingsStage = new SettingsStage(internal, true);
+		settingsStage.setAudioController(audioController);
+//		settingsStage.setViewport(canvas.getViewport());
 
 		Gdx.input.setInputProcessor( stage );
 

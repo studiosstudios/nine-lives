@@ -804,7 +804,7 @@ public class Level {
         textureScaleCache.set(1/4f, 1/4f);
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
-            Spikes spikes = new Spikes(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
+            Spikes spikes = new Spikes(propertiesMap, textureRegionAssetMap, scale, textureScaleCache, biome);
             loadTiledActivatable(spikes);
         }
     }

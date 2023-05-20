@@ -456,7 +456,7 @@ public class GameController implements Screen {
                 "cat", "walk-anim", "jump-anim", "idle-sit-anim", "idle-stand-anim", "meow-anim",
                 "trans-anim","climb-anim","corpse", "corpse2", "corpse3","corpse-burnt","trans2-anim","jump-mid",
                 // SPIKES
-                "spikes",
+                "spikes", "forest-spikes",
                 // BUTTONS & SWITCHES
                 "button-base", "button-top", "switch-top", "switch-base",
                 // FLAMETHROWERS

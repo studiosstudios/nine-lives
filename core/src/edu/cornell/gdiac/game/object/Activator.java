@@ -91,9 +91,15 @@ public abstract class Activator extends PolygonObstacle {
         spriteFrames = TextureRegion.split(topTexture, 256,256);
         this.biome = biome;
         setTextureScale(textureScale);
-        if (biome.equals("forest") && resize) {
-            setTextureScale(textureScale.x / 2f, textureScale.y / 2f);
-            origin.set(-128, -128);
+
+        //i am so sorry for how i am doing this
+        if (biome.equals("forest")) {
+            if (resize) {
+                setTextureScale(textureScale.x / 2f, textureScale.y / 2f);
+                origin.set(-128, -128);
+            } else {
+                origin.set(0, -8);
+            }
         }
         bottomTexture = tMap.get(base_name);
         setRestitution(0);

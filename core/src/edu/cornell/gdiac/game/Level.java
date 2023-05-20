@@ -50,6 +50,8 @@ public class Level {
     protected Tiles climbables;
     /** Windows of level */
     protected  Tiles windows;
+    /** Lab Background of level */
+    protected  Tiles labBkg;
     /** Leaves of level */
     protected  Tiles leaves;
     /** All the objects in the world. */
@@ -535,6 +537,7 @@ public class Level {
         JsonValue windowData = null;
         JsonValue leafData = null;
         JsonValue tileData = null;
+        JsonValue labBkgData = null;
 
         tileSize = tiledMap.getInt("tilewidth");
         int levelWidth = tiledMap.getInt("width");
@@ -554,6 +557,9 @@ public class Level {
             }
             else if (layer.getString("name").equals("windows")) {
                 windowData = layer;
+            }
+            else if (layer.getString("name").equals("background")) {
+                labBkgData = layer;
             }
             else if (layer.getString("name").equals("forestLeaves")) {
                 leafData = layer;
@@ -581,6 +587,7 @@ public class Level {
         int fID_climbable = 1;
         int fID_window = 1;
         int fID_leaves = 1;
+        int fID_bkg = 1;
         if (biome.equals("metal")) {
             tileset = textureRegionAssetMap.get("metal-tileset");
             for (JsonValue tilesetData : tiledMap.get("tilesets")){
@@ -592,6 +599,9 @@ public class Level {
                 }
                 else if (tilesetData.getString("source").endsWith("windows.tsx")){
                     fID_window = tilesetData.getInt("firstgid");
+                }
+                else if (tilesetData.getString("source").endsWith("lab-bkg.tsx")){
+                    fID_bkg = tilesetData.getInt("firstgid");
                 }
                 else if (tilesetData.getString("source").endsWith("forestLeaves.tsx")){
                     fID_leaves = tilesetData.getInt("firstgid");
@@ -609,7 +619,10 @@ public class Level {
                     fID_climbable = tilesetData.getInt("firstgid");
                 }
                 else if (tilesetData.getString("source").endsWith("windows.tsx")){
-                    fID_climbable = tilesetData.getInt("firstgid");
+                    fID_window = tilesetData.getInt("firstgid");
+                }
+                else if (tilesetData.getString("source").endsWith("lab-bkg.tsx")){
+                    fID_bkg = tilesetData.getInt("firstgid");
                 }
                 else if (tilesetData.getString("source").endsWith("forestLeaves.tsx")){
                     fID_leaves = tilesetData.getInt("firstgid");
@@ -630,9 +643,14 @@ public class Level {
                     textureRegionAssetMap.get("windows-tileset"), bounds, fID_window, new Vector2(1/4f, 1/4f));
         }
 
+        if (labBkgData != null) {
+            labBkg = new Tiles(labBkgData, 512, levelWidth, levelHeight,
+                    textureRegionAssetMap.get("lab-bkg-tileset"), bounds, fID_bkg, new Vector2(1/4f, 1/4f));
+        }
+
         if (leafData != null) {
-            leaves = new Tiles(leafData, 128, levelWidth, levelHeight,
-                    textureRegionAssetMap.get("forestLeaves-tileset"), bounds, fID_leaves, new Vector2(1/4f, 1/4f));
+            leaves = new Tiles(leafData, 256, levelWidth, levelHeight,
+                    textureRegionAssetMap.get("forestLeaves-tileset"), bounds, fID_leaves, new Vector2(1/2f, 1/2f));
         }
 
         //make joints
@@ -1282,6 +1300,10 @@ public class Level {
      * @param greyscale   amount of greyscale to apply (0-1)
      */
     public void draw(GameCanvas canvas, boolean drawCat, float greyscale) {
+
+        if (labBkg != null) {
+            labBkg.draw(canvas);
+        }
 
         for (Decoration d : decorations) { d.draw(canvas); }
 

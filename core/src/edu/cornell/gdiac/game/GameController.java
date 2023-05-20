@@ -476,7 +476,8 @@ public class GameController implements Screen {
                 // ACTIVATABLE LIGHTS
                 "ceiling-light", "wall-light",
                 // TILESETS
-                "metal-tileset", "climbable-tileset", "steel", "windows-tileset", "forest-tileset", "forestLeaves-tileset",
+                "metal-tileset", "climbable-tileset", "steel", "windows-tileset", "forest-tileset",
+                "forestLeaves-tileset", "lab-bkg-tileset",
                 // DOORS & PLATFORMS
                 "door", "platform", "forest-platform",
                 // BOX
@@ -492,7 +493,8 @@ public class GameController implements Screen {
                 "tank", "test-tubes", "coke", "broken-robot", "coming-soon", "arrow-sign",
                 "tutorial-cancel-switch", "wood-arrow", "wood-sign",
                 "cat-tank","cat-tank-purple","chair","dandelions","desktop","firefly","flowers",
-                "mushrooms","pin-board","robo","window-robo","x-ray","shelf2"
+                "mushrooms","pin-board","robo","window-robo","x-ray","shelf2",
+                "bkg1", "bkg2", "bkg3", "bkg4"
                 }; // Unsure if this is actually being used
         for (String n : names){
 //            System.out.println(n);

@@ -75,6 +75,7 @@
       "windows-tileset": "world/platforms/windows-tileset.png",
       "forest-tileset": "world/platforms/forest-tileset.png",
       "forestLeaves-tileset": "world/platforms/forestLeaves-tileset.png",
+      "lab-bkg-tileset": "world/platforms/lab-bkg-tileset.png",
       "steel": "obstacles/shared/steel.png",
       "ceiling-light": "obstacles/lights/ceiling-light.png",
       "wall-light": "obstacles/lights/wall-light.png",
@@ -134,7 +135,11 @@
       "window-robo": "world/decor/window-robo.png",
       "x-ray": "world/decor/x-ray.png",
       "shelf2": "world/decor/shelf2.png",
-      "tree": "world/decor/tree.png"
+      "tree": "world/decor/tree.png",
+      "bkg1": "world/decor/bkg1.png",
+      "bkg2": "world/decor/bkg2.png",
+      "bkg3": "world/decor/bkg3.png",
+      "bkg4": "world/decor/bkg4.png"
     },
     "jsons"  : {
         "constants": "jsons/constants.json",

@@ -56,8 +56,13 @@ public class Tiles {
             for (float x = 0; x < levelWidth; x++){
                 if (levelTiles[i] > 0) {
                     TextureRegion tileTexture = tileset[levelTiles[i] - fid];
-                    canvas.draw(tileTexture, Color.WHITE, 0, 0, (x+offset.x) * tileSize * textureScale.x,
-                            (y+offset.y) * tileSize * textureScale.y, 0, textureScale.x, textureScale.y);
+                    if (tileSize == 512) {
+                        canvas.draw(tileTexture, Color.WHITE, 0, 0, (x+offset.x) * 128 * textureScale.x,
+                                (y+offset.y) * 128 * textureScale.y, 0, textureScale.x, textureScale.y);
+                    } else {
+                        canvas.draw(tileTexture, Color.WHITE, 0, 0, (x+offset.x) * tileSize * textureScale.x,
+                                (y+offset.y) * tileSize * textureScale.y, 0, textureScale.x, textureScale.y);
+                    }
                 }
                 i++;
             }

@@ -1153,6 +1153,7 @@ public class Level {
         currCheckpoint = null;
         climbables = null;
         windows = null;
+        labBkg = null;
         leaves = null;
         goal = null;
         setComplete(false);

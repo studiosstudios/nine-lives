@@ -1,12 +1,4 @@
 { "compressionlevel":-1,
- "editorsettings":
-    {
-     "export":
-        {
-         "format":"json",
-         "target":"sabrina2.json"
-        }
-    },
  "height":23,
  "infinite":false,
  "layers":[

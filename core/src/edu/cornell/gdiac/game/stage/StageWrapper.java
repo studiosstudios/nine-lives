@@ -49,13 +49,13 @@ public abstract class StageWrapper extends Stage {
         internal.loadAssets();
         internal.finishLoading();
         if (settings) {
-//            FreeTypeFontGenerator.setMaxTextureSize(2048);
+            FreeTypeFontGenerator.setMaxTextureSize(2048);
             FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("shared/preahvihear.ttf"));
             FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
             parameter.size = 32; //24
-//            parameter.genMipMaps = true;
-//            parameter.minFilter = Texture.TextureFilter.Linear;
-//            parameter.magFilter = Texture.TextureFilter.Linear;
+            parameter.genMipMaps = true;
+            parameter.minFilter = Texture.TextureFilter.Linear;
+            parameter.magFilter = Texture.TextureFilter.Linear;
             font = gen.generateFont(parameter);
             labelStyle = new Label.LabelStyle(font, Color.WHITE);
             textButtonStyle = new TextButton.TextButtonStyle(null,null,null, font);
@@ -94,13 +94,13 @@ public abstract class StageWrapper extends Stage {
         internal.loadAssets();
         internal.finishLoading();
         if (settings) {
-//            FreeTypeFontGenerator.setMaxTextureSize(2048);
+            FreeTypeFontGenerator.setMaxTextureSize(2048);
             FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("shared/preahvihear.ttf"));
             FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
             parameter.size = 32; //24
-//            parameter.genMipMaps = true;
-//            parameter.minFilter = Texture.TextureFilter.Linear;
-//            parameter.magFilter = Texture.TextureFilter.Linear;
+            parameter.genMipMaps = true;
+            parameter.minFilter = Texture.TextureFilter.Linear;
+            parameter.magFilter = Texture.TextureFilter.Linear;
             font = gen.generateFont(parameter);
             labelStyle = new Label.LabelStyle(font, Color.WHITE);
             textButtonStyle = new TextButton.TextButtonStyle(null,null,null, font);

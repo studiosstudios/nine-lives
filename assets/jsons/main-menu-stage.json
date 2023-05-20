@@ -1,0 +1,10 @@
+{
+  "textures": {
+    "background": "ui/main/bg-main-menu.png",
+    "continue-game": "ui/main/continue-game.png",
+    "play-game" : "ui/main/play-game.png",
+    "level-select" : "ui/main/level-select.png",
+    "settings" : "ui/main/settings.png",
+    "exit" : "ui/main/exit-game.png"
+  }
+}

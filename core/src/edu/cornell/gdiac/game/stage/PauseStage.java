@@ -33,7 +33,7 @@ public class PauseStage extends StageWrapper {
     public void setRestartState(int state) { restartState = state; }
 
     public GameController currLevel;
-    public PauseStage(AssetDirectory internal, boolean createActors) {
+    public PauseStage(String internal, boolean createActors) {
         super(internal, createActors, false);
     }
 

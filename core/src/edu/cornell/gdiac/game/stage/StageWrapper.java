@@ -27,6 +27,7 @@ public abstract class StageWrapper extends Stage {
     /** Standard window height (for scaling) */
     static int STANDARD_HEIGHT = 576;
     /** x-coordinate for center of button list */
+    static int numLevels;
     public int buttonX;
     public int xHalf;
     public int yHalf;
@@ -40,17 +41,19 @@ public abstract class StageWrapper extends Stage {
     static TextButton.TextButtonStyle controlButtonStyle;
     static Slider.SliderStyle sliderStyle;
 
-    public StageWrapper(AssetDirectory internal, boolean createActors, boolean settings) {
+    public StageWrapper(String directory, boolean createActors, boolean settings) {
         super(new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT));
-        this.internal = internal;
+        internal = new AssetDirectory(directory);
+        internal.loadAssets();
+        internal.finishLoading();
         if (settings) {
-            FreeTypeFontGenerator.setMaxTextureSize(2048);
+//            FreeTypeFontGenerator.setMaxTextureSize(2048);
             FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("shared/preahvihear.ttf"));
             FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
             parameter.size = 32; //24
-            parameter.genMipMaps = true;
-            parameter.minFilter = Texture.TextureFilter.Linear;
-            parameter.magFilter = Texture.TextureFilter.Linear;
+//            parameter.genMipMaps = true;
+//            parameter.minFilter = Texture.TextureFilter.Linear;
+//            parameter.magFilter = Texture.TextureFilter.Linear;
             font = gen.generateFont(parameter);
             labelStyle = new Label.LabelStyle(font, Color.WHITE);
             textButtonStyle = new TextButton.TextButtonStyle(null,null,null, font);
@@ -60,9 +63,58 @@ public abstract class StageWrapper extends Stage {
             controlStyle = new Label.LabelStyle(controlFont, Color.WHITE);
             controlButtonStyle = new TextButton.TextButtonStyle(null,null,null, controlFont);
 
-            Texture knob = internal.getEntry("paw", Texture.class);
-            Texture slider = internal.getEntry("slider-empty", Texture.class);
-            Texture before = internal.getEntry("slider-full", Texture.class);
+            AssetDirectory tableAssets = new AssetDirectory("jsons/table.json");
+            tableAssets.loadAssets();
+            tableAssets.finishLoading();
+
+            Texture knob = tableAssets.getEntry("paw", Texture.class);
+            Texture slider = tableAssets.getEntry("slider-empty", Texture.class);
+            Texture before = tableAssets.getEntry("slider-full", Texture.class);
+            TextureRegionDrawable sliderTexture = new TextureRegionDrawable(new TextureRegion(slider));
+            TextureRegionDrawable sliderKnobTexture = new TextureRegionDrawable(new TextureRegion(knob));
+            TextureRegionDrawable sliderTextureBefore = new TextureRegionDrawable(new TextureRegion(before));
+            sliderStyle = new Slider.SliderStyle(sliderTexture, sliderKnobTexture);
+            sliderStyle.knobBefore = sliderTextureBefore;
+        }
+
+        buttonX = (int)(3f/5 * STANDARD_WIDTH);
+        buttonY = (int)(1f/2 * STANDARD_HEIGHT);
+        xHalf = (int) (1f/2 * STANDARD_WIDTH);
+        yHalf = (int) (1f/2 * STANDARD_HEIGHT);
+        if (createActors) {
+            createActors();
+        }
+    }
+    public StageWrapper(String directory, boolean createActors, boolean settings, int numLevels) {
+        super(new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT));
+        this.numLevels = numLevels;
+        internal = new AssetDirectory(directory);
+        internal.loadAssets();
+        internal.finishLoading();
+        if (settings) {
+//            FreeTypeFontGenerator.setMaxTextureSize(2048);
+            FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("shared/preahvihear.ttf"));
+            FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+            parameter.size = 32; //24
+//            parameter.genMipMaps = true;
+//            parameter.minFilter = Texture.TextureFilter.Linear;
+//            parameter.magFilter = Texture.TextureFilter.Linear;
+            font = gen.generateFont(parameter);
+            labelStyle = new Label.LabelStyle(font, Color.WHITE);
+            textButtonStyle = new TextButton.TextButtonStyle(null,null,null, font);
+            parameter.size = 24;
+            controlFont = gen.generateFont(parameter);
+            gen.dispose();
+            controlStyle = new Label.LabelStyle(controlFont, Color.WHITE);
+            controlButtonStyle = new TextButton.TextButtonStyle(null,null,null, controlFont);
+
+            AssetDirectory tableAssets = new AssetDirectory("jsons/table.json");
+            tableAssets.loadAssets();
+            tableAssets.finishLoading();
+
+            Texture knob = tableAssets.getEntry("paw", Texture.class);
+            Texture slider = tableAssets.getEntry("slider-empty", Texture.class);
+            Texture before = tableAssets.getEntry("slider-full", Texture.class);
             TextureRegionDrawable sliderTexture = new TextureRegionDrawable(new TextureRegion(slider));
             TextureRegionDrawable sliderKnobTexture = new TextureRegionDrawable(new TextureRegion(knob));
             TextureRegionDrawable sliderTextureBefore = new TextureRegionDrawable(new TextureRegion(before));

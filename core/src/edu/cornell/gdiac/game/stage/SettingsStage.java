@@ -84,7 +84,7 @@ public class SettingsStage extends StageWrapper {
     public void setBackButtonState(int state) { backButtonState = state; }
     public void setAudioController(AudioController audioController) { this.audioController = audioController; }
 
-    public SettingsStage(AssetDirectory internal, boolean createActors) {
+    public SettingsStage(String internal, boolean createActors) {
         super(internal, createActors, true);
         bindings = Save.getControls();
         controlsInputProcessor = new ControlsInputProcessor();
@@ -201,7 +201,7 @@ public class SettingsStage extends StageWrapper {
         controls.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                audioController.playSoundEffect("menu-select");
+//                audioController.playSoundEffect("menu-select");
                 Save.setVolume(effectsSlider.getValue());
                 Save.setMusic(musicSlider.getValue());
                 table.clear();

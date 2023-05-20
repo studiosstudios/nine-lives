@@ -91,7 +91,7 @@ public abstract class Activator extends PolygonObstacle {
         spriteFrames = TextureRegion.split(tMap.get(texture_name).getTexture(), 256,256);
         float frameDuration = 0.2f;
         animation = new Animation<>(frameDuration, spriteFrames[0]);
-        setBodyType(BodyDef.BodyType.StaticBody);
+        setBodyType(properties.containsKey("attachName") ? BodyDef.BodyType.DynamicBody : BodyDef.BodyType.StaticBody);
         animation.setPlayMode(Animation.PlayMode.REVERSED);
         animationTime = 0f;
 

@@ -51,7 +51,8 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
 
         this.flameTexture = tMap.get("flame-anim");
 
-        flameBase = new BoxObstacle(tMap.get("flamethrower").getRegionWidth()/drawScale.x*textureScale.x, tMap.get("flamethrower").getRegionHeight()/drawScale.y*textureScale.y);
+        flameBase = new BoxObstacle(tMap.get("flamethrower").getRegionWidth()/drawScale.x*textureScale.x,
+                tMap.get("flamethrower").getRegionHeight()/drawScale.y*textureScale.y);
         setDrawScale(drawScale);
         flameBase.setDrawScale(drawScale);
         flameBase.setTextureScale(textureScale);
@@ -118,6 +119,8 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
         if (!super.activatePhysics(world)) {
             return false;
         }
+        flameBase.setDimension(flameBase.getWidth() * objectConstants.get("solid_scale").getFloat(0),
+                flameBase.getHeight() * objectConstants.get("solid_scale").getFloat(1), 0, -flameBase.getHeight()/2f, false);
         if (!activated){
             deactivated(world);
         }

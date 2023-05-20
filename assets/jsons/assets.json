@@ -160,8 +160,9 @@
         "tiledLevel12": "levels/triple-body-deposits.json",
 //        "tiledLevel13": "levels/level-beta-med1.json",
       "tiledLevel13": "levels/wall-jump-intro.json",
+      "tiledLevel14": "levels/tutorial-body-switch.json",
 
-      "tiledLevel14": "levels/super-jump.json",
+//      "tiledLevel14": "levels/super-jump.json",
 //        "tiledLevel5": "levels/level-beta-hard.json",
 //        "tiledLevel14": "levels/party-room.json",
         "tiledLevel15": "levels/split-spirit-regions.json",

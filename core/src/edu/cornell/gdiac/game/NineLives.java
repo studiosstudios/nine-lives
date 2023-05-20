@@ -96,8 +96,10 @@ public class NineLives extends Game implements ScreenListener {
 	public void resize(int width, int height) {
 		Gdx.gl.glViewport(0, 0, width, height);
 		canvas.resize();
-		if (menu.pause) {
-			menu.resize(width, height);
+		if (menu != null) {
+			if (menu.pause) {
+				menu.resize(width, height);
+			}
 		}
 		super.resize(width,height);
 	}

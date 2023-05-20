@@ -133,7 +133,8 @@
       "robo": "world/decor/robo.png",
       "window-robo": "world/decor/window-robo.png",
       "x-ray": "world/decor/x-ray.png",
-      "shelf2": "world/decor/shelf2.png"
+      "shelf2": "world/decor/shelf2.png",
+      "tree": "world/decor/tree.png"
     },
     "jsons"  : {
         "constants": "jsons/constants.json",

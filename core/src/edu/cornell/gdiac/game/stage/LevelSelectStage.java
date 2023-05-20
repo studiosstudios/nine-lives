@@ -193,6 +193,5 @@ public class LevelSelectStage extends StageWrapper {
         levelImage.setPosition(STANDARD_WIDTH/2f-levelImage.getWidth()*7f/40f, STANDARD_HEIGHT/2f-levelImage.getHeight()*7f/40f);
         addActor(levelImage);
         barActors.get(selectedLevel-1).setColor(Color.BROWN);
-        System.out.println(selectedLevel);
     }
 }

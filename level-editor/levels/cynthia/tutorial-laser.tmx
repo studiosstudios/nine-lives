@@ -154,7 +154,12 @@
 </data>
  </layer>
  <objectgroup id="2" name="cat">
-  <object id="87" gid="2" x="1024" y="16384" width="1024" height="1024"/>
+  <object id="87" gid="2" x="1024" y="16384" width="1024" height="1024">
+   <properties>
+    <property name="canDash" type="bool" value="true"/>
+    <property name="canSwitch" type="bool" value="false"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup id="4" name="flamethrowers"/>
  <objectgroup id="3" name="checkpoints">

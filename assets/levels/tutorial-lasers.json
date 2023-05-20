@@ -261,6 +261,17 @@
                  "height":1024,
                  "id":87,
                  "name":"",
+                 "properties":[
+                        {
+                         "name":"canDash",
+                         "type":"bool",
+                         "value":true
+                        }, 
+                        {
+                         "name":"canSwitch",
+                         "type":"bool",
+                         "value":false
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,

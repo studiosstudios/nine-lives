@@ -1,11 +1,13 @@
 package edu.cornell.gdiac.game.stage;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ScreenUtils;
 import edu.cornell.gdiac.assets.AssetDirectory;
 
 public class HudStage extends StageWrapper {
@@ -32,10 +34,10 @@ public class HudStage extends StageWrapper {
     Actor cracked3;
     Actor cracked2;
     Actor cracked1;
-
-
+    Actor magnifyingGlass;
     Array<Actor> bellArray = new Array<>();
     Array<Actor> crackedArray = new Array<>();
+    private Color magnifyingColor;
 
     public HudStage(String internal, boolean createActors) {
         super(internal, createActors, false);
@@ -140,6 +142,12 @@ public class HudStage extends StageWrapper {
         cracked1.setScale(0.5f);
         cracked1.setVisible(false);
 
+        magnifyingGlass = addActor(internal.getEntry("magnifying-glass", Texture.class), STANDARD_WIDTH - 130, STANDARD_HEIGHT - 130);
+        magnifyingGlass.setScale(0.4f);
+        magnifyingColor = new Color(Color.WHITE);
+        magnifyingColor.a = 0f;
+        magnifyingGlass.setColor(magnifyingColor);
+        magnifyingGlass.setVisible(true);
     }
 
     /**
@@ -185,6 +193,17 @@ public class HudStage extends StageWrapper {
                 bellArray.get(i).setVisible(false);
             }
         }
+    }
+
+    public void updateMagnifying(boolean magnifying) {
+        if (magnifying) {
+            magnifyingColor.a += (0.8f - magnifyingColor.a) * 0.05f;
+            if (0.8f - magnifyingColor.a < 0.01f) magnifyingColor.a = 0.8f;
+        } else {
+            magnifyingColor.a -= magnifyingColor.a * 0.1f;
+            if (magnifyingColor.a < 0.01f) magnifyingColor.a = 0f;
+        }
+        magnifyingGlass.setColor(magnifyingColor);
     }
 
 }

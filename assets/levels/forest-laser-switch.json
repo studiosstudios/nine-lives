@@ -330,7 +330,7 @@
          "name":"spiritRegions",
          "objects":[
                 {
-                 "height":9216,
+                 "height":10240,
                  "id":222,
                  "name":"",
                  "rotation":0,
@@ -543,29 +543,6 @@
                 {
                  "gid":1,
                  "height":1024,
-                 "id":225,
-                 "name":"",
-                 "properties":[
-                        {
-                         "name":"attachName",
-                         "type":"string",
-                         "value":""
-                        }, 
-                        {
-                         "name":"id",
-                         "type":"string",
-                         "value":"1"
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":1024,
-                 "x":3072,
-                 "y":18432
-                }, 
-                {
-                 "gid":1,
-                 "height":1024,
                  "id":226,
                  "name":"",
                  "properties":[
@@ -580,6 +557,30 @@
                  "width":1024,
                  "x":2048,
                  "y":5120
+                }, 
+                {
+                 "gid":1,
+                 "height":1024,
+                 "id":248,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"1"
+                        }, 
+                        {
+                         "name":"type",
+                         "propertytype":"activators",
+                         "type":"string",
+                         "value":"switch"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":1024,
+                 "x":3072,
+                 "y":18432
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -644,13 +645,18 @@
                              "x":0,
                              "y":13
                             }
+                        }, 
+                        {
+                         "name":"speed",
+                         "type":"float",
+                         "value":4
                         }],
                  "rotation":0,
                  "type":"Platform",
                  "visible":true,
                  "width":4096,
                  "x":5120,
-                 "y":19456
+                 "y":21504
                 }, 
                 {
                  "height":1024,
@@ -674,15 +680,20 @@
                          "value":
                             {
                              "x":0,
-                             "y":13
+                             "y":14
                             }
+                        }, 
+                        {
+                         "name":"speed",
+                         "type":"float",
+                         "value":4
                         }],
                  "rotation":0,
                  "type":"Platform",
                  "visible":true,
                  "width":4096,
                  "x":11264,
-                 "y":19456
+                 "y":21504
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -753,7 +764,7 @@
          "y":0
         }],
  "nextlayerid":23,
- "nextobjectid":248,
+ "nextobjectid":249,
  "orientation":"orthogonal",
  "properties":[
         {

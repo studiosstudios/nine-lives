@@ -22,7 +22,7 @@ public class Button extends Activator {
      */
     public Button(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale, String biome){
         super(properties, biome.equals("metal") ? "button-top" : "forest-button-top",
-                biome.equals("metal") ? "button-base" : "forest-button-top",tMap,scale, textureScale, biome);
+                biome.equals("metal") ? "button-base" : "forest-button-top",tMap,scale, textureScale, biome, true);
     }
 
 

@@ -47,6 +47,8 @@ public abstract class Activator extends PolygonObstacle {
     private Color color = new Color();
     /** direction of this button */
     private Direction dir;
+    private String biome;
+    private boolean prevPressed;
 
     /**
      * @return true if the activator is currently activating
@@ -83,22 +85,20 @@ public abstract class Activator extends PolygonObstacle {
      * @param scale          Draw scale for drawing
      * @param textureScale   Texture scale for rescaling texture
      */
-    public Activator(ObjectMap<String, Object> properties, String texture_name, String base_name, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale, String biome){
+    public Activator(ObjectMap<String, Object> properties, String texture_name, String base_name, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale, String biome, boolean resize){
         super(objectConstants.get("body_shape").asFloatArray());
         topTexture = tMap.get(texture_name).getTexture();
-        if (biome.equals("forest")) {
-            bottomTexture = null;
-            textureScale.scl(0.5f);
-            origin.set(-128, -128); //i am so sorry
-        } else {
-            bottomTexture = tMap.get(base_name);
-            setTexture(bottomTexture);
-        }
+        spriteFrames = TextureRegion.split(topTexture, 256,256);
+        this.biome = biome;
         setTextureScale(textureScale);
+        if (biome.equals("forest") && resize) {
+            setTextureScale(textureScale.x / 2f, textureScale.y / 2f);
+            origin.set(-128, -128);
+        }
+        bottomTexture = tMap.get(base_name);
         setRestitution(0);
-        spriteFrames = TextureRegion.split(tMap.get(texture_name).getTexture(), 256,256);
-        float frameDuration = 0.2f;
-        animation = new Animation<>(frameDuration, spriteFrames[0]);
+        float totalAnimationTime = 0.2f;
+        animation = new Animation<>(totalAnimationTime/spriteFrames[0].length, spriteFrames[0]);
         setBodyType(properties.containsKey("attachName") ? BodyDef.BodyType.DynamicBody : BodyDef.BodyType.StaticBody);
         animation.setPlayMode(Animation.PlayMode.REVERSED);
         animationTime = 0f;
@@ -119,6 +119,7 @@ public abstract class Activator extends PolygonObstacle {
         color.set((Color) properties.get("color", Color.RED));
         pan = (boolean) properties.get("shouldPan", false);
         activating = false;
+        prevPressed = false;
     }
 
     @Override
@@ -133,6 +134,8 @@ public abstract class Activator extends PolygonObstacle {
     @Override
     public void draw(GameCanvas canvas){
         TextureRegion currentFrame;
+        if (prevPressed ^ isPressed()) animationTime = 0;
+        prevPressed = isPressed();
         if(isPressed()){
             animation.setPlayMode(Animation.PlayMode.NORMAL);
             animationTime += Gdx.graphics.getDeltaTime();
@@ -151,7 +154,7 @@ public abstract class Activator extends PolygonObstacle {
         }
 
         canvas.draw(currentFrame, color, origin.x, origin.y, x, getY()*drawScale.y, getAngle(), textureScale.x,textureScale.y);
-        if (bottomTexture != null) canvas.draw(bottomTexture, Color.WHITE, origin.x, origin.y, x, (getY())*drawScale.y, getAngle(), textureScale.x, textureScale.y);
+        if (biome.equals("metal")) canvas.draw(bottomTexture, Color.WHITE, origin.x, origin.y, x, (getY())*drawScale.y, getAngle(), textureScale.x, textureScale.y);
     }
 
     /**

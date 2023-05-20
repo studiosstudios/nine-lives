@@ -100,7 +100,12 @@
     "offset": [0, 0],
 //    "offset": [0.5, -1],
     "solid_height_scale": 0.5,
-    "solid_width_scale": 1
+    "solid_width_scale": 1,
+    "light": {
+      "distance": 2,
+      "color": "#ffd700aa",
+      "offset": [0, 5]
+    }
   },
   "deadBody": {
     "friction": 1,

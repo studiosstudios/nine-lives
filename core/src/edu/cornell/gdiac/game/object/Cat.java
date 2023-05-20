@@ -628,7 +628,7 @@ public class Cat extends CapsuleObstacle implements Movable {
         idleAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("idle-sit-anim").getTexture(),256,256)[0]);
         idleStandAnimation = new Animation<>(0.15f, TextureRegion.split(tMap.get("idle-stand-anim").getTexture(),256,256)[0]);
         climbAnimation = new Animation<>(0.05f, TextureRegion.split(tMap.get("climb-anim").getTexture(),256,256)[0]);
-        transAnimation2 = new Animation<>(0.015f, TextureRegion.split(tMap.get("trans2-anim").getTexture(),256,256)[0]);
+        transAnimation2 = new Animation<>(0.02f, TextureRegion.split(tMap.get("trans2-anim").getTexture(),256,256)[0]);
         midJumpAnimation = new Animation<>(0.1f, TextureRegion.split(tMap.get("jump-mid").getTexture(),256,256)[0]);
         meowAnimation.setPlayMode(Animation.PlayMode.REVERSED);
         idleStandAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);

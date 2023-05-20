@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="67" height="24" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="23" nextobjectid="360">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="67" height="24" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="23" nextobjectid="367">
  <editorsettings>
-  <export target="../../../assets/levels/basic-checkpoint.json" format="json"/>
+  <export target="../../../assets/levels/spike-hell.json" format="json"/>
  </editorsettings>
  <properties>
   <property name="biome" propertytype="biome" value="metal"/>
@@ -17,8 +17,8 @@
 92,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,94,
 92,99,105,105,105,105,105,105,100,93,93,93,93,93,93,93,93,99,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,100,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,94,
 92,94,0,0,0,0,0,0,92,93,93,93,93,93,93,93,93,94,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,92,99,105,105,105,105,105,105,100,93,93,93,93,93,93,93,93,93,93,93,94,
-92,94,0,0,0,0,0,0,92,99,105,105,105,105,105,105,105,106,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,67,0,0,67,0,0,67,0,0,0,0,92,94,0,0,0,0,0,0,92,93,93,93,93,93,93,93,93,93,93,93,94,
-92,94,0,0,0,0,0,0,92,94,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,92,94,0,0,0,0,0,0,92,93,93,93,93,93,93,93,93,93,93,93,94,
+92,94,0,0,0,0,0,0,92,99,105,105,105,105,105,105,105,106,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,92,94,0,0,0,0,0,0,92,93,93,93,93,93,93,93,93,93,93,93,94,
+92,94,0,0,0,0,0,0,92,94,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,67,0,0,67,0,0,67,0,0,0,0,92,94,0,0,0,0,0,0,92,93,93,93,93,93,93,93,93,93,93,93,94,
 92,94,0,0,0,0,0,0,92,94,0,0,0,0,0,0,0,0,0,0,67,0,0,0,0,0,0,0,0,0,0,0,0,67,0,0,0,0,0,0,0,0,0,67,0,0,92,94,0,0,0,0,0,0,92,93,93,93,93,93,93,93,93,93,93,93,94,
 92,111,81,81,81,81,81,81,112,94,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,80,82,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,92,111,81,81,81,81,81,81,112,93,93,93,93,93,93,93,93,93,93,93,94,
 104,105,105,105,105,105,105,105,105,106,0,0,0,0,0,0,67,0,0,0,0,0,0,0,0,0,0,104,106,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,104,105,105,105,105,105,105,105,105,105,105,105,105,105,100,93,93,93,93,93,94,
@@ -67,7 +67,19 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="19" name="cameraRegions"/>
+ <objectgroup id="19" name="cameraRegions">
+  <object id="362" type="CameraRegion" x="35840" y="0" width="20480" height="24576">
+   <properties>
+    <property name="bHeight" type="float" value="24"/>
+    <property name="bWidth" type="float" value="22"/>
+    <property name="bX" type="float" value="33"/>
+    <property name="bY" type="float" value="0"/>
+    <property name="shouldSnap" type="bool" value="true"/>
+    <property name="snapCollisionArea" type="bool" value="false"/>
+    <property name="zoom" type="float" value="0.75"/>
+   </properties>
+  </object>
+ </objectgroup>
  <objectgroup id="12" name="wallsPoly">
   <object id="304" x="0" y="22528">
    <polygon points="0,0 0,2048 13312,2048 13312,-8192 8192,-8192 8192,-6144 6144,-6144 6144,-2048 3072,-2048 3072,0"/>
@@ -265,24 +277,37 @@
   <object id="240" gid="7" x="46080" y="9216" width="1024" height="1024" rotation="90"/>
  </objectgroup>
  <objectgroup id="22" name="decor">
-  <object id="204" name="tutorial-checkpoint" gid="125" x="34816" y="11264" width="9216" height="4096"/>
   <object id="244" name="cabinet-mid" gid="141" x="59392" y="17408" width="2048" height="2048"/>
   <object id="248" name="microscope" gid="143" x="62464" y="14336" width="1024" height="1280"/>
   <object id="250" name="cabinet-mid" gid="141" x="61440" y="17408" width="2048" height="2048"/>
-  <object id="251" name="broken-robot" gid="149" x="33792" y="15360" width="2048" height="2048"/>
-  <object id="258" name="shelf" gid="147" x="3072" y="5120" width="1024" height="1024"/>
-  <object id="259" name="shelf" gid="147" x="4096" y="5120" width="1024" height="1024"/>
-  <object id="260" name="shelf" gid="147" x="5120" y="5120" width="1024" height="1024"/>
-  <object id="261" name="shelf" gid="147" x="6144" y="5120" width="1024" height="1024"/>
+  <object id="251" name="broken-robot" gid="149" x="33792" y="15607.4" width="2048" height="2048"/>
+  <object id="258" name="test-tubes" gid="147" x="3051.38" y="5305.57" width="1024" height="1024"/>
+  <object id="259" name="test-tubes" gid="147" x="4075.38" y="5305.57" width="1024" height="1024">
+   <properties>
+    <property name="flipX" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="260" name="test-tubes" gid="147" x="5078.76" y="5305.57" width="1024" height="1024"/>
+  <object id="261" name="test-tubes" gid="147" x="6123.38" y="5326.19" width="1024" height="1024">
+   <properties>
+    <property name="flipX" type="bool" value="true"/>
+   </properties>
+  </object>
   <object id="271" name="shelf" gid="132" x="59392" y="14336" width="4096" height="2048"/>
-  <object id="291" name="broken-robot" gid="149" x="57344" y="17408" width="2048" height="2048"/>
+  <object id="291" name="broken-robot" gid="149" x="58003.8" y="17696.7" width="2048" height="2048"/>
   <object id="292" name="cat-tank-pink" gid="136" x="49152" y="7168" width="1668" height="2388"/>
   <object id="293" name="cat-tank-pink" gid="136" x="53248" y="7168" width="1668" height="2388"/>
   <object id="294" name="cat-tank-green" gid="137" x="51200" y="7168" width="1668" height="2388"/>
-  <object id="298" name="broken-robot" gid="149" x="63488" y="17408" width="2048" height="2048"/>
+  <object id="298" name="broken-robot" gid="149" x="62828.2" y="17717.3" width="2048" height="2048">
+   <properties>
+    <property name="flipX" type="bool" value="true"/>
+   </properties>
+  </object>
   <object id="299" name="cabinet-mid" gid="141" x="2048" y="7168" width="2048" height="2048"/>
   <object id="300" name="cabinet-mid" gid="141" x="4096" y="7168" width="2048" height="2048"/>
   <object id="301" name="cabinet-mid" gid="141" x="6144" y="7168" width="2048" height="2048"/>
+  <object id="364" name="cat-vinci" gid="131" x="35840" y="11264" width="4096" height="4096"/>
+  <object id="366" name="cat-vinci" gid="131" x="39936" y="11264" width="4096" height="4096"/>
  </objectgroup>
  <objectgroup id="15" name="activators"/>
  <objectgroup id="9" name="doors"/>

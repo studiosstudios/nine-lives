@@ -491,6 +491,77 @@
         }, 
         {
          "draworder":"topdown",
+         "id":24,
+         "name":"lights",
+         "objects":[
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":124,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":5120,
+                 "y":12288
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":125,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":13312,
+                 "y":12288
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":126,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":23552,
+                 "y":12288
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":127,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":29696,
+                 "y":8192
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":129,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":35840,
+                 "y":3072
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":4,
          "name":"flamethrowers",
          "objects":[],
@@ -673,8 +744,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":24,
- "nextobjectid":124,
+ "nextlayerid":25,
+ "nextobjectid":130,
  "orientation":"orthogonal",
  "properties":[
         {

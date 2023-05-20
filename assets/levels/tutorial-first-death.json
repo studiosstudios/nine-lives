@@ -30,6 +30,65 @@
          "y":0
         }, 
         {
+         "draworder":"topdown",
+         "id":23,
+         "name":"lights",
+         "objects":[
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":126,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":2048,
+                 "y":4096
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":127,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":11264,
+                 "y":5120
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":128,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":20480,
+                 "y":5120
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":129,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":29696,
+                 "y":5120
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
          "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -180,7 +239,7 @@
          "name":"background",
          "opacity":1,
          "type":"tilelayer",
-         "visible":true,
+         "visible":false,
          "width":32,
          "x":0,
          "y":0
@@ -546,8 +605,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":23,
- "nextobjectid":125,
+ "nextlayerid":24,
+ "nextobjectid":130,
  "orientation":"orthogonal",
  "properties":[
         {

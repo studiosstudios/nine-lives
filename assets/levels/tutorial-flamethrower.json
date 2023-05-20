@@ -61,7 +61,7 @@
          "name":"background",
          "opacity":1,
          "type":"tilelayer",
-         "visible":true,
+         "visible":false,
          "width":52,
          "x":0,
          "y":0
@@ -95,6 +95,77 @@
          "type":"tilelayer",
          "visible":true,
          "width":52,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":25,
+         "name":"lights",
+         "objects":[
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":141,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":6144,
+                 "y":3072
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":142,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":16384,
+                 "y":3072
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":144,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":25600,
+                 "y":3072
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":145,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":35840,
+                 "y":3072
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":147,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":9216,
+                 "y":10240
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
          "x":0,
          "y":0
         }, 
@@ -754,8 +825,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":25,
- "nextobjectid":141,
+ "nextlayerid":26,
+ "nextobjectid":148,
  "orientation":"orthogonal",
  "properties":[
         {

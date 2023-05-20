@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="56" height="43" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="25" nextobjectid="197">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="56" height="43" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="26" nextobjectid="204">
  <editorsettings>
   <export target="../../../assets/levels/climb-spikes.json" format="json"/>
  </editorsettings>
@@ -62,7 +62,28 @@
 157,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,159
 </data>
  </layer>
- <layer id="24" name="background" width="56" height="43">
+ <objectgroup id="25" name="lights">
+  <object id="197" gid="13" x="1024" y="29696" width="3072" height="1024"/>
+  <object id="198" gid="13" x="45056" y="6144" width="3072" height="1024"/>
+  <object id="199" gid="13" x="24576" y="28672" width="3072" height="1024"/>
+  <object id="200" gid="13" x="27648" y="20480" width="3072" height="1024"/>
+  <object id="201" type="Light" gid="14" x="9216" y="11264" width="1024" height="1024">
+   <properties>
+    <property name="type" propertytype="lightType" value="wall"/>
+   </properties>
+  </object>
+  <object id="202" type="Light" gid="14" x="14336" y="24576" width="1024" height="1024">
+   <properties>
+    <property name="type" propertytype="lightType" value="wall"/>
+   </properties>
+  </object>
+  <object id="203" type="Light" gid="14" x="25600" y="13312" width="1024" height="1024">
+   <properties>
+    <property name="type" propertytype="lightType" value="wall"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <layer id="24" name="background" width="56" height="43" visible="0">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

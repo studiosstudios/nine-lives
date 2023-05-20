@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="52" height="21" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="25" nextobjectid="141">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="52" height="21" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="26" nextobjectid="148">
  <editorsettings>
   <export target="../../../assets/levels/tutorial-flamethrower.json" format="json"/>
  </editorsettings>
@@ -39,7 +39,7 @@
 157,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,159
 </data>
  </layer>
- <layer id="24" name="background" width="52" height="21">
+ <layer id="24" name="background" width="52" height="21" visible="0">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -89,6 +89,13 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
+ <objectgroup id="25" name="lights">
+  <object id="141" gid="13" x="6144" y="3072" width="3072" height="1024"/>
+  <object id="142" gid="13" x="16384" y="3072" width="3072" height="1024"/>
+  <object id="144" gid="13" x="25600" y="3072" width="3072" height="1024"/>
+  <object id="145" gid="13" x="35840" y="3072" width="3072" height="1024"/>
+  <object id="147" gid="13" x="9216" y="10240" width="3072" height="1024"/>
+ </objectgroup>
  <objectgroup id="19" name="cameraRegions"/>
  <objectgroup id="12" name="wallsPoly">
   <object id="130" x="0" y="17408">

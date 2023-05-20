@@ -115,6 +115,77 @@
         }, 
         {
          "draworder":"topdown",
+         "id":24,
+         "name":"lights",
+         "objects":[
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":149,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":8192,
+                 "y":8192
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":150,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":1024,
+                 "y":3072
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":151,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":17408,
+                 "y":8192
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":152,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":26624,
+                 "y":18432
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":153,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":29696,
+                 "y":8192
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":19,
          "name":"cameraRegions",
          "objects":[],
@@ -731,8 +802,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":24,
- "nextobjectid":149,
+ "nextlayerid":25,
+ "nextobjectid":154,
  "orientation":"orthogonal",
  "properties":[
         {

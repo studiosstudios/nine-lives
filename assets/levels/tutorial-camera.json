@@ -40,6 +40,77 @@
          "y":0
         }, 
         {
+         "draworder":"topdown",
+         "id":25,
+         "name":"lights",
+         "objects":[
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":149,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":6144,
+                 "y":5120
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":150,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":12288,
+                 "y":5120
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":151,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":22528,
+                 "y":5120
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":152,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":16384,
+                 "y":17408
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":153,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3072,
+                 "x":23552,
+                 "y":17408
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
          "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -688,8 +759,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":25,
- "nextobjectid":149,
+ "nextlayerid":26,
+ "nextobjectid":154,
  "orientation":"orthogonal",
  "properties":[
         {

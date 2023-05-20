@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="32" height="26" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="25" nextobjectid="149">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="32" height="26" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="26" nextobjectid="154">
  <editorsettings>
   <export target="../../../assets/levels/tutorial-camera.json" format="json"/>
  </editorsettings>
@@ -43,6 +43,13 @@
 0,0,0,0,0,0,0,0,0,157,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,158,159
 </data>
  </layer>
+ <objectgroup id="25" name="lights">
+  <object id="149" gid="13" x="6144" y="5120" width="3072" height="1024"/>
+  <object id="150" gid="13" x="12288" y="5120" width="3072" height="1024"/>
+  <object id="151" gid="13" x="22528" y="5120" width="3072" height="1024"/>
+  <object id="152" gid="13" x="16384" y="17408" width="3072" height="1024"/>
+  <object id="153" gid="13" x="23552" y="17408" width="3072" height="1024"/>
+ </objectgroup>
  <layer id="24" name="background" width="32" height="26">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

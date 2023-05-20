@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="32" height="20" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="24" nextobjectid="176">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="32" height="20" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="24" nextobjectid="177">
  <editorsettings>
-  <export target="../../../assets/levels/sabrina.json" format="json"/>
+  <export target="../../../assets/levels/flamethrow-level.json" format="json"/>
  </editorsettings>
  <properties>
   <property name="biome" propertytype="biome" value="metal"/>
@@ -153,7 +153,7 @@
  </objectgroup>
  <objectgroup id="16" name="spiritRegions"/>
  <objectgroup id="2" name="cat">
-  <object id="134" gid="2" x="2048" y="15360" width="1024" height="1024"/>
+  <object id="134" gid="2" x="1024" y="15360" width="1024" height="1024"/>
  </objectgroup>
  <objectgroup id="4" name="flamethrowers">
   <object id="133" gid="4" x="11264" y="10240" width="1024" height="1024" rotation="180"/>
@@ -161,7 +161,9 @@
  <objectgroup id="20" name="goal">
   <object id="139" gid="8" x="29696" y="0" width="1024" height="8192"/>
  </objectgroup>
- <objectgroup id="3" name="checkpoints"/>
+ <objectgroup id="3" name="checkpoints">
+  <object id="176" gid="3" x="1024" y="14336" width="1024" height="2048"/>
+ </objectgroup>
  <objectgroup id="6" name="lasers"/>
  <objectgroup id="7" name="mobs">
   <object id="127" gid="6" x="5120" y="8192" width="1024" height="2048"/>

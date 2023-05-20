@@ -282,11 +282,11 @@
                          "y":0
                         }, 
                         {
-                         "x":2730.67,
+                         "x":2048,
                          "y":0
                         }, 
                         {
-                         "x":2730.67,
+                         "x":2048,
                          "y":3072
                         }, 
                         {
@@ -522,6 +522,18 @@
                  "width":1024,
                  "x":12288,
                  "y":10240
+                }, 
+                {
+                 "gid":3,
+                 "height":2048,
+                 "id":215,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":1024,
+                 "x":1024,
+                 "y":14336
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -768,7 +780,7 @@
          "name":"exits",
          "objects":[
                 {
-                 "height":2048,
+                 "height":4096,
                  "id":185,
                  "name":"",
                  "properties":[
@@ -783,7 +795,7 @@
                  "visible":true,
                  "width":1024,
                  "x":-1024,
-                 "y":14336
+                 "y":12288
                 }, 
                 {
                  "height":5120,
@@ -803,7 +815,7 @@
          "y":0
         }],
  "nextlayerid":24,
- "nextobjectid":215,
+ "nextobjectid":216,
  "orientation":"orthogonal",
  "properties":[
         {
@@ -811,17 +823,7 @@
          "propertytype":"biome",
          "type":"string",
          "value":"metal"
-        },
-   {
-     "name":"canDash",
-     "type":"bool",
-     "value":false
-   },
-   {
-     "name":"canSwitch",
-     "type":"bool",
-     "value":true
-   }],
+        }],
  "renderorder":"right-down",
  "tiledversion":"1.10.1",
  "tileheight":1024,

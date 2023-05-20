@@ -265,7 +265,7 @@
                  "type":"",
                  "visible":true,
                  "width":1024,
-                 "x":2048,
+                 "x":1024,
                  "y":16384
                 }],
          "opacity":1,
@@ -289,7 +289,19 @@
          "draworder":"topdown",
          "id":3,
          "name":"checkpoints",
-         "objects":[],
+         "objects":[
+                {
+                 "gid":3,
+                 "height":2048,
+                 "id":225,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":1024,
+                 "x":1024,
+                 "y":15360
+                }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -1217,7 +1229,7 @@
          "y":0
         }],
  "nextlayerid":24,
- "nextobjectid":225,
+ "nextobjectid":226,
  "orientation":"orthogonal",
  "properties":[
         {
@@ -1225,17 +1237,7 @@
          "propertytype":"biome",
          "type":"string",
          "value":"metal"
-        },
-   {
-     "name":"canDash",
-     "type":"bool",
-     "value":true
-   },
-   {
-     "name":"canSwitch",
-     "type":"bool",
-     "value":false
-   }],
+        }],
  "renderorder":"right-down",
  "tiledversion":"1.10.1",
  "tileheight":1024,

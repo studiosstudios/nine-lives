@@ -557,6 +557,15 @@ public class ActionController {
         }
     }
 
+    public void moveCat(float dist, float maxDist) {
+        Cat cat = level.getCat();
+        if (cat.getX() <= level.getGoal().getX() + maxDist) {
+            cat.setHorizontalMovement(dist);
+            cat.updateState();
+            cat.applyForce();
+        }
+    }
+
     /**
 
      * Method to ensure that a sound asset is only played once.

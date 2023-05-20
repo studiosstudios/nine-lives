@@ -922,12 +922,17 @@ public class GameController implements Screen {
 
         if (actionController.isCombiningLives()) {
             //TODO: transition the cat
+//            float maxDist = 3f;
             cam.setZoom(true, 0.9f);
 //            cam.setZoom(false, 1.0f);
             float x_pos = currLevel.getCat().getPosition().x*scale.x;
             float y_pos = currLevel.getCat().getPosition().y*scale.y;
             cam.updateCamera(x_pos, y_pos, true, cam.getGameplayBounds());
 
+            actionController.moveCat(1.2f, 1.2f);
+//            if (currLevel.getCat().getPosition().x < currLevel.getGoal().getPosition().x + maxDist) {
+//                actionController.moveCat(1.2f, 3f);
+//            }
 //            currLevel.getCat().setHorizontalMovement(1000f);
 //            currLevel.getCat().updateState();
             input.setDisableAll(true);

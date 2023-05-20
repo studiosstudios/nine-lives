@@ -476,7 +476,7 @@ public class GameController implements Screen {
                 // TILESETS
                 "metal-tileset", "climbable-tileset", "steel", "windows-tileset", "forest-tileset", "forestLeaves-tileset",
                 // DOORS & PLATFORMS
-                "door", "platform",
+                "door", "platform", "forest-platform",
                 // BOX
                 "box",
                 // BACKGROUNDS

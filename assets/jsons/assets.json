@@ -10,6 +10,11 @@
         "wrapU": "repeated",
         "wrapV": "repeated"
       },
+      "forest-platform" : {
+        "file":  "world/platforms/forest-platform.png",
+        "wrapU": "repeated",
+        "wrapV": "repeated"
+      },
       "door": {
         "file": "obstacles/door/door.png",
         "wrapU": "repeated",
@@ -148,7 +153,7 @@
         "tiledLevel14": "levels/super-jump.json",
 //        "tiledLevel5": "levels/level-beta-hard.json",
 //        "tiledLevel14": "levels/party-room.json",
-        "tiledLevel15": "levels/test-forest.json"
+        "tiledLevel15": "levels/split-spirit-regions.json"
     },
     "soundfx" : {
         "jump" : "sounds/jump-CELESTE.wav",

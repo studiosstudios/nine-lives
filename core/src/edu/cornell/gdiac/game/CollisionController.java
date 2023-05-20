@@ -20,6 +20,7 @@ public class CollisionController implements ContactListener, ContactFilter {
 
     /** Camera to set zoom for CameraRegions*/
     private Camera camera;
+    private boolean gameFinished;
 
     /**
      * Creates and initialize a new instance of a CollisionController
@@ -30,6 +31,7 @@ public class CollisionController implements ContactListener, ContactFilter {
         this.actionController = actionController;
         shouldReturn = false;
         didChange = false;
+        gameFinished = false;
     }
 
     /**
@@ -48,6 +50,8 @@ public class CollisionController implements ContactListener, ContactFilter {
      * @return shouldReturn
      */
     public boolean getReturn() { return shouldReturn; }
+
+    public boolean isGameFinished() { return gameFinished; }
 
     /**
      * Sets whether to return to previous level
@@ -124,12 +128,15 @@ public class CollisionController implements ContactListener, ContactFilter {
 
                     if (bd2 instanceof Spikes && fd2.equals(Spikes.pointyName) && fd1.equals(Cat.bodyName)) {
                         actionController.die(true);
+                        actionController.audioController.playSoundEffect("death-spike");
                     }
                     if (bd2 instanceof Flamethrower.Flame && fd2.equals(Flamethrower.flameSensorName)){
                         actionController.die(true);
+                        actionController.audioController.playSoundEffect("death-fire");
                     }
                     if (bd2 instanceof Laser && fd2.equals(Laser.laserHitboxName)) {
                         actionController.die(true);
+                        actionController.audioController.playSoundEffect("death-laser");
                     }
                     if (bd2 instanceof Checkpoint && ((Checkpoint) bd2).getSensorName().equals(fd2)){
                         Checkpoint checkpoint = (Checkpoint) bd2;
@@ -138,13 +145,17 @@ public class CollisionController implements ContactListener, ContactFilter {
                     }
                     if (bd2 instanceof Mob){
                         actionController.die(true);
+                        actionController.audioController.playSoundEffect("death-mob");
                     }
                     if (bd2 instanceof SpiritRegion){
                         cat.addSpiritRegion((SpiritRegion) bd2);
                     }
                     if (bd2 instanceof Goal) {
+                        if (((Goal) bd2).isFinal()) {
+                            //TODO: finished the game. go to credits!
+                            gameFinished = true;
+                        }
                         ((Goal) bd2).activate();
-                        //TODO: if not active then collect dead bodies with action controller
                         actionController.recombineLives();
                     }
                     if (bd2 instanceof CameraRegion){
@@ -192,14 +203,14 @@ public class CollisionController implements ContactListener, ContactFilter {
 
                 // TODO: fix collisions when obstacles collide with top and bottom
                 // Mob changes direction when hits a wall
-                if (bd1 instanceof Mob && !(fd2 instanceof Activator) && !(fd2 instanceof Checkpoint)) {
+                if (bd1 instanceof Mob && !(fix2.isSensor()) && !(bd2 instanceof Movable)) {
                     ((Mob) bd1).setFacingRight(!((Mob) bd1).isFacingRight());
                 }
 
                 // Activator
                 if (fd1 instanceof Activator) {
                     ((Activator) fd1).addPress();
-
+                    actionController.audioController.playSoundEffect("button-click");
                 }
                 //swap everything
                 Body bodyTemp = body1;
@@ -380,10 +391,10 @@ public class CollisionController implements ContactListener, ContactFilter {
 
             for (int i = 0; i < 2; i++) {
 
-                //flame does not turn on activators
-                if (fd1 instanceof Activator && bd2 instanceof Flamethrower.Flame) {
-                    return false;
-                }
+                //sensors do not turn on activators
+                if (bd1 instanceof Activator && fix2.isSensor()) { return false; }
+
+                if (fd1 != null && fd1.equals(level.getCat().getGroundSensorName()) && fix2.isSensor()) { return false; }
 
                 if (bd1 instanceof Door && bd2 instanceof Door) return false;
 

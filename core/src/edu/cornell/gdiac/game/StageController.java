@@ -28,7 +28,9 @@ import java.util.HashMap;
  * Adapted from Walker M. White's LoadingMode.java in Cornell CS 3152, Spring 2023.
  */
 public class StageController implements Screen {
-	// There are TWO asset managers.  One to load the loading screen.  The other to load the assets
+	public enum Stages {
+		LEVEL_SELECT, LOADING, MAIN_MENU, PAUSE, SETTINGS, START
+	}
 	/** Internal assets for this loading screen */
 	private final AssetDirectory internal;
 	/** The actual assets to be loaded */
@@ -52,6 +54,7 @@ public class StageController implements Screen {
 	public boolean loading;
 	public boolean starting;
 	public boolean fromSelect;
+	public Stages currentStage;
 
 	/** The current stage being rendered on the screen */
 	private StageWrapper stage;
@@ -70,6 +73,7 @@ public class StageController implements Screen {
 	public GameController currLevel;
 	private int selectedLevel;
 	private boolean startLoad = false;
+	private int numLevels;
 
 //	/** The hashmap for music */
 //	private HashMap<String, AudioSource> musicAssetMap;
@@ -144,14 +148,22 @@ public class StageController implements Screen {
 	 */
 	public StageController(String file, GameCanvas canvas, int millis, boolean start, boolean paused, AudioController audioController, int numLevels) {
 		this.canvas  = canvas;
-		this.audioController = audioController;
+		this.numLevels = numLevels;
 		budget = millis;
+
+		if (start) {
+			starting = true;
+			startStage = new StartStage("jsons/start-stage.json", true);
+			stage = startStage;
+			currentStage = Stages.START;
+		}
 
 		// We need these files loaded immediately
 		internal = new AssetDirectory( "jsons/loading.json" );
 		internal.loadAssets();
 		internal.finishLoading();
 
+		this.audioController = audioController;
 		startMusic();
 
 		if(!Save.exists()) {
@@ -161,32 +173,25 @@ public class StageController implements Screen {
 			audioController.setSfxVolume(Save.getVolume());
 		}
 
-		mainMenuStage = new MainMenuStage(internal, true);
-//		mainMenuStage.setViewport(canvas.getViewport());
-		settingsStage = new SettingsStage(internal, true);
-		settingsStage.setAudioController(audioController);
-//		settingsStage.setViewport(canvas.getViewport());
-		pauseStage = new PauseStage(internal, true);
-		LevelSelectStage.setNumLevels(numLevels);
-		levelSelectStage = new LevelSelectStage(internal, true);
-		loadingStage = new LoadingStage(internal, true);
-//		canvas.getViewport().apply(true);
-
-		if (start) {
-			starting = true;
-			startStage = new StartStage(internal, true);
-			stage = startStage;
-		} else if (paused) {
-			stage = pauseStage;
-		} else {
-			stage = mainMenuStage;
+		if (!start) {
+			if (paused) {
+				pauseStage = new PauseStage("jsons/pause-stage.json", true);
+				currentStage = Stages.PAUSE;
+				stage = pauseStage;
+			} else {
+				mainMenuStage = new MainMenuStage("jsons/main-menu-stage.json", true);
+				currentStage = Stages.MAIN_MENU;
+				stage = mainMenuStage;
+			}
 		}
 
 		Gdx.input.setInputProcessor( stage );
 
-		// Start loading the real assets
-		assets = new AssetDirectory( file );
-		assets.loadAssets();
+		if (start) {
+			// Start loading the real assets
+			assets = new AssetDirectory( file );
+			assets.loadAssets();
+		}
 		active = true;
 	}
 
@@ -232,7 +237,10 @@ public class StageController implements Screen {
 				assets.update(budget);
 				if (assets.getProgress() >= 1.0f) {
 					starting = false;
+					mainMenuStage = new MainMenuStage("jsons/main-menu-stage.json", true);
+					currentStage = Stages.MAIN_MENU;
 					changeStage(mainMenuStage);
+					startStage.dispose();
 					startStage = null;
 				}
 			}
@@ -295,72 +303,140 @@ public class StageController implements Screen {
 						startLoad = false;
 						listener.exitScreen(this, 0);
 					}
-					loading = false;
-					if (fromSelect) {
-						fromSelect = false;
-						listener.exitScreen(this, 69);
-					} else {
-						fromSelect = false;
-						listener.exitScreen(this, 0);
+//					loading = false;
+//					if (fromSelect) {
+//						fromSelect = false;
+//						listener.exitScreen(this, 69);
+//					} else {
+//						fromSelect = false;
+//						listener.exitScreen(this, 0);
+//					}
+				}
+			}
+
+			if (currentStage == Stages.MAIN_MENU) {
+				if (mainMenuStage.isPlay() && listener != null) {
+//				audioController.playSoundEffect("menu-select");
+					loading = true;
+					fromSelect = false;
+					loadingStage = new LoadingStage("jsons/loading-stage.json", true);
+					changeStage(loadingStage);
+					currentStage = Stages.LOADING;
+					getStage().act();
+					getStage().draw();
+					mainMenuStage.dispose();
+					mainMenuStage = null;
+//				listener.exitScreen(this, 0);
+				} else if (mainMenuStage.isSettings()) {
+					audioController.playSoundEffect("menu-select");
+					mainMenuStage.setSettingsState(0);
+					settingsStage = new SettingsStage("jsons/settings-stage.json", true);
+					settingsStage.setAudioController(this.audioController);
+					changeStage(settingsStage);
+					currentStage = Stages.SETTINGS;
+					mainMenuStage.dispose();
+					mainMenuStage = null;
+				} else if (mainMenuStage.isLevelSelect()) {
+					audioController.playSoundEffect("menu-select");
+					mainMenuStage.setLevelSelectState(0);
+					levelSelectStage = new LevelSelectStage("jsons/level-select-stage.json", true, numLevels);
+//					levelSelectStage.setNumLevels(numLevels);
+					changeStage(levelSelectStage);
+					currentStage = Stages.LEVEL_SELECT;
+					mainMenuStage.dispose();
+					mainMenuStage = null;
+				} else if (mainMenuStage.isExit() && listener != null) {
+					audioController.playSoundEffect("menu-select");
+					mainMenuStage.dispose();
+					mainMenuStage = null;
+					listener.exitScreen(this, 99);
+				}
+			} else if (currentStage == Stages.SETTINGS) {
+				if (pause && settingsStage.isBack()) {
+					audioController.playSoundEffect("menu-select");
+					settingsStage.exit();
+					currLevel.updateControls();
+					settingsStage.setBackButtonState(0);
+					changeStage(pauseStage);
+					currentStage = Stages.PAUSE;
+					settingsStage.dispose();
+					settingsStage = null;
+				} else if (settingsStage.isBack() && !pause) {
+					audioController.playSoundEffect("menu-select");
+						settingsStage.exit();
+					settingsStage.setBackButtonState(0);
+					mainMenuStage = new MainMenuStage("jsons/main-menu-stage.json", true);
+					changeStage(mainMenuStage);
+					currentStage = Stages.MAIN_MENU;
+					settingsStage.dispose();
+					settingsStage = null;
+				}
+			} else if (currentStage == Stages.LEVEL_SELECT) {
+				if (levelSelectStage.isBack() && !pause) {
+					audioController.playSoundEffect("menu-select");
+					levelSelectStage.setBackButtonState(0);
+					mainMenuStage = new MainMenuStage("jsons/main-menu-stage.json", true);
+					changeStage(mainMenuStage);
+					currentStage = Stages.MAIN_MENU;
+					levelSelectStage.dispose();
+					levelSelectStage = null;
+				} else if (levelSelectStage.isPlay() && listener != null) {
+					audioController.playSoundEffect("menu-select");
+					loading = true;
+					fromSelect = true;
+					loadingStage = new LoadingStage("jsons/loading-stage.json", true);
+					changeStage(loadingStage);
+					currentStage = Stages.LOADING;
+					getStage().act();
+					getStage().draw();
+					levelSelectStage.setPlayButtonState(0);
+					selectedLevel = levelSelectStage.getSelectedLevel();
+					levelSelectStage.dispose();
+					levelSelectStage = null;
+				}
+			} else if (currentStage == Stages.PAUSE) {
+					if (pauseStage.isRestart() && listener != null) {
+						audioController.playSoundEffect("menu-select");
+						audioController.pauseStageMusic();
+						pause = false;
+						pauseStage.setResumeButtonState(0);
+						pauseStage.currLevel = null;
+						pauseStage.dispose();
+						pauseStage = null;
+						listener.exitScreen(this, 81);
+					} else if (pauseStage.isResume() && listener != null) {
+						audioController.playSoundEffect("menu-select");
+						audioController.pauseStageMusic();
+						pause = false;
+						pauseStage.setResumeButtonState(0);
+						pauseStage.currLevel = null;
+						pauseStage.dispose();
+						pauseStage = null;
+						listener.exitScreen(this, 25);
+					} else if (pauseStage.isSettings() && listener != null) {
+						audioController.playSoundEffect("menu-select");
+						pauseStage.setSettingsState(0);
+						settingsStage = new SettingsStage("jsons/settings-stage.json", true);
+						settingsStage.setAudioController(this.audioController);
+						changeStage(settingsStage);
+						currentStage = Stages.SETTINGS;
+//						pauseStage.dispose();
+//						pauseStage = null;
+					} else if (pauseStage.isMainMenu() && listener != null) {
+						audioController.playSoundEffect("menu-select");
+						pause = false;
+						pauseStage.setMainMenuState(0);
+						pauseStage.currLevel = null;
+						mainMenuStage = new MainMenuStage("jsons/main-menu-stage.json", true);
+						changeStage(mainMenuStage);
+						currentStage = Stages.MAIN_MENU;
+						pauseStage.dispose();
+						pauseStage = null;
+						listener.exitScreen(this, 79);
 					}
 				}
 			}
 
-			// We are ready, notify our listener
-			if (mainMenuStage.isPlay() && listener != null) {
-//				audioController.playSoundEffect("menu-select");
-				loading = true;
-				fromSelect = false;
-				changeStage(loadingStage);
-				getStage().act();
-				getStage().draw();
-//				listener.exitScreen(this, 0);
-			} else if (mainMenuStage.isSettings()) {
-				audioController.playSoundEffect("menu-select");
-				mainMenuStage.setSettingsState(0);
-				changeStage(settingsStage);
-			} else if (mainMenuStage.isLevelSelect()) {
-				audioController.playSoundEffect("menu-select");
-				mainMenuStage.setLevelSelectState(0);
-				changeStage(levelSelectStage);
-			} else if (settingsStage.isBack() || levelSelectStage.isBack()) {
-				audioController.playSoundEffect("menu-select");
-				if (settingsStage.isBack()) {
-					settingsStage.exit();
-				}
-				settingsStage.setBackButtonState(0);
-				levelSelectStage.setBackButtonState(0);
-				changeStage(mainMenuStage);
-			} else if (levelSelectStage.isPlay() && listener != null) {
-				audioController.playSoundEffect("menu-select");
-				loading = true;
-				fromSelect = true;
-				changeStage(loadingStage);
-				getStage().act();
-				getStage().draw();
-				levelSelectStage.setPlayButtonState(0);
-				selectedLevel = levelSelectStage.getSelectedLevel();
-//				listener.exitScreen(this, 69);
-			} else if (pauseStage.isResume() && listener != null) {
-				audioController.playSoundEffect("menu-select");
-				audioController.pauseStageMusic();
-				pause = false;
-				pauseStage.setResumeButtonState(0);
-				pauseStage.currLevel = null;
-				listener.exitScreen(this, 25);
-			} else if (pauseStage.isMainMenu() && listener != null) {
-				audioController.playSoundEffect("menu-select");
-				pause = false;
-				pauseStage.setMainMenuState(0);
-				pauseStage.currLevel = null;
-				mainMenuStage.createActors();
-				changeStage(mainMenuStage);
-				listener.exitScreen(this, 79);
-			} else if (mainMenuStage.isExit() && listener != null) {
-				audioController.playSoundEffect("menu-select");
-				listener.exitScreen(this, 99);
-			}
-		}
 	}
 
 	/**
@@ -442,4 +518,17 @@ public class StageController implements Screen {
 		}
 		resize(canvas.getWidth(), canvas.getHeight());
 	}
+	// LEVEL_SELECT, LOADING, MAIN_MENU, PAUSE, SETTINGS, START
+//	private void changeStage(Stages stage) {
+//		mainMenuStage = new MainMenuStage(internal, true);
+//		pauseStage = new PauseStage(internal, true);
+//		LevelSelectStage.setNumLevels(numLevels);
+//		levelSelectStage = new LevelSelectStage(internal, true);
+//		loadingStage = new LoadingStage(internal, true);
+//		settingsStage = new SettingsStage(internal, true);
+//		settingsStage.setAudioController(audioController);
+//		if (stage == Stages.LOADING) {
+//			this.stage.dispose();
+//		}
+//	}
 }

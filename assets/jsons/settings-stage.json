@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "bg-settings" : "ui/settings/bg-settings.png",
+    "back" : "ui/shared/back.png"
+  }
+}

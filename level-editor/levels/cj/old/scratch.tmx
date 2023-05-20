@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="29" height="17" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="23" nextobjectid="127">
+ <editorsettings>
+  <export target="../../../assets/levels/lights.json" format="json"/>
+ </editorsettings>
+ <properties>
+  <property name="biome" propertytype="biome" value="metal"/>
+ </properties>
+ <tileset firstgid="1" source="../../objects/objects.tsx"/>
+ <tileset firstgid="15" source="../../tilesets/metal-walls.tsx"/>
+ <tileset firstgid="63" source="../../tilesets/climbables.tsx"/>
+ <tileset firstgid="67" source="../../tilesets/windows.tsx"/>
+ <tileset firstgid="83" source=":/automap-tiles.tsx"/>
+ <tileset firstgid="88" source="../../tilesets/default-metal-walls.tsx"/>
+ <layer id="17" name="metalWalls" width="29" height="17">
+  <data encoding="csv">
+101,102,102,102,102,102,102,102,102,102,102,102,102,102,102,102,102,102,102,102,102,102,102,102,102,102,102,102,103,
+113,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,115,
+113,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,115,
+125,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,127,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,89,90,90,90,90,91,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+101,102,102,102,102,102,102,102,102,102,102,102,102,102,102,102,102,103,0,0,0,0,0,0,101,102,102,102,103,
+113,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,132,102,102,102,102,102,102,133,114,114,114,115,
+125,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,127
+</data>
+ </layer>
+ <layer id="18" name="climbables" width="29" height="17">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="19" name="cameraRegions"/>
+ <objectgroup id="12" name="wallsPoly">
+  <object id="58" type="Wall" x="0" y="1024">
+   <polygon points="0,0 0,2048 0,3072 29696,3072 29696,-1024 24576,-1024 24576,2048 15360,2048 15360,-1024 0,-1024"/>
+  </object>
+  <object id="60" type="Wall" x="18432" y="9216">
+   <polygon points="0,0 0,1024 6144,1024 6144,0"/>
+  </object>
+  <object id="62" type="Wall" x="15360" y="0">
+   <polygon points="0,0 0,1024 9216,1024 9216,0"/>
+  </object>
+ </objectgroup>
+ <objectgroup id="16" name="spiritRegions"/>
+ <objectgroup id="2" name="cat">
+  <object id="38" gid="2" x="7168" y="9216" width="1024" height="1024"/>
+ </objectgroup>
+ <objectgroup id="21" name="lights">
+  <object id="116" type="Light" gid="13" x="1024" y="4096" width="3072" height="1024">
+   <properties>
+    <property name="active" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="117" type="Light" gid="13" x="11264" y="4096" width="3072" height="1024">
+   <properties>
+    <property name="active" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="118" type="Light" gid="13" x="6144" y="4096" width="3072" height="1024"/>
+ </objectgroup>
+ <objectgroup id="4" name="flamethrowers"/>
+ <objectgroup id="20" name="goal">
+  <object id="86" gid="8" x="27648" y="12288" width="1024" height="2048"/>
+ </objectgroup>
+ <objectgroup id="3" name="checkpoints">
+  <object id="66" type="Checkpoint" gid="3" x="7168" y="12288" width="1024" height="2048">
+   <properties>
+    <property name="attachName" value="platform1"/>
+   </properties>
+  </object>
+  <object id="67" gid="3" x="26624" y="9216" width="1024" height="2048" rotation="90"/>
+ </objectgroup>
+ <objectgroup id="6" name="lasers">
+  <object id="125" gid="5" x="4096" y="13312" width="1024" height="1024"/>
+  <object id="126" gid="5" x="10240" y="13312" width="1024" height="1024"/>
+ </objectgroup>
+ <objectgroup id="7" name="mobs">
+  <object id="31" gid="6" x="15360" y="12288" width="1024" height="2048"/>
+ </objectgroup>
+ <objectgroup id="8" name="spikes">
+  <object id="42" gid="7" x="19456" y="14336" width="1024" height="1024"/>
+  <object id="43" gid="7" x="18432" y="14336" width="1024" height="1024"/>
+  <object id="44" gid="7" x="20480" y="14336" width="1024" height="1024"/>
+  <object id="45" gid="7" x="21504" y="14336" width="1024" height="1024"/>
+  <object id="46" gid="7" x="22528" y="14336" width="1024" height="1024"/>
+  <object id="47" gid="7" x="23552" y="14336" width="1024" height="1024"/>
+ </objectgroup>
+ <objectgroup id="15" name="activators"/>
+ <objectgroup id="9" name="doors"/>
+ <objectgroup id="10" name="platforms">
+  <object id="51" name="platform1" type="Platform" x="5120" y="10240" width="5120" height="1024">
+   <properties>
+    <property name="activatorID" value=""/>
+    <property name="disp" type="class" propertytype="Vector2">
+     <properties>
+      <property name="x" type="float" value="5"/>
+     </properties>
+    </property>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="13" name="mirrors"/>
+ <objectgroup id="14" name="boxes"/>
+ <objectgroup id="11" name="exits">
+  <object id="33" type="Exit" x="-1024" y="4096" width="1024" height="10240">
+   <properties>
+    <property name="type" propertytype="exitType" value="return"/>
+   </properties>
+  </object>
+  <object id="34" type="Exit" x="29696" y="4096" width="1024" height="10240"/>
+ </objectgroup>
+</map>

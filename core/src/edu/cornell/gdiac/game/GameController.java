@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.game.object.*;
 import edu.cornell.gdiac.game.obstacle.*;
+import edu.cornell.gdiac.game.stage.CreditsStage;
 import edu.cornell.gdiac.game.stage.HudStage;
 import edu.cornell.gdiac.util.ScreenListener;
 
@@ -127,6 +128,8 @@ public class GameController implements Screen {
     private boolean LIGHTS_ACTIVE = true;
     private Color spiritModeColor = new Color(1, 1, 1, 1);
     private boolean drawAdjacentLevels;
+    private boolean gameFinished;
+    public CreditsStage credits;
 
     /**
      * PLAY: User has all controls and is in game
@@ -172,6 +175,7 @@ public class GameController implements Screen {
     public void setCanvas(GameCanvas canvas) {
         this.canvas = canvas;
         collisionController.setCamera(canvas.getCamera());
+        actionController.setCamera(canvas.getCamera());
     }
 
     /**
@@ -312,6 +316,7 @@ public class GameController implements Screen {
     protected GameController(Vector2 gravity, Vector2 scale, int numLevels, AudioController audioController) {
         this.audioController = audioController;
         this.scale = scale;
+        gameFinished = false;
         debug = false;
         setRet(false);
         world = new World(gravity, true);
@@ -340,7 +345,9 @@ public class GameController implements Screen {
         internal.loadAssets();
         internal.finishLoading();
 
-        hud = new HudStage(internal, true);
+        RayHandler.useDiffuseLight(true);
+
+        hud = new HudStage("jsons/hud-stage.json", true);
         hud.lives = currLevel.getNumLives();
     }
 
@@ -455,27 +462,28 @@ public class GameController implements Screen {
                 "cat", "walk-anim", "jump-anim", "idle-sit-anim", "idle-stand-anim", "meow-anim",
                 "trans-anim","climb-anim","corpse", "corpse2", "corpse3","corpse-burnt","trans2-anim","jump-mid",
                 // SPIKES
-                "spikes",
+                "spikes", "forest-spikes",
                 // BUTTONS & SWITCHES
-                "button-base", "button-top", "switch-top", "switch-base",
+                "button-base", "button-top", "switch-top", "switch-base", "forest-button-top", "forest-switch-top",
                 // FLAMETHROWERS
-                "flamethrower", "flame-anim",
+                "flamethrower", "flame-anim", "forest-flamethrower",
                 // LASERS
                 "laser",
                 // CHECKPOINTS
                 "checkpoint-anim", "checkpoint-active-anim", "checkpoint-base", "checkpoint-base-active", "checkpoint-activation-anim",
                 // GOAL
-                "goal", "goal-active", "goal-bases", "goal-idle-anim", "goal-inactive",
+                "goal", "goal-active", "goal-bases", "goal-idle-anim", "goal-inactive", "goal-final",
                 // ROBOT & MOBS
-                "robot-anim",
+                "robot-anim", "forest-mob-anim",
                 // SPIRIT BOUNDARIES
                 "spirit-anim", "spirit-photon", "spirit-photon-cat", "spirit-region",
                 // ACTIVATABLE LIGHTS
                 "ceiling-light", "wall-light",
                 // TILESETS
-                "metal-tileset", "climbable-tileset", "steel", "windows-tileset", "forest-tileset", "forestLeaves-tileset",
+                "metal-tileset", "climbable-tileset", "steel", "windows-tileset", "forest-tileset",
+                "forestLeaves-tileset", "forest-climbable-tileset",
                 // DOORS & PLATFORMS
-                "door", "platform",
+                "door", "platform", "forest-platform", "forest-door",
                 // BOX
                 "box",
                 // BACKGROUNDS
@@ -483,12 +491,14 @@ public class GameController implements Screen {
                 // DECOR
                 "tutorial-burn", "tutorial-camera", "tutorial-checkpoint", "tutorial-dash", "tutorial-pause",
                 "tutorial-side-spikes", "tutorial-spikes", "tutorial-switch", "tutorial-walk-jump",
-                "tutorial-jump-dash", "tutorial-undo", "tutorial-climb",
+                "tutorial-jump-dash", "tutorial-undo", "tutorial-climb", "tutorial-cancel-switch",
+                "tutorial-spirit-region",
                 "cabinet-left", "cabinet-mid", "cabinet-right", "goggles", "microscope",
-                "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf", "wall-bottom", "wall-top",
+                "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf",
                 "tank", "test-tubes", "coke", "broken-robot", "coming-soon", "arrow-sign",
+                "tutorial-cancel-switch", "wood-arrow", "wood-sign",
                 "cat-tank","cat-tank-purple","chair","dandelions","desktop","firefly","flowers",
-                "mushrooms","pin-board","robo","window-robo","x-ray"
+                "mushrooms","pin-board","robo","window-robo","x-ray","shelf2"
                 }; // Unsure if this is actually being used
         for (String n : names){
 //            System.out.println(n);
@@ -496,7 +506,8 @@ public class GameController implements Screen {
             textureRegionAssetMap.put(n, new TextureRegion(directory.getEntry(n, Texture.class)));
         }
 
-        names = new String[]{"jump", "dash", "metal-landing", "meow-1", "meow-2", "meow-3"};
+        names = new String[]{"jump", "dash", "metal-landing", "meow-1", "meow-2", "meow-3", "death-fall",
+                             "button-click", "death-spike", "death-fire", "death-laser", "death-mob"};
         audioController.createSoundEffectMap(directory, names);
 
         names = new String[]{"bkg-lab-1", "bkg-forest-1"};
@@ -524,7 +535,11 @@ public class GameController implements Screen {
 
 //		InputController.getInstance().writeTo("debug-input/recent.txt");
 //		InputController.getInstance().readFrom("debug-input/recent.txt");
-}
+    }
+
+    public void updateControls() {
+        InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
+    }
 
     /**
      * Handles respawning the cat after their death
@@ -566,13 +581,9 @@ public class GameController implements Screen {
         if (rayHandler != null) {
             rayHandler.dispose();
         }
-//        RayHandler.useDiffuseLight(true);
-//        RayHandler.useDiffuseLight(false);
 
         rayHandler = new RayHandler(world);
-//        rayHandler.setAmbientLight(0.35f, 0.35f, 0.35f, 0.1f);
-        rayHandler.setAmbientLight(0.8f);
-//        rayHandler.setShadows(true);
+        rayHandler.setAmbientLight(0.5f, 0.5f, 0.5f, 1f);
 
         justRespawned = true;
         justReset = true;
@@ -733,7 +744,12 @@ public class GameController implements Screen {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt) {
-//        System.out.println(currLevel.getGoal());
+
+        if (collisionController.isGameFinished() && !gameFinished) {
+            credits = new CreditsStage("jsons/credits-stage.json", true, false);
+            gameFinished = true;
+        }
+
         if (collisionController.getReturn()) {
             setRet(true);
         }
@@ -814,6 +830,7 @@ public class GameController implements Screen {
     public void updateCamera(){
         Camera cam = canvas.getCamera();
         InputController input = InputController.getInstance();
+
         if(drawAdjacentLevels){
             gameState = GameState.LEVEL_SWITCH;
         }
@@ -917,6 +934,15 @@ public class GameController implements Screen {
                 drawAdjacentLevels = false;
             }
         }
+
+        if (actionController.isCombiningLives()) {
+//            cam.setZoom(true, 0.9f);
+//            float x_pos = currLevel.getCat().getPosition().x*scale.x;
+//            float y_pos = currLevel.getCat().getPosition().y*scale.y;
+//            cam.updateCamera(x_pos, y_pos, true, cam.getGameplayBounds());
+            actionController.moveCat(1.2f, 1.2f);
+            input.setDisableAll(true);
+        }
     }
     @Override
     public void render(float delta) {
@@ -944,9 +970,18 @@ public class GameController implements Screen {
             updateAndRenderRayHandler();
         }
 
-        // Menu draw
-        hud.draw();
-        if (paused && stageController != null) { stageController.render(delta); }
+        if (gameFinished) {
+            credits.draw();
+            if (credits.finished) {
+                gameFinished = false;
+                credits.finished = false;
+                listener.exitScreen(this, 89);
+            }
+        } else {
+            // Menu draw
+            hud.draw();
+            if (paused && stageController != null) { stageController.render(delta); }
+        }
     }
 
     /**

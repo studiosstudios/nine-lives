@@ -1,0 +1,10 @@
+{
+  "textures": {
+    "left-arrow": "ui/level-select/left-arrow.png",
+    "right-arrow": "ui/level-select/right-arrow.png",
+    "bar-segment": "ui/level-select/bar-segment.png",
+    "bg-level-select": "ui/level-select/bg-level-select.png",
+    "back" : "ui/shared/back.png",
+    "play": "ui/main/play.png"
+  }
+}

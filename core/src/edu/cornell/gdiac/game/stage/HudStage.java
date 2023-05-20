@@ -37,8 +37,8 @@ public class HudStage extends StageWrapper {
     Array<Actor> bellArray = new Array<>();
     Array<Actor> crackedArray = new Array<>();
 
-    public HudStage(AssetDirectory internal, boolean createActors) {
-        super(internal, createActors);
+    public HudStage(String internal, boolean createActors) {
+        super(internal, createActors, false);
         bellArray.add(bell9);
         bellArray.add(bell8);
         bellArray.add(bell7);

@@ -87,7 +87,7 @@
   </object>
  </objectgroup>
  <objectgroup id="21" name="goal">
-  <object id="257" x="99328" y="2048" width="1024" height="8192"/>
+  <object id="257" x="97280" y="2048" width="1024" height="8192"/>
  </objectgroup>
  <objectgroup id="12" name="wallsPoly">
   <object id="243" x="95232" y="10240">

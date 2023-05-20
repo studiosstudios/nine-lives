@@ -45,17 +45,18 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
      * @param drawScale      Draw scale for drawing
      * @param textureScale   Texture scale for rescaling texture
      */
-    public Flamethrower(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 drawScale, Vector2 textureScale) {
+    public Flamethrower(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 drawScale, Vector2 textureScale, String biome) {
         super();
 
 
         this.flameTexture = tMap.get("flame-anim");
 
-        flameBase = new BoxObstacle(tMap.get("flamethrower").getRegionWidth()/drawScale.x*textureScale.x, tMap.get("flamethrower").getRegionHeight()/drawScale.y*textureScale.y);
+        flameBase = new BoxObstacle(tMap.get("flamethrower").getRegionWidth()/drawScale.x*textureScale.x,
+                tMap.get("flamethrower").getRegionHeight()/drawScale.y*textureScale.y);
         setDrawScale(drawScale);
         flameBase.setDrawScale(drawScale);
         flameBase.setTextureScale(textureScale);
-        flameBase.setTexture(tMap.get("flamethrower"));
+        flameBase.setTexture(biome.equals("metal") ? tMap.get("flamethrower") : tMap.get("forest-flamethrower"));
         flameBase.setFriction(objectConstants.getFloat("friction", 0));
         flameBase.setRestitution(objectConstants.getFloat("restitution", 0));
         flameBase.setDensity(objectConstants.getFloat("density", 0));
@@ -118,6 +119,8 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
         if (!super.activatePhysics(world)) {
             return false;
         }
+        flameBase.setDimension(flameBase.getWidth() * objectConstants.get("solid_scale").getFloat(0),
+                flameBase.getHeight() * objectConstants.get("solid_scale").getFloat(1), 0, -flameBase.getHeight()/2f, false);
         if (!activated){
             deactivated(world);
         }
@@ -135,6 +138,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
     @Override
     public void activated(World world){
         flame.setActive(true);
+        getLight().setActive(true);
         flame.setPosition(flameBase.getX()+flameOffset.x, flameBase.getY()+flameOffset.y);
         createJoints(world);
     }
@@ -143,6 +147,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
     @Override
     public void deactivated(World world){
         flame.setActive(false);
+        getLight().setActive(false);
         for (Joint j : joints){
             world.destroyJoint(j);
         }

@@ -56,7 +56,10 @@ public class ActionController {
     private Vector2 startPointCache = new Vector2();
     private Vector2 endPointCache = new Vector2();
     private ObjectMap<DeadBody, Float> hitDeadbodies = new ObjectMap<>();
-    private AudioController audioController;
+    public AudioController audioController;
+    /** Camera to set zoom for CameraRegions*/
+    private Camera camera;
+    private boolean combiningLives;
 
     /**
      * Creates and initialize a new instance of a ActionController
@@ -68,6 +71,7 @@ public class ActionController {
         this.scale = scale;
 //        this.volume = volume;
         this.audioController = audioController;
+        combiningLives = false;
         mobControllers = new Array<>();
     }
 //
@@ -84,6 +88,14 @@ public class ActionController {
     public void setLevel(Level level){
         this.level = level;
         this.bounds = level.bounds;
+    }
+
+    /**
+     * Set camera for current instance of collisionController
+     * @param camera camera for current canvas
+     */
+    public void setCamera(Camera camera){
+        this.camera = camera;
     }
 
     /**
@@ -106,6 +118,8 @@ public class ActionController {
     public Array<AIController> getMobControllers() {
         return mobControllers;
     }
+
+    public boolean isCombiningLives() { return combiningLives; }
 
 //    /**
 //     * Sets the hashmaps for Texture Regions, Sounds, Fonts, and sets JSON value constants
@@ -149,7 +163,10 @@ public class ActionController {
         }
 
         if (level.getSpiritParticles().size != 0 && level.getdeadBodyArray().size == 0) {
+            combiningLives = true;
             moveSpirits();
+        } else {
+            combiningLives = false;
         }
 
         if (level.canSwitch && ic.didSwitch()) {
@@ -161,6 +178,7 @@ public class ActionController {
                 cat.setPosition(body.getSwitchPosition());
                 cat.setLinearVelocity(body.getLinearVelocity());
                 cat.setFacingRight(body.isFacingRight());
+                cat.setDashTimer(body.getDashTimer());
                 level.removeDeadBody(body);
             } else {
                 cat.failedSwitch();
@@ -185,6 +203,7 @@ public class ActionController {
         //Die if off-screen
         if (level.bounds.y - cat.getY() > 10){
             die(false);
+            audioController.playSoundEffect("death-fall");
         }
 
         //Prepare dead bodies for raycasting
@@ -232,6 +251,12 @@ public class ActionController {
             mob.setPosition(mob.getX() + mobControl.getAction(), mob.getY());
             mob.applyForce();
         }
+
+//        // combing lives
+//        if (combiningLives) {
+//            System.out.println("combining lives");
+//            ic.setDisableAll(true);
+//        }
 
     }
 
@@ -349,8 +374,8 @@ public class ActionController {
 
             //object is grounded, update base velocity to be average of velocities of grounds
             if (numGrounded > 0 && !baseVel.scl(1f / numGrounded).epsilonEquals(Vector2.Zero, 0.001f)) {
-//                obj.setBaseVelocity(baseVel);
                 obj.setBaseVX(baseVel.x);
+                if (baseVel.y < 0) obj.setBaseVY(baseVel.y); //so that objects fly up but do not bounce when going down
                 grounded.put(obj, true);
                 return true;
             }
@@ -523,7 +548,7 @@ public class ActionController {
                 float x = level.getCat().getX() - spirit.getX();
                 float y = level.getCat().getY() - spirit.getY();
                 float angle = (float) Math.atan((double)y/(double)x);
-                spirit.setAngle(angle, 0.25f);
+                spirit.setAngle(angle, 0.2f);
                 spirit.move();
                 if (Math.abs(spirit.getX() - level.getCat().getX()) <= 1f &&
                     Math.abs(spirit.getY() - level.getCat().getY()) <= 1f) {
@@ -531,6 +556,21 @@ public class ActionController {
                     level.setNumLives(level.getNumLives() + 1);
                 }
             }
+        }
+    }
+
+    /**
+     * Moves the cat a certain distance horizontally
+     *
+     * @param dist to move horizontally
+     * @param maxDist the maximum distance from the goal
+     */
+    public void moveCat(float dist, float maxDist) {
+        Cat cat = level.getCat();
+        if (cat.getX() <= level.getGoal().getX() + maxDist) {
+            cat.setHorizontalMovement(dist);
+            cat.updateState();
+            cat.applyForce();
         }
     }
 

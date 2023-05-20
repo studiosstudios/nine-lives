@@ -25,8 +25,8 @@ public class TimedButton extends Activator {
      * @param scale          Draw scale for drawing
      * @param textureScale   Texture scale for rescaling texture
      */
-    public TimedButton(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
-        super(properties, "button-top","button-base",tMap, scale, textureScale );
+    public TimedButton(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale, String biome){
+        super(properties, "button-top","button-base",tMap, scale, textureScale, biome, true);
         totalDurationTicks = (int) properties.get("duration");
         pressedTicks = 0;
         setName("timedButton");

@@ -84,8 +84,8 @@ public class SettingsStage extends StageWrapper {
     public void setBackButtonState(int state) { backButtonState = state; }
     public void setAudioController(AudioController audioController) { this.audioController = audioController; }
 
-    public SettingsStage(AssetDirectory internal, boolean createActors) {
-        super(internal, createActors);
+    public SettingsStage(String internal, boolean createActors) {
+        super(internal, createActors, true);
         bindings = Save.getControls();
         controlsInputProcessor = new ControlsInputProcessor();
         inputMultiplexer = new InputMultiplexer();
@@ -188,7 +188,6 @@ public class SettingsStage extends StageWrapper {
 //        musicSlider.sizeBy(1,1);
 //        musicSlider.scaleBy(0.75f);
         musicSlider.addListener(new ChangeListener() {
-
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (audioController != null) {

@@ -20,9 +20,12 @@ public class Button extends Activator {
      * @param scale          Draw scale for drawing
      * @param textureScale   Texture scale for rescaling texture
      */
-    public Button(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
-        super(properties, "button-top", "button-base",tMap,scale, textureScale);
+    public Button(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale, String biome){
+        super(properties, biome.equals("metal") ? "button-top" : "forest-button-top",
+                biome.equals("metal") ? "button-base" : "forest-button-top",tMap,scale, textureScale, biome, true);
     }
+
+
 
     /** For a button, active = isPressed() */
     public void updateActivated(){

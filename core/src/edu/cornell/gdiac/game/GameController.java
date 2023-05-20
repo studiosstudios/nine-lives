@@ -492,7 +492,7 @@ public class GameController implements Screen {
                 "tutorial-side-spikes", "tutorial-spikes", "tutorial-switch", "tutorial-walk-jump",
                 "tutorial-jump-dash", "tutorial-undo", "tutorial-climb", "tutorial-cancel-switch",
                 "cabinet-left", "cabinet-mid", "cabinet-right", "goggles", "microscope",
-                "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf", "wall-bottom", "wall-top",
+                "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf",
                 "tank", "test-tubes", "coke", "broken-robot", "coming-soon", "arrow-sign",
                 "tutorial-cancel-switch", "wood-arrow", "wood-sign",
                 "cat-tank","cat-tank-purple","chair","dandelions","desktop","firefly","flowers",

@@ -25,7 +25,7 @@ public class NineLives extends Game implements ScreenListener {
 	/** The AudioController to control all sound effects and music */
 	private AudioController audioController;
 
-	private final int TOTAL_LEVELS = 28;
+	private final int TOTAL_LEVELS = 29;
 	private boolean quickLaunchFromTiled;
 	private String filepath;
 

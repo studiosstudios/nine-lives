@@ -762,6 +762,7 @@ public class GameController implements Screen {
 
         hud.lives = currLevel.getNumLives();
         hud.updateLives();
+        hud.updateMagnifying(gameState == GameState.PLAYER_PAN);
     }
 
 

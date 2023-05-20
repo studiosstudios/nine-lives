@@ -14,7 +14,7 @@ import java.util.HashMap;
 
 public class LevelSelectStage extends StageWrapper {
     private static final int BAR_WIDTH = 800;
-    private static final int BAR_HEIGHT = STANDARD_HEIGHT - 150;
+    private static final int BAR_HEIGHT = STANDARD_HEIGHT - 100;
     private static final int SEGMENT_GAP = 5;
     private static final int SEGMENT_HEIGHT = 10;
     private Actor backButtonActor;
@@ -29,7 +29,6 @@ public class LevelSelectStage extends StageWrapper {
     private HashMap<Actor, Integer> segmentIndex;
     private int selectedLevel = 0;
     private int progress;
-//    private boolean levelChanged;
 
     public boolean isBack() { return backButtonState == 2; }
     public int getBackButtonState() { return backButtonState; }
@@ -41,8 +40,6 @@ public class LevelSelectStage extends StageWrapper {
 //    public static void setNumLevels(int numLevels) { LevelSelectStage.numLevels = numLevels; }
     public LevelSelectStage(String internal, boolean createActors, int numLevels) {
         super(internal, createActors, false, numLevels);
-//        selectedLevel = 1;
-//        levelChanged = true;
         changeLevel(Save.getProgress());
     }
 
@@ -78,9 +75,6 @@ public class LevelSelectStage extends StageWrapper {
                 if (segmentIndex.get(a) + 1 <= progress) {
                     changeLevel(segmentIndex.get(a) + 1);
                 }
-//                selectedLevel = segmentIndex.get(a) + 1;
-//                a.setColor(Color.BROWN);
-//                levelChanged = true;
             }
 
 //            @Override
@@ -104,25 +98,22 @@ public class LevelSelectStage extends StageWrapper {
      */
     @Override
     public void createActors() {
-//        addActor(new Image(internal.getEntry("bg-lab", Texture.class)));
         progress = Save.getProgress();
         Actor background = addActor(internal.getEntry("bg-level-select", Texture.class), 0, 0);
         background.setScale(0.5f);
-        backButtonActor = addActor(internal.getEntry("back", Texture.class),940,buttonY-225);
+        backButtonActor = addActor(internal.getEntry("back", Texture.class),60,buttonY-225);
         backButtonActor.setScale(0.5f);
-        playButtonActor = addActor(internal.getEntry("play", Texture.class), 940, buttonY-175);
+        playButtonActor = addActor(internal.getEntry("play", Texture.class), 60, buttonY-175);
         playButtonActor.setScale(0.5f);
 
-        leftArrowActor = addActor(internal.getEntry("left-arrow", Texture.class), 150, 0);
+        leftArrowActor = addActor(internal.getEntry("left-arrow", Texture.class), 165, 0);
         leftArrowActor.setScale(0.75f);
         leftArrowActor.setY(STANDARD_HEIGHT/2f-(leftArrowActor.getHeight()/2f));
         leftArrowActor.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (selectedLevel > 1) {
-//                    selectedLevel--;
                     changeLevel(selectedLevel - 1);
-//                    levelChanged = true;
                 }
             }
         });
@@ -134,9 +125,7 @@ public class LevelSelectStage extends StageWrapper {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (selectedLevel < numLevels && selectedLevel < progress) {
-//                    selectedLevel++;
                     changeLevel(selectedLevel + 1);
-//                    levelChanged = true;
                 }
             }
         });
@@ -149,15 +138,6 @@ public class LevelSelectStage extends StageWrapper {
         leftArrowActor.addListener(createHoverListener(leftArrowActor));
         rightArrowActor.addListener(createHoverListener(rightArrowActor));
     }
-
-//    @Override
-//    public void update(float delta) {
-//        super.update(delta);
-//        if (levelChanged) {
-//            barActors.get(selectedLevel-1).setColor(Color.BROWN);
-//            levelChanged = false;
-//        }
-//    }
 
     /**
      * @param event

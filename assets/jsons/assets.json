@@ -152,8 +152,6 @@
     "jsons"  : {
         "constants": "jsons/constants.json",
         "controls": "jsons/controls.json",
-        "tiledSuperJump": "levels/super-jump.json",
-        "tiledLevelTutorial": "levels/tiledLevelTutorial1.json",
         "tiledLevel1": "levels/tutorial-walk-jump.json",
         "tiledLevel2": "levels/easy-platforming-2.json",
         "tiledLevel3": "levels/tutorial-first-death.json",
@@ -181,12 +179,12 @@
         "tiledLevel24": "levels/forest-intro.json",
         "tiledLevel25": "levels/tutorial-body-switch.json",
         "tiledLevel26": "levels/basic-body-switch.json",
-        //        "tiledLevel27": "levels/falling-switch-dash.json",
+//        "tiledLevel27": "levels/falling-switch-dash.json",
         "tiledLevel27": "levels/super-jump.json",
         //        "tiledLevel28": "levels/forest-laser-switch.json",
         //        "tiledLevel29": "levels/split-spirit-regions.json",
         //        "tiledLevel30": "levels/t-level.json",
-        "tiledLevel28": "levels/test-forest.json",
+        "tiledLevel28": "levels/final-level.json",
         "tiledLevel29": "levels/challenge-level.json"
     },
     "soundfx" : {

@@ -86,10 +86,9 @@ public class MainMenuStage extends StageWrapper{
 //        table.add(settings);
 //        table.row();
 //        table.add(exitGame);
-        System.out.println(time);
-        catActor = addActor(animation.getKeyFrame(time).getTexture(),0,0);
-        catActor.setScale(0.1f);
-//        addActor(internal.getEntry("main-menu-cat", Texture.class),15,15);
+//        catActor = addActor(animation.getKeyFrame(time).getTexture(),0,0);
+//        catActor.setScale(0.1f);
+        addActor(internal.getEntry("main-menu-cat", Texture.class),15,15);
         playButtonActor = addActor(internal.getEntry("play-game", Texture.class),buttonX+215, buttonY);
         playButtonActor.setScale(0.5f);
         levelSelectActor = addActor(internal.getEntry("level-select", Texture.class),buttonX+215-19, buttonY-50-10);

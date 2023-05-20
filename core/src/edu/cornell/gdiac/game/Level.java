@@ -776,13 +776,13 @@ public class Level {
             //TODO: developers should be able to specify in json if they want first pan or not
             switch ((String) propertiesMap.get("type", "button")){
                 case "button":
-                    activator = new Button(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
+                    activator = new Button(propertiesMap, textureRegionAssetMap, scale, textureScaleCache, biome);
                     break;
                 case "switch":
-                    activator = new Switch(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
+                    activator = new Switch(propertiesMap, textureRegionAssetMap, scale, textureScaleCache, biome);
                     break;
                 case "timed":
-                    activator = new TimedButton(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
+                    activator = new TimedButton(propertiesMap, textureRegionAssetMap, scale, textureScaleCache, biome);
                     break;
                 default:
                     throw new RuntimeException("unrecognised activator type");

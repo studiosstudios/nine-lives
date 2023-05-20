@@ -1319,8 +1319,6 @@ public class Level {
 
         if (greyscale > 0) {canvas.setShader(null);}
 
-        spiritLine.draw(canvas);
-
         String spiritRegionColor = "";
         if (cat != null)  spiritRegionColor = cat.getSpiritRegionColor().toString().substring(0, 6);
         for (SpiritRegion s : spiritRegionArray) {
@@ -1377,6 +1375,10 @@ public class Level {
         if (leaves != null) {
             leaves.draw(canvas);
         }
+
+        if (greyscale > 0) {canvas.setShader(null);}
+
+        spiritLine.draw(canvas);
     }
 
     /**

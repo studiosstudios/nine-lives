@@ -95,7 +95,6 @@ public class MainMenuStage extends StageWrapper{
         addActor(catActor);
         catActor.setScale(0.25f);
         catActor.setPosition(15,15);
-        addActor(internal.getEntry("main-menu-cat", Texture.class),15,15);
         if (Save.getStarted()) {
             playButtonActor = addActor(internal.getEntry("continue-game", Texture.class),buttonX+215-19-50, buttonY);
             playButtonActor.setScale(0.5f);
@@ -143,7 +142,7 @@ public class MainMenuStage extends StageWrapper{
     public void update(float delta) {
         super.update(delta);
         time += delta;
-        catActor.act(delta);
+        catActor.act(time);
 //        addActor(animation.getKeyFrame(time).getTexture(),15,15);
     }
 

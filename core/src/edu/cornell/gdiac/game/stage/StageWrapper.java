@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -30,6 +31,7 @@ public abstract class StageWrapper extends Stage {
     public int xHalf;
     public int yHalf;
     /** y-coordinate for top button */
+
     public int buttonY;
     static BitmapFont font;
     static BitmapFont controlFont;
@@ -77,7 +79,6 @@ public abstract class StageWrapper extends Stage {
             createActors();
         }
     }
-
     public void draw() {
         super.getViewport().apply();
 //        update();
@@ -90,7 +91,6 @@ public abstract class StageWrapper extends Stage {
         super.addActor(actor);
         return actor;
     }
-
     public Actor createActor(Texture texture, float x, float y) {
         Actor actor = new Image(texture);
         actor.setPosition(x, y);

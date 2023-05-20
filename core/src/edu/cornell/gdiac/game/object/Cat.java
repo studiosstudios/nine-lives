@@ -301,6 +301,9 @@ public class Cat extends CapsuleObstacle implements Movable {
         dashPressed = value;
     }
 
+    public int getDashTimer() { return dashTimer; }
+    public void setDashTimer(int t) {dashTimer = t;}
+
 
     /**
      * Sets up/down movement of this character.

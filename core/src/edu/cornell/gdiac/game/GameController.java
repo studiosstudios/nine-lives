@@ -172,6 +172,7 @@ public class GameController implements Screen {
     public void setCanvas(GameCanvas canvas) {
         this.canvas = canvas;
         collisionController.setCamera(canvas.getCamera());
+        actionController.setCamera(canvas.getCamera());
     }
 
     /**
@@ -340,6 +341,8 @@ public class GameController implements Screen {
         internal.loadAssets();
         internal.finishLoading();
 
+        RayHandler.useDiffuseLight(true);
+
         hud = new HudStage(internal, true);
         hud.lives = currLevel.getNumLives();
     }
@@ -455,7 +458,7 @@ public class GameController implements Screen {
                 "cat", "walk-anim", "jump-anim", "idle-sit-anim", "idle-stand-anim", "meow-anim",
                 "trans-anim","climb-anim","corpse", "corpse2", "corpse3","corpse-burnt","trans2-anim","jump-mid",
                 // SPIKES
-                "spikes",
+                "spikes", "forest-spikes",
                 // BUTTONS & SWITCHES
                 "button-base", "button-top", "switch-top", "switch-base",
                 // FLAMETHROWERS
@@ -465,9 +468,9 @@ public class GameController implements Screen {
                 // CHECKPOINTS
                 "checkpoint-anim", "checkpoint-active-anim", "checkpoint-base", "checkpoint-base-active", "checkpoint-activation-anim",
                 // GOAL
-                "goal", "goal-active", "goal-bases", "goal-idle-anim", "goal-inactive",
+                "goal", "goal-active", "goal-bases", "goal-idle-anim", "goal-inactive", "goal-final",
                 // ROBOT & MOBS
-                "robot-anim",
+                "robot-anim", "forest-mob-anim",
                 // SPIRIT BOUNDARIES
                 "spirit-anim", "spirit-photon", "spirit-photon-cat", "spirit-region",
                 // ACTIVATABLE LIGHTS
@@ -475,7 +478,7 @@ public class GameController implements Screen {
                 // TILESETS
                 "metal-tileset", "climbable-tileset", "steel", "windows-tileset", "forest-tileset", "forestLeaves-tileset",
                 // DOORS & PLATFORMS
-                "door", "platform",
+                "door", "platform", "forest-platform",
                 // BOX
                 "box",
                 // BACKGROUNDS
@@ -487,6 +490,7 @@ public class GameController implements Screen {
                 "cabinet-left", "cabinet-mid", "cabinet-right", "goggles", "microscope",
                 "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf", "wall-bottom", "wall-top",
                 "tank", "test-tubes", "coke", "broken-robot", "coming-soon", "arrow-sign",
+                "tutorial-cancel-switch", "wood-arrow", "wood-sign",
                 "cat-tank","cat-tank-purple","chair","dandelions","desktop","firefly","flowers",
                 "mushrooms","pin-board","robo","window-robo","x-ray"
                 }; // Unsure if this is actually being used
@@ -570,13 +574,9 @@ public class GameController implements Screen {
         if (rayHandler != null) {
             rayHandler.dispose();
         }
-//        RayHandler.useDiffuseLight(true);
-//        RayHandler.useDiffuseLight(false);
 
         rayHandler = new RayHandler(world);
-//        rayHandler.setAmbientLight(0.35f, 0.35f, 0.35f, 0.1f);
-        rayHandler.setAmbientLight(0.8f);
-//        rayHandler.setShadows(true);
+        rayHandler.setAmbientLight(0.5f, 0.5f, 0.5f, 1f);
 
         justRespawned = true;
         justReset = true;
@@ -818,6 +818,7 @@ public class GameController implements Screen {
     public void updateCamera(){
         Camera cam = canvas.getCamera();
         InputController input = InputController.getInstance();
+
         if(drawAdjacentLevels){
             gameState = GameState.LEVEL_SWITCH;
         }
@@ -920,6 +921,15 @@ public class GameController implements Screen {
                 gameState = GameState.PLAY;
                 drawAdjacentLevels = false;
             }
+        }
+
+        if (actionController.isCombiningLives()) {
+            cam.setZoom(true, 0.9f);
+            float x_pos = currLevel.getCat().getPosition().x*scale.x;
+            float y_pos = currLevel.getCat().getPosition().y*scale.y;
+            cam.updateCamera(x_pos, y_pos, true, cam.getGameplayBounds());
+            actionController.moveCat(1.2f, 1.2f);
+            input.setDisableAll(true);
         }
     }
     @Override

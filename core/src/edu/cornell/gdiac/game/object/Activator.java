@@ -1,5 +1,7 @@
 package edu.cornell.gdiac.game.object;
 
+import box2dLight.PositionalLight;
+import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -91,7 +93,7 @@ public abstract class Activator extends PolygonObstacle {
         spriteFrames = TextureRegion.split(tMap.get(texture_name).getTexture(), 256,256);
         float frameDuration = 0.2f;
         animation = new Animation<>(frameDuration, spriteFrames[0]);
-        setBodyType(BodyDef.BodyType.StaticBody);
+        setBodyType(properties.containsKey("attachName") ? BodyDef.BodyType.DynamicBody : BodyDef.BodyType.StaticBody);
         animation.setPlayMode(Animation.PlayMode.REVERSED);
         animationTime = 0f;
 
@@ -111,6 +113,15 @@ public abstract class Activator extends PolygonObstacle {
         color.set((Color) properties.get("color", Color.RED));
         pan = (boolean) properties.get("shouldPan", false);
         activating = false;
+    }
+
+    @Override
+    public void createLight(RayHandler rayHandler) {
+        createPointLight(objectConstants.get("light"), rayHandler);
+        // Slight offset here because activators are weird for some reason... Along with the rotation
+        ((PositionalLight) getLight()).attachToBody(getBody(), 0.4f, 0.5f, Direction.dirToDegrees(dir));
+        getLight().setSoft(true);
+        getLight().setXray(true);
     }
 
     @Override

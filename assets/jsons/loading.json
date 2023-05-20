@@ -11,6 +11,7 @@
         "back" : "ui/shared/back.png",
         "exit" : "ui/main/exit-game.png",
         "main-menu-cat": "ui/main/main-menu-cat.png",
+      "main-menu-cat-anim": "ui/main/idle_calico.png",
         "bg-blur": "ui/shared/bg-blur.png", //UNUSED
         "bg-pause": "ui/pause/bg-pause.png",
         "bg-lab": "world/backgrounds/bg-lab.png", //UNUSED

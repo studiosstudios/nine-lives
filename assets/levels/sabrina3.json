@@ -40,7 +40,67 @@
          "draworder":"topdown",
          "id":21,
          "name":"decor",
-         "objects":[],
+         "objects":[
+                {
+                 "gid":178,
+                 "height":2304,
+                 "id":204,
+                 "name":"x-ray",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":2048,
+                 "x":8046.54545454546,
+                 "y":6662.18181818182
+                }, 
+                {
+                 "gid":157,
+                 "height":1786.0410022779,
+                 "id":205,
+                 "name":"cabinet-mid",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":2048,
+                 "x":5926.99818511797,
+                 "y":16396.0508166969
+                }, 
+                {
+                 "gid":170,
+                 "height":2724.86505279619,
+                 "id":206,
+                 "name":"chair",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":2587.01424851783,
+                 "x":6818.45781822091,
+                 "y":16420.60704326
+                }, 
+                {
+                 "gid":176,
+                 "height":2488.90598290598,
+                 "id":208,
+                 "name":"pin-board",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":2275.23076923077,
+                 "x":4391.23076923077,
+                 "y":14935.6923076923
+                }, 
+                {
+                 "gid":172,
+                 "height":1303.2,
+                 "id":209,
+                 "name":"desktop",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":1929.99,
+                 "x":6022.18448717949,
+                 "y":14647.5452991453
+                }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -349,7 +409,7 @@
          "objects":[
                 {
                  "gid":8,
-                 "height":2048,
+                 "height":5120,
                  "id":184,
                  "name":"",
                  "rotation":0,
@@ -357,7 +417,7 @@
                  "visible":true,
                  "width":1024,
                  "x":28672,
-                 "y":3072
+                 "y":0
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -584,7 +644,7 @@
                         {
                          "name":"speed",
                          "type":"float",
-                         "value":6
+                         "value":8
                         }],
                  "rotation":0,
                  "type":"Platform",
@@ -662,7 +722,7 @@
          "y":0
         }],
  "nextlayerid":22,
- "nextobjectid":204,
+ "nextobjectid":210,
  "orientation":"orthogonal",
  "properties":[
         {

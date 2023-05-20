@@ -19,9 +19,6 @@
  <tile id="13" type="Decoration">
   <image width="2048" height="1024" source="tutorial-side-spikes.png"/>
  </tile>
- <tile id="14" type="Decoration">
-  <image width="2048" height="1024" source="tutorial-switch.png"/>
- </tile>
  <tile id="15" type="Decoration">
   <image width="2048" height="1024" source="tutorial-walk-jump.png"/>
  </tile>
@@ -40,6 +37,18 @@
  <tile id="36">
   <image width="128" height="128" source="arrow-sign.png"/>
  </tile>
+ <tile id="37">
+  <image width="512" height="256" source="tutorial-cancel-switch.png"/>
+ </tile>
+<<<<<<< HEAD
+ <tile id="39">
+  <image width="256" height="256" source="arrow-sign-forest.png"/>
+ </tile>
+ <tile id="38">
+  <image width="256" height="256" source="sign-stick.png"/>
+ </tile>
+=======
+>>>>>>> golden
  <tile id="16" type="Decoration">
   <image width="2048" height="2048" source="cat-vinci.png"/>
  </tile>
@@ -88,6 +97,16 @@
  <tile id="34" type="Decoration">
   <image width="2048" height="2048" source="broken-robot.png"/>
  </tile>
+<<<<<<< HEAD
+ <tile id="40">
+  <image width="256" height="256" source="wood-sign.png"/>
+ </tile>
+ <tile id="41">
+  <image width="256" height="256" source="wood-arrow.png"/>
+ </tile>
+ <tile id="42">
+  <image width="2048" height="1024" source="tutorial-switch.png"/>
+=======
  <tile id="37">
   <image width="1668" height="2388" source="cat-tank-pink-2.png"/>
  </tile>
@@ -120,5 +139,6 @@
  </tile>
  <tile id="47">
   <image width="256" height="256" source="x-ray.png"/>
+>>>>>>> golden
  </tile>
 </tileset>

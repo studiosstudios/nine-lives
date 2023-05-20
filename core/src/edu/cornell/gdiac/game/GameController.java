@@ -343,7 +343,7 @@ public class GameController implements Screen {
 
         RayHandler.useDiffuseLight(true);
 
-        hud = new HudStage(internal, true);
+        hud = new HudStage("jsons/hud-stage.json", true);
         hud.lives = currLevel.getNumLives();
     }
 

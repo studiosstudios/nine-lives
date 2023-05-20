@@ -14,7 +14,7 @@ public class LoadingStage extends StageWrapper {
     Actor loadingTutorial;
     Actor loadingText;
 
-    public LoadingStage(AssetDirectory internal, boolean createActors) {
+    public LoadingStage(String internal, boolean createActors) {
         super(internal, createActors, false);
     }
 

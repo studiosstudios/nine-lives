@@ -47,7 +47,7 @@ public class MainMenuStage extends StageWrapper{
     public boolean isSettings() { return settingsState == 2; }
     public boolean isExit() { return exitButtonState == 2; }
 
-    public MainMenuStage(AssetDirectory internal, boolean createActors) {
+    public MainMenuStage(String internal, boolean createActors) {
         super(internal, createActors, false);
     }
     /**

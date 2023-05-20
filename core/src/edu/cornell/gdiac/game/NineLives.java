@@ -155,6 +155,7 @@ public class NineLives extends Game implements ScreenListener {
 			menu = new StageController("jsons/assets.json", canvas, 1, false, true, audioController, TOTAL_LEVELS);
 			menu.setScreenListener(this);
 			menu.pause = true;
+			menu.currentStage = StageController.Stages.PAUSE;
 			menu.currLevel = controller;
 			controller.stageController = menu;
 			controller.pause();

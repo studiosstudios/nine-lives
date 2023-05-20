@@ -28,7 +28,10 @@
         "slider-full": "ui/settings/slider-full.png",
         "left-arrow": "ui/level-select/left-arrow.png",
         "right-arrow": "ui/level-select/right-arrow.png",
-        "bar-segment": "ui/level-select/bar-segment.png"
+        "bar-segment": "ui/level-select/bar-segment.png",
+        "continue-game": "ui/main/continue-game.png",
+        "restart": "ui/pause/restart.png",
+        "pause-settings": "ui/pause/settings.png"
 	},
     "fonts": {
         "chewy": {

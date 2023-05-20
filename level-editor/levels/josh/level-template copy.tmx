@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="29" height="17" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="21" nextobjectid="99">
+ <editorsettings>
+  <export target="../../nine-lives/assets/tiled/level-template.json" format="json"/>
+ </editorsettings>
+ <properties>
+  <property name="biome" propertytype="biome" value="metal"/>
+ </properties>
+ <tileset firstgid="1" source="../../objects/objects.tsx"/>
+ <tileset firstgid="15" source="../../tilesets/metal-walls.tsx"/>
+ <tileset firstgid="63" source="../../tilesets/climbables.tsx"/>
+ <tileset firstgid="67" source="../../tilesets/default-metal-walls.tsx"/>
+ <layer id="17" name="metalWalls" width="29" height="17">
+  <data encoding="csv">
+80,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,82,
+92,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,94,
+92,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,94,
+104,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,78,105,105,105,105,105,105,105,105,105,106,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,91,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,91,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,91,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,91,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,91,0,0,0,79,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,91,0,0,0,91,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,91,0,0,0,91,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,103,0,0,0,91,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,91,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,91,0,0,0,0,0,0,
+80,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,89,81,81,81,81,81,82,
+92,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,94,
+104,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,106
+</data>
+ </layer>
+ <layer id="18" name="climbables" width="29" height="17">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,63,0,65,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,63,0,65,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,63,0,65,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,63,0,65,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,63,0,65,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,63,0,65,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,63,0,65,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,63,0,65,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="19" name="cameraRegions"/>
+ <objectgroup id="12" name="wallsPoly">
+  <object id="87" type="Wall" x="0" y="0">
+   <polygon points="0,0 0,4096 29696,4096 29696,0"/>
+  </object>
+  <object id="88" type="Wall" x="0" y="14336">
+   <polygon points="0,0 0,3072 29696,3072 29696,0"/>
+  </object>
+  <object id="91" type="Wall" x="18432" y="12288">
+   <properties>
+    <property name="climbable" type="bool" value="true"/>
+   </properties>
+   <polygon points="0,0 0,-8192 1024,-8192 1024,0"/>
+  </object>
+  <object id="94" type="Wall" x="22528" y="8192">
+   <polygon points="0,0 1024,0 1024,6144 0,6144"/>
+  </object>
+ </objectgroup>
+ <objectgroup id="16" name="spiritRegions"/>
+ <objectgroup id="2" name="cat">
+  <object id="38" gid="2" x="1024" y="13312" width="1024" height="1024"/>
+ </objectgroup>
+ <objectgroup id="4" name="flamethrowers"/>
+ <objectgroup id="20" name="goal">
+  <object id="96" x="26624" y="4096" width="1024" height="10240"/>
+ </objectgroup>
+ <objectgroup id="3" name="checkpoints"/>
+ <objectgroup id="6" name="lasers"/>
+ <objectgroup id="7" name="mobs">
+  <object id="98" gid="6" x="9216" y="12288" width="1024" height="2048">
+   <properties>
+    <property name="aggressive" type="bool" value="true"/>
+    <property name="facingRight" type="bool" value="true"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="8" name="spikes"/>
+ <objectgroup id="15" name="activators"/>
+ <objectgroup id="9" name="doors"/>
+ <objectgroup id="10" name="platforms"/>
+ <objectgroup id="13" name="mirrors"/>
+ <objectgroup id="14" name="boxes"/>
+ <objectgroup id="11" name="exits">
+  <object id="33" type="Exit" x="-1024" y="4096" width="1024" height="10240">
+   <properties>
+    <property name="type" propertytype="exitType" value="return"/>
+   </properties>
+  </object>
+  <object id="34" type="Exit" x="29696" y="4096" width="1024" height="10240"/>
+ </objectgroup>
+</map>

@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.game.Save;
 
 public class MainMenuStage extends StageWrapper{
     private Table table;
@@ -78,8 +79,13 @@ public class MainMenuStage extends StageWrapper{
 //        table.row();
 //        table.add(exitGame);
 //        addActor(internal.getEntry("main-menu-cat", Texture.class),-50,-65);
-        playButtonActor = addActor(internal.getEntry("play-game", Texture.class),buttonX+215, buttonY);
-        playButtonActor.setScale(0.5f);
+        if (Save.getStarted()) {
+            playButtonActor = addActor(internal.getEntry("continue-game", Texture.class),buttonX+215-19-50, buttonY);
+            playButtonActor.setScale(0.5f);
+        } else {
+            playButtonActor = addActor(internal.getEntry("play-game", Texture.class),buttonX+215, buttonY);
+            playButtonActor.setScale(0.5f);
+        }
         levelSelectActor = addActor(internal.getEntry("level-select", Texture.class),buttonX+215-19, buttonY-50-10);
         levelSelectActor.setScale(0.5f);
         settingsActor = addActor(internal.getEntry("settings", Texture.class),buttonX+215+28, buttonY-100-20);

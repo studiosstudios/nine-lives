@@ -815,7 +815,7 @@
         {
          "name":"canDash",
          "type":"bool",
-         "value":false
+         "value":true
         }, 
         {
          "name":"canSwitch",

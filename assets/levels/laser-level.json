@@ -811,7 +811,17 @@
          "propertytype":"biome",
          "type":"string",
          "value":"metal"
-        }],
+        },
+   {
+     "name":"canDash",
+     "type":"bool",
+     "value":false
+   },
+   {
+     "name":"canSwitch",
+     "type":"bool",
+     "value":true
+   }],
  "renderorder":"right-down",
  "tiledversion":"1.10.1",
  "tileheight":1024,

@@ -178,6 +178,7 @@ public class ActionController {
                 cat.setPosition(body.getSwitchPosition());
                 cat.setLinearVelocity(body.getLinearVelocity());
                 cat.setFacingRight(body.isFacingRight());
+                cat.setDashTimer(body.getDashTimer());
                 level.removeDeadBody(body);
             } else {
                 cat.failedSwitch();
@@ -372,8 +373,8 @@ public class ActionController {
 
             //object is grounded, update base velocity to be average of velocities of grounds
             if (numGrounded > 0 && !baseVel.scl(1f / numGrounded).epsilonEquals(Vector2.Zero, 0.001f)) {
-//                obj.setBaseVelocity(baseVel);
                 obj.setBaseVX(baseVel.x);
+                if (baseVel.y < 0) obj.setBaseVY(baseVel.y); //so that objects fly up but do not bounce when going down
                 grounded.put(obj, true);
                 return true;
             }

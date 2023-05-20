@@ -96,6 +96,9 @@ public class NineLives extends Game implements ScreenListener {
 	public void resize(int width, int height) {
 		Gdx.gl.glViewport(0, 0, width, height);
 		canvas.resize();
+		if (menu.pause) {
+			menu.resize(width, height);
+		}
 		super.resize(width,height);
 	}
 
@@ -131,7 +134,12 @@ public class NineLives extends Game implements ScreenListener {
 	public void exitScreen(Screen screen, int exitCode) {
 		if (screen == menu && exitCode == 0) {
 //			menu.loadAssets();
-			startGame(TOTAL_LEVELS, 1);
+			if (Save.getStarted()) {
+				startGame(TOTAL_LEVELS, Save.getProgress());
+			} else {
+				Save.setStarted(true);
+				startGame(TOTAL_LEVELS, 1);
+			}
 		} else if (screen == menu && exitCode == 69) {
 //			menu.loadAssets();
 			startGame(TOTAL_LEVELS, menu.getSelectedLevel());
@@ -150,6 +158,12 @@ public class NineLives extends Game implements ScreenListener {
 			controller.pause();
 //			setScreen(menu);
 //			controller.getCurrLevel().getLevel().draw(canvas,false);
+		} else if (exitCode == 81) {
+			controller.reset();
+			controller.resume();
+			setScreen(controller);
+			menu.dispose();
+			menu = null;
 		} else if (exitCode == 79) {
 			if (menu != null) {
 				setScreen(menu);

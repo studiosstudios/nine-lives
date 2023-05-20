@@ -40,6 +40,15 @@
  <tile id="37">
   <image width="512" height="256" source="tutorial-cancel-switch.png"/>
  </tile>
+<<<<<<< HEAD
+ <tile id="39">
+  <image width="256" height="256" source="arrow-sign-forest.png"/>
+ </tile>
+ <tile id="38">
+  <image width="256" height="256" source="sign-stick.png"/>
+ </tile>
+=======
+>>>>>>> golden
  <tile id="16" type="Decoration">
   <image width="2048" height="2048" source="cat-vinci.png"/>
  </tile>

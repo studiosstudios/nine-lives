@@ -323,7 +323,7 @@ public class StageController implements Screen {
 				audioController.playSoundEffect("menu-select");
 				mainMenuStage.setLevelSelectState(0);
 				changeStage(levelSelectStage);
-			} else if (settingsStage.isBack() || levelSelectStage.isBack()) {
+			} else if ((settingsStage.isBack() || levelSelectStage.isBack()) && !pause) {
 				audioController.playSoundEffect("menu-select");
 				if (settingsStage.isBack()) {
 					settingsStage.exit();
@@ -331,6 +331,19 @@ public class StageController implements Screen {
 				settingsStage.setBackButtonState(0);
 				levelSelectStage.setBackButtonState(0);
 				changeStage(mainMenuStage);
+			} else if (pause && settingsStage.isBack()) {
+				audioController.playSoundEffect("menu-select");
+				settingsStage.exit();
+				currLevel.updateControls();
+				settingsStage.setBackButtonState(0);
+				changeStage(pauseStage);
+			} else if (pause && pauseStage.isRestart() && listener != null) {
+				audioController.playSoundEffect("menu-select");
+				audioController.pauseStageMusic();
+				pause = false;
+				pauseStage.setResumeButtonState(0);
+				pauseStage.currLevel = null;
+				listener.exitScreen(this, 81);
 			} else if (levelSelectStage.isPlay() && listener != null) {
 				audioController.playSoundEffect("menu-select");
 				loading = true;
@@ -348,6 +361,10 @@ public class StageController implements Screen {
 				pauseStage.setResumeButtonState(0);
 				pauseStage.currLevel = null;
 				listener.exitScreen(this, 25);
+			} else if (pauseStage.isSettings() && listener != null) {
+				audioController.playSoundEffect("menu-select");
+				pauseStage.setSettingsState(0);
+				changeStage(settingsStage);
 			} else if (pauseStage.isMainMenu() && listener != null) {
 				audioController.playSoundEffect("menu-select");
 				pause = false;

@@ -20,7 +20,12 @@
     "body_shape" : [0.1, 0.2, 0.9, 0.2, 0.6, 0.4, 0.4, 0.4],
     "sensor_shape" : [0.1, 0.2, 0.9, 0.2, 0.9, 0.6, 0.1, 0.6],
     "friction" : 0.4,
-    "offset": [0, -1.5]
+    "offset": [0, -1.5],
+    "light": {
+      "offset": [0, 0],
+      "distance": 2,
+      "color": "#ffffff55"
+    }
   },
   "boxes": {
     "friction" : 0,
@@ -33,6 +38,7 @@
   },
   "flamethrowers": {
     "flame_sensor_scale": [0.45, 0.5],
+    "solid_scale": [1, 0.6],
     "base_offset" : [0.5, -0.5],
     "flame_offset" : [-0.05, 1.1],
     "friction": 1,
@@ -64,9 +70,9 @@
     "ceiling": {
       "offset": [1.5, -0.5],
       "light": {
-        "offset": [0, 0],
-        "distance": 15,
-        "color": "#ffffffff",
+        "offset": [0, -1],
+        "distance": 12,
+        "color": "#ffffff66",
         "directionDegree": 270,
         "coneDegree": 50
       }
@@ -75,8 +81,8 @@
       "offset": [0.5, -0.5],
       "light": {
         "offset": [0, 0],
-        "distance": 7,
-        "color": "#ffffffff"
+        "distance": 12,
+        "color": "#ffffff66"
       }
     }
   },
@@ -88,8 +94,8 @@
     "solid_width_scale": 1,
     "light": {
       "distance": 2.5,
-      "color": "#0000ffaa",
-      "activated_color": "#ffff00aa",
+      "color": "#0000ff77",
+      "activated_color": "#ffff0077",
       "offset": [0, 0]
     }
   },
@@ -112,7 +118,7 @@
     "mass" : 1,
     "damping" : 1.2,
     "offset": [0, 0],
-    "burnTicks" : 300,
+    "burnTicks" : 450,
     "capsuleWidth": 0.875,
     "capsuleHeight": 0.90312505,
     "shrink": [0.65, 0.3],
@@ -183,8 +189,7 @@
     },
     "light": {
       "distance": 2,
-//      "color": "#ffff008c",
-      "color": "#ffd700aa",
+      "color": "#F2F0DF88",
       "offset": [0, 0]
     }
   },

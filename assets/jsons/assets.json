@@ -10,6 +10,11 @@
         "wrapU": "repeated",
         "wrapV": "repeated"
       },
+      "forest-platform" : {
+        "file":  "world/platforms/forest-platform.png",
+        "wrapU": "repeated",
+        "wrapV": "repeated"
+      },
       "door": {
         "file": "obstacles/door/door.png",
         "wrapU": "repeated",
@@ -44,6 +49,7 @@
       "corpse3" : "obstacles/corpse/corpse3.png",
       "corpse-burnt": "obstacles/corpse/corpse-burnt.png",
       "spikes": "obstacles/spikes/spikes-tileset.png",
+      "forest-spikes" : "obstacles/spikes/forest-spikes-tileset.png",
       "button-base": "obstacles/button/button-base.png",
       "button-top": "obstacles/button/button-top.png",
       "switch-top": "obstacles/button/switch-top.png",
@@ -59,6 +65,7 @@
       "checkpoint-base-active" : "obstacles/checkpoint/checkpoint-base-active.png",
       "checkpoint-activation-anim": "obstacles/checkpoint/checkpoint-activation-anim.png",
       "robot-anim": "mob/robot/robot-anim.png",
+      "forest-mob-anim" : "mob/robot/forest-mob-anim.png",
       "spirit-anim": "obstacles/spirit-region/spirit-anim.png", //UNUSED
       "spirit-photon": "obstacles/spirit-region/spirit-photon.png",
       "spirit-photon-cat": "obstacles/spirit-region/spirit-photon-cat.png", //UNUSED
@@ -94,6 +101,7 @@
       "tutorial-jump-dash": "world/decor/tutorial-jump-dash.png",
       "tutorial-undo": "world/decor/tutorial-undo.png",
       "tutorial-climb": "world/decor/tutorial-climb.png",
+      "tutorial-cancel-switch": "world/decor/tutorial-cancel-switch.png",
       "cat-vinci": "world/decor/cat-vinci.png",
       "cat-tank-pink": "world/decor/cat-tank-pink.png",
       "cat-tank-green": "world/decor/cat-tank-green.png",
@@ -111,6 +119,8 @@
       "broken-robot": "world/decor/broken-robot.png",
       "coming-soon": "world/decor/coming-soon.png",
       "arrow-sign": "world/decor/arrow-sign.png",
+      "wood-sign": "world/decor/wood-sign.png",
+      "wood-arrow": "world/decor/wood-arrow.png"
       "cat-tank": "world/decor/cat-tank-pink-2.png",
       "cat-tank-purple": "world/decor/cat-tank-purple.png",
       "chair": "world/decor/chair.png",
@@ -147,7 +157,7 @@
         "tiledLevel14": "levels/super-jump.json",
 //        "tiledLevel5": "levels/level-beta-hard.json",
 //        "tiledLevel14": "levels/party-room.json",
-        "tiledLevel15": "levels/test-forest.json"
+        "tiledLevel15": "levels/split-spirit-regions.json"
     },
     "soundfx" : {
         "jump" : "sounds/jump-CELESTE.wav",

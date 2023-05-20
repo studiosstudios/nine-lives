@@ -17,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.*;  // For GameCanvas
+import edu.cornell.gdiac.game.object.Flamethrower;
 
 /**
  * Box-shaped model to support collisions.
@@ -33,7 +34,7 @@ public class BoxObstacle extends SimpleObstacle {
 	/** A cache value for the fixture (for resizing) */
 	private Fixture geometry;
 	/** Cache of the polygon vertices (for resizing) */
-	private float[] vertices;
+	public float[] vertices;
 	
 	/** 
 	 * Returns the dimensions of this box
@@ -98,9 +99,9 @@ public class BoxObstacle extends SimpleObstacle {
 	 * @param markDirty  If the fixture should be recreated
 	 */
 	public void setDimension(float width, float height, float x, float y, boolean markDirty) {
+		resize(width, height, x, y);
 		dimension.set(width, height);
 		markDirty(markDirty);
-		resize(width, height, x, y);
 		if (!markDirty) { ((PolygonShape) geometry.getShape()).set(vertices); }
 	}
 
@@ -185,14 +186,27 @@ public class BoxObstacle extends SimpleObstacle {
 	 */
 	private void resize(float width, float height, float x, float y) {
 		// Make the box with the center in the center
-		vertices[0] = -width/2.0f - x;
-		vertices[1] = -height/2.0f - y;
-		vertices[2] = -width/2.0f - x;
-		vertices[3] =  height/2.0f - y;
-		vertices[4] =  width/2.0f - x;
-		vertices[5] =  height/2.0f - y;
-		vertices[6] =  width/2.0f - x;
-		vertices[7] = -height/2.0f - y;
+		if (x == 0 && y == 0) {
+			vertices[0] = -width / 2.0f;
+			vertices[1] = -height / 2.0f;
+			vertices[2] = -width / 2.0f;
+			vertices[3] = height / 2.0f;
+			vertices[4] = width / 2.0f;
+			vertices[5] = height / 2.0f;
+			vertices[6] = width / 2.0f;
+			vertices[7] = -height / 2.0f;
+		} else {
+			float sx = width/dimension.x;
+			float sy = height/dimension.y;
+			vertices[0] += (sx - 1) * (vertices[0] - x);
+			vertices[1] += (sy - 1) * (vertices[1] - y);
+			vertices[2] += (sx - 1) * (vertices[2] - x);
+			vertices[3] += (sy - 1) * (vertices[3] - y);
+			vertices[4] += (sx - 1) * (vertices[4] - x);
+			vertices[5] += (sy - 1) * (vertices[5] - y);
+			vertices[6] += (sx - 1) * (vertices[6] - x);
+			vertices[7] += (sy - 1) * (vertices[7] - y);
+		}
 		shape.set(vertices);
 	}
 

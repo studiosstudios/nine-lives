@@ -486,7 +486,7 @@
     <property name="type" propertytype="lightType" value="wall"/>
    </properties>
   </object>
-  <object id="336" type="Light" gid="14" x="26624" y="28672" width="1024" height="1024">
+  <object id="336" type="Light" gid="14" x="26624" y="30720" width="1024" height="1024">
    <properties>
     <property name="type" propertytype="lightType" value="wall"/>
    </properties>

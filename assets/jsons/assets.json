@@ -129,7 +129,6 @@
         "tiledSuperJump": "levels/super-jump.json",
         "tiledLevelTutorial": "levels/tiledLevelTutorial1.json",
       "tiledLevel1": "levels/tutorial-walk-jump.json",
-      "tiledLevel15": "levels/sabrina3.json",
         "tiledLevel2": "levels/tutorial-dash.json",
         "tiledLevel3": "levels/tutorial-first-death.json",
         "tiledLevel4": "levels/tutorial-undo.json",

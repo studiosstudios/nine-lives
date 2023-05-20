@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="67" height="24" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="23" nextobjectid="371">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="67" height="24" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="23" nextobjectid="367">
  <editorsettings>
   <export target="../../../assets/levels/spike-hell.json" format="json"/>
  </editorsettings>
@@ -77,16 +77,6 @@
     <property name="shouldSnap" type="bool" value="true"/>
     <property name="snapCollisionArea" type="bool" value="false"/>
     <property name="zoom" type="float" value="0.75"/>
-   </properties>
-  </object>
-  <object id="369" type="CameraRegion" x="56320" y="9216" width="12288" height="8192">
-   <properties>
-    <property name="bHeight" type="float" value="16"/>
-    <property name="bWidth" type="float" value="22"/>
-    <property name="bX" type="float" value="45"/>
-    <property name="bY" type="float" value="3"/>
-    <property name="shouldSnap" type="bool" value="true"/>
-    <property name="snapCollisionArea" type="bool" value="false"/>
    </properties>
   </object>
  </objectgroup>
@@ -176,7 +166,7 @@
  </objectgroup>
  <objectgroup id="4" name="flamethrowers"/>
  <objectgroup id="20" name="goal">
-  <object id="268" x="64512" y="11264" width="1024" height="6144"/>
+  <object id="268" x="66560" y="11264" width="1024" height="6144"/>
  </objectgroup>
  <objectgroup id="3" name="checkpoints">
   <object id="302" gid="3" x="1024" y="20480" width="1024" height="2048"/>
@@ -287,28 +277,28 @@
   <object id="240" gid="7" x="46080" y="9216" width="1024" height="1024" rotation="90"/>
  </objectgroup>
  <objectgroup id="22" name="decor">
-  <object id="244" name="cabinet-mid" gid="141" x="57898.8" y="17408" width="2048" height="2048"/>
-  <object id="248" name="microscope" gid="143" x="60942.9" y="14363.9" width="1024" height="1280"/>
-  <object id="250" name="cabinet-mid" gid="141" x="59946.8" y="17408" width="2048" height="2048"/>
-  <object id="251" name="broken-robot" gid="149" x="33792" y="15611.4" width="2048" height="2048"/>
-  <object id="258" name="test-tubes" gid="147" x="3044.07" y="5315.53" width="1024" height="1024"/>
-  <object id="259" name="test-tubes" gid="147" x="4096" y="5315.53" width="1024" height="1024">
+  <object id="244" name="cabinet-mid" gid="141" x="59392" y="17408" width="2048" height="2048"/>
+  <object id="248" name="microscope" gid="143" x="62464" y="14336" width="1024" height="1280"/>
+  <object id="250" name="cabinet-mid" gid="141" x="61440" y="17408" width="2048" height="2048"/>
+  <object id="251" name="broken-robot" gid="149" x="33792" y="15607.4" width="2048" height="2048"/>
+  <object id="258" name="test-tubes" gid="147" x="3051.38" y="5305.57" width="1024" height="1024"/>
+  <object id="259" name="test-tubes" gid="147" x="4075.38" y="5305.57" width="1024" height="1024">
    <properties>
     <property name="flipX" type="bool" value="true"/>
    </properties>
   </object>
-  <object id="260" name="test-tubes" gid="147" x="5120" y="5315.53" width="1024" height="1024"/>
-  <object id="261" name="test-tubes" gid="147" x="6144" y="5315.53" width="1024" height="1024">
+  <object id="260" name="test-tubes" gid="147" x="5078.76" y="5305.57" width="1024" height="1024"/>
+  <object id="261" name="test-tubes" gid="147" x="6123.38" y="5326.19" width="1024" height="1024">
    <properties>
     <property name="flipX" type="bool" value="true"/>
    </properties>
   </object>
-  <object id="271" name="shelf" gid="132" x="58122.3" y="14587.4" width="4096" height="2048"/>
-  <object id="291" name="broken-robot" gid="149" x="56549.1" y="17715.3" width="2048" height="2048"/>
-  <object id="292" name="cat-tank-pink" gid="136" x="49152" y="7168" width="2125.14" height="3102.29"/>
-  <object id="293" name="cat-tank-pink" gid="136" x="53105.1" y="7196.57" width="2010.86" height="3130.86"/>
-  <object id="294" name="cat-tank-green" gid="137" x="51171.4" y="7168" width="2039.43" height="3130.86"/>
-  <object id="298" name="broken-robot" gid="149" x="61296.5" y="17715.3" width="2048" height="2048">
+  <object id="271" name="shelf" gid="132" x="59392" y="14336" width="4096" height="2048"/>
+  <object id="291" name="broken-robot" gid="149" x="58003.8" y="17696.7" width="2048" height="2048"/>
+  <object id="292" name="cat-tank-pink" gid="136" x="49152" y="7168" width="1668" height="2388"/>
+  <object id="293" name="cat-tank-pink" gid="136" x="53248" y="7168" width="1668" height="2388"/>
+  <object id="294" name="cat-tank-green" gid="137" x="51200" y="7168" width="1668" height="2388"/>
+  <object id="298" name="broken-robot" gid="149" x="62828.2" y="17717.3" width="2048" height="2048">
    <properties>
     <property name="flipX" type="bool" value="true"/>
    </properties>
@@ -316,13 +306,8 @@
   <object id="299" name="cabinet-mid" gid="141" x="2048" y="7168" width="2048" height="2048"/>
   <object id="300" name="cabinet-mid" gid="141" x="4096" y="7168" width="2048" height="2048"/>
   <object id="301" name="cabinet-mid" gid="141" x="6144" y="7168" width="2048" height="2048"/>
-  <object id="364" name="cat-vinci" gid="131" x="34411.4" y="11178.3" width="4096" height="4096"/>
-  <object id="366" name="cat-vinci" gid="131" x="40393.1" y="11235.4" width="4096" height="4096"/>
-  <object id="367" name="cat-vinci" gid="131" x="37380.6" y="11180.6" width="4096" height="4096">
-   <properties>
-    <property name="flipY" type="bool" value="true"/>
-   </properties>
-  </object>
+  <object id="364" name="cat-vinci" gid="131" x="35840" y="11264" width="4096" height="4096"/>
+  <object id="366" name="cat-vinci" gid="131" x="39936" y="11264" width="4096" height="4096"/>
  </objectgroup>
  <objectgroup id="15" name="activators"/>
  <objectgroup id="9" name="doors"/>

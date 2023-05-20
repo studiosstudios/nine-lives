@@ -856,7 +856,7 @@ public class Level {
         JsonValue objects = data.get("objects");
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
-            Door door = new Door(propertiesMap, textureRegionAssetMap, scale, 128);
+            Door door = new Door(propertiesMap, textureRegionAssetMap, scale, 128, biome);
             loadTiledActivatable(door);
         }
     }

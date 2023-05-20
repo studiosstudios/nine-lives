@@ -20,6 +20,11 @@
         "wrapU": "repeated",
         "wrapV": "repeated"
       },
+      "forest-door": {
+        "file": "obstacles/door/forest-door.png",
+        "wrapU": "repeated",
+        "wrapV": "repeated"
+      },
       "goal": {
         "file": "obstacles/goal/goal.png",
         "wrapU": "repeated",

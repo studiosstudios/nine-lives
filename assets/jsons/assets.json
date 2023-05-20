@@ -182,22 +182,8 @@
         "tiledLevel25": "levels/tutorial-body-switch.json",
         "tiledLevel26": "levels/basic-body-switch.json",
 //        "tiledLevel27": "levels/falling-switch-dash.json",
-        "tiledLevel27": "levels/test-forest.json"
-
-      //        "tiledLevel2": "levels/test-windows.json",
-      //        "tiledLevel1": "levels/lights.json",
-//       "tiledLevel7": "levels/tutorial-flamethrower.json",
-
-//        "tiledLevel10": "levels/mob-push-box.json",
-//        "tiledLevel12": "levels/triple-body-deposits.json",
-//        "tiledLevel13": "levels/level-beta-med1.json",
-//      "tiledLevel13": "levels/wall-jump-intro.json",
-//      "tiledLevel14": "levels/tutorial-body-switch.json",
-//      "tiledLevel15": "levels/super-jump.json",
-//      "tiledLevel14": "levels/super-jump.json",
-//        "tiledLevel5": "levels/level-beta-hard.json",
-//        "tiledLevel14": "levels/party-room.json",
-//        "tiledLevel16": "levels/split-spirit-regions.json",
+        "tiledLevel27": "levels/test-forest.json",
+        "tiledLevel28": "levels/hard-platforming-robot-office.json"
     },
     "soundfx" : {
         "jump" : "sounds/jump.wav",

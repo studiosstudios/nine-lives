@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="48" height="18" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="24" nextobjectid="575">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="48" height="18" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="24" nextobjectid="618">
  <editorsettings>
   <export target="../../../assets/levels/checkpoint-tutorial.json" format="json"/>
  </editorsettings>
@@ -123,49 +123,49 @@
  <objectgroup id="6" name="lasers"/>
  <objectgroup id="7" name="mobs"/>
  <objectgroup id="8" name="spikes">
-  <object id="379" gid="7" x="28672" y="13312" width="1024" height="1024"/>
-  <object id="380" gid="7" x="29696" y="13312" width="1024" height="1024"/>
-  <object id="381" gid="7" x="30720" y="13312" width="1024" height="1024"/>
-  <object id="487" gid="7" x="31744" y="12288" width="1024" height="1024"/>
-  <object id="488" gid="7" x="32768" y="12288" width="1024" height="1024"/>
-  <object id="489" gid="7" x="33792" y="12288" width="1024" height="1024"/>
-  <object id="490" gid="7" x="34816" y="12288" width="1024" height="1024"/>
-  <object id="491" gid="7" x="35840" y="12288" width="1024" height="1024"/>
-  <object id="492" gid="7" x="36864" y="12288" width="1024" height="1024"/>
-  <object id="493" gid="7" x="38912" y="12288" width="1024" height="1024"/>
-  <object id="494" gid="7" x="39936" y="12288" width="1024" height="1024"/>
-  <object id="495" gid="7" x="40960" y="12288" width="1024" height="1024"/>
-  <object id="496" gid="7" x="41984" y="12288" width="1024" height="1024"/>
-  <object id="497" gid="7" x="37888" y="12288" width="1024" height="1024"/>
-  <object id="503" gid="7" x="29696" y="8192" width="1024" height="1024"/>
-  <object id="504" gid="7" x="30720" y="8192" width="1024" height="1024"/>
-  <object id="507" gid="7" x="25600" y="8192" width="1024" height="1024"/>
-  <object id="508" gid="7" x="26624" y="8192" width="1024" height="1024"/>
-  <object id="515" gid="7" x="22528" y="6144" width="1024" height="1024"/>
-  <object id="516" gid="7" x="23552" y="6144" width="1024" height="1024"/>
-  <object id="519" gid="7" x="18432" y="6144" width="1024" height="1024"/>
-  <object id="520" gid="7" x="19456" y="6144" width="1024" height="1024"/>
-  <object id="523" gid="7" x="14336" y="11264" width="1024" height="1024"/>
-  <object id="524" gid="7" x="15360" y="11264" width="1024" height="1024"/>
-  <object id="525" gid="7" x="16384" y="11264" width="1024" height="1024"/>
-  <object id="526" gid="7" x="17408" y="11264" width="1024" height="1024"/>
-  <object id="527" gid="7" x="18432" y="11264" width="1024" height="1024"/>
-  <object id="528" gid="7" x="19456" y="11264" width="1024" height="1024"/>
-  <object id="529" gid="7" x="20480" y="11264" width="1024" height="1024"/>
-  <object id="530" gid="7" x="21504" y="11264" width="1024" height="1024"/>
-  <object id="531" gid="7" x="22528" y="11264" width="1024" height="1024"/>
-  <object id="532" gid="7" x="23552" y="11264" width="1024" height="1024"/>
-  <object id="533" gid="7" x="24576" y="13312" width="1024" height="1024"/>
-  <object id="534" gid="7" x="25600" y="13312" width="1024" height="1024"/>
-  <object id="535" gid="7" x="26624" y="13312" width="1024" height="1024"/>
-  <object id="536" gid="7" x="27648" y="13312" width="1024" height="1024"/>
-  <object id="545" gid="7" x="21504" y="3072" width="1024" height="1024" rotation="180"/>
-  <object id="546" gid="7" x="20480" y="3072" width="1024" height="1024" rotation="180"/>
-  <object id="547" gid="7" x="23552" y="3072" width="1024" height="1024" rotation="180"/>
-  <object id="548" gid="7" x="22528" y="3072" width="1024" height="1024" rotation="180"/>
-  <object id="566" gid="7" x="19456" y="3072" width="1024" height="1024" rotation="180"/>
   <object id="571" gid="10" x="7168" y="12288" width="1024" height="1024"/>
   <object id="572" gid="11" x="8192" y="12288" width="1024" height="1024"/>
+  <object id="575" gid="10" x="14336" y="11264" width="1024" height="1024"/>
+  <object id="576" gid="11" x="23552" y="11264" width="1024" height="1024"/>
+  <object id="577" gid="12" x="15360" y="11264" width="1024" height="1024"/>
+  <object id="578" gid="12" x="16384" y="11264" width="1024" height="1024"/>
+  <object id="579" gid="12" x="17408" y="11264" width="1024" height="1024"/>
+  <object id="580" gid="12" x="18432" y="11264" width="1024" height="1024"/>
+  <object id="581" gid="12" x="19456" y="11264" width="1024" height="1024"/>
+  <object id="582" gid="12" x="20480" y="11264" width="1024" height="1024"/>
+  <object id="583" gid="12" x="21504" y="11264" width="1024" height="1024"/>
+  <object id="584" gid="12" x="22528" y="11264" width="1024" height="1024"/>
+  <object id="585" gid="10" x="24576" y="13312" width="1024" height="1024"/>
+  <object id="586" gid="11" x="30720" y="13312" width="1024" height="1024"/>
+  <object id="587" gid="12" x="25600" y="13312" width="1024" height="1024"/>
+  <object id="588" gid="12" x="26624" y="13312" width="1024" height="1024"/>
+  <object id="589" gid="12" x="27648" y="13312" width="1024" height="1024"/>
+  <object id="590" gid="12" x="28672" y="13312" width="1024" height="1024"/>
+  <object id="591" gid="12" x="29696" y="13312" width="1024" height="1024"/>
+  <object id="592" gid="10" x="31744" y="12288" width="1024" height="1024"/>
+  <object id="593" gid="11" x="41984" y="12288" width="1024" height="1024"/>
+  <object id="594" gid="12" x="32768" y="12288" width="1024" height="1024"/>
+  <object id="595" gid="12" x="33792" y="12288" width="1024" height="1024"/>
+  <object id="596" gid="12" x="34816" y="12288" width="1024" height="1024"/>
+  <object id="597" gid="12" x="35840" y="12288" width="1024" height="1024"/>
+  <object id="598" gid="12" x="36864" y="12288" width="1024" height="1024"/>
+  <object id="599" gid="12" x="37888" y="12288" width="1024" height="1024"/>
+  <object id="600" gid="12" x="38912" y="12288" width="1024" height="1024"/>
+  <object id="601" gid="12" x="39936" y="12288" width="1024" height="1024"/>
+  <object id="602" gid="12" x="40960" y="12288" width="1024" height="1024"/>
+  <object id="603" gid="10" x="18432" y="6144" width="1024" height="1024"/>
+  <object id="604" gid="11" x="19456" y="6144" width="1024" height="1024"/>
+  <object id="605" gid="10" x="22528" y="6144" width="1024" height="1024"/>
+  <object id="606" gid="11" x="23552" y="6144" width="1024" height="1024"/>
+  <object id="607" gid="10" x="25600" y="8192" width="1024" height="1024"/>
+  <object id="608" gid="11" x="26624" y="8192" width="1024" height="1024"/>
+  <object id="609" gid="10" x="29696" y="8192" width="1024" height="1024"/>
+  <object id="610" gid="11" x="30720" y="8192" width="1024" height="1024"/>
+  <object id="612" gid="12" x="20480" y="3072" width="1024" height="1024" rotation="180"/>
+  <object id="613" gid="12" x="21504" y="3072" width="1024" height="1024" rotation="180"/>
+  <object id="614" gid="12" x="22528" y="3072" width="1024" height="1024" rotation="180"/>
+  <object id="616" gid="11" x="19456" y="3072" width="1024" height="1024" rotation="180"/>
+  <object id="617" gid="10" x="23552" y="3072" width="1024" height="1024" rotation="180"/>
  </objectgroup>
  <objectgroup id="22" name="decor">
   <object id="569" name="tutorial-checkpoint" gid="125" x="12288" y="6144" width="6144" height="3072"/>

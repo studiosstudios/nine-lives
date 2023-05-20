@@ -343,7 +343,7 @@ public class GameController implements Screen {
 
         RayHandler.useDiffuseLight(true);
 
-        hud = new HudStage(internal, true);
+        hud = new HudStage("jsons/hud-stage.json", true);
         hud.lives = currLevel.getNumLives();
     }
 
@@ -486,13 +486,13 @@ public class GameController implements Screen {
                 // DECOR
                 "tutorial-burn", "tutorial-camera", "tutorial-checkpoint", "tutorial-dash", "tutorial-pause",
                 "tutorial-side-spikes", "tutorial-spikes", "tutorial-switch", "tutorial-walk-jump",
-                "tutorial-jump-dash", "tutorial-undo", "tutorial-climb",
+                "tutorial-jump-dash", "tutorial-undo", "tutorial-climb", "tutorial-cancel-switch",
                 "cabinet-left", "cabinet-mid", "cabinet-right", "goggles", "microscope",
                 "cat-vinci", "cat-tank-pink", "cat-tank-green","shelf", "wall-bottom", "wall-top",
                 "tank", "test-tubes", "coke", "broken-robot", "coming-soon", "arrow-sign",
                 "tutorial-cancel-switch", "wood-arrow", "wood-sign",
                 "cat-tank","cat-tank-purple","chair","dandelions","desktop","firefly","flowers",
-                "mushrooms","pin-board","robo","window-robo","x-ray"
+                "mushrooms","pin-board","robo","window-robo","x-ray","shelf2"
                 }; // Unsure if this is actually being used
         for (String n : names){
 //            System.out.println(n);

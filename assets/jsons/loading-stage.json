@@ -1,0 +1,7 @@
+{
+  "textures": {
+    "loading-tutorial": "ui/loading/loading-tutorial.png",
+    "loading-text": "ui/loading/loading-text.png",
+    "paw": "ui/shared/paw.png"
+  }
+}

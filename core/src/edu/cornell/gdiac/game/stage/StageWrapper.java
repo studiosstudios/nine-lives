@@ -27,10 +27,10 @@ public abstract class StageWrapper extends Stage {
     /** Standard window height (for scaling) */
     static int STANDARD_HEIGHT = 576;
     /** x-coordinate for center of button list */
+    static int numLevels;
     public int buttonX;
     public int xHalf;
     public int yHalf;
-    /** y-coordinate for top button */
 
     public int buttonY;
     static BitmapFont font;
@@ -41,35 +41,86 @@ public abstract class StageWrapper extends Stage {
     static TextButton.TextButtonStyle controlButtonStyle;
     static Slider.SliderStyle sliderStyle;
 
-    public StageWrapper(AssetDirectory internal, boolean createActors) {
+    public StageWrapper(String directory, boolean createActors, boolean settings) {
         super(new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT));
-        this.internal = internal;
-        FreeTypeFontGenerator.setMaxTextureSize(2048);
-        FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("shared/preahvihear.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 32; //24
-        parameter.genMipMaps = true;
-        parameter.minFilter = Texture.TextureFilter.Linear;
-        parameter.magFilter = Texture.TextureFilter.Linear;
-        font = gen.generateFont(parameter);
-//        font = internal.getEntry("chewy", BitmapFont.class);
-//        font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        labelStyle = new Label.LabelStyle(font, Color.WHITE);
-        textButtonStyle = new TextButton.TextButtonStyle(null,null,null, font);
-        parameter.size = 24;
-        controlFont = gen.generateFont(parameter);
-        gen.dispose();
-        controlStyle = new Label.LabelStyle(controlFont, Color.WHITE);
-        controlButtonStyle = new TextButton.TextButtonStyle(null,null,null, controlFont);
+        internal = new AssetDirectory(directory);
+        internal.loadAssets();
+        internal.finishLoading();
+        if (settings) {
+//            FreeTypeFontGenerator.setMaxTextureSize(2048);
+            FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("shared/preahvihear.ttf"));
+            FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+            parameter.size = 32; //24
+//            parameter.genMipMaps = true;
+//            parameter.minFilter = Texture.TextureFilter.Linear;
+//            parameter.magFilter = Texture.TextureFilter.Linear;
+            font = gen.generateFont(parameter);
+            labelStyle = new Label.LabelStyle(font, Color.WHITE);
+            textButtonStyle = new TextButton.TextButtonStyle(null,null,null, font);
+            parameter.size = 24;
+            controlFont = gen.generateFont(parameter);
+            gen.dispose();
+            controlStyle = new Label.LabelStyle(controlFont, Color.WHITE);
+            controlButtonStyle = new TextButton.TextButtonStyle(null,null,null, controlFont);
 
-        Texture knob = internal.getEntry("paw", Texture.class);
-        Texture slider = internal.getEntry("slider-empty", Texture.class);
-        Texture before = internal.getEntry("slider-full", Texture.class);
-        TextureRegionDrawable sliderTexture = new TextureRegionDrawable(new TextureRegion(slider));
-        TextureRegionDrawable sliderKnobTexture = new TextureRegionDrawable(new TextureRegion(knob));
-        TextureRegionDrawable sliderTextureBefore = new TextureRegionDrawable(new TextureRegion(before));
-        sliderStyle = new Slider.SliderStyle(sliderTexture, sliderKnobTexture);
-        sliderStyle.knobBefore = sliderTextureBefore;
+            AssetDirectory tableAssets = new AssetDirectory("jsons/table.json");
+            tableAssets.loadAssets();
+            tableAssets.finishLoading();
+
+            Texture knob = tableAssets.getEntry("paw", Texture.class);
+            Texture slider = tableAssets.getEntry("slider-empty", Texture.class);
+            Texture before = tableAssets.getEntry("slider-full", Texture.class);
+            TextureRegionDrawable sliderTexture = new TextureRegionDrawable(new TextureRegion(slider));
+            TextureRegionDrawable sliderKnobTexture = new TextureRegionDrawable(new TextureRegion(knob));
+            TextureRegionDrawable sliderTextureBefore = new TextureRegionDrawable(new TextureRegion(before));
+            sliderStyle = new Slider.SliderStyle(sliderTexture, sliderKnobTexture);
+            sliderStyle.knobBefore = sliderTextureBefore;
+        }
+
+        buttonX = (int)(3f/5 * STANDARD_WIDTH);
+        buttonY = (int)(1f/2 * STANDARD_HEIGHT);
+        xHalf = (int) (1f/2 * STANDARD_WIDTH);
+        yHalf = (int) (1f/2 * STANDARD_HEIGHT);
+        if (createActors) {
+            createActors();
+        }
+    }
+    public StageWrapper(String directory, boolean createActors, boolean settings, int numLevels) {
+        super(new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT));
+        this.numLevels = numLevels;
+        internal = new AssetDirectory(directory);
+        internal.loadAssets();
+        internal.finishLoading();
+        if (settings) {
+//            FreeTypeFontGenerator.setMaxTextureSize(2048);
+            FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("shared/preahvihear.ttf"));
+            FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+            parameter.size = 32; //24
+//            parameter.genMipMaps = true;
+//            parameter.minFilter = Texture.TextureFilter.Linear;
+//            parameter.magFilter = Texture.TextureFilter.Linear;
+            font = gen.generateFont(parameter);
+            labelStyle = new Label.LabelStyle(font, Color.WHITE);
+            textButtonStyle = new TextButton.TextButtonStyle(null,null,null, font);
+            parameter.size = 24;
+            controlFont = gen.generateFont(parameter);
+            gen.dispose();
+            controlStyle = new Label.LabelStyle(controlFont, Color.WHITE);
+            controlButtonStyle = new TextButton.TextButtonStyle(null,null,null, controlFont);
+
+            AssetDirectory tableAssets = new AssetDirectory("jsons/table.json");
+            tableAssets.loadAssets();
+            tableAssets.finishLoading();
+
+            Texture knob = tableAssets.getEntry("paw", Texture.class);
+            Texture slider = tableAssets.getEntry("slider-empty", Texture.class);
+            Texture before = tableAssets.getEntry("slider-full", Texture.class);
+            TextureRegionDrawable sliderTexture = new TextureRegionDrawable(new TextureRegion(slider));
+            TextureRegionDrawable sliderKnobTexture = new TextureRegionDrawable(new TextureRegion(knob));
+            TextureRegionDrawable sliderTextureBefore = new TextureRegionDrawable(new TextureRegion(before));
+            sliderStyle = new Slider.SliderStyle(sliderTexture, sliderKnobTexture);
+            sliderStyle.knobBefore = sliderTextureBefore;
+        }
 
         buttonX = (int)(3f/5 * STANDARD_WIDTH);
         buttonY = (int)(1f/2 * STANDARD_HEIGHT);
@@ -81,9 +132,14 @@ public abstract class StageWrapper extends Stage {
     }
     public void draw() {
         super.getViewport().apply();
-//        update();
         super.act();
         super.draw();
+    }
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+        update(delta);
     }
 
     public Actor addActor(Texture texture, float x, float y) {
@@ -111,23 +167,6 @@ public abstract class StageWrapper extends Stage {
         public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) { return listenerTouchDown(event,x,y,pointer,button); }
         @Override
         public void touchUp(InputEvent event, float x, float y, int pointer, int button) { listenerTouchUp(event,x,y,pointer,button); }
-    }
-
-    public InputListener createCatpawListener(Actor actor, Actor catpaw) {
-        return new InputListener() {
-            @Override
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                actor.setColor(Color.LIGHT_GRAY);
-                catpaw.setColor(Color.LIGHT_GRAY);
-                catpaw.setVisible(true);
-            }
-            @Override
-            public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                actor.setColor(Color.WHITE);
-                catpaw.setColor(Color.WHITE);
-                catpaw.setVisible(false);
-            }
-        };
     }
 
     public InputListener createHoverListener(Actor actor) {

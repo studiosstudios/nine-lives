@@ -1,0 +1,7 @@
+{
+  "textures": {
+    "bar": "ui/hud/bar.png",
+    "bell": "ui/hud/bell.png",
+    "cracked-bell": "ui/hud/cracked.png"
+  }
+}

@@ -13,7 +13,6 @@ import edu.cornell.gdiac.game.Save;
 import java.util.HashMap;
 
 public class LevelSelectStage extends StageWrapper {
-    private static int numLevels;
     private static final int BAR_WIDTH = 800;
     private static final int BAR_HEIGHT = STANDARD_HEIGHT - 150;
     private static final int SEGMENT_GAP = 5;
@@ -39,9 +38,9 @@ public class LevelSelectStage extends StageWrapper {
     public int getPlayButtonState() { return playButtonState; }
     public void setPlayButtonState(int state) { playButtonState = state; }
     public int getSelectedLevel() { return selectedLevel; }
-    public static void setNumLevels(int numLevels) { LevelSelectStage.numLevels = numLevels; }
-    public LevelSelectStage(AssetDirectory internal, boolean createActors) {
-        super(internal, createActors, false);
+//    public static void setNumLevels(int numLevels) { LevelSelectStage.numLevels = numLevels; }
+    public LevelSelectStage(String internal, boolean createActors, int numLevels) {
+        super(internal, createActors, false, numLevels);
 //        selectedLevel = 1;
 //        levelChanged = true;
         changeLevel(Save.getProgress());

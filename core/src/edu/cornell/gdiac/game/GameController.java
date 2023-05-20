@@ -128,6 +128,8 @@ public class GameController implements Screen {
     private Color spiritModeColor = new Color(1, 1, 1, 1);
     private boolean drawAdjacentLevels;
 
+    private boolean gameFinished;
+
     /**
      * PLAY: User has all controls and is in game
      * PLAYER_PAN: Camera zooms out and player is free to pan around the level (all other gameplay controls stripped from user)
@@ -313,6 +315,7 @@ public class GameController implements Screen {
     protected GameController(Vector2 gravity, Vector2 scale, int numLevels, AudioController audioController) {
         this.audioController = audioController;
         this.scale = scale;
+        gameFinished = false;
         debug = false;
         setRet(false);
         world = new World(gravity, true);
@@ -343,7 +346,7 @@ public class GameController implements Screen {
 
         RayHandler.useDiffuseLight(true);
 
-        hud = new HudStage(internal, true);
+        hud = new HudStage("jsons/hud-stage.json", true);
         hud.lives = currLevel.getNumLives();
     }
 
@@ -460,9 +463,9 @@ public class GameController implements Screen {
                 // SPIKES
                 "spikes", "forest-spikes",
                 // BUTTONS & SWITCHES
-                "button-base", "button-top", "switch-top", "switch-base",
+                "button-base", "button-top", "switch-top", "switch-base", "forest-button-top", "forest-switch-top",
                 // FLAMETHROWERS
-                "flamethrower", "flame-anim",
+                "flamethrower", "flame-anim", "forest-flamethrower",
                 // LASERS
                 "laser",
                 // CHECKPOINTS
@@ -739,7 +742,9 @@ public class GameController implements Screen {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt) {
-//        System.out.println(currLevel.getGoal());
+
+        gameFinished = collisionController.isGameFinished();
+
         if (collisionController.getReturn()) {
             setRet(true);
         }
@@ -926,10 +931,10 @@ public class GameController implements Screen {
         }
 
         if (actionController.isCombiningLives()) {
-            cam.setZoom(true, 0.9f);
-            float x_pos = currLevel.getCat().getPosition().x*scale.x;
-            float y_pos = currLevel.getCat().getPosition().y*scale.y;
-            cam.updateCamera(x_pos, y_pos, true, cam.getGameplayBounds());
+//            cam.setZoom(true, 0.9f);
+//            float x_pos = currLevel.getCat().getPosition().x*scale.x;
+//            float y_pos = currLevel.getCat().getPosition().y*scale.y;
+//            cam.updateCamera(x_pos, y_pos, true, cam.getGameplayBounds());
             actionController.moveCat(1.2f, 1.2f);
             input.setDisableAll(true);
         }

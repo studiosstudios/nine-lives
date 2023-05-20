@@ -1,0 +1,7 @@
+{
+  "textures": {
+    "paw": "ui/shared/paw.png",
+    "slider-empty": "ui/settings/slider-empty.png",
+    "slider-full": "ui/settings/slider-full.png"
+  }
+}

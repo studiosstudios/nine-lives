@@ -868,6 +868,41 @@
         }, 
         {
          "draworder":"topdown",
+         "id":24,
+         "name":"lights",
+         "objects":[
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":651,
+                 "name":"",
+                 "rotation":0,
+                 "type":"Light",
+                 "visible":true,
+                 "width":3072,
+                 "x":0,
+                 "y":15360
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":652,
+                 "name":"",
+                 "rotation":0,
+                 "type":"Light",
+                 "visible":true,
+                 "width":3072,
+                 "x":5120,
+                 "y":15360
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":10,
          "name":"platforms",
          "objects":[],
@@ -939,8 +974,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":24,
- "nextobjectid":648,
+ "nextlayerid":25,
+ "nextobjectid":653,
  "orientation":"orthogonal",
  "properties":[
         {

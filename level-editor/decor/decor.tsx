@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.10.1" name="decor" tilewidth="3840" tileheight="2388" tilecount="45" columns="0">
+<tileset version="1.10" tiledversion="1.10.1" name="decor" tilewidth="3840" tileheight="2388" tilecount="46" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="8" type="Decoration">
   <image width="1024" height="1024" source="tutorial-burn.png"/>
@@ -136,4 +136,10 @@
  <tile id="52">
   <image width="1024" height="1024" source="bkg4.png"/>
  </tile>
+<<<<<<< HEAD
+=======
+ <tile id="53">
+  <image width="1024" height="512" source="tutorial-spirit-region.png"/>
+ </tile>
+>>>>>>> golden
 </tileset>

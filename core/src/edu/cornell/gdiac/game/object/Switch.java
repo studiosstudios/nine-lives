@@ -23,7 +23,7 @@ public class Switch extends Activator {
      * @param textureScale   Texture scale for rescaling texture
      */
     public Switch(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale, String biome){
-        super(properties, biome.equals("metal") ? "forest-switch-top" : "forest-switch-top", "switch-base",tMap, scale, textureScale, biome, false);
+        super(properties, biome.equals("metal") ? "switch-top" : "forest-switch-top", "switch-base",tMap, scale, textureScale, biome, false);
         prevPressed = false;
         setName("switch");
     }

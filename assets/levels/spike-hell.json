@@ -2355,15 +2355,15 @@
                 }, 
                 {
                  "gid":132,
-                 "height":2048,
+                 "height":2142.04,
                  "id":271,
                  "name":"shelf",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":4096,
-                 "x":58122.3,
-                 "y":14587.4
+                 "width":4284.09,
+                 "x":57871.5,
+                 "y":14681.4
                 }, 
                 {
                  "gid":149,
@@ -2528,6 +2528,174 @@
         }, 
         {
          "draworder":"topdown",
+         "id":23,
+         "name":"lights",
+         "objects":[
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":449,
+                 "name":"",
+                 "rotation":0,
+                 "type":"Light",
+                 "visible":true,
+                 "width":3072,
+                 "x":2048,
+                 "y":3072
+                }, 
+                {
+                 "gid":13,
+                 "height":1024,
+                 "id":450,
+                 "name":"",
+                 "rotation":0,
+                 "type":"Light",
+                 "visible":true,
+                 "width":3072,
+                 "x":5120,
+                 "y":3072
+                }, 
+                {
+                 "gid":14,
+                 "height":1024,
+                 "id":455,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"type",
+                         "propertytype":"lightType",
+                         "type":"string",
+                         "value":"wall"
+                        }],
+                 "rotation":0,
+                 "type":"Light",
+                 "visible":true,
+                 "width":1024,
+                 "x":56807.7,
+                 "y":13234.1
+                }, 
+                {
+                 "gid":14,
+                 "height":1024,
+                 "id":456,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"type",
+                         "propertytype":"lightType",
+                         "type":"string",
+                         "value":"wall"
+                        }],
+                 "rotation":0,
+                 "type":"Light",
+                 "visible":true,
+                 "width":1024,
+                 "x":62042.9,
+                 "y":13265.4
+                }, 
+                {
+                 "gid":14,
+                 "height":1024,
+                 "id":457,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"type",
+                         "propertytype":"lightType",
+                         "type":"string",
+                         "value":"wall"
+                        }],
+                 "rotation":0,
+                 "type":"Light",
+                 "visible":true,
+                 "width":1024,
+                 "x":30720,
+                 "y":5120
+                }, 
+                {
+                 "gid":14,
+                 "height":1024,
+                 "id":458,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"type",
+                         "propertytype":"lightType",
+                         "type":"string",
+                         "value":"wall"
+                        }],
+                 "rotation":0,
+                 "type":"Light",
+                 "visible":true,
+                 "width":1024,
+                 "x":22528,
+                 "y":10240
+                }, 
+                {
+                 "gid":14,
+                 "height":1024,
+                 "id":459,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"type",
+                         "propertytype":"lightType",
+                         "type":"string",
+                         "value":"wall"
+                        }],
+                 "rotation":0,
+                 "type":"Light",
+                 "visible":true,
+                 "width":1024,
+                 "x":4096,
+                 "y":17408
+                }, 
+                {
+                 "gid":14,
+                 "height":1024,
+                 "id":460,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"type",
+                         "propertytype":"lightType",
+                         "type":"string",
+                         "value":"wall"
+                        }],
+                 "rotation":0,
+                 "type":"Light",
+                 "visible":true,
+                 "width":1024,
+                 "x":41984,
+                 "y":13312
+                }, 
+                {
+                 "gid":14,
+                 "height":1024,
+                 "id":461,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"type",
+                         "propertytype":"lightType",
+                         "type":"string",
+                         "value":"wall"
+                        }],
+                 "rotation":0,
+                 "type":"Light",
+                 "visible":true,
+                 "width":1024,
+                 "x":47104,
+                 "y":13312
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":9,
          "name":"doors",
          "objects":[],
@@ -2610,8 +2778,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":23,
- "nextobjectid":446,
+ "nextlayerid":24,
+ "nextobjectid":462,
  "orientation":"orthogonal",
  "properties":[
         {

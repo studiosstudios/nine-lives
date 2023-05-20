@@ -214,7 +214,7 @@ public class Laser extends BoxObstacle implements Activatable{
         super.update(dt);
 
         if (points.size > 0) {
-            float length = points.get(0).dst(points.get(1));
+            float length = Math.max(points.get(0).dst(points.get(1)), 0.05f);
             hitbox.setDimension(0.15f, length, false);
             switch (dir) {
                 case UP:

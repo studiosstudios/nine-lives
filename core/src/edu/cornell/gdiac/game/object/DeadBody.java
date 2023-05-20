@@ -279,6 +279,8 @@ public class DeadBody extends CapsuleObstacle implements Movable {
             }
         }
 
+        if (groundFixtures.size > 0) dashTimer = 0;
+
 
         setRelativeVX(getRelativeVelocity().x/damping);
 

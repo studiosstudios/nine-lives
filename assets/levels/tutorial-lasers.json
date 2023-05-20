@@ -840,7 +840,7 @@
          "name":"exits",
          "objects":[
                 {
-                 "height":11264,
+                 "height":9216,
                  "id":32,
                  "name":"",
                  "properties":[
@@ -855,10 +855,10 @@
                  "visible":true,
                  "width":1024,
                  "x":-1024,
-                 "y":7168
+                 "y":8192
                 }, 
                 {
-                 "height":5120,
+                 "height":3072,
                  "id":138,
                  "name":"",
                  "properties":[
@@ -873,7 +873,7 @@
                  "visible":true,
                  "width":1024,
                  "x":59392,
-                 "y":19456
+                 "y":20480
                 }],
          "opacity":1,
          "type":"objectgroup",

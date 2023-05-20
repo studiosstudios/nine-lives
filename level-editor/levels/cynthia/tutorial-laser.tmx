@@ -229,12 +229,12 @@
   <object id="137" x="53248" y="20480" width="1024" height="3072"/>
  </objectgroup>
  <objectgroup id="11" name="exits">
-  <object id="32" type="Exit" x="-1024" y="7168" width="1024" height="11264">
+  <object id="32" type="Exit" x="-1024" y="8192" width="1024" height="9216">
    <properties>
     <property name="type" propertytype="exitType" value="return"/>
    </properties>
   </object>
-  <object id="138" type="Exit" x="59392" y="19456" width="1024" height="5120">
+  <object id="138" type="Exit" x="59392" y="20480" width="1024" height="3072">
    <properties>
     <property name="type" propertytype="exitType" value="goal"/>
    </properties>

@@ -54,15 +54,21 @@ public class Tiles {
         int i = 0;
         for (float y = levelHeight - 1; y >= 0; y--){
             for (float x = 0; x < levelWidth; x++){
-                if (levelTiles[i] > 0) {
-                    TextureRegion tileTexture = tileset[levelTiles[i] - fid];
-                    if (tileSize == 512) {
-                        canvas.draw(tileTexture, Color.WHITE, 0, 0, (x+offset.x) * 128 * textureScale.x,
-                                (y+offset.y) * 128 * textureScale.y, 0, textureScale.x, textureScale.y);
-                    } else {
-                        canvas.draw(tileTexture, Color.WHITE, 0, 0, (x+offset.x) * tileSize * textureScale.x,
-                                (y+offset.y) * tileSize * textureScale.y, 0, textureScale.x, textureScale.y);
+                try {
+                    if (levelTiles[i] > 0) {
+                        TextureRegion tileTexture = tileset[levelTiles[i] - fid];
+                        if (tileSize == 512) {
+                            canvas.draw(tileTexture, Color.WHITE, 0, 0, (x + offset.x) * 128 * textureScale.x,
+                                    (y + offset.y) * 128 * textureScale.y, 0, textureScale.x, textureScale.y);
+                        } else {
+                            canvas.draw(tileTexture, Color.WHITE, 0, 0, (x + offset.x) * tileSize * textureScale.x,
+                                    (y + offset.y) * tileSize * textureScale.y, 0, textureScale.x, textureScale.y);
+                        }
                     }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    System.err.println("WARNING: tile " + i + " at (" + x +", " + y + ") has invalid id " +
+                            levelTiles[i] + ". (fid is " + fid + ", tileset size is " + tileset.length + ").");
+                    levelTiles[i] = 0;
                 }
                 i++;
             }

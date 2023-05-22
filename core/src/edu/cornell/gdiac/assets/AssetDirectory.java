@@ -172,6 +172,7 @@ public class AssetDirectory extends AssetManager {
         topLoader.addParser( new MusicParser() );
         topLoader.addParser( new SoundEffectParser() );
         topLoader.addParser( new MusicQueueParser() );
+        topLoader.addParser( new AudioSourceParser() );
     }
 
     /**

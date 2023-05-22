@@ -47,6 +47,8 @@ public class AIController {
     private Vector2 startPointCache = new Vector2();
     private Vector2 endPointCache = new Vector2();
 
+    private Vector2 prevPos = new Vector2();
+
 
     /**
      * Creates an AIController for the ship with the given id.
@@ -88,6 +90,7 @@ public class AIController {
     public float getAction() {
         detectRayCast(detectorRay);
         changeStateifApplicable();
+        prevPos.set(mob.getPosition());
         return getHorizontal();
     }
 
@@ -115,6 +118,9 @@ public class AIController {
                     this.state = FSMState.CHASE;
                 }
             }
+
+            //change direction if can't move further
+            if (mob.getPosition().epsilonEquals(prevPos, 0.01f)) mob.setFacingRight(!mob.isFacingRight());
 
             // doesn't go into CHASE state, continues walking in same dir
             // check if there's anything blocking it in collision controller
@@ -177,12 +183,7 @@ public class AIController {
          * Gets closest raycasted fixture and stores collision point and the fixture itself
          */
         public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-            // Detector ignores Spirit Regions
-            if (fixture.getBody().getUserData() instanceof SpiritRegion) {
-                return -1;
-            }
-
-            if ( fraction < closestFraction && fixture.getBody() != mob.getBody()) {
+            if ( fraction < closestFraction && fixture.getBody() != mob.getBody() && !fixture.isSensor()) {
                 closestFraction = fraction;
                 rayCastPoint.set(point);
                 rayCastFixture = fixture;
@@ -211,7 +212,7 @@ public class AIController {
             rayCastPoint = endPointCache;
             rayCastFixture = null;
         } else {
-            Boolean detected = rayCastFixture.getBody().getUserData() instanceof Cat;
+            boolean detected = rayCastFixture.getBody().getUserData() instanceof Cat;
             if (detected) {
                 target = level.getCat();
             } else {

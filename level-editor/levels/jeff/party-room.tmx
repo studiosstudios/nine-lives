@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="46" height="22" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="18" nextobjectid="129">
+ <editorsettings>
+  <export target="../nine-lives/assets/tiled/party-room.json" format="json"/>
+ </editorsettings>
+ <properties>
+  <property name="biome" propertytype="biome" value="metal"/>
+ </properties>
+ <tileset firstgid="1" source="../../objects/objects.tsx"/>
+ <tileset firstgid="58" source=":/automap-tiles.tsx"/>
+ <tileset firstgid="63" source="../../tilesets/metal-walls.tsx"/>
+ <layer id="17" name="metalWalls" width="46" height="22">
+  <data encoding="csv">
+67,65,65,65,65,68,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,67,65,65,65,65,68,
+87,0,0,0,0,87,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,87,0,0,0,0,87,
+87,0,0,0,0,87,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,87,0,0,0,0,87,
+69,65,65,65,65,82,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,69,65,65,65,65,82,
+87,0,0,0,0,87,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,87,0,0,0,0,87,
+87,0,0,0,0,87,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,87,0,0,0,0,87,
+69,65,65,65,65,82,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,69,65,65,65,65,82,
+87,0,0,0,0,87,0,0,0,0,0,0,0,0,67,65,65,68,0,67,65,65,65,68,0,67,65,65,65,66,0,0,0,0,0,0,0,0,0,0,87,0,0,0,0,87,
+87,0,0,0,0,87,0,0,0,0,0,0,0,0,87,0,0,87,0,87,0,0,0,87,0,87,0,0,0,0,0,0,0,0,0,0,0,0,0,0,87,0,0,0,0,87,
+69,65,65,65,65,82,0,0,0,0,0,0,0,0,87,0,0,87,0,87,0,0,0,87,0,87,0,0,0,0,0,0,0,0,0,0,0,0,0,0,69,65,65,65,65,82,
+87,0,0,0,0,87,0,0,0,0,0,0,0,0,69,65,65,80,0,87,0,0,0,87,0,87,0,0,64,68,0,0,0,0,0,0,0,0,0,0,87,0,0,0,0,87,
+87,0,0,0,0,87,0,0,0,0,0,0,0,0,87,0,0,0,0,87,0,0,0,87,0,87,0,0,0,87,0,0,0,0,0,0,0,0,0,0,87,0,0,0,0,87,
+79,65,65,65,65,80,0,0,0,0,0,0,0,0,87,0,0,0,0,87,0,0,0,87,0,87,0,0,0,87,0,0,0,0,0,0,0,0,0,0,79,65,65,65,65,80,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,99,0,0,0,0,79,65,65,65,80,0,79,65,65,65,80,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+76,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,77,78,
+88,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,90,
+88,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,90,
+88,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,89,90,
+100,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,102
+</data>
+ </layer>
+ <objectgroup id="2" name="cat">
+  <object id="87" gid="2" x="2048" y="16384" width="1024" height="1024"/>
+ </objectgroup>
+ <objectgroup id="4" name="flamethrowers"/>
+ <objectgroup id="3" name="checkpoints"/>
+ <objectgroup id="6" name="lasers">
+  <object id="112" gid="5" x="13312" y="8192" width="1024" height="1024" rotation="270">
+   <properties>
+    <property name="activatorID" value="button4"/>
+    <property name="active" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="113" gid="5" x="13312" y="10240" width="1024" height="1024" rotation="270">
+   <properties>
+    <property name="activatorID" value="button3"/>
+   </properties>
+  </object>
+  <object id="114" gid="5" x="13312" y="12288" width="1024" height="1024" rotation="270">
+   <properties>
+    <property name="activatorID" value="button2"/>
+    <property name="active" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="115" gid="5" x="13312" y="14336" width="1024" height="1024" rotation="270">
+   <properties>
+    <property name="activatorID" value="button1"/>
+   </properties>
+  </object>
+  <object id="116" gid="5" x="14336" y="6144" width="1024" height="1024">
+   <properties>
+    <property name="activatorID" value="button5"/>
+   </properties>
+  </object>
+  <object id="117" gid="5" x="16384" y="6144" width="1024" height="1024">
+   <properties>
+    <property name="activatorID" value="button6"/>
+    <property name="active" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="118" gid="5" x="19456" y="6144" width="1024" height="1024">
+   <properties>
+    <property name="activatorID" value="button7"/>
+   </properties>
+  </object>
+  <object id="119" gid="5" x="21504" y="6144" width="1024" height="1024">
+   <properties>
+    <property name="activatorID" value="button8"/>
+    <property name="active" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="120" gid="5" x="23552" y="6144" width="1024" height="1024">
+   <properties>
+    <property name="activatorID" value="button1"/>
+   </properties>
+  </object>
+  <object id="121" gid="5" x="25600" y="6144" width="1024" height="1024">
+   <properties>
+    <property name="activatorID" value="button2"/>
+    <property name="active" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="122" gid="5" x="27648" y="6144" width="1024" height="1024">
+   <properties>
+    <property name="activatorID" value="button3"/>
+   </properties>
+  </object>
+  <object id="123" gid="5" x="29696" y="6144" width="1024" height="1024">
+   <properties>
+    <property name="activatorID" value="button4"/>
+    <property name="active" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="124" gid="5" x="31744" y="7168" width="1024" height="1024" rotation="90">
+   <properties>
+    <property name="activatorID" value="button5"/>
+   </properties>
+  </object>
+  <object id="125" gid="5" x="27648" y="9216" width="1024" height="1024" rotation="90">
+   <properties>
+    <property name="activatorID" value="button6"/>
+    <property name="active" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="126" gid="5" x="31744" y="11264" width="1024" height="1024" rotation="90">
+   <properties>
+    <property name="activatorID" value="button7"/>
+   </properties>
+  </object>
+  <object id="127" gid="5" x="31744" y="13312" width="1024" height="1024" rotation="90">
+   <properties>
+    <property name="activatorID" value="button8"/>
+    <property name="active" type="bool" value="false"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="7" name="mobs">
+  <object id="34" gid="6" x="2048" y="10240" width="1024" height="2048"/>
+  <object id="35" gid="6" x="2048" y="7168" width="1024" height="2048">
+   <properties>
+    <property name="facingRight" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="36" gid="6" x="3072" y="4096" width="1024" height="2048">
+   <properties>
+    <property name="facingRight" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="37" gid="6" x="3072" y="1024" width="1024" height="2048"/>
+  <object id="38" gid="6" x="43008" y="7168" width="1024" height="2048">
+   <properties>
+    <property name="facingRight" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="39" gid="6" x="43008" y="10240" width="1024" height="2048"/>
+  <object id="40" gid="6" x="44032" y="4096" width="1024" height="2048">
+   <properties>
+    <property name="facingRight" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="41" gid="6" x="44032" y="1024" width="1024" height="2048"/>
+ </objectgroup>
+ <objectgroup id="8" name="spikes"/>
+ <objectgroup id="15" name="activators">
+  <object id="88" gid="1" x="44032" y="11264" width="1024" height="1024">
+   <properties>
+    <property name="id" value="button8"/>
+   </properties>
+  </object>
+  <object id="89" gid="1" x="44032" y="8192" width="1024" height="1024">
+   <properties>
+    <property name="id" value="button6"/>
+   </properties>
+  </object>
+  <object id="90" gid="1" x="43008" y="5120" width="1024" height="1024">
+   <properties>
+    <property name="id" value="button5"/>
+   </properties>
+  </object>
+  <object id="91" gid="1" x="43008" y="2048" width="1024" height="1024">
+   <properties>
+    <property name="id" value="button5"/>
+   </properties>
+  </object>
+  <object id="92" gid="1" x="2048" y="2048" width="1024" height="1024">
+   <properties>
+    <property name="id" value="button1"/>
+   </properties>
+  </object>
+  <object id="93" gid="1" x="2048" y="5120" width="1024" height="1024">
+   <properties>
+    <property name="id" value="button2"/>
+   </properties>
+  </object>
+  <object id="94" gid="1" x="3072" y="8192" width="1024" height="1024">
+   <properties>
+    <property name="id" value="button3"/>
+   </properties>
+  </object>
+  <object id="95" gid="1" x="3072" y="11264" width="1024" height="1024">
+   <properties>
+    <property name="id" value="button4"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="9" name="doors"/>
+ <objectgroup id="16" name="spiritRegions"/>
+ <objectgroup id="10" name="platforms"/>
+ <objectgroup id="12" name="wallsPoly">
+  <object id="46" x="0" y="13312">
+   <polygon points="0,0 6144,0 6144,-13312 5120,-13312 5120,-1024 1024,-1024 1024,-13312 0,-13312"/>
+  </object>
+  <object id="47" x="1024" y="10240">
+   <polygon points="0,0 4096,0 4096,-1024 0,-1024"/>
+  </object>
+  <object id="48" x="1024" y="7168">
+   <polygon points="0,0 4096,0 4096,-1024 0,-1024"/>
+  </object>
+  <object id="49" x="1024" y="3072">
+   <polygon points="0,0 0,1024 4096,1024 4096,0"/>
+  </object>
+  <object id="50" x="1024" y="0">
+   <polygon points="0,0 0,1024 4096,1024 4096,0"/>
+  </object>
+  <object id="51" x="40960" y="13312">
+   <polygon points="0,0 6144,0 6144,-13312 5120,-13312 5120,-1024 1024,-1024 1024,-13312 0,-13312"/>
+  </object>
+  <object id="52" x="41984" y="10240">
+   <polygon points="0,0 4096,0 4096,-1024 0,-1024"/>
+  </object>
+  <object id="53" x="41984" y="7168">
+   <polygon points="0,0 4096,0 4096,-1024 0,-1024"/>
+  </object>
+  <object id="54" x="41984" y="3072">
+   <polygon points="0,0 0,1024 4096,1024 4096,0"/>
+  </object>
+  <object id="55" x="41984" y="0">
+   <polygon points="0,0 0,1024 4096,1024 4096,0"/>
+  </object>
+  <object id="56" x="14336" y="14336">
+   <polygon points="0,0 1024,0 1024,-3072 4096,-3072 3072,-4096 1024,-4096 0,-3072 0,0"/>
+  </object>
+  <object id="57" x="14336" y="11264">
+   <polygon points="0,0 0,-4096 1024,-4096 1024,-1024 3072,-1024 4096,0 4096,-4096 3072,-4096 3072,-1024 0,0"/>
+  </object>
+  <object id="58" x="15360" y="7168">
+   <polygon points="0,0 0,1024 2048,1024 2048,0"/>
+  </object>
+  <object id="59" x="19456" y="7168">
+   <polygon points="0,0 1024,1024 1024,6144 4096,6144 4096,1024 5120,0 5120,7168 0,7168"/>
+  </object>
+  <object id="60" x="20480" y="8192">
+   <polygon points="0,0 3072,0 4096,-1024 -1024,-1024"/>
+  </object>
+  <object id="61" x="25600" y="7168">
+   <polygon points="0,0 0,7168 5120,7168 5120,3072 3072,3072 3072,4096 4096,4096 4096,6144 1024,6144 1024,1024 5120,1024 5120,0"/>
+  </object>
+  <object id="128" x="0" y="17408">
+   <polygon points="0,0 47104,0 47104,5120 0,5120"/>
+  </object>
+ </objectgroup>
+ <objectgroup id="13" name="mirrors"/>
+ <objectgroup id="14" name="boxes"/>
+ <objectgroup id="11" name="exits">
+  <object id="32" type="Exit" x="-1024" y="13312" width="1024" height="4096">
+   <properties>
+    <property name="type" propertytype="exitType" value="return"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

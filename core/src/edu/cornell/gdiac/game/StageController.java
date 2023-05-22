@@ -5,9 +5,17 @@ import com.badlogic.gdx.graphics.*;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.*;
+import edu.cornell.gdiac.audio.AudioEngine;
+import edu.cornell.gdiac.audio.AudioSource;
+import edu.cornell.gdiac.audio.MusicQueue;
+import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.game.stage.*;
 import edu.cornell.gdiac.util.*;
+
+import java.util.HashMap;
 
 /**
  * Class that provides a loading screen for the state of the game.
@@ -20,7 +28,9 @@ import edu.cornell.gdiac.util.*;
  * Adapted from Walker M. White's LoadingMode.java in Cornell CS 3152, Spring 2023.
  */
 public class StageController implements Screen {
-	// There are TWO asset managers.  One to load the loading screen.  The other to load the assets
+	public enum Stages {
+		LEVEL_SELECT, LOADING, MAIN_MENU, PAUSE, SETTINGS, START
+	}
 	/** Internal assets for this loading screen */
 	private final AssetDirectory internal;
 	/** The actual assets to be loaded */
@@ -44,6 +54,7 @@ public class StageController implements Screen {
 	public boolean loading;
 	public boolean starting;
 	public boolean fromSelect;
+	public Stages currentStage;
 
 	/** The current stage being rendered on the screen */
 	private StageWrapper stage;
@@ -59,17 +70,17 @@ public class StageController implements Screen {
 	private LevelSelectStage levelSelectStage;
 	private LoadingStage loadingStage;
 	private StartStage startStage;
-
-	private float animationTime;
-	/** Background texture for start-up */
-	private boolean jump_animated;
-	private TextureRegion[][] spriteFrames;
-	private Animation<TextureRegion> animation;
-	private Texture jump_texture;
-
 	public GameController currLevel;
 	private int selectedLevel;
+	private boolean startLoad = false;
+	private int numLevels;
 
+//	/** The hashmap for music */
+//	private HashMap<String, AudioSource> musicAssetMap;
+//	/** A queue to play music */
+//	MusicQueue music;
+
+	private AudioController audioController;
 	public int getSelectedLevel() { return selectedLevel; }
 	public void setSelectedLevel(int level) { selectedLevel = level; }
 
@@ -119,8 +130,8 @@ public class StageController implements Screen {
 	 * @param file  	The asset directory to load in the background
 	 * @param canvas 	The game canvas to draw to
 	 */
-	public StageController(String file, GameCanvas canvas) {
-		this(file, canvas, DEFAULT_BUDGET, false, false);
+	public StageController(String file, GameCanvas canvas, AudioController audioController, int numLevels) {
+		this(file, canvas, DEFAULT_BUDGET, false, false,  audioController, numLevels);
 	}
 
 	/**
@@ -135,53 +146,55 @@ public class StageController implements Screen {
 	 * @param canvas 	The game canvas to draw to
 	 * @param millis 	The loading budget in milliseconds
 	 */
-	public StageController(String file, GameCanvas canvas, int millis, boolean start, boolean paused) {
+	public StageController(String file, GameCanvas canvas, int millis, boolean start, boolean paused, AudioController audioController, int numLevels) {
 		this.canvas  = canvas;
+		this.numLevels = numLevels;
 		budget = millis;
-
-		// We need these files loaded immediately
-		internal = new AssetDirectory( "loading.json" );
-		internal.loadAssets();
-		internal.finishLoading();
-
-		// Load the next two images immediately.
-		jump_texture = internal.getEntry( "jump", Texture.class );
-		jump_animated = false;
-		int spriteWidth = 250;
-		int spriteHeight = 250;
-		spriteFrames = TextureRegion.split(jump_texture,spriteWidth, spriteHeight);
-		float frameDuration = 0.05f;
-		animation = new Animation<>(frameDuration, spriteFrames[0]);
-		animationTime = 0f;
-
-		if(!Save.exists()) {
-			Save.create();
-		}
-
-		mainMenuStage = new MainMenuStage(internal, true);
-		settingsStage = new SettingsStage(internal, true);
-		pauseStage = new PauseStage(internal, true);
-		levelSelectStage = new LevelSelectStage(internal, true);
-		loadingStage = new LoadingStage(internal, true);
 
 		if (start) {
 			starting = true;
-			startStage = new StartStage(internal, true);
+			startStage = new StartStage("jsons/start-stage.json", true);
 			stage = startStage;
-		} else if (paused) {
-			stage = pauseStage;
+			currentStage = Stages.START;
+		}
+
+		// We need these files loaded immediately
+		internal = new AssetDirectory( "jsons/loading.json" );
+		internal.loadAssets();
+		internal.finishLoading();
+
+		this.audioController = audioController;
+		startMusic();
+
+		if(!Save.exists()) {
+			Save.create();
 		} else {
-			stage = mainMenuStage;
+			audioController.setVolume(Save.getMusic());
+			audioController.setSfxVolume(Save.getVolume());
+		}
+
+		if (!start) {
+			if (paused) {
+				pauseStage = new PauseStage("jsons/pause-stage.json", true);
+				currentStage = Stages.PAUSE;
+				stage = pauseStage;
+			} else {
+				mainMenuStage = new MainMenuStage("jsons/main-menu-stage.json", true);
+				currentStage = Stages.MAIN_MENU;
+				stage = mainMenuStage;
+			}
 		}
 
 		Gdx.input.setInputProcessor( stage );
 
-		// Start loading the real assets
-		assets = new AssetDirectory( file );
-		assets.loadAssets();
+		if (start) {
+			// Start loading the real assets
+			assets = new AssetDirectory( file );
+			assets.loadAssets();
+		}
 		active = true;
 	}
-	
+
 	/**
 	 * Called when this screen should release all resources.
 	 */
@@ -191,11 +204,23 @@ public class StageController implements Screen {
 	}
 
 	public void loadAssets() {
-		assets = new AssetDirectory("assets.json");
+		assets = new AssetDirectory("jsons/assets.json");
 		assets.loadAssets();
 		assets.finishLoading();
 	}
-	
+
+	public void startMusic() {
+		// Get some stage sound effects
+		audioController.addSoundEffect("menu-select", internal.getEntry("menu-select", SoundEffect.class));
+//		// TODO: automate this with the volume constant in internal loading json
+		// audioController.setVolume(internal.get("defaults").getFloat("volume"));
+
+//		audioController.setVolume(0.3f);
+		audioController.addStageMusic(internal.getEntry("bkg-intro", AudioSource.class));
+		audioController.playStageMusic();
+	}
+
+
 	/**
 	 * Update the status of this player mode.
 	 * <br><br>
@@ -206,12 +231,16 @@ public class StageController implements Screen {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	private void update(float delta) {
+		stage.update(delta);
 		if (starting) {
 			if(!assets.isFinished()) {
 				assets.update(budget);
 				if (assets.getProgress() >= 1.0f) {
 					starting = false;
+					mainMenuStage = new MainMenuStage("jsons/main-menu-stage.json", true);
+					currentStage = Stages.MAIN_MENU;
 					changeStage(mainMenuStage);
+					startStage.dispose();
 					startStage = null;
 				}
 			}
@@ -230,14 +259,10 @@ public class StageController implements Screen {
 			Gdx.gl.glClearColor(0, 0, 0, 1.0f);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		}
-		animation.setPlayMode(Animation.PlayMode.LOOP);
-		animationTime += Gdx.graphics.getDeltaTime();
-		TextureRegion currentFrame = animation.getKeyFrame(animationTime);
 		canvas.begin();
 		stage.getViewport().apply();
 		stage.act();
 		stage.draw();
-//		canvas.draw(jump_texture, Color.WHITE, 100,100,500,500);
 		canvas.end();
 	}
 
@@ -252,74 +277,166 @@ public class StageController implements Screen {
 	 */
 	public void render(float delta) {
 		if (active) {
-			if (!pause && startStage != null) { update(delta); }
+			update(delta);
 			draw();
 			if (pause) {
+				audioController.playStageMusic();
 				pauseStage.currLevel = this.currLevel;
-//				changeStage(pauseStage);
 			}
 			if (loading) {
-				loading = false;
-//				try {
-//					Thread.sleep(1000);
-//				} catch (InterruptedException e) {
-//					Thread.currentThread().interrupt();
-//				}
-				if (fromSelect) {
-					fromSelect = false;
-					listener.exitScreen(this, 69);
-				} else {
-					fromSelect = false;
-					listener.exitScreen(this,0);
+				if (!startLoad) {
+					audioController.playSoundEffect("menu-select");
+					assets = new AssetDirectory("jsons/assets.json");
+					assets.loadAssets();
+					startLoad = true;
+				}
+				assets.update();
+				if (assets.isFinished()) {
+					audioController.pauseStageMusic();
+					loading = false;
+					if (fromSelect) {
+						fromSelect = false;
+						startLoad = false;
+						listener.exitScreen(this, 69);
+					} else {
+						fromSelect = false;
+						startLoad = false;
+						listener.exitScreen(this, 0);
+					}
+//					loading = false;
+//					if (fromSelect) {
+//						fromSelect = false;
+//						listener.exitScreen(this, 69);
+//					} else {
+//						fromSelect = false;
+//						listener.exitScreen(this, 0);
+//					}
 				}
 			}
 
-			// We are ready, notify our listener
-			if (mainMenuStage.isPlay() && listener != null) {
-				loading = true;
-				fromSelect = false;
-				changeStage(loadingStage);
-				getStage().act();
-				getStage().draw();
+			if (currentStage == Stages.MAIN_MENU) {
+				if (mainMenuStage.isPlay() && listener != null) {
+//				audioController.playSoundEffect("menu-select");
+					loading = true;
+					fromSelect = false;
+					loadingStage = new LoadingStage("jsons/loading-stage.json", true);
+					changeStage(loadingStage);
+					currentStage = Stages.LOADING;
+					getStage().act();
+					getStage().draw();
+					mainMenuStage.dispose();
+					mainMenuStage = null;
 //				listener.exitScreen(this, 0);
-			} else if (mainMenuStage.isSettings()) {
-				mainMenuStage.setSettingsState(0);
-				changeStage(settingsStage);
-			} else if (mainMenuStage.isLevelSelect()) {
-				mainMenuStage.setLevelSelectState(0);
-				changeStage(levelSelectStage);
-			} else if (settingsStage.isBack() || levelSelectStage.isBack()) {
-				if (settingsStage.isBack()) {
-					settingsStage.exit();
+				} else if (mainMenuStage.isSettings()) {
+					audioController.playSoundEffect("menu-select");
+					mainMenuStage.setSettingsState(0);
+					settingsStage = new SettingsStage("jsons/settings-stage.json", true);
+					settingsStage.setAudioController(this.audioController);
+					changeStage(settingsStage);
+					currentStage = Stages.SETTINGS;
+					mainMenuStage.dispose();
+					mainMenuStage = null;
+				} else if (mainMenuStage.isLevelSelect()) {
+					audioController.playSoundEffect("menu-select");
+					mainMenuStage.setLevelSelectState(0);
+					levelSelectStage = new LevelSelectStage("jsons/level-select-stage.json", true, 32);
+//					levelSelectStage.setNumLevels(numLevels);
+					changeStage(levelSelectStage);
+					currentStage = Stages.LEVEL_SELECT;
+					mainMenuStage.dispose();
+					mainMenuStage = null;
+				} else if (mainMenuStage.isExit() && listener != null) {
+					audioController.playSoundEffect("menu-select");
+					mainMenuStage.dispose();
+					mainMenuStage = null;
+					listener.exitScreen(this, 99);
 				}
-				settingsStage.setBackButtonState(0);
-				levelSelectStage.setBackButtonState(0);
-				changeStage(mainMenuStage);
-			} else if (levelSelectStage.isPlay() && listener != null) {
-				loading = true;
-				fromSelect = true;
-				changeStage(loadingStage);
-				getStage().act();
-				getStage().draw();
-				levelSelectStage.setPlayButtonState(0);
-				selectedLevel = levelSelectStage.getSelectedLevel();
-//				listener.exitScreen(this, 69);
-			} else if (pauseStage.isResume() && listener != null) {
-				pause = false;
-				pauseStage.setResumeButtonState(0);
-				pauseStage.currLevel = null;
-				listener.exitScreen(this, 25);
-			} else if (pauseStage.isMainMenu() && listener != null) {
-				pause = false;
-				pauseStage.setMainMenuState(0);
-				pauseStage.currLevel = null;
-				mainMenuStage.createActors();
-				changeStage(mainMenuStage);
-				listener.exitScreen(this, 79);
-			} else if (mainMenuStage.isExit() && listener != null) {
-				listener.exitScreen(this, 99);
+			} else if (currentStage == Stages.SETTINGS) {
+				if (pause && settingsStage.isBack()) {
+					audioController.playSoundEffect("menu-select");
+					settingsStage.exit();
+					currLevel.updateControls();
+					settingsStage.setBackButtonState(0);
+					changeStage(pauseStage);
+					currentStage = Stages.PAUSE;
+					settingsStage.dispose();
+					settingsStage = null;
+				} else if (settingsStage.isBack() && !pause) {
+					audioController.playSoundEffect("menu-select");
+						settingsStage.exit();
+					settingsStage.setBackButtonState(0);
+					mainMenuStage = new MainMenuStage("jsons/main-menu-stage.json", true);
+					changeStage(mainMenuStage);
+					currentStage = Stages.MAIN_MENU;
+					settingsStage.dispose();
+					settingsStage = null;
+				}
+			} else if (currentStage == Stages.LEVEL_SELECT) {
+				if (levelSelectStage.isBack() && !pause) {
+					audioController.playSoundEffect("menu-select");
+					levelSelectStage.setBackButtonState(0);
+					mainMenuStage = new MainMenuStage("jsons/main-menu-stage.json", true);
+					changeStage(mainMenuStage);
+					currentStage = Stages.MAIN_MENU;
+					levelSelectStage.dispose();
+					levelSelectStage = null;
+				} else if (levelSelectStage.isPlay() && listener != null) {
+					audioController.playSoundEffect("menu-select");
+					loading = true;
+					fromSelect = true;
+					loadingStage = new LoadingStage("jsons/loading-stage.json", true);
+					changeStage(loadingStage);
+					currentStage = Stages.LOADING;
+					getStage().act();
+					getStage().draw();
+					levelSelectStage.setPlayButtonState(0);
+					selectedLevel = levelSelectStage.getSelectedLevel();
+					levelSelectStage.dispose();
+					levelSelectStage = null;
+				}
+			} else if (currentStage == Stages.PAUSE) {
+					if (pauseStage.isRestart() && listener != null) {
+						audioController.playSoundEffect("menu-select");
+						audioController.pauseStageMusic();
+						pause = false;
+						pauseStage.setResumeButtonState(0);
+						pauseStage.currLevel = null;
+						pauseStage.dispose();
+						pauseStage = null;
+						listener.exitScreen(this, 81);
+					} else if (pauseStage.isResume() && listener != null) {
+						audioController.playSoundEffect("menu-select");
+						audioController.pauseStageMusic();
+						pause = false;
+						pauseStage.setResumeButtonState(0);
+						pauseStage.currLevel = null;
+						pauseStage.dispose();
+						pauseStage = null;
+						listener.exitScreen(this, 25);
+					} else if (pauseStage.isSettings() && listener != null) {
+						audioController.playSoundEffect("menu-select");
+						pauseStage.setSettingsState(0);
+						settingsStage = new SettingsStage("jsons/settings-stage.json", true);
+						settingsStage.setAudioController(this.audioController);
+						changeStage(settingsStage);
+						currentStage = Stages.SETTINGS;
+//						pauseStage.dispose();
+//						pauseStage = null;
+					} else if (pauseStage.isMainMenu() && listener != null) {
+						audioController.playSoundEffect("menu-select");
+						pause = false;
+						pauseStage.setMainMenuState(0);
+						pauseStage.currLevel = null;
+						mainMenuStage = new MainMenuStage("jsons/main-menu-stage.json", true);
+						changeStage(mainMenuStage);
+						currentStage = Stages.MAIN_MENU;
+						pauseStage.dispose();
+						pauseStage = null;
+						listener.exitScreen(this, 79);
+					}
+				}
 			}
-		}
+
 	}
 
 	/**
@@ -394,7 +511,24 @@ public class StageController implements Screen {
 	 */
 	private void changeStage(StageWrapper s) {
 		stage = s;
-		Gdx.input.setInputProcessor(s);
+		if (s == settingsStage) {
+			Gdx.input.setInputProcessor(settingsStage.inputMultiplexer);
+		} else {
+			Gdx.input.setInputProcessor(s);
+		}
 		resize(canvas.getWidth(), canvas.getHeight());
 	}
+	// LEVEL_SELECT, LOADING, MAIN_MENU, PAUSE, SETTINGS, START
+//	private void changeStage(Stages stage) {
+//		mainMenuStage = new MainMenuStage(internal, true);
+//		pauseStage = new PauseStage(internal, true);
+//		LevelSelectStage.setNumLevels(numLevels);
+//		levelSelectStage = new LevelSelectStage(internal, true);
+//		loadingStage = new LoadingStage(internal, true);
+//		settingsStage = new SettingsStage(internal, true);
+//		settingsStage.setAudioController(audioController);
+//		if (stage == Stages.LOADING) {
+//			this.stage.dispose();
+//		}
+//	}
 }

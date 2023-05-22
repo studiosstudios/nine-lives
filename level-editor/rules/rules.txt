@@ -1,0 +1,4 @@
+./DefaultLab_rules.tmx
+./window_rules.tmx
+./lab-bkg-rules.tmx
+./forest-wall-rules.tmx

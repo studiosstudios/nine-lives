@@ -1,16 +1,16 @@
 package edu.cornell.gdiac.game.object;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
-import edu.cornell.gdiac.game.obstacle.PolygonObstacle;
+import edu.cornell.gdiac.game.obstacle.ComplexObstacle;
 import edu.cornell.gdiac.util.Direction;
 
 import java.util.HashMap;
@@ -19,7 +19,10 @@ import java.util.HashMap;
  * An activatable that changes dimension when activated.
  */
 public class Door extends BoxObstacle implements Activatable {
-
+    private Cap cap;
+    private static float capSize;
+    private Vector2 capClosedPos;
+    private Vector2 capOpenPos;
     /** Current activation state */
     private boolean activated;
     /** Starting activation state */
@@ -39,18 +42,25 @@ public class Door extends BoxObstacle implements Activatable {
     /** 1 if closing, -1 if opening, 0 if static */
     private float closing;
     /** x position of the door when fully closed */
-    private final float x;
+    private float x;
     /** y position of the door when fully closed */
-    private final float y;
+    private float y;
     private int textureSize;
-
     private TextureRegion top;
-
     private TextureRegion bottom;
-
     private TextureRegion middle;
-
     private static float shrink;
+    private Color baseColor = new Color();
+    private static TextureRegion[][] labTileset;
+    private static TextureRegion[][] forestTileset;
+
+    private class Cap extends BoxObstacle {
+        public Cap(float width, float height) {
+            super(width, height);
+        }
+        @Override
+        public Vector2 getLinearVelocity() { return Vector2.Zero; }
+    }
 
     /**
      * Creates a new Door object.
@@ -62,18 +72,22 @@ public class Door extends BoxObstacle implements Activatable {
      * @param scale          Draw scale for drawing
      * @param textureSize    Size of texture in pixels
      */
-    public Door(float width, float height, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int textureSize){
+    public Door(float width, float height, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int textureSize, String biome){
         super(width, height);
-//
-//        setTexture(tMap.get("door"));
-        TextureRegion[][] tiles = tMap.get("door").split(tMap.get("door").getTexture(), textureSize, textureSize);
+        if (labTileset == null) {
+            labTileset = tMap.get("door").split(textureSize, textureSize);
+        }
+        if (forestTileset == null) {
+            forestTileset = tMap.get("forest-door").split(textureSize, textureSize);
+        }
+        TextureRegion[][] tiles = biome.equals("metal") ? labTileset : forestTileset;
         top = tiles[0][1];
         middle = tiles[0][2];
         bottom = tiles[0][0];
         bottom.setRegion(0, textureSize/2, textureSize, textureSize/2); //remove weird line
+        baseColor.set((Color) properties.get("baseColor",  Color.WHITE));
         this.textureSize = textureSize;
         setDrawScale(scale);
-        setBodyType(BodyDef.BodyType.StaticBody);
         setDensity(objectConstants.getFloat( "density", 0.0f ));
         setFriction(objectConstants.getFloat( "friction", 0.0f ));
         setRestitution(objectConstants.getFloat( "restitution", 0.0f ));
@@ -86,19 +100,59 @@ public class Door extends BoxObstacle implements Activatable {
         y = (float) properties.get("y") + objectConstants.get("offset").getFloat(1) - height/2f;
         switch (angle) {
             case UP:
+                width -= shrink;
+                cap = new Cap(width/2f, capSize);
+                capClosedPos = new Vector2(x, y + height/2f - capSize/2f);
+                capOpenPos = new Vector2(x, y - height/2f + capSize * 1.5f);
+                cap.setPosition(capClosedPos);
+                height -= capSize;
+                y -= capSize/2f;
+                break;
             case DOWN:
                 width -= shrink;
+                cap = new Cap(width/2f, capSize);
+                capClosedPos = new Vector2(x, y - height/2f + capSize/2f);
+                capOpenPos = new Vector2(x, y + height/2f - capSize * 1.5f);
+                cap.setPosition(capClosedPos);
+                height -= capSize;
+                y += capSize/2f;
                 break;
             case RIGHT:
+                height -= shrink;
+                cap = new Cap(capSize, height/2f);
+                capClosedPos = new Vector2(x + width/2f - capSize/2f, y);
+                capOpenPos = new Vector2(x - width/2f + capSize*1.5f, y);
+                cap.setPosition(capClosedPos);
+                width -= capSize;
+                x -= capSize/2f;
+                break;
             case LEFT:
                 height -= shrink;
+                cap = new Cap(capSize, height/2f);
+                capClosedPos = new Vector2(x - width/2f + capSize/2f, y);
+                capOpenPos = new Vector2(x + width/2f - capSize*1.5f, y);
+                cap.setPosition(capClosedPos);
+                width -= capSize;
+                x += capSize/2f;
                 break;
         }
         this.width = width;
         this.height = height;
-        setDimension(width, height);
         setX(x);
         setY(y);
+        setDimension(width, height);
+        setBodyType(BodyDef.BodyType.StaticBody);
+        setGravityScale(0);
+        setFixedRotation(true);
+
+        cap.setBodyType(BodyDef.BodyType.DynamicBody);
+        cap.setGravityScale(0);
+        cap.setFixedRotation(true);
+        cap.setDrawScale(scale);
+        cap.setDensity(objectConstants.getFloat( "density", 0.0f ));
+        cap.setFriction(objectConstants.getFloat( "friction", 0.0f ));
+        cap.setRestitution(objectConstants.getFloat( "restitution", 0.0f ));
+
         initTiledActivations(properties);
     }
 
@@ -110,9 +164,9 @@ public class Door extends BoxObstacle implements Activatable {
      * @param scale          Draw scale for drawing
      * @param textureSize    Size of texture in pixels
      */
-    public Door(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int textureSize){
+    public Door(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int textureSize, String biome){
         this((float) properties.get("width"), (float) properties.get("height"),
-                properties, tMap, scale, textureSize);
+                properties, tMap, scale, textureSize, biome);
     }
 
     /**
@@ -122,33 +176,41 @@ public class Door extends BoxObstacle implements Activatable {
     public void update(float dt) {
         super.update(dt);
         ticks += closing;
-        if (ticks <= 0){
+
+        if (closing == -1 && cap.getPosition().dst(capClosedPos) > capOpenPos.dst(capClosedPos)) {
+            cap.setPosition(capOpenPos);
+            cap.setSensor(true);
             setActive(false);
             closing = 0;
-            ticks = 0;
-            return;
-        }
-        if (ticks >= totalTicks){
-            ticks = (int) totalTicks;
+        } else if (closing == 1 && cap.getPosition().dst(capOpenPos) > capOpenPos.dst(capClosedPos)){
+            cap.setPosition(capClosedPos);
+            cap.setBodyType(BodyDef.BodyType.StaticBody);
             closing = 0;
-            return;
         }
         switch (angle) {
             case DOWN:
-                setY(y + height * (1-ticks / totalTicks)/2f);
-                setDimension(getWidth(),  height * ticks / totalTicks, false);
+                cap.setVY(-(height - capSize) * closing / totalTicks * 60f);
+                cap.setX(x);
+                setY(y + (cap.getY() - (y - height/2f + capSize/2f) + capSize)/2f);
+                setDimension(width,  height - (cap.getY() - (y - height/2f + capSize/2f) + capSize), false);
                 break;
             case UP:
-                setY(y - height * (1-ticks / totalTicks)/2f);
-                setDimension(getWidth(),  height * ticks / totalTicks, false);
-                break;
-            case LEFT:
-                setX(x + width * (1-ticks / totalTicks)/2f);
-                setDimension(width * ticks / totalTicks,  getHeight(), false);
+                cap.setVY((height - capSize) * closing / totalTicks * 60f);
+                cap.setX(x);
+                setY(y - (y + height/2f - capSize/2f - cap.getY() + capSize)/2f);
+                setDimension(width,  height - (y + height/2f - capSize/2f - cap.getY() + capSize), false);
                 break;
             case RIGHT:
-                setX(x - width * (1-ticks / totalTicks)/2f);
-                setDimension(width * ticks / totalTicks,  getHeight(), false);
+                cap.setVX((width - capSize) * closing / totalTicks * 60f);
+                cap.setY(y);
+                setX(x - (x + width/2f - capSize/2f - cap.getX() + capSize)/2f);
+                setDimension(width - (x + width/2f - capSize/2f - cap.getX() + capSize), height, false);
+                break;
+            case LEFT:
+                cap.setVX(-(width - capSize) * closing / totalTicks * 60f);
+                cap.setY(y);
+                setX(x + (cap.getX() - (x - width/2f + capSize/2f) + capSize)/2f);
+                setDimension(width - (cap.getX() - (x - width/2f + capSize/2f) + capSize), height, false);
                 break;
         }
     }
@@ -164,13 +226,16 @@ public class Door extends BoxObstacle implements Activatable {
      * @return      true if object allocation succeeded
      */
     public boolean activatePhysics(World world){
-        if (!super.activatePhysics(world)) {
+        if (!super.activatePhysics(world) || !cap.activatePhysics(world)) {
             return false;
         }
         if (!activated) {
             deactivated(world);
             setActive(false);
+            cap.setSensor(true);
+            cap.setPosition(capOpenPos);
         }
+        cap.getBody().setUserData(this);
         return true;
     }
 
@@ -181,13 +246,15 @@ public class Door extends BoxObstacle implements Activatable {
     public void activated(World world){
         closing = 1;
         setActive(true);
+        cap.setSensor(false);
     }
 
     /**
-     * Begins opens door.
+     * Begins opening door.
      */
     @Override
     public void deactivated(World world){
+        cap.setBodyType(BodyDef.BodyType.DynamicBody);
         closing = -1;
     }
 
@@ -221,14 +288,14 @@ public class Door extends BoxObstacle implements Activatable {
         float topY, botY, topX, botX, midX, midY, rotation;
         float scale = 32f/textureSize;
 
-        float length = angle == Direction.UP || angle == Direction.DOWN ? height : width;
-        float midHeight = Math.max((length * ticks/totalTicks - 1), 0);
+        float length = capSize + (angle == Direction.UP || angle == Direction.DOWN ? getDimension().y : getDimension().x);
+        float midHeight = Math.max((length - 1), 0) ;
         if (midHeight > 0){
-            middle.setRegionHeight((int) (textureSize * (midHeight + 0.5)));
+            middle.setRegionHeight((int) (textureSize * (midHeight + 0.5f)));
             top.setRegionHeight(textureSize);
         } else {
             middle.setRegionHeight(0);
-            top.setRegionHeight((int) (textureSize * length * ticks/totalTicks));
+            top.setRegionHeight((int) (textureSize * length));
         }
 
         if (angle == Direction.UP || angle == Direction.DOWN) {
@@ -251,7 +318,7 @@ public class Door extends BoxObstacle implements Activatable {
                     canvas.draw(top, Color.WHITE, 0, 0, (topX+dx)*drawScale.x, topY*drawScale.y, rotation, scale, scale);
                     canvas.draw(middle, Color.WHITE, 0, 0, (midX+dx)*drawScale.x, midY*drawScale.y, rotation, scale, scale);
                 }
-                canvas.draw(bottom, Color.WHITE, 0, 0, (botX+dx)*drawScale.x, botY*drawScale.y, rotation, scale, scale);
+                canvas.draw(bottom, baseColor, 0, 0, (botX+dx)*drawScale.x, botY*drawScale.y, rotation, scale, scale);
             }
         } else {
             if (angle == Direction.RIGHT) {
@@ -273,10 +340,16 @@ public class Door extends BoxObstacle implements Activatable {
                     canvas.draw(top, Color.WHITE, 0, 0, topX * drawScale.x, (topY + dy) * drawScale.y, rotation, scale, scale);
                     canvas.draw(middle, Color.WHITE, 0, 0, midX * drawScale.x, (midY + dy) * drawScale.y, rotation, scale, scale);
                 }
-                canvas.draw(bottom, Color.WHITE, 0, 0, botX*drawScale.x, (botY+dy)*drawScale.y, rotation, scale, scale);
+                canvas.draw(bottom, baseColor, 0, 0, botX*drawScale.x, (botY+dy)*drawScale.y, rotation, scale, scale);
             }
         }
 
+    }
+
+    @Override
+    public void drawDebug(GameCanvas canvas){
+        super.drawDebug(canvas);
+        cap.drawDebug(canvas);
     }
 
     @Override
@@ -289,19 +362,29 @@ public class Door extends BoxObstacle implements Activatable {
     public static void setConstants(JsonValue constants) {
         objectConstants = constants;
         shrink = constants.getFloat("shrink");
+        capSize = constants.getFloat("cap_size");
     }
 
     public ObjectMap<String, Object> storeState(){
         ObjectMap<String, Object> stateMap = super.storeState();
-        stateMap.put("ticks", ticks);
         stateMap.put("closing", closing);
         stateMap.put("activated", activated);
+        stateMap.put("capState", cap.storeState());
         return stateMap;
     }
 
     public void loadState(ObjectMap<String, Object> stateMap){
         super.loadState(stateMap);
-        ticks = (int) stateMap.get("ticks");
         closing = (float) stateMap.get("closing");
+        activated = (boolean) stateMap.get("activated");
+        if (activated) {
+            closing = 1;
+            setActive(true);
+            cap.setSensor(false);
+        } else {
+            cap.setBodyType(BodyDef.BodyType.DynamicBody);
+            closing = -1;
+        }
+        cap.loadState((ObjectMap<String, Object>) stateMap.get("capState"));
     }
 }

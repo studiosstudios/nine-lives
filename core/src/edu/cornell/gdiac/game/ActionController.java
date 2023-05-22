@@ -31,20 +31,20 @@ public class ActionController {
     protected Rectangle bounds;
     /** The world scale */
     protected Vector2 scale;
-    /** The hashmap for sounds */
-    private HashMap<String, Sound> soundAssetMap;
     /** The JSON value constants */
     private JsonValue constantsJSON;
-    /** The default sound volume */
-    private float volume;
-    /** The jump sound */
-    private long jumpId = -1;
-    /** The plop sound */
-    private long plopId = -1;
-    /** The pew (fire) sound */
-    private long fireId = -1;
-    /** The meow sound */
-    private long meowId = -1;
+//    /** The hashmap for sounds */
+//    private HashMap<String, Sound> soundAssetMap;
+//    /** The default sound volume */
+//    private float volume;
+//    /** The jump sound */
+//    private long jumpId = -1;
+//    /** The plop sound */
+//    private long plopId = -1;
+//    /** The pew (fire) sound */
+//    private long fireId = -1;
+//    /** The meow sound */
+//    private long meowId = -1;
     /** The level */
     private Level level;
     private Array<AIController> mobControllers;
@@ -56,23 +56,29 @@ public class ActionController {
     private Vector2 startPointCache = new Vector2();
     private Vector2 endPointCache = new Vector2();
     private ObjectMap<DeadBody, Float> hitDeadbodies = new ObjectMap<>();
+    public AudioController audioController;
+    /** Camera to set zoom for CameraRegions*/
+    private Camera camera;
+    private boolean combiningLives;
 
     /**
      * Creates and initialize a new instance of a ActionController
      *
      * @param scale	    The game scale Vector2
-     * @param volume    The volume of the game
+     * @param audioController    The audio controller of the game
      */
-    public ActionController(Vector2 scale, float volume) {
+    public ActionController(Vector2 scale, AudioController audioController) {
         this.scale = scale;
-        this.volume = volume;
+//        this.volume = volume;
+        this.audioController = audioController;
+        combiningLives = false;
         mobControllers = new Array<>();
     }
-
-    /**
-     * Sets the volume for all sounds in the game.
-     * */
-    public void setVolume(float volume) { this.volume = volume; }
+//
+//    /**
+//     * Sets the volume for all sounds in the game.
+//     * */
+//    public void setVolume(float volume) { this.volume = volume; }
 
     /**
      * Sets the level model
@@ -82,6 +88,14 @@ public class ActionController {
     public void setLevel(Level level){
         this.level = level;
         this.bounds = level.bounds;
+    }
+
+    /**
+     * Set camera for current instance of collisionController
+     * @param camera camera for current canvas
+     */
+    public void setCamera(Camera camera){
+        this.camera = camera;
     }
 
     /**
@@ -105,12 +119,14 @@ public class ActionController {
         return mobControllers;
     }
 
-    /**
-     * Sets the hashmaps for Texture Regions, Sounds, Fonts, and sets JSON value constants
-     *
-     * @param sMap the hashmap for Sounds
-     */
-    public void setAssets(HashMap<String, Sound> sMap){ soundAssetMap = sMap; }
+    public boolean isCombiningLives() { return combiningLives; }
+
+//    /**
+//     * Sets the hashmaps for Texture Regions, Sounds, Fonts, and sets JSON value constants
+//     *
+//     * @param sMap the hashmap for Sounds
+//     */
+//    public void setAssets(HashMap<String, Sound> sMap){ soundAssetMap = sMap; }
 
     /**
      * Called when the Screen is paused.
@@ -139,14 +155,21 @@ public class ActionController {
         InputController ic = InputController.getInstance();
         Cat cat = level.getCat();
 
-        updateSpiritLine(dt, ic.holdSwitch() && !ic.didSwitch());
+        updateSpiritLine(dt, level.canSwitch && ic.holdSwitch() && !ic.didSwitch());
 
         for (SpiritRegion sr : level.getSpiritRegionArray()) {
             sr.setSpiritRegionColorOpacity(ic.holdSwitch());
             sr.update();
         }
 
-        if (ic.didSwitch()) {
+        if (level.getSpiritParticles().size != 0 && level.getdeadBodyArray().size == 0) {
+            combiningLives = true;
+            moveSpirits();
+        } else {
+            combiningLives = false;
+        }
+
+        if (level.canSwitch && ic.didSwitch()) {
             //switch body
             DeadBody body = level.getNextBody();
             if (body != null && body.isSwitchable()){
@@ -155,6 +178,7 @@ public class ActionController {
                 cat.setPosition(body.getSwitchPosition());
                 cat.setLinearVelocity(body.getLinearVelocity());
                 cat.setFacingRight(body.isFacingRight());
+                cat.setDashTimer(body.getDashTimer());
                 level.removeDeadBody(body);
             } else {
                 cat.failedSwitch();
@@ -164,14 +188,14 @@ public class ActionController {
             cat.setVerticalMovement(ic.getVertical());
             cat.setJumpPressed(ic.didJump());
             cat.setClimbingPressed(ic.didClimb());
-            cat.setDashPressed(ic.didDash());
+            cat.setDashPressed(level.canDash && ic.didDash());
             cat.setMeowing(ic.didMeow());
 
             cat.updateState();
             cat.applyForce();
 
             for (String soundName : cat.getSoundBuffer()) {
-                soundAssetMap.get(soundName).play();
+                audioController.playSoundEffect(soundName);
             }
             cat.getSoundBuffer().clear();
         }
@@ -179,6 +203,7 @@ public class ActionController {
         //Die if off-screen
         if (level.bounds.y - cat.getY() > 10){
             die(false);
+            audioController.playSoundEffect("death-fall");
         }
 
         //Prepare dead bodies for raycasting
@@ -226,6 +251,12 @@ public class ActionController {
             mob.setPosition(mob.getX() + mobControl.getAction(), mob.getY());
             mob.applyForce();
         }
+
+//        // combing lives
+//        if (combiningLives) {
+//            System.out.println("combining lives");
+//            ic.setDisableAll(true);
+//        }
 
     }
 
@@ -343,7 +374,8 @@ public class ActionController {
 
             //object is grounded, update base velocity to be average of velocities of grounds
             if (numGrounded > 0 && !baseVel.scl(1f / numGrounded).epsilonEquals(Vector2.Zero, 0.001f)) {
-                obj.setBaseVelocity(baseVel);
+                obj.setBaseVX(baseVel.x);
+                if (baseVel.y < 0) obj.setBaseVY(baseVel.y); //so that objects fly up but do not bounce when going down
                 grounded.put(obj, true);
                 return true;
             }
@@ -404,16 +436,6 @@ public class ActionController {
             }
         }
 
-        if (level.getCat().getBody().getFixtureList().contains(rayCastFixture, true)){
-            die(true);
-        }
-
-        //check deadbodies
-        for (DeadBody db : hitDeadbodies.keys()){
-            if (hitDeadbodies.get(db) < closestFraction) {
-                db.setTouchingLaser(true);
-            }
-        }
     }
 
     /**
@@ -426,16 +448,16 @@ public class ActionController {
     private void getRayCastEnd(Vector2 start, Direction dir){
         switch (dir) {
             case UP:
-                endPointCache.set(start.x,bounds.height);
+                endPointCache.set(start.x,bounds.height + bounds.y);
                 break;
             case LEFT:
-                endPointCache.set(0, start.y);
+                endPointCache.set(bounds.x, start.y);
                 break;
             case DOWN:
-                endPointCache.set(start.x, 0);
+                endPointCache.set(start.x, bounds.y);
                 break;
             case RIGHT:
-                endPointCache.set(bounds.width, start.y);
+                endPointCache.set(bounds.width + bounds.x, start.y);
                 break;
         }
     }
@@ -479,6 +501,7 @@ public class ActionController {
             level.setDied(true);
             // decrement lives
             level.setNumLives(level.getNumLives()-1);
+            level.getCat().setLightActive(false);
             // 0 lives
             if (level.getNumLives() <= 0) {
                 level.resetLives();
@@ -490,32 +513,64 @@ public class ActionController {
         }
     }
 
+    /**
+     * Main function called when cat reaches goal object.
+     * Spirit particles are spawned at dead bodies and dead bodies are removed.
+     */
     public void recombineLives() {
-        level.resetLives();
-        for (DeadBody body: level.getdeadBodyArray()) {
-            level.removeDeadBody(body);
-            Particle spirit = new Particle();
-            spirit.setX(body.getX());
-            spirit.setY(body.getY());
-            float x = level.getCat().getX() - body.getX();
-            float y = level.getCat().getY() - body.getY();
-            float angle = (float) Math.atan((double)x/(double)y);
-            spirit.setAngle(angle);
-//            level.getSpiritParticles().add(spirit);
+        if (level.getNumLives() != level.getMaxLives() && level.getdeadBodyArray().size == 0) {
+            level.resetLives();
+            return;
         }
-//        moveSpirits();
-    }
 
-
-    public void moveSpirits() {
-        while (level.getSpiritParticles().size != 0) {
-            System.out.println(level.getSpiritParticles());
-            for (Particle spirit : level.getSpiritParticles()) {
-                spirit.move();
-                if (Math.abs(spirit.getX() - level.getCat().getX()) <= 5f) {
-                    level.getSpiritParticles().removeValue(spirit, true);
+        if (level.getSpiritParticles().size == 0) {
+            while (level.getdeadBodyArray().size != 0) {
+                for (DeadBody body: level.getdeadBodyArray()) {
+                    Particle spirit = new Particle();
+                    spirit.setX(body.getX());
+                    spirit.setY(body.getY());
+                    level.addSpiritParticle(spirit);
+                    //TODO: smooth remove of dead bodies
+                    level.removeDeadBody(body);
                 }
             }
+        }
+    }
+
+    /**
+     * Moves the spirit particles.
+     * The particles go towards the Cat.
+     *
+     */
+    public void moveSpirits() {
+        if (level.getSpiritParticles().size != 0) {
+            for (Particle spirit : level.getSpiritParticles()) {
+                float x = level.getCat().getX() - spirit.getX();
+                float y = level.getCat().getY() - spirit.getY();
+                float angle = (float) Math.atan((double)y/(double)x);
+                spirit.setAngle(angle, 0.2f);
+                spirit.move();
+                if (Math.abs(spirit.getX() - level.getCat().getX()) <= 1f &&
+                    Math.abs(spirit.getY() - level.getCat().getY()) <= 1f) {
+                    level.getSpiritParticles().removeValue(spirit, true);
+                    level.setNumLives(level.getNumLives() + 1);
+                }
+            }
+        }
+    }
+
+    /**
+     * Moves the cat a certain distance horizontally
+     *
+     * @param dist to move horizontally
+     * @param maxDist the maximum distance from the goal
+     */
+    public void moveCat(float dist, float maxDist) {
+        Cat cat = level.getCat();
+        if (cat.getX() <= level.getGoal().getX() + maxDist) {
+            cat.setHorizontalMovement(dist);
+            cat.updateState();
+            cat.applyForce();
         }
     }
 
@@ -575,9 +630,7 @@ public class ActionController {
         @Override
         public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
             Obstacle obs = (Obstacle) fixture.getBody().getUserData();
-            if (fixture.getUserData() != null && fixture.getUserData().equals(DeadBody.catBodyName)) {
-                hitDeadbodies.put((DeadBody) fixture.getBody().getUserData(), fraction);
-            } else if ( fraction < closestFraction && (!fixture.isSensor() || obs instanceof Cat)) {
+            if ( fraction < closestFraction && (!fixture.isSensor() || obs instanceof Cat)) {
                 closestFraction = fraction;
                 rayCastPoint.set(point);
                 rayCastFixture = fixture;

@@ -41,12 +41,14 @@ public class DeadBody extends CapsuleObstacle implements Movable {
     private Animation<TextureRegion> animation;
     private float time;
     private ObjectSet<Fixture> groundFixtures = new ObjectSet<>();
-
     public static final String groundSensorName = "deadBodyGround";
     public static final String centerSensorName = "deadBodyCenter";
     public static final String catBodyName = "deadCatBody";
     public static final String catSensorsName = "deadCatSensors";
     public static final String hitboxSensorName = "deadBodyHitBox";
+    public static final String spikesSensorName = "deadBodySpikes";
+    private int flameCounter;
+    private int dashTimer;
     private PolygonShape hitboxShape;
     /** List of shapes corresponding to the sensors attached to this body */
     private Array<Shape> sensorShapes;
@@ -101,6 +103,26 @@ public class DeadBody extends CapsuleObstacle implements Movable {
      */
     public void removeHazard(){ hazardsTouching--; }
 
+    /** A fixture has started touching a flame */
+    public void addFlame(){
+        if (flameCounter++ == 0) {
+            hazardsTouching++;
+            setBurning(true);
+        }
+    }
+
+    /** A fixture has stopped touching a flame */
+    public void removeFlame() {
+        if ( --flameCounter == 0) {
+            hazardsTouching--;
+            setBurning(false);
+        }
+    }
+
+    public DeadBody(TextureRegion texture, TextureRegion burnTexture, Vector2 scale, Vector2 position, Vector2 textureScale) {
+        this(texture, burnTexture, scale, position, textureScale, 0);
+    }
+
     /**
      * Creates a new dead body. Note that the Box2D body created in this constructor is not the actual solid part of the
      * dead body, it is a sensor body that is identical to the body of the Cat. This is so that we have a reference for
@@ -112,10 +134,10 @@ public class DeadBody extends CapsuleObstacle implements Movable {
      * @param scale         Draw scale.
      * @param position      Position
      */
-    public DeadBody(TextureRegion texture, TextureRegion burnTexture, Vector2 scale, Vector2 position, Vector2 textureScale) {
+    public DeadBody(TextureRegion texture, TextureRegion burnTexture, Vector2 scale, Vector2 position, Vector2 textureScale, int dashTimer) {
         super(0, 0, objectConstants.getFloat("capsuleWidth"), objectConstants.getFloat("capsuleHeight"), Orientation.TOP);
 
-        spriteFrames = TextureRegion.split(burnTexture.getTexture(), 2048,2048);
+        spriteFrames = TextureRegion.split(burnTexture.getTexture(), 256,256);
         animation = new Animation<>(0.025f, spriteFrames[0]);
         time = 0f;
         setTexture(texture);
@@ -140,10 +162,13 @@ public class DeadBody extends CapsuleObstacle implements Movable {
         burning = false;
         faceRight = true;
         spiritRegions = new ObjectMap<>();
+        this.dashTimer = dashTimer;
         //create centre sensor (for fixing to spikes)
 
         setName("deadBody");
     }
+
+    public int getDashTimer() { return dashTimer; }
 
     /**
      * Creates the physics Body(s) for this object, adding them to the world.
@@ -176,12 +201,17 @@ public class DeadBody extends CapsuleObstacle implements Movable {
         Fixture solidFixture = body.createFixture(hitboxDef);
         solidFixture.setUserData(hitboxSensorName);
 
+        //spikes solid sensor
+        JsonValue spikesSensorJV = objectConstants.get("spikes_sensor");
+        Fixture fix = generateSensor(solidOffset,
+                spikesSensorJV.getFloat("width", 0) * getWidth()/2, hy,
+                spikesSensorName);
+        fix.setSensor(false);
+
         //center sensor
         JsonValue centerSensorJV = objectConstants.get("center_sensor");
-        Fixture fix = generateSensor(solidOffset,
-                centerSensorJV.getFloat("width", 0) * getWidth()/2, hy,
-                centerSensorName);
-        fix.setSensor(false);
+        generateSensor(new Vector2(0, -centerSensorJV.getFloat("y_offset")), centerSensorJV.getFloat("width"),
+                centerSensorJV.getFloat("height"), centerSensorName);
 
         JsonValue groundSensorJV = objectConstants.get("ground_sensor");
         Fixture a = generateSensor(new Vector2(0, -getHeight() / 2),
@@ -249,6 +279,8 @@ public class DeadBody extends CapsuleObstacle implements Movable {
             }
         }
 
+        if (groundFixtures.size > 0) dashTimer = 0;
+
 
         setRelativeVX(getRelativeVelocity().x/damping);
 
@@ -313,7 +345,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
             TextureRegion frame = animation.getKeyFrame(time);
             float x = textureX * drawScale.x;
             float y = textureY * drawScale.y;
-            canvas.draw(frame, color, origin.x, origin.y,  x,y, getAngle(), -effect/drawScale.x, 1.0f/drawScale.y);
+            canvas.draw(frame, color, origin.x, origin.y,  x,y, getAngle(), -effect * textureScale.x, textureScale.y);
         }
         else{
             canvas.draw(texture, color, origin.x, origin.y, textureX * drawScale.x, textureY * drawScale.y, getAngle(), effect * textureScale.x, textureScale.y);
@@ -329,14 +361,14 @@ public class DeadBody extends CapsuleObstacle implements Movable {
      */
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
-        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
-        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+//        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+//        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
         for (Shape shape : sensorShapes) {
             if (shape instanceof PolygonShape) {
-                canvas.drawPhysics((PolygonShape) shape, Color.RED, getX() - xTranslate, getY() - yTranslate,
+                canvas.drawPhysics((PolygonShape) shape, Color.RED, getX(), getY(),
                         getAngle(), drawScale.x, drawScale.y);
             } else if (shape instanceof CircleShape) {
-                canvas.drawPhysics((CircleShape) shape, Color.RED, getX() - xTranslate, getY() - yTranslate, drawScale.x, drawScale.y);
+                canvas.drawPhysics((CircleShape) shape, Color.RED, getX(), getY(), drawScale.x, drawScale.y);
             }
         }
     }
@@ -366,6 +398,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
             jointInfo.put((Spikes) j.getBodyB().getUserData(), j.getAnchorA());
         }
         stateMap.put("jointInfo", jointInfo);
+        stateMap.put("dashTimer", dashTimer);
         return stateMap;
     }
 
@@ -377,6 +410,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
         super.loadState(stateMap);
         burnTicks = (int) stateMap.get("burnTicks");
         faceRight = (boolean) stateMap.get("faceRight");
+        dashTimer = (int) stateMap.get("dashTimer");
         joints.clear();
     }
 }

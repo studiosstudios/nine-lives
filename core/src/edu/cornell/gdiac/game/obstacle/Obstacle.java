@@ -17,14 +17,20 @@
  */
 package edu.cornell.gdiac.game.obstacle;
 
+import box2dLight.ChainLight;
+import box2dLight.ConeLight;
+import box2dLight.Light;
+import box2dLight.PointLight;
+import box2dLight.RayHandler;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.*;  // For GameCanvas
 
-import java.util.HashMap;
 
 /**
  * Base model class to support collisions.
@@ -79,6 +85,14 @@ public abstract class Obstacle {
 	protected Vector2 relativeVelocity = new Vector2();
 	/** Hashmap to store data if this obstacle is paused. */
 	private ObjectMap<String, Object> pausedState;
+	/** box2dlight associated with this object */
+	private Light light;
+	/** Color of the box2dlight associated with this object */
+	protected Color lightColor = new Color();
+	/** Greyscale RGB values of box2dlight color*/
+	protected float greyColor;
+	/** RGB weights for converting light colors to greyscale.*/
+	private Vector3 greyConv = new Vector3(0.333f, 0.333f, 0.333f);
 
 	/// BodyDef Methods
 	/**
@@ -364,7 +378,185 @@ public abstract class Obstacle {
 	public void setAngularVelocity(float value) {
 		bodyinfo.angularVelocity = value;
 	}
-	
+
+	/**
+	 * @return the light associated with this obstacle (may be null)
+	 */
+	public Light getLight() { return light; }
+
+	/**
+	 * @return The box2dlight associated with this obstacle, casted as a ChainLight
+	 */
+	public ChainLight getLightAsChain() { return (ChainLight) light; }
+
+	/**
+	 * Sets the box2dlight associated with this obstacle
+	 *
+	 * @param l the box2dlight to associate with this obstacle
+	 */
+	public void setLight(Light l) { light = l;}
+
+	/**
+	 * Sets the current light associated with this obstacle to active, if such light exists
+	 *
+	 * @param active Whether the current light should be active
+	 */
+	public void setLightActive(boolean active) { if (light != null) light.setActive(active); }
+
+	/**
+	 * Creates a box2dlight PointLight given a valid objectConstants and rayHandler
+	 * <br><br>
+	 * The objectConstants should contain the following fields:<br>
+	 * 	light: {
+	 * 	  distance,
+	 * 	  color,
+	 * 	  offset
+	 * 	  OPTIONAL: activated_color (for objects that might be "activated", like buttons or checkpoints)
+	 * 	}
+	 * <br>
+	 * @param lightData valid JSON of object constants corresponding to this obstacle
+	 * @param rayHandler Ray handler currently associated with the active world
+	 */
+	public void createPointLight(JsonValue lightData, RayHandler rayHandler) {
+		float xOffset = lightData.get("offset").getFloat(0), yOffset = lightData.get("offset").getFloat(1);
+		lightColor.set(Color.valueOf(lightData.getString("color")));
+		greyColor = greyColor(lightColor);
+		light = new PointLight(rayHandler, 100, lightColor, lightData.getFloat("distance"), xOffset, yOffset);
+	}
+
+	/**
+	 * Creates a box2dlight PointLight. The additional parameters are optional; the lightData JsonValue
+	 * should be valid, but the additional parameters allow for more customization when desired.
+	 * @param lightData valid JSON of object constants corresponding to this obstacle
+	 * @param rayHandler Ray handler currently associated with the active world
+	 * @param color Color this box2dlight should adopt. If null, will draw from lightData instead
+	 * @param distance Distance this box2dlight should adopt. If 0, will draw from lightData instead
+	 * @param offset Offset vector this box2dlight should adopt. If 0, will draw from lightData instead
+	 */
+	public void createPointLight(JsonValue lightData, RayHandler rayHandler, Color color, int distance, Vector2 offset) {
+		float xOffset = offset.x != 0 ? offset.x : lightData.get("offset").getFloat(0), yOffset = offset.y != 0 ? offset.y : lightData.get("offset").getFloat(1);
+		lightColor.set(color != null ? color : Color.valueOf(lightData.getString("color")));
+		greyColor = greyColor(lightColor);
+		light = new PointLight(rayHandler, 100, lightColor, distance != 0 ? distance : lightData.getFloat("distance"), xOffset, yOffset);
+	}
+
+	/**
+	 * Creates a box2dlight ConeLight given a valid objectConstants and rayHandler
+	 * <br><br>
+	 * The objectConstants should contain the following fields:<br>
+	 * 	light: {
+	 *	  distance
+	 *        color
+	 *        offset
+	 *        directionDegree
+	 *        coneDegree
+	 * 	}
+	 * <br>
+	 * @param lightData valid JSON of object constants corresponding to this obstacle
+	 * @param rayHandler Ray handler currently associated with the active world
+	 */
+	public void createConeLight(JsonValue lightData, RayHandler rayHandler) {
+		float xOffset = lightData.get("offset").getFloat(0), yOffset = lightData.get("offset").getFloat(1);
+		lightColor.set(Color.valueOf(lightData.getString("color")));
+		greyColor = greyColor(lightColor);
+		light = new ConeLight(
+				rayHandler,
+				100,
+				lightColor,
+				lightData.getFloat("distance"),
+				xOffset,
+				yOffset,
+				lightData.getFloat("directionDegree"),
+				lightData.getFloat("coneDegree"));
+	}
+
+	/**
+	 * Creates a box2dlight Chainlight given a valid objectConstants and rayHandler
+	 * <br><br>
+	 * The objectConstants should contain the following fields:<br>
+	 * 	light: {
+	 *	  distance
+	 *        color
+	 *        direction
+	 * 	}
+	 * <br>
+	 * @param lightData valid JSON of object constants corresponding to this obstacle
+	 * @param rayHandler Ray handler currently associated with the active world
+	 */
+	public void createChainLight(JsonValue lightData, RayHandler rayHandler) {
+		createChainLight(lightData, rayHandler, new float[0]);
+	}
+
+	/**
+	 * Creates a box2dlight Chainlight given a valid objectConstants and rayHandler
+	 * <br><br>
+	 * The objectConstants should contain the following fields:<br>
+	 * 	light: {
+	 *	  distance
+	 *        color
+	 *        direction
+	 * 	}
+	 * <br>
+	 * @param lightData valid JSON of object constants corresponding to this obstacle
+	 * @param rayHandler Ray handler currently associated with the active world
+	 * @param vertices Vertices defining the ChainLight
+	 */
+	public void createChainLight(JsonValue lightData, RayHandler rayHandler, float[] vertices) {
+		lightColor.set(Color.valueOf(lightData.getString("color")));
+		greyColor = greyColor(lightColor);
+		light = new ChainLight(
+				rayHandler,
+				100,
+				lightColor,
+				lightData.getFloat("distance"),
+				lightData.getInt("direction"),
+				vertices);
+	}
+
+	/**
+	 * Creates a box2dlight Chainlight given a valid objectConstants and rayHandler
+	 * <br><br>
+	 * The objectConstants should contain the following fields:<br>
+	 * 	light: {
+	 *	  distance
+	 *        color
+	 * 	}
+	 * <br>
+	 * @param lightData valid JSON of object constants corresponding to this obstacle
+	 * @param rayHandler Ray handler currently associated with the active world
+	 * @param direction Direction this ChainLight should emit light
+	 */
+	public void createChainLight(JsonValue lightData, RayHandler rayHandler, int direction) {
+		lightColor.set(Color.valueOf(lightData.getString("color")));
+		greyColor = greyColor(lightColor);
+		light = new ChainLight(
+				rayHandler,
+				100,
+				lightColor,
+				lightData.getFloat("distance"),
+				direction);
+	}
+
+	/**
+	 * Applies a greyscale effect to the box2dlight associated with this object.
+	 *
+	 * @param greyscale  Amount of greyscale to apply: 0 is none, 1 is full.
+	 */
+	public void setLightGreyscale(float greyscale){
+		if (light == null) return;
+		light.setColor(lightColor.r * (1-greyscale) + greyColor * greyscale,
+				lightColor.g * (1-greyscale) + greyColor * greyscale,
+				lightColor.b * (1-greyscale) + greyColor * greyscale, lightColor.a);
+	}
+
+	/**
+	 * @param c   Color to convert to greyscale
+	 * @return    Float RGB value of color converted to greyscale
+	 */
+	protected float greyColor(Color c){
+		return greyConv.x * c.r + greyConv.x * c.g + greyConv.x * c.b;
+	}
+
 	/**
 	 * Returns true if the body is active
 	 *
@@ -1128,6 +1320,26 @@ public abstract class Obstacle {
 	 * @param world Box2D world that stores body
 	 */
 	public abstract void deactivatePhysics(World world);
+
+	/**
+	 * TODO: Make this abstract
+	 * Creates the appropriate light for this object, be it a PointLight or ConeLight, with
+	 * appropriate setting (XRay, soft, etc)
+	 * @param rayHandler Ray Handler associated with the currently active box2d world
+	 */
+	public void createLight(RayHandler rayHandler) {}
+
+	/**
+	 * Removes the light stored in this Obstacle class.<br>
+	 * Note that some subclasses may also store lights within their own fields; for example, the
+	 * Laser class stores two ChainLights in an array. This destroyLights method should override
+	 * and handle those extraneous cases.<br>
+	 */
+	public void destroyLight() {
+		if (light != null) {
+			light.remove(true);
+		}
+	}
 
 	/**
 	 * Updates the object's physics state (NOT GAME LOGIC).

@@ -17,7 +17,7 @@ import java.util.HashMap;
 /**
  * A Platform is a kinematic body that can move between two points.
  */
-public class Platform extends PolygonObstacle implements Activatable {
+public class Platform extends BoxObstacle implements Activatable {
     /** Current activation state */
     private boolean activated;
     /** Starting activation state */
@@ -42,6 +42,10 @@ public class Platform extends PolygonObstacle implements Activatable {
     private TextureRegion[][] textures;
     private int tileSize;
     private Vector2 other;
+    private float width;
+    private float height;
+    private static TextureRegion[][] labTileset;
+    private static TextureRegion[][] forestTileset;
 
     /**
      * Creates a new Door object.
@@ -53,19 +57,29 @@ public class Platform extends PolygonObstacle implements Activatable {
      * @param scale          Draw scale for drawing
      * @param tileSize       Size in pixels of tileset tiles
      */
-    public Platform(float width, float height, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize){
-        super(new float[]{0, 0, width, 0, width, height, 0, height});
+    public Platform(float width, float height, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, String biome){
+        super(width, height);
+        this.width = width;
+        this.height = height;
         setName("platform");
         setBodyType(BodyDef.BodyType.KinematicBody);
+        setGravityScale(0);
+        setFixedRotation(true);
         setDensity(objectConstants.getFloat( "density", 0.0f ));
         setFriction(objectConstants.getFloat( "friction", 0.0f ));
         setRestitution(objectConstants.getFloat( "restitution", 0.0f ));
         setDrawScale(scale);
         setTexture(tMap.get("steel"));
         this.tileSize = tileSize;
-        initTextures(tMap.get("platforms"), (int) width, (int) height);
-        setX((float) properties.get("x"));
-        setY((float) properties.get("y") - height);
+        if (labTileset == null) {
+            labTileset = tMap.get("platform").split(tileSize, tileSize);
+        }
+        if (forestTileset == null) {
+            forestTileset = tMap.get("forest-platform").split(tileSize, tileSize);
+        }
+        initTextures(biome.equals("metal") ? labTileset : forestTileset, (int) width, (int) height);
+        setX((float) properties.get("x") + width/2f);
+        setY((float) properties.get("y") - height/2f);
         startPos = getPosition().cpy();
         speed = (float) properties.get("speed", 5f);
         damping = (float) properties.get("damping", 0.1f);
@@ -79,13 +93,12 @@ public class Platform extends PolygonObstacle implements Activatable {
     /**
      * Initializes the tileset TextureRegion array for this platform based on its width and height.
      *
-     * @param tileset   Platform tileset (16 tiles)
+     * @param tiles     Platform tileset (16 tiles)
      * @param width     Width in world units
      * @param height    Height in world units
      */
-    private void initTextures(TextureRegion tileset, int width, int height){
+    private void initTextures(TextureRegion[][] tiles, int width, int height){
         textures = new TextureRegion[width][height];
-        TextureRegion[][] tiles = tileset.split(tileSize, tileSize);
 
         if (width == 1 && height == 1){
             textures[0][0] = tiles[0][0];
@@ -137,8 +150,8 @@ public class Platform extends PolygonObstacle implements Activatable {
      * @param scale          Draw scale for drawing
      * @param tileSize       Size in pixels of tileset tiles
      */
-    public Platform(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize){
-        this((float) properties.get("width"), (float) properties.get("height"), properties, tMap, scale, tileSize);
+    public Platform(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int tileSize, String biome){
+        this((float) properties.get("width"), (float) properties.get("height"), properties, tMap, scale, tileSize, biome);
     }
 
     /**
@@ -149,15 +162,21 @@ public class Platform extends PolygonObstacle implements Activatable {
         super.update(dt);
         if (moving == 0) { return; }
 
+        dt = 1/60f;
+
         //check if should start slowing down to 0
         if (target.dst(getPosition()) - estimateDist(dt) <= 0){
             targetVel.set(0, 0);
+        } else {
+            //in case something bad happens
+            targetVel.set(disp.x * moving, disp.y * moving).nor().scl(speed);
         }
 
         //check if close enough to target pos
         if (getPosition().epsilonEquals(target, 0.01f)){
             moving = 0;
             setPosition(target);
+            setBodyType(BodyDef.BodyType.KinematicBody);
             targetVel.set(0, 0);
             setVX(0);
             setVY(0);
@@ -167,9 +186,17 @@ public class Platform extends PolygonObstacle implements Activatable {
         if (other.dst(getPosition()) > other.dst(target)) {
             moving = 0;
             setPosition(target);
+            setBodyType(BodyDef.BodyType.KinematicBody);
             setVX(0);
             setVY(0);
             targetVel.set(0, 0);
+        }
+
+        //check if moved off of path
+        if (!getPosition().sub(target).isOnLine(disp)) {
+            float proj = getPosition().sub(target).dot(disp)/disp.len2();
+            setX(target.x + proj * disp.x);
+            setY(target.y + proj * disp.y);
         }
 
         //update velocity
@@ -209,7 +236,8 @@ public class Platform extends PolygonObstacle implements Activatable {
         for (int dx = 0; dx < getWidth(); dx++) {
             for (int dy = 0; dy < getHeight(); dy++){
                 TextureRegion platformTile = textures[dx][dy];
-                canvas.draw(platformTile, Color.WHITE, 0, 0, (getX() + dx)*drawScale.x, (getY() +  dy)*drawScale.y, 0, drawScale.x/tileSize, drawScale.y/tileSize);
+                canvas.draw(platformTile, Color.WHITE, 0, 0, (getX() - width/2f + dx)*drawScale.x,
+                        (getY() - height/2f +  dy)*drawScale.y, 0, drawScale.x/tileSize, drawScale.y/tileSize);
             }
         }
     }
@@ -220,14 +248,16 @@ public class Platform extends PolygonObstacle implements Activatable {
         targetVel.set(-disp.x, -disp.y).nor().scl(speed);
         target.set(startPos);
         other.set(disp.x + startPos.x, disp.y + startPos.y);
+        setBodyType(BodyDef.BodyType.DynamicBody);
     }
 
-    //region ACTIVATABLE METHODS
+
     public void deactivated(World world){
         moving = 1;
         targetVel.set(disp.x, disp.y).nor().scl(speed);
         target.set(disp.x + startPos.x, disp.y + startPos.y);
         other.set(startPos);
+        setBodyType(BodyDef.BodyType.DynamicBody);
     }
 
     //region ACTIVATABLE METHODS

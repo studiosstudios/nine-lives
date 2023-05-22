@@ -22,8 +22,12 @@ public class NineLives extends Game implements ScreenListener {
 	private StageController menu;
 	/** The WorldController that contains all LevelControllers*/
 	private GameController controller;
+	/** The AudioController to control all sound effects and music */
+	private AudioController audioController;
 
-	private final int TOTAL_LEVELS = 6;
+	private final int TOTAL_LEVELS = 32;
+	private boolean quickLaunchFromTiled;
+	private String filepath;
 
 	/**
 	 * Creates a new game from the configuration settings.
@@ -31,7 +35,10 @@ public class NineLives extends Game implements ScreenListener {
 	 * This method configures the asset manager, but does not load any assets
 	 * or assign any screen.
 	 */
-	public NineLives() { }
+	public NineLives(boolean quickLaunchFromTiled, String filepath) {
+		this.quickLaunchFromTiled = quickLaunchFromTiled;
+		this.filepath = filepath;
+	}
 
 	/**
 	 * Called when the Application is first created.
@@ -41,8 +48,8 @@ public class NineLives extends Game implements ScreenListener {
 	 */
 	public void create() {
 		canvas  = new GameCanvas();
-		menu = new StageController("assets.json", canvas, 1, true, false);
-
+		audioController = new AudioController();
+		menu = new StageController("jsons/assets.json", canvas, 1, true, false, audioController, TOTAL_LEVELS);
 		menu.setScreenListener(this);
 		setScreen(menu);
 	}
@@ -63,8 +70,10 @@ public class NineLives extends Game implements ScreenListener {
 			menu = null;
 		}
 
-		controller.dispose();
-		controller = null;
+		if (controller != null) {
+			controller.dispose();
+			controller = null;
+		}
 
 		// Unload all of the resources
 		if (directory != null) {
@@ -85,7 +94,13 @@ public class NineLives extends Game implements ScreenListener {
 	 * @param height The new height in pixels
 	 */
 	public void resize(int width, int height) {
+		Gdx.gl.glViewport(0, 0, width, height);
 		canvas.resize();
+		if (menu != null) {
+			if (menu.pause) {
+				menu.resize(width, height);
+			}
+		}
 		super.resize(width,height);
 	}
 
@@ -96,11 +111,15 @@ public class NineLives extends Game implements ScreenListener {
 	 */
 	private void startGame(int numLevels, int startLevel){
 		directory = menu.getAssets();
-		controller = new GameController(numLevels);
+		if (quickLaunchFromTiled) {
+			controller = new GameController(filepath, audioController);
+		} else {
+			controller = new GameController(numLevels, audioController);
+		}
 		controller.gatherAssets(directory);
-		controller.setScreenListener(this);
 		controller.setCanvas(canvas);
-		controller.init(startLevel);
+		controller.init(quickLaunchFromTiled ? 1 : startLevel);
+		controller.setScreenListener(this);
 		setScreen(controller);
 		menu.dispose();
 		menu = null;
@@ -116,10 +135,15 @@ public class NineLives extends Game implements ScreenListener {
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
 		if (screen == menu && exitCode == 0) {
-			menu.loadAssets();
-			startGame(TOTAL_LEVELS, 1);
+//			menu.loadAssets();
+			if (Save.getStarted()) {
+				startGame(TOTAL_LEVELS, Save.getProgress());
+			} else {
+				Save.setStarted(true);
+				startGame(TOTAL_LEVELS, 1);
+			}
 		} else if (screen == menu && exitCode == 69) {
-			menu.loadAssets();
+//			menu.loadAssets();
 			startGame(TOTAL_LEVELS, menu.getSelectedLevel());
 		} else if (screen == menu && exitCode == 25) {
 			controller.resume();
@@ -128,18 +152,29 @@ public class NineLives extends Game implements ScreenListener {
 			menu = null;
 		} else if (exitCode == GameController.EXIT_QUIT && screen == controller) {
 			// pause stage
-			menu = new StageController("assets.json", canvas, 1, false, true);
+			menu = new StageController("jsons/assets.json", canvas, 1, false, true, audioController, TOTAL_LEVELS);
 			menu.setScreenListener(this);
 			menu.pause = true;
+			menu.currentStage = StageController.Stages.PAUSE;
 			menu.currLevel = controller;
 			controller.stageController = menu;
 			controller.pause();
 //			setScreen(menu);
 //			controller.getCurrLevel().getLevel().draw(canvas,false);
+		} else if (exitCode == 81) {
+			controller.reset();
+			controller.resume();
+			setScreen(controller);
+			menu.dispose();
+			menu = null;
 		} else if (exitCode == 79) {
 			if (menu != null) {
 				setScreen(menu);
 			}
+		} else if (exitCode == 89) {
+			menu = new StageController("jsons/assets.json", canvas, 1, false, false, audioController, TOTAL_LEVELS);
+			menu.setScreenListener(this);
+			setScreen(menu);
 		} else if (exitCode == 99) {
 			Gdx.app.exit();
 		}

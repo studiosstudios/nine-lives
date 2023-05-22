@@ -1,6 +1,9 @@
 package edu.cornell.gdiac.game.object;
 
+import box2dLight.PositionalLight;
+import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -10,6 +13,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.*;
 import com.badlogic.gdx.Gdx;
+import edu.cornell.gdiac.util.Direction;
 
 import java.util.HashMap;
 
@@ -23,7 +27,7 @@ public abstract class Activator extends PolygonObstacle {
     /** Filmstrip */
     protected Animation<TextureRegion> animation;
     /** If the activator is activating objects */
-    protected boolean active;
+    protected boolean activating;
     /** The unique string id of this Activator */
     protected String id;
     /** Array of animation frames */
@@ -31,6 +35,8 @@ public abstract class Activator extends PolygonObstacle {
     /** How long the activator has been animating */
     private float animationTime;
     /** Shape of the sensor that presses this activator */
+    private Texture topTexture;
+    private TextureRegion bottomTexture;
     private PolygonShape sensorShape;
     /** The number of objects pressing on this activator */
     public int numPressing;
@@ -38,11 +44,16 @@ public abstract class Activator extends PolygonObstacle {
     private boolean pan;
     /** If pressing this activator for the first time should pan the camera */
     private boolean shouldPan;
+    private Color color = new Color();
+    /** direction of this button */
+    private Direction dir;
+    private String biome;
+    private boolean prevPressed;
 
     /**
      * @return true if the activator is currently activating
      */
-    public boolean isActivating(){ return active; }
+    public boolean isActivating(){ return activating; }
 
     /**
      * @return true if an object is pressing this activator
@@ -74,44 +85,82 @@ public abstract class Activator extends PolygonObstacle {
      * @param scale          Draw scale for drawing
      * @param textureScale   Texture scale for rescaling texture
      */
-    public Activator(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
+    public Activator(ObjectMap<String, Object> properties, String texture_name, String base_name, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale, String biome, boolean resize){
         super(objectConstants.get("body_shape").asFloatArray());
-        setDrawScale(scale);
-        int spriteWidth = 32;
-        int spriteHeight = 32;
+        topTexture = tMap.get(texture_name).getTexture();
+        spriteFrames = TextureRegion.split(topTexture, 256,256);
+        this.biome = biome;
         setTextureScale(textureScale);
-        spriteFrames = TextureRegion.split(tMap.get("button_anim").getTexture(), spriteWidth, spriteHeight);
-        float frameDuration = 0.2f;
-        animation = new Animation<>(frameDuration, spriteFrames[0]);
-        setBodyType(BodyDef.BodyType.StaticBody);
+
+        //i am so sorry for how i am doing this
+        if (biome.equals("forest")) {
+            if (resize) {
+                setTextureScale(textureScale.x / 2f, textureScale.y / 2f);
+                origin.set(-128, -128);
+            } else {
+                origin.set(0, -8);
+            }
+        }
+        bottomTexture = tMap.get(base_name);
+        setRestitution(0);
+        float totalAnimationTime = 0.2f;
+        animation = new Animation<>(totalAnimationTime/spriteFrames[0].length, spriteFrames[0]);
+        setBodyType(properties.containsKey("attachName") ? BodyDef.BodyType.DynamicBody : BodyDef.BodyType.StaticBody);
         animation.setPlayMode(Animation.PlayMode.REVERSED);
         animationTime = 0f;
 
+        setAngle((float) ((float) properties.get("rotation") * Math.PI/180));
+        dir = Direction.angleToDir((int) ((float) properties.get("rotation")));
+        Vector2 offset = new Vector2(objectConstants.get("offset").getFloat(0), objectConstants.get("offset").getFloat(1));
+        Direction.rotateVector(offset, dir);
+        setX((float) properties.get("x") + offset.x);
+        setY((float) properties.get("y") + offset.y);
+
         setDrawScale(scale);
-        setTexture(tMap.get("button"));
         setFixedRotation(true);
 
         id = (String) properties.get("id");
-        setX((float) properties.get("x")+objectConstants.get("offset").getFloat(0));
-        setY((float) properties.get("y")+objectConstants.get("offset").getFloat(1));
+//        setX((float) properties.get("x")+objectConstants.get("offset").getFloat(0));
+//        setY((float) properties.get("y")+objectConstants.get("offset").getFloat(1));
+        color.set((Color) properties.get("color", Color.RED));
         pan = (boolean) properties.get("shouldPan", false);
-        active = false;
+        activating = false;
+        prevPressed = false;
+    }
+
+    @Override
+    public void createLight(RayHandler rayHandler) {
+        createPointLight(objectConstants.get("light"), rayHandler);
+        // Slight offset here because activators are weird for some reason... Along with the rotation
+        ((PositionalLight) getLight()).attachToBody(getBody(), 0.4f, 0.5f, Direction.dirToDegrees(dir));
+        getLight().setSoft(true);
+        getLight().setXray(true);
     }
 
     @Override
     public void draw(GameCanvas canvas){
+        TextureRegion currentFrame;
+        if (prevPressed ^ isPressed()) animationTime = 0;
+        prevPressed = isPressed();
         if(isPressed()){
-            animation.setPlayMode(Animation.PlayMode.REVERSED);
-            animationTime += Gdx.graphics.getDeltaTime();
-            TextureRegion currentFrame = animation.getKeyFrame(animationTime);
-            canvas.draw(currentFrame, getX()*drawScale.x,getY()*drawScale.x);
-        }
-        else {
             animation.setPlayMode(Animation.PlayMode.NORMAL);
             animationTime += Gdx.graphics.getDeltaTime();
-            TextureRegion currentFrame = animation.getKeyFrame(animationTime);
-            canvas.draw(currentFrame, getX()*drawScale.x,getY()*drawScale.x);
+            currentFrame = animation.getKeyFrame(animationTime);
         }
+        else {
+            animation.setPlayMode(Animation.PlayMode.REVERSED);
+            animationTime += Gdx.graphics.getDeltaTime();
+            currentFrame = animation.getKeyFrame(animationTime);
+        }
+        float x = (getX() - 0.5f)*drawScale.x;
+
+//        System.out.println();
+        if (Math.round(Math.toDegrees(getAngle())) == 180) {
+            x = x + drawScale.x;
+        }
+
+        canvas.draw(currentFrame, color, origin.x, origin.y, x, getY()*drawScale.y, getAngle(), textureScale.x,textureScale.y);
+        if (biome.equals("metal")) canvas.draw(bottomTexture, Color.WHITE, origin.x, origin.y, x, (getY())*drawScale.y, getAngle(), textureScale.x, textureScale.y);
     }
 
     /**
@@ -137,6 +186,8 @@ public abstract class Activator extends PolygonObstacle {
         sensorDef.shape = sensorShape;
 
         Fixture sensorFixture = body.createFixture( sensorDef );
+        sensorFixture.setRestitution(0);
+        sensorFixture.setFriction(0);
         sensorFixture.setUserData(this);
 
         return true;
@@ -152,9 +203,9 @@ public abstract class Activator extends PolygonObstacle {
      */
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
-        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
-        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
-        canvas.drawPhysics(sensorShape,Color.RED,getX()-xTranslate,getY()-yTranslate,getAngle(),drawScale.x,drawScale.y);
+//        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+//        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+        canvas.drawPhysics(sensorShape,Color.RED,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
     }
 
     /**
@@ -168,5 +219,17 @@ public abstract class Activator extends PolygonObstacle {
     }
     public void setPan(boolean p){
         pan = p;
+    }
+
+    @Override
+    public ObjectMap<String, Object> storeState(){
+        ObjectMap<String, Object> stateMap = super.storeState();
+        stateMap.put("activating", activating);
+        return stateMap;
+    }
+
+    public void loadState(ObjectMap<String, Object> stateMap) {
+        super.loadState(stateMap);
+        activating = (boolean) stateMap.get("activating");
     }
 }

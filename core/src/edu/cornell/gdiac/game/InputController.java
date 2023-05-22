@@ -32,6 +32,9 @@ import java.io.*;
 public class InputController {
 	/** The singleton instance of the input controller */
 	private static InputController theController = null;
+	private static final String[] bindableControlNames = new String[] {
+			"up", "down", "right", "left", "jump", "dash", "climb", "switch", "cancel", "undo", "pan"
+	};
 	
 	/** 
 	 * Return the singleton instance of the input controller
@@ -82,6 +85,15 @@ public class InputController {
 			previousMap.put(entry.name, false);
 			pressedMap.put(entry.name, false);
 		}
+		int[] userControls = Save.getControls();
+		for (int i = 0; i < userControls.length; i++) {
+			controls.put(bindableControlNames[i], userControls[i]);
+		}
+
+	}
+
+	public void changeControls() {
+
 	}
 
 	/**
@@ -197,7 +209,7 @@ public class InputController {
 	 *
 	 * @return true if the dash button was pressed.
 	 */
-	public boolean didNext() { return isClicked("next");}
+//	public boolean didNext() { return isClicked("next");}
 
 	/**
 	 * Returns true if the dash button was pressed.
@@ -207,7 +219,7 @@ public class InputController {
 	 *
 	 * @return true if the dash button was pressed.
 	 */
-	public boolean didPrev() { return isClicked("previous");}
+//	public boolean didPrev() { return isClicked("previous");}
 
 	/**
 	 * Returns true if the dash button was pressed.
@@ -231,19 +243,24 @@ public class InputController {
 	 *
 	 * @return true if the reset button was pressed.
 	 */
-	public boolean didReset() {
-		return isClicked("reset");
-	}
+//	public boolean didReset() {
+//		return isClicked("reset");
+//	}
 	
 	/**
 	 * Returns true if the player wants to go toggle the debug mode.
 	 *
 	 * @return true if the player wants to go toggle the debug mode.
 	 */
-	public boolean didDebug() {
-		return isClicked("debug");
-	}
+//	public boolean didDebug() {
+//		return isClicked("debug");
+//	}
 
+	/**
+	 * Returns true if player wants to pan the map
+	 *
+	 * @return true if the player wants to pan the map
+	 */
 	public boolean didPan() {
 		return pressedMap.get("pan");
 	}
@@ -300,6 +317,13 @@ public class InputController {
 	}
 
 	/**
+	 * Returns true if the switch button was just pressed.
+	 *
+	 * @return true if the switch button was just pressed.
+	 */
+	public boolean switchPressed() { return isClicked("switch"); }
+
+	/**
 	 * Creates a new input controller
 	 * 
 	 * The input controller attempts to connect to the X-Box controller at device 0,
@@ -347,16 +371,16 @@ public class InputController {
 		}
 		else {
 			if (pressedMap.get("right")) {
-				camHorizontal += 4.0f;
+				camHorizontal += 8f;
 			}
 			if (pressedMap.get("left")) {
-				camHorizontal -= 4.0f;
+				camHorizontal -= 8f;
 			}
 			if (pressedMap.get("up")) {
-				camVertical += 4.0f;
+				camVertical += 8f;
 			}
 			if (pressedMap.get("down")) {
-				camVertical -= 4.0f;
+				camVertical -= 8f;
 			}
 		}
 		if (writeFile != null){
@@ -418,7 +442,10 @@ public class InputController {
 	private void readKeyboard() {
 		pressedMap.put("pan", Gdx.input.isKeyPressed(controls.get("pan")));
 		for (String control : controlNames){
-			if(disableAll){
+			if(control.equals("exit")){
+				pressedMap.put("exit", Gdx.input.isKeyPressed(controls.get("exit")));
+			}
+			else if(disableAll){
 				pressedMap.put(control, false);
 			}
 			else if(pressedMap.get("pan")) {

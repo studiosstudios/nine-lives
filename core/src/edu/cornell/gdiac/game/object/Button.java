@@ -2,14 +2,8 @@ package edu.cornell.gdiac.game.object;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.physics.box2d.*;
 
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
-import edu.cornell.gdiac.game.*;
-import edu.cornell.gdiac.game.obstacle.*;
 
 import java.util.HashMap;
 
@@ -26,13 +20,16 @@ public class Button extends Activator {
      * @param scale          Draw scale for drawing
      * @param textureScale   Texture scale for rescaling texture
      */
-    public Button(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
-        super(properties, tMap, scale, textureScale);
+    public Button(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale, String biome){
+        super(properties, biome.equals("metal") ? "button-top" : "forest-button-top",
+                biome.equals("metal") ? "button-base" : "forest-button-top",tMap,scale, textureScale, biome, true);
     }
+
+
 
     /** For a button, active = isPressed() */
     public void updateActivated(){
-        active = isPressed();
+        activating = isPressed();
     }
 
 }

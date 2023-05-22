@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.game.object;
 
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -33,18 +34,26 @@ public class Checkpoint extends BoxObstacle
     private TextureRegion[][] spriteFrames;
     /** The frames of the active checkpoint animation */
     private TextureRegion[][] activeSpriteFrames;
+    /** The frames of the checkpoint activation animation */
+    private TextureRegion[][] activationSpriteFrames;
     /** How long the checkpoint has been animating */
     private float animationTime;
     /** Filmstrip of non-active checkpoint animation */
     private Animation<TextureRegion> animation;
     /** Filmstrip of active checkpoint animation */
     private Animation<TextureRegion> activeAnimation;
+    /** Filmstrip of checkpoint activation animation */
+    private Animation<TextureRegion> activationAnimation;
     /** if the player was facing right when getting this checkpoint */
     private boolean facingRight;
     /** direction of this checkpoint */
     private Direction dir;
     private Vector2 baseOffset;
     private Vector2 respawnOffset;
+    private boolean activated;
+    /** Number of fixtures touching this checkpoint */
+    private int numTouching;
+//    private boolean active;
 
     /**
      * Creates a new Checkpoint object.
@@ -58,17 +67,22 @@ public class Checkpoint extends BoxObstacle
 
         super(32/scale.x, 64/scale.y);
         current = false;
+        activated = false;
+//        active = false;
         setTextureScale(textureScale);
-        int spriteWidth = 1024;
-        int spriteHeight = 2048;
-        this.baseTexture = tMap.get("checkpoint_base");
-        this.activeBaseTexture = tMap.get("checkpoint_base_active");
-        spriteFrames = TextureRegion.split(tMap.get("checkpoint_anim").getTexture(), spriteWidth, spriteHeight);
-        activeSpriteFrames = TextureRegion.split(tMap.get("checkpoint_active_anim").getTexture(), spriteWidth, spriteHeight);
-        float frameDuration = 0.1f;
+        int spriteWidth = 128;
+        int spriteHeight = 256;
+        this.baseTexture = tMap.get("checkpoint-base");
+        this.activeBaseTexture = tMap.get("checkpoint-base-active");
+        spriteFrames = TextureRegion.split(tMap.get("checkpoint-anim").getTexture(), spriteWidth, spriteHeight);
+        activeSpriteFrames = TextureRegion.split(tMap.get("checkpoint-active-anim").getTexture(), spriteWidth, spriteHeight);
+        activationSpriteFrames = TextureRegion.split(tMap.get("checkpoint-activation-anim").getTexture(), spriteWidth, spriteHeight+spriteHeight/2);
+
+        float frameDuration = 1/10f;
 
         animation = new Animation<>(frameDuration, spriteFrames[0]);
         activeAnimation = new Animation<>(frameDuration, activeSpriteFrames[0]);
+        activationAnimation = new Animation<>(1/12f, activationSpriteFrames[0]);
 
         animation.setPlayMode(Animation.PlayMode.LOOP);
         animationTime = 0f;
@@ -97,6 +111,8 @@ public class Checkpoint extends BoxObstacle
 
         respawnOffset = new Vector2(objectConstants.get("respawn_offset").getFloat(0),objectConstants.get("respawn_offset").getFloat(1));
         Direction.rotateVector(respawnOffset, dir);
+
+        numTouching = 0;
     }
 
     @Override
@@ -115,6 +131,10 @@ public class Checkpoint extends BoxObstacle
     }
 
     public boolean facingRight() { return facingRight; }
+
+    public void addTouching() {numTouching++;}
+    public void removeTouching() {numTouching--;}
+    public boolean isFirstTouch() { return numTouching == 1; }
 
     /**
      * Creates the physics Body(s) for this object, adding them to the world.
@@ -140,17 +160,36 @@ public class Checkpoint extends BoxObstacle
     }
 
     /**
+     * Creates PointLight for Checkpoint with soft and xray true
+     * @param rayHandler Ray Handler associated with the currently active box2d world
+     */
+    public void createLight(RayHandler rayHandler) {
+        createPointLight(objectConstants.get("light"), rayHandler);
+        getLight().attachToBody(getBody());
+        getLight().setSoft(true);
+        getLight().setXray(true);
+    }
+
+    /**
      * @param b               whether we want the checkpoint to be active
      * @param facingRight     if the player was facing right when getting this checkpoint
      */
     public void setCurrent(boolean b, boolean facingRight){
         current = b;
+//        active = b;
         this.facingRight = facingRight;
+        JsonValue lightData = objectConstants.get("light");
+        activated = false;
         if (b) {
-            animation.setPlayMode(Animation.PlayMode.LOOP);
+            animationTime = 0;
+            current = true;
+            lightColor = Color.valueOf(lightData.getString("activated_color"));
         } else {
+            current = false;
             activeAnimation.setPlayMode(Animation.PlayMode.LOOP);
+            lightColor = Color.valueOf(lightData.getString("color"));
         }
+        greyColor = greyColor(lightColor);
     }
 
     /**
@@ -162,14 +201,8 @@ public class Checkpoint extends BoxObstacle
 
     public void drawBase(GameCanvas canvas) {
        if (current) {
-//           TextureRegion singleFrame = spriteFrames[0][0];
-//           TextureRegion[][] splitTexture = TextureRegion.split(singleFrame.getTexture(), singleFrame.getRegionWidth(), singleFrame.getRegionHeight()/2);
-//           setTexture(splitTexture[1][1]);
            setTexture(baseTexture);
         } else {
-//           TextureRegion singleFrame = activeSpriteFrames[0][0];
-//           TextureRegion[][] splitTexture = TextureRegion.split(singleFrame.getTexture(), singleFrame.getRegionWidth(), singleFrame.getRegionHeight()/2);
-//           setTexture(splitTexture[1][1]);
            setTexture(activeBaseTexture);
        }
         super.draw(canvas);
@@ -179,8 +212,18 @@ public class Checkpoint extends BoxObstacle
     public void draw(GameCanvas canvas){
         animationTime += Gdx.graphics.getDeltaTime();
         if (current) {
-            setTexture(animation.getKeyFrame(animationTime));
-            animation.setPlayMode(Animation.PlayMode.LOOP);
+            if (activated) {
+                setTexture(animation.getKeyFrame(animationTime));
+                animation.setPlayMode(Animation.PlayMode.LOOP);
+            } else {
+                setTexture(activationAnimation.getKeyFrame(animationTime));
+                    activationAnimation.setPlayMode(Animation.PlayMode.NORMAL);
+                if (activationAnimation.isAnimationFinished(animationTime)) {
+                    setTexture(animation.getKeyFrame(animationTime));
+                    animation.setPlayMode(Animation.PlayMode.LOOP);
+                    activated = true;
+                }
+            }
         } else {
             setTexture(activeAnimation.getKeyFrame(animationTime));
             activeAnimation.setPlayMode(Animation.PlayMode.LOOP);
@@ -196,9 +239,9 @@ public class Checkpoint extends BoxObstacle
 
     public void drawDebug(GameCanvas canvas){
         super.drawDebug(canvas);
-        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
-        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
-        canvas.drawPhysics(sensorShape, Color.RED, getX()-xTranslate, getY()-yTranslate, getAngle(), drawScale.x, drawScale.y);
+//        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+//        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+        canvas.drawPhysics(sensorShape, Color.RED, getX(), getY(), getAngle(), drawScale.x, drawScale.y);
     }
 
     public String getSensorName(){ return sensorName; }

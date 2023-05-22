@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.game.object;
 
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.BoxObstacle;
+import edu.cornell.gdiac.util.Direction;
 
 import java.util.HashMap;
 
@@ -19,11 +21,30 @@ public class Goal extends BoxObstacle
     protected Vector2 origin;
     /** Whether this goal is active or not */
     private boolean active;
+    /** width of the door when fully closed */
+    private final float width;
+    /** height of the door when fully closed */
+    private final float height;
+    /** x position of the door when fully closed */
+    private final float x;
+    /** y position of the door when fully closed */
+    private final float y;
+    private int textureSize;
+    private TextureRegion top;
+
+    private TextureRegion bottom;
+
+    private TextureRegion middle;
+
+    private TextureRegion topBase;
+    private TextureRegion bottomBase;
+
+    private static float shrink;
     /** The sensor shape for this goal */
     private PolygonShape sensorShape;
     /** The constants for the goal */
     protected static JsonValue objectConstants;
-    private static final String sensorName = "goalSensor";
+    private static final String sensorName = "goalobjsensor";
     /** The texture for the non-active goal */
     private TextureRegion texture;
     /** The texture for the active goal */
@@ -38,55 +59,117 @@ public class Goal extends BoxObstacle
     private Animation<TextureRegion> animation;
     /** Filmstrip of active goal animation */
     private Animation<TextureRegion> active_animation;
+    private TextureRegion inactiveFrame;
+    private TextureRegion finalGoal;
+    private boolean activated;
+    private boolean isFinal;
 
     /**
-     * Creates a new Goal object.
+     * Creates a new Door object.
      *
      * @param properties     String-Object map of properties for this object
      * @param tMap           Texture map for loading textures
      * @param scale          Draw scale for drawing
-     * @param textureScale   Texture scale for rescaling texture
+     * @param textureSize    Size of texture in pixels
      */
-    public Goal(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
+    public Goal(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int textureSize){
+        this((float) properties.get("width"), (float) properties.get("height"),
+                properties, tMap, scale, textureSize);
+    }
 
-        super(32/scale.x, 64/scale.y);
-        active = false;
-        setTextureScale(textureScale);
-        int spriteWidth = 1024;
-        int spriteHeight = 2048;
-        this.texture = tMap.get("goal_obj");
-        this.activeTexture = tMap.get("goal_obj");
-//        spriteFrames = TextureRegion.split(tMap.get("checkpoint_anim").getTexture(), spriteWidth, spriteHeight);
-//        activeSpriteFrames = TextureRegion.split(tMap.get("checkpoint_active_anim").getTexture(), spriteWidth, spriteHeight);
-//        float frameDuration = 0.1f;
+    /**
+     * Creates a new Door object.
+     *
+     * @param width          Width of the door
+     * @param height         Height of the door
+     * @param properties     String-Object map of properties for this object
+     * @param tMap           Texture map for loading textures
+     * @param scale          Draw scale for drawing
+     * @param textureSize    Size of texture in pixels
+     */
+    public Goal(float width, float height, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, int textureSize){
+        super(width, height);
+
+        activated = false;
+        if (properties.get("final") != null) {
+            isFinal = (boolean) properties.get("final");
+            if (isFinal) {
+                finalGoal = tMap.get("goal-final");
+                textureScale.set((float) properties.get("width") * scale.x / finalGoal.getRegionWidth(),
+                        (float) properties.get("height") * scale.y / finalGoal.getRegionHeight());
+            }
+        }
+
+        // Get the bases, split texture
+        TextureRegion[][] bases = tMap.get("goal-bases").split(tMap.get("goal-bases").getTexture(), textureSize, textureSize);
+        bottomBase = bases[0][0];
+        topBase = bases[0][1];
+
+        // Get inactive texture
+        inactiveFrame = tMap.get("goal-inactive");
+
+        // Get animations
+        int spriteWidth = 512;
+        int spriteHeight = 512;
+//        this.texture = tMap.get("goal");
+//        this.activeTexture = tMap.get("goal");
+        spriteFrames = TextureRegion.split(tMap.get("goal-idle-anim").getTexture(), spriteWidth, spriteHeight);
+//        activeSpriteFrames = TextureRegion.split(tMap.get("checkpoint-active-anim").getTexture(), spriteWidth, spriteHeight);
+        float frameDuration = 0.1f;
 //
-//        animation = new Animation<>(frameDuration, spriteFrames[0]);
+        animation = new Animation<>(frameDuration, spriteFrames[0]);
 //        active_animation = new Animation<>(frameDuration, activeSpriteFrames[0]);
 
-//        animation.setPlayMode(Animation.PlayMode.LOOP);
-//        animationTime = 0f;
+        animation.setPlayMode(Animation.PlayMode.LOOP);
+        animationTime = 0f;
+
+
+        // Split the texture
+        TextureRegion[][] tiles = tMap.get("goal-active").split(tMap.get("goal-active").getTexture(), textureSize, textureSize);
+        top = tiles[0][2];
+        middle = tiles[0][1];
+        bottom = tiles[0][0];
+
+        active = false;
+        setTextureScale(textureScale);
+
+
         setMass(0);
         setName("goal");
         setDrawScale(scale);
         setSensor(true);
-        setX((float) properties.get("x") + objectConstants.get("offset").getFloat(0));
-        setY((float) properties.get("y") + objectConstants.get("offset").getFloat(1));
-        setSensor(true);
+        x =(float) properties.get("x") + objectConstants.get("offset").getFloat(0) + width/2f;
+        y = (float) properties.get("y") + objectConstants.get("offset").getFloat(1) - height;
+
+        this.width = width;
+        this.height = height;
+        this.textureSize = textureSize;
+
+        setDimension(width, height);
+        setX(x);
+        setY(y);
+
+//        setX((float) properties.get("x") + objectConstants.get("offset").getFloat(0));
+//        setY((float) properties.get("y") + objectConstants.get("offset").getFloat(1));
+
+//        setSensor(true);
         setBodyType(BodyDef.BodyType.StaticBody);
         Vector2 solidCenter = new Vector2(0,0);
         sensorShape = new PolygonShape();
-        sensorShape.setAsBox(getWidth() / 2 * objectConstants.getFloat("solid_width_scale"),
-                getHeight() / 2 * objectConstants.getFloat("solid_height_scale"),
-                solidCenter, 0.0f);
+        sensorShape.setAsBox(width/3.8f, height, solidCenter, 0.0f);
     }
 
     @Override
-    /**
+    /**x
      * @return position of checkpoint base rather than goal origin
      */
     public Vector2 getPosition(){
         return new Vector2(getX()-objectConstants.get("base_offset").getFloat(0),getY()-objectConstants.get("base_offset").getFloat(1));
     }
+
+    public boolean isFinal() { return isFinal; }
+
+    public void activate() { activated = true; }
 
     /**
      * Creates the physics Body(s) for this object, adding them to the world.
@@ -111,76 +194,61 @@ public class Goal extends BoxObstacle
         return true;
     }
 
-//    /**
-//     * @param b  whether we want the goal to be active
-//     */
-//    public void setCurrent(boolean b){
-//        active = b;
-//        int currFrame = animation.getKeyFrameIndex(animation.getFrameDuration());
-//
-//        if (b) {
-//            animation.setPlayMode(Animation.PlayMode.LOOP);
-//        } else {
-//            active_animation.setPlayMode(Animation.PlayMode.LOOP);
-//        }
-//    }
-
-    /**
-     * @return true if the goal is active
-     */
-    public boolean isActive(){
-        return active;
-    }
-
-    /**
-     * Set whether the goal is active or not
-     * @param val to set active
-     */
-    public void setActive(Boolean val) { active = val; }
-
     @Override
-    public void draw(GameCanvas canvas) {
-        if (active) {
-//           TextureRegion singleFrame = spriteFrames[0][0];
-//           TextureRegion[][] splitTexture = TextureRegion.split(singleFrame.getTexture(), singleFrame.getRegionWidth(), singleFrame.getRegionHeight()/2);
-//           setTexture(splitTexture[1][1]);
-            setTexture(texture);
-        } else {
-//           TextureRegion singleFrame = activeSpriteFrames[0][0];
-//           TextureRegion[][] splitTexture = TextureRegion.split(singleFrame.getTexture(), singleFrame.getRegionWidth(), singleFrame.getRegionHeight()/2);
-//           setTexture(splitTexture[1][1]);
-            setTexture(activeTexture);
-        }
-        super.draw(canvas);
-    }
+    public void draw(GameCanvas canvas){
+        animationTime += Gdx.graphics.getDeltaTime();
+        float scale = 32f/textureSize;
 
-//    @Override
-//    public void draw(GameCanvas canvas){
-//        animationTime += Gdx.graphics.getDeltaTime();
-//        if (current) {
-//            setTexture(animation.getKeyFrame(animationTime));
-//            animation.setPlayMode(Animation.PlayMode.LOOP);
-//        } else {
-//            setTexture(active_animation.getKeyFrame(animationTime));
-//            active_animation.setPlayMode(Animation.PlayMode.LOOP);
-//        }
-//        super.draw(canvas);
-//    }
+        if (isFinal) {
+            canvas.draw(finalGoal, Color.WHITE, 0, 0, (x-1f)*drawScale.x, (y-0.2f)*drawScale.y, 0, textureScale.x, textureScale.y);
+        } else {
+            setTexture(animation.getKeyFrame(animationTime));
+            animation.setPlayMode(Animation.PlayMode.LOOP);
+
+            for (float dy = 0; dy < height; dy+= 1){
+                if (activated) {
+                    canvas.draw(animation.getKeyFrame(animationTime), Color.WHITE, 0, 0,
+                            (x-0.5f)*drawScale.x, (y + dy) * drawScale.y, 0, scale, scale);
+                } else {
+                    canvas.draw(inactiveFrame, Color.WHITE, 0, 0,
+                            (x-0.5f)*drawScale.x, (y + dy) * drawScale.y, 0, scale, scale);
+                }
+            }
+            canvas.draw(bottomBase, Color.WHITE, 0, 0, (x-0.5f)*drawScale.x, y*drawScale.y, 0, scale, scale);
+            canvas.draw(topBase, Color.WHITE, 0, 0, (x-0.5f)*drawScale.x, (y + height - 1) * drawScale.y, 0, scale, scale);
+        }
+    }
 
     /**
      * Loads json values that specify object properties that remain the same across all levels
      * @param constants Json field corresponding to this object
      */
-    public static void setConstants(JsonValue constants) { objectConstants = constants; }
+    public static void setConstants(JsonValue constants) {
+        objectConstants = constants;
+        shrink = constants.getFloat("shrink");
+    }
 
     public void drawDebug(GameCanvas canvas){
         super.drawDebug(canvas);
-        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
-        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
-        canvas.drawPhysics(sensorShape, Color.RED, getX()-xTranslate, getY()-yTranslate, getAngle(), drawScale.x, drawScale.y);
+//        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+//        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+        canvas.drawPhysics(sensorShape, Color.RED, getX(), getY(), getAngle(), drawScale.x, drawScale.y);
     }
 
     public String getSensorName(){ return sensorName; }
+
+    /**
+     * Creates PointLight for final goal with soft and xray true
+     * @param rayHandler Ray Handler associated with the currently active box2d world
+     */
+    public void createLight(RayHandler rayHandler) {
+        if (isFinal) {
+            createPointLight(objectConstants.get("light"), rayHandler);
+            getLight().attachToBody(getBody());
+            getLight().setSoft(true);
+            getLight().setXray(true);
+        }
+    }
 
     @Override
     public void loadState(ObjectMap<String, Object> state){

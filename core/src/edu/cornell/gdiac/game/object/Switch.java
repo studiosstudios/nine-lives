@@ -2,14 +2,8 @@ package edu.cornell.gdiac.game.object;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.physics.box2d.*;
 
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
-import edu.cornell.gdiac.game.*;
-import edu.cornell.gdiac.game.obstacle.*;
 
 import java.util.HashMap;
 
@@ -28,8 +22,8 @@ public class Switch extends Activator {
      * @param scale          Draw scale for drawing
      * @param textureScale   Texture scale for rescaling texture
      */
-    public Switch(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
-        super(properties, tMap, scale, textureScale);
+    public Switch(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale, String biome){
+        super(properties, biome.equals("metal") ? "switch-top" : "forest-switch-top", "switch-base",tMap, scale, textureScale, biome, false);
         prevPressed = false;
         setName("switch");
     }
@@ -37,7 +31,7 @@ public class Switch extends Activator {
     /** For a switch, active is toggled every time button is pressed */
     public void updateActivated(){
         if (isPressed() && !prevPressed) {
-            active = !active;
+            activating = !activating;
         }
         prevPressed = isPressed();
     }

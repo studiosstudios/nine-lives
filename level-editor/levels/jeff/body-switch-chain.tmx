@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="48" height="21" tilewidth="1024" tileheight="1024" infinite="0" nextlayerid="23" nextobjectid="233">
+ <editorsettings>
+  <export target="../nine-lives/assets/tiled/body-switching-chain-medium.json" format="json"/>
+ </editorsettings>
+ <properties>
+  <property name="biome" propertytype="biome" value="metal"/>
+ </properties>
+ <tileset firstgid="1" source="../../objects/objects.tsx"/>
+ <tileset firstgid="9" source=":/automap-tiles.tsx"/>
+ <tileset firstgid="14" source="../../tilesets/metal-walls.tsx"/>
+ <layer id="17" name="metalWalls" width="48" height="21">
+  <data encoding="csv">
+27,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,29,
+51,40,40,40,40,40,40,46,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,47,40,40,40,40,40,40,40,40,40,40,40,41,
+39,40,40,40,40,40,40,41,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,51,47,40,40,40,40,40,40,40,40,40,40,41,
+39,40,40,40,40,40,40,41,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,51,47,40,40,40,40,40,40,40,40,40,41,
+51,52,52,52,52,52,52,53,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,51,47,40,40,40,40,40,40,40,40,41,
+0,0,0,0,0,0,0,0,0,0,15,16,16,17,0,0,0,0,0,0,15,16,16,17,0,0,0,0,0,0,15,16,16,17,0,0,0,0,39,40,40,40,40,40,40,40,40,41,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,39,40,40,40,40,40,40,40,40,41,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,39,40,40,40,40,40,40,40,40,41,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,39,40,40,40,40,40,40,40,40,41,
+27,28,28,28,29,0,0,0,0,0,0,0,0,0,0,15,16,16,17,0,0,0,0,0,0,15,16,16,17,0,0,0,0,0,0,0,0,0,51,52,52,52,52,52,52,52,52,53,
+39,40,40,40,58,29,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+39,40,40,40,40,58,29,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+51,52,52,52,52,52,56,17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,15,16,16,17,0,0,0,0,0,0,15,16,16,17,0,0,0,0,0,0,15,16,16,17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,27,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,29,
+0,0,0,0,0,39,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,41,
+0,0,0,0,0,39,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,41,
+0,0,0,0,0,51,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,52,53
+</data>
+ </layer>
+ <objectgroup id="16" name="spiritRegions">
+  <object id="114" type="SpiritRegion" x="0" y="2048" width="20480" height="15360"/>
+  <object id="116" type="SpiritRegion" x="20480" y="2048" width="12288" height="15360">
+   <properties>
+    <property name="color" type="color" value="#ff1b1ec5"/>
+   </properties>
+  </object>
+  <object id="117" type="SpiritRegion" x="32768" y="2048" width="6144" height="15360">
+   <properties>
+    <property name="color" type="color" value="#ff00ff00"/>
+   </properties>
+  </object>
+  <object id="224" type="SpiritRegion" x="38912" y="10240" width="4096" height="7168">
+   <properties>
+    <property name="color" type="color" value="#ff00ff00"/>
+   </properties>
+  </object>
+  <object id="232" gid="8" x="47104" y="15360" width="1024" height="2048"/>
+ </objectgroup>
+ <objectgroup id="11" name="exits">
+  <object id="128" type="Exit" x="49152" y="10240" width="1024" height="7168"/>
+  <object id="227" type="Exit" x="-1024" y="5120" width="1024" height="4096">
+   <properties>
+    <property name="type" propertytype="exitType" value="return"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="12" name="wallsPoly">
+  <object id="157" x="0" y="17408">
+   <properties>
+    <property name="climbable" type="bool" value="false"/>
+   </properties>
+   <polygon points="0,-4096 8192,-4096 8192,-5120 7168,-5120 7168,-6144 6144,-6144 6144,-7168 5120,-7168 5120,-8192 0,-8192"/>
+  </object>
+  <object id="159" x="0" y="0">
+   <polygon points="0,0 0,2048 35840,2048 35840,3072 36864,3072 36864,4096 37888,4096 37888,5120 38912,5120 38912,10240 49152,10240 49152,0"/>
+  </object>
+  <object id="161" x="10240" y="13312">
+   <polygon points="0,0 0,1024 4096,1024 4096,0"/>
+  </object>
+  <object id="194" x="5120" y="17408">
+   <polygon points="0,0 0,4096 44032,4096 44032,0"/>
+  </object>
+  <object id="217" x="10240" y="5120">
+   <polygon points="0,0 0,1024 4096,1024 4096,0"/>
+  </object>
+  <object id="218" x="15360" y="9216">
+   <polygon points="0,0 0,1024 4096,1024 4096,0 0,0"/>
+  </object>
+  <object id="219" x="20480" y="5120">
+   <polygon points="0,0 0,1024 4096,1024 4096,0"/>
+  </object>
+  <object id="220" x="25600" y="9216">
+   <polygon points="0,0 0,1024 4096,1024 4096,0 0,0"/>
+  </object>
+  <object id="221" x="20480" y="13312">
+   <polygon points="0,0 0,1024 4096,1024 4096,0"/>
+  </object>
+  <object id="222" x="30720" y="13312">
+   <polygon points="0,0 0,1024 4096,1024 4096,0"/>
+  </object>
+  <object id="223" x="30720" y="5120">
+   <polygon points="0,0 0,1024 4096,1024 4096,0"/>
+  </object>
+ </objectgroup>
+ <objectgroup id="10" name="platforms"/>
+ <objectgroup id="9" name="doors">
+  <object id="195" type="Door" x="38912" y="10240" width="1024" height="7168">
+   <properties>
+    <property name="activatorID" value="button1"/>
+    <property name="active" type="bool" value="false"/>
+    <property name="closeAngle" type="int" value="180"/>
+    <property name="totalTicks" type="int" value="180"/>
+   </properties>
+  </object>
+  <object id="196" type="Door" x="41984" y="10240" width="1024" height="7168">
+   <properties>
+    <property name="activatorID" value="button1"/>
+    <property name="active" type="bool" value="true"/>
+    <property name="closeAngle" type="int" value="180"/>
+    <property name="totalTicks" type="int" value="60"/>
+   </properties>
+  </object>
+  <object id="225" type="Door" x="45056" y="10240" width="1024" height="7168">
+   <properties>
+    <property name="activatorID" value="button1"/>
+    <property name="active" type="bool" value="false"/>
+    <property name="closeAngle" type="int" value="180"/>
+    <property name="totalTicks" type="int" value="180"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="2" name="cat">
+  <object id="192" gid="2" x="1024" y="8192" width="1024" height="1024"/>
+ </objectgroup>
+ <objectgroup id="4" name="flamethrowers"/>
+ <objectgroup id="3" name="checkpoints">
+  <object id="230" gid="3" x="20480" y="11264" width="1024" height="2048"/>
+  <object id="231" gid="3" x="23552" y="11264" width="1024" height="2048"/>
+ </objectgroup>
+ <objectgroup id="6" name="lasers"/>
+ <objectgroup id="7" name="mobs"/>
+ <objectgroup id="8" name="spikes">
+  <object id="184" gid="7" x="3072" y="6144" width="1024" height="1024" rotation="180"/>
+  <object id="208" gid="7" x="12288" y="15360" width="1024" height="1024" rotation="180"/>
+  <object id="210" gid="7" x="22528" y="15360" width="1024" height="1024" rotation="180"/>
+  <object id="214" gid="7" x="32768" y="15360" width="1024" height="1024" rotation="180"/>
+  <object id="185" gid="7" x="4096" y="6144" width="1024" height="1024" rotation="180"/>
+  <object id="207" gid="7" x="13312" y="15360" width="1024" height="1024" rotation="180"/>
+  <object id="211" gid="7" x="23552" y="15360" width="1024" height="1024" rotation="180"/>
+  <object id="215" gid="7" x="33792" y="15360" width="1024" height="1024" rotation="180"/>
+  <object id="186" gid="7" x="5120" y="6144" width="1024" height="1024" rotation="180"/>
+  <object id="206" gid="7" x="14336" y="15360" width="1024" height="1024" rotation="180"/>
+  <object id="212" gid="7" x="24576" y="15360" width="1024" height="1024" rotation="180"/>
+  <object id="216" gid="7" x="34816" y="15360" width="1024" height="1024" rotation="180"/>
+  <object id="187" gid="7" x="2048" y="6144" width="1024" height="1024" rotation="180"/>
+  <object id="205" gid="7" x="11264" y="15360" width="1024" height="1024" rotation="180"/>
+  <object id="209" gid="7" x="21504" y="15360" width="1024" height="1024" rotation="180"/>
+  <object id="213" gid="7" x="31744" y="15360" width="1024" height="1024" rotation="180"/>
+  <object id="188" gid="7" x="1024" y="6144" width="1024" height="1024" rotation="180"/>
+  <object id="189" gid="7" x="6144" y="6144" width="1024" height="1024" rotation="180"/>
+  <object id="190" gid="7" x="7168" y="6144" width="1024" height="1024" rotation="180"/>
+  <object id="191" gid="7" x="8192" y="6144" width="1024" height="1024" rotation="180"/>
+ </objectgroup>
+ <objectgroup id="15" name="activators">
+  <object id="122" gid="1" x="3072" y="8192" width="1024" height="1024">
+   <properties>
+    <property name="id" value="button1"/>
+    <property name="shouldPan" type="bool" value="true"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="13" name="mirrors"/>
+ <objectgroup id="14" name="boxes"/>
+</map>

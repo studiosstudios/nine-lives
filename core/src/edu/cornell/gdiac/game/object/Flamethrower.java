@@ -1,5 +1,7 @@
 package edu.cornell.gdiac.game.object;
 
+import box2dLight.ConeLight;
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -43,17 +45,18 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
      * @param drawScale      Draw scale for drawing
      * @param textureScale   Texture scale for rescaling texture
      */
-    public Flamethrower(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 drawScale, Vector2 textureScale) {
+    public Flamethrower(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 drawScale, Vector2 textureScale, String biome) {
         super();
 
 
-        this.flameTexture = tMap.get("flame_anim");
+        this.flameTexture = tMap.get("flame-anim");
 
-        flameBase = new BoxObstacle(tMap.get("flamethrower").getRegionWidth()/drawScale.x*textureScale.x, tMap.get("flamethrower").getRegionHeight()/drawScale.y*textureScale.y);
+        flameBase = new BoxObstacle(tMap.get("flamethrower").getRegionWidth()/drawScale.x*textureScale.x,
+                tMap.get("flamethrower").getRegionHeight()/drawScale.y*textureScale.y);
         setDrawScale(drawScale);
         flameBase.setDrawScale(drawScale);
         flameBase.setTextureScale(textureScale);
-        flameBase.setTexture(tMap.get("flamethrower"));
+        flameBase.setTexture(biome.equals("metal") ? tMap.get("flamethrower") : tMap.get("forest-flamethrower"));
         flameBase.setFriction(objectConstants.getFloat("friction", 0));
         flameBase.setRestitution(objectConstants.getFloat("restitution", 0));
         flameBase.setDensity(objectConstants.getFloat("density", 0));
@@ -67,6 +70,8 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
         flameBase.setX((float) properties.get("x") + offset.x);
         flameBase.setY((float) properties.get("y") + offset.y);
         flameBase.setSensor((boolean) properties.get("baseSensor", false));
+
+
 
         flameOffset = new Vector2(objectConstants.get("flame_offset").getFloat(0)*(float)Math.cos(angle)-
                 objectConstants.get("flame_offset").getFloat(1)*(float)Math.sin(angle),
@@ -114,16 +119,26 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
         if (!super.activatePhysics(world)) {
             return false;
         }
+        flameBase.setDimension(flameBase.getWidth() * objectConstants.get("solid_scale").getFloat(0),
+                flameBase.getHeight() * objectConstants.get("solid_scale").getFloat(1), 0, -flameBase.getHeight()/2f, false);
         if (!activated){
             deactivated(world);
         }
         return true;
     }
 
+    public void createLight(RayHandler rayHandler) {
+        createPointLight(objectConstants.get("light"), rayHandler);
+        getLight().attachToBody(flame.getBody());
+        getLight().setXray(true);
+        getLight().setSoft(true);
+    }
+
     /** Turns on flames */
     @Override
     public void activated(World world){
         flame.setActive(true);
+        getLight().setActive(true);
         flame.setPosition(flameBase.getX()+flameOffset.x, flameBase.getY()+flameOffset.y);
         createJoints(world);
     }
@@ -132,6 +147,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
     @Override
     public void deactivated(World world){
         flame.setActive(false);
+        getLight().setActive(false);
         for (Joint j : joints){
             world.destroyJoint(j);
         }
@@ -187,7 +203,6 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
         markDirty(true);
     }
 
-
     /**
      * Represents a flame that a flamethrower can produce.
      */
@@ -211,8 +226,8 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
          */
         public Flame(TextureRegion texture, Vector2 scale, Vector2 pos, float angle, Vector2 textureScale) {
             super(texture.getRegionWidth()/scale.x*textureScale.x/7, texture.getRegionHeight()/scale.y*textureScale.y);
-            int spriteWidth = 2048;
-            int spriteHeight = 4096;
+            int spriteWidth = 128;
+            int spriteHeight = 256;
             spriteFrames = TextureRegion.split(texture.getTexture(), spriteWidth, spriteHeight);
             float frameDuration = 0.1f;
             animation = new Animation<>(frameDuration, spriteFrames[0]);
@@ -250,9 +265,9 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
         @Override
         public void drawDebug(GameCanvas canvas) {
             super.drawDebug(canvas);
-            float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
-            float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
-            canvas.drawPhysics(sensorShape,Color.RED,getX()-xTranslate,getY()-yTranslate,getAngle(),drawScale.x,drawScale.y);
+//            float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+//            float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+            canvas.drawPhysics(sensorShape,Color.RED,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
         }
 
         @Override

@@ -10,9 +10,9 @@
  */
 package edu.cornell.gdiac.game.object;
 
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
@@ -21,7 +21,6 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.*;
 import edu.cornell.gdiac.game.obstacle.*;
 
@@ -41,7 +40,8 @@ public class Mob extends CapsuleObstacle {
     private Animation<TextureRegion> walkAnimation;
 
     private float walkTime;
-    private TextureRegion[][] spriteFrames;
+    private static TextureRegion[][] labSpriteFrames;
+    private static TextureRegion[][] forestSpriteFrames;
     /** The factor to multiply by the input */
 //    private final float force;
     /** The amount to slow the character down */
@@ -83,29 +83,29 @@ public class Mob extends CapsuleObstacle {
 
 
     /**
-     * Returns ow hard the brakes are applied to get a cat to stop moving
+     * Returns ow hard the brakes are applied to get a mob to stop moving
      *
-     * @return ow hard the brakes are applied to get a cat to stop moving
+     * @return ow hard the brakes are applied to get a mob to stop moving
      */
     public float getDamping() {
         return damping;
     }
 
     /**
-     * Returns the upper limit on cat left-right movement.
+     * Returns the upper limit on mob left-right movement.
      *
      * This does NOT apply to vertical movement.
      *
-     * @return the upper limit on cat left-right movement.
+     * @return the upper limit on mob left-right movement.
      */
     public float getMaxSpeed() {
         return maxspeed;
     }
 
     /**
-     * Returns true if this character is facing right
+     * Returns true if this mob is facing right
      *
-     * @return true if this character is facing right
+     * @return true if this mob is facing right
      */
     public boolean isFacingRight() {
         return faceRight;
@@ -113,14 +113,14 @@ public class Mob extends CapsuleObstacle {
 
     /**
      * Manually force cat to face right
-     * @param faceRight true if we want the cat to face right
+     * @param faceRight true if we want the mob to face right
      */
     public void setFacingRight(boolean faceRight) { this.faceRight = faceRight; }
 
     /**
-     * Returns true if this character is aggressive
+     * Returns true if this mob is aggressive
      *
-     * @return true if this character is aggressive
+     * @return true if this mob is aggressive
      */
     public boolean isAggressive() {
         return isAggressive;
@@ -137,9 +137,8 @@ public class Mob extends CapsuleObstacle {
      * @param textureScale   Texture scale for rescaling texture
      */
 
-    public Mob(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
-        super(tMap.get("roboMob").getRegionWidth()/scale.x*textureScale.x/2f,
-                tMap.get("roboMob").getRegionHeight()/scale.y*textureScale.y*H_SCALE);
+    public Mob(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale, String biome){
+        super(objectConstants.get("scale").getFloat(0), 2*objectConstants.get("scale").getFloat(1));
 
         setFixedRotation(true);
         setName("mob");
@@ -148,9 +147,14 @@ public class Mob extends CapsuleObstacle {
         setDrawScale(scale);
         setTextureScale(textureScale);
         walkTime = 0f;
-        spriteFrames = TextureRegion.split(tMap.get("roboMobAnim").getTexture(), 2058, 2058);
-        walkAnimation = new Animation<>(0.15f, spriteFrames[0]);
-        setTexture(tMap.get("roboMob"));
+        if (labSpriteFrames == null) labSpriteFrames = TextureRegion.split(tMap.get("robot-anim").getTexture(), 256, 256);
+        if (forestSpriteFrames == null) forestSpriteFrames = TextureRegion.split(tMap.get("forest-mob-anim").getTexture(), 208, 256);
+        if (biome.equals("metal")) {
+            walkAnimation = new Animation<>(0.1f, labSpriteFrames[0]);
+        } else {
+            walkAnimation = new Animation<>(0.1f, forestSpriteFrames[0]);
+        }
+        setTexture(walkAnimation.getKeyFrames()[0]);
 
         setDensity(objectConstants.getFloat("density", 0));
         setFriction(objectConstants.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
@@ -170,11 +174,11 @@ public class Mob extends CapsuleObstacle {
     }
 
 
-        /**
-         * Returns the sensor name of the mob
-         *
-         * @return sensorName
-         */
+    /**
+     * Returns the sensor name of the mob
+     *
+     * @return sensorName
+     */
     public static String getSensorName() {
         return sensorName;
     }
@@ -203,6 +207,17 @@ public class Mob extends CapsuleObstacle {
         }
         body.setUserData(this);
         return true;
+    }
+
+    /**
+     * Creates PointLight for with soft and xray true
+     * @param rayHandler Ray Handler associated with the currently active box2d world
+     */
+    public void createLight(RayHandler rayHandler) {
+        createPointLight(objectConstants.get("light"), rayHandler);
+        getLight().attachToBody(getBody());
+        getLight().setSoft(true);
+        getLight().setXray(true);
     }
 
     /**
@@ -252,7 +267,7 @@ public class Mob extends CapsuleObstacle {
         walkAnimation.setPlayMode(Animation.PlayMode.LOOP_REVERSED);
         walkTime += Gdx.graphics.getDeltaTime();
         TextureRegion currentFrame = walkAnimation.getKeyFrame(walkTime);
-        canvas.draw(currentFrame,Color.WHITE, origin.x, origin.y,x,y, getAngle(),effect * textureScale.x,textureScale.y*H_SCALE);
+        canvas.draw(currentFrame,Color.WHITE, origin.x, origin.y,x,y, getAngle(),effect * textureScale.x,textureScale.y * 0.9f);
     }
 
     /**
@@ -264,15 +279,15 @@ public class Mob extends CapsuleObstacle {
      */
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
-        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
-        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+//        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+//        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
         // Draw detectorRay
         if (detectorRay.getPoints().size > 1) {
-            canvas.drawLineDebug(detectorRay.getPoints().get(0).sub(xTranslate,yTranslate), detectorRay.getPoints().get(detectorRay.getPoints().size-1).sub(xTranslate,yTranslate), Color.BLUE, getDrawScale().x, getDrawScale().y);
+            canvas.drawLineDebug(detectorRay.getPoints().get(0).sub(0,0), detectorRay.getPoints().get(detectorRay.getPoints().size-1).sub(0,0), Color.BLUE, getDrawScale().x, getDrawScale().y);
         }
 
         for (PolygonShape shape : sensorShapes) {
-            canvas.drawPhysics(shape,Color.RED,getX()-xTranslate,getY()-yTranslate,getAngle(),drawScale.x,drawScale.y);
+            canvas.drawPhysics(shape,Color.RED,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
         }
     }
 

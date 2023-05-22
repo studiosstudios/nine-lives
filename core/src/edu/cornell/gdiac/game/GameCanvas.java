@@ -1,12 +1,14 @@
 package edu.cornell.gdiac.game;
 
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.*;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.math.Path2;
@@ -14,8 +16,6 @@ import edu.cornell.gdiac.math.PathExtruder;
 import edu.cornell.gdiac.math.PathFactory;
 import edu.cornell.gdiac.math.PolyFactory;
 import edu.cornell.gdiac.math.*;
-
-import java.util.ArrayList;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
@@ -55,11 +55,11 @@ public class GameCanvas {
 		OPAQUE
 	}	
 
-	private final float STANDARD_WIDTH = 1024f;
-	private final float STANDARD_HEIGHT = 576f;
+	public static final float STANDARD_WIDTH = 1024f;
+	public static final float STANDARD_HEIGHT = 576f;
 	
 	/** Drawing context to handle textures AND POLYGONS as sprites */
-	private PolygonSpriteBatch spriteBatch;
+	protected PolygonSpriteBatch spriteBatch;
 
 	/** Path rendering */
 	private PathFactory pathFactory;
@@ -89,7 +89,7 @@ public class GameCanvas {
 	private Camera camera;
 
 	/** ExtendViewport, used during gameplay */
-	private Viewport extendView;
+	private FitViewport viewport;
 
 	/** Value to cache window width (if we are currently full screen) */
 	int width;
@@ -104,7 +104,10 @@ public class GameCanvas {
 	private Vector2 vertex;
 	/** Cache object to handle raw textures */
 	private TextureRegion holder;
-	private final float CAMERA_ZOOM = 0.6f;
+	protected ShaderProgram spiritModeShader;
+	protected ShaderProgram greyscaleShader;
+	private FrameBuffer mainFrameBuffer;
+	private final Matrix4 FBO_PROJECTION = new Matrix4().setToOrtho2D(0,0,1,1);
 
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
@@ -121,12 +124,14 @@ public class GameCanvas {
 		polyFactory = new PolyFactory();
 		pather = new SplinePather();
 		extruder = new PathExtruder();
-		region = new TextureRegion(new Texture("white.png"));
+		region = new TextureRegion(new Texture("shared/white.png"));
 		
 		// Set the projection matrix (for proper scaling)
-		camera = new Camera(STANDARD_WIDTH, STANDARD_HEIGHT, CAMERA_ZOOM);
-		extendView = new ExtendViewport(STANDARD_WIDTH, STANDARD_HEIGHT, STANDARD_WIDTH, STANDARD_HEIGHT, camera.getCamera());
-		extendView.apply(true);
+		camera = new Camera(STANDARD_WIDTH, STANDARD_HEIGHT);
+//		camera = new Camera(getWidth(), getHeight(), CAMERA_ZOOM);
+		viewport = new FitViewport(STANDARD_WIDTH, STANDARD_HEIGHT, camera.getCamera());
+//		viewport = new FitViewport(getWidth(), getHeight(), camera.getCamera());
+		viewport.apply(true);
 		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
 		debugRender.setProjectionMatrix(camera.getCamera().combined);
 
@@ -135,6 +140,18 @@ public class GameCanvas {
 		local  = new Affine2();
 		global = new Matrix4();
 		vertex = new Vector2();
+
+		//shaders
+		ShaderProgram.pedantic =false;
+		spiritModeShader = new ShaderProgram(spriteBatch.getShader().getVertexShaderSource(),
+				Gdx.files.internal("shaders/portal.frag").readString());
+		greyscaleShader = new ShaderProgram(spriteBatch.getShader().getVertexShaderSource(),
+				Gdx.files.internal("shaders/greyscale.frag").readString());
+
+		mainFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
+
+		setBlendState(BlendState.NO_PREMULT);
+
 	}
 	/**
 	* Eliminate any resources that should be garbage collected manually.
@@ -147,7 +164,13 @@ public class GameCanvas {
 		spriteBatch.dispose();
 		spriteBatch = null;
 		debugRender.dispose();
+		mainFrameBuffer.dispose();
+		spiritModeShader.dispose();
+		greyscaleShader.dispose();
+		greyscaleShader = null;
+		spiritModeShader = null;
 		debugRender = null;
+		mainFrameBuffer = null;
 		local  = null;
 		global = null;
 		vertex = null;
@@ -227,7 +250,7 @@ public class GameCanvas {
 
 	/**
 	 * Changes the width and height of this canvas
-	 * <br><br>
+ef	 * <br><br>
 	 * This method raises an IllegalStateException if called while drawing is
 	 * active (e.g. in-between a begin-end pair).
 	 *
@@ -274,7 +297,7 @@ public class GameCanvas {
 	 * This method raises an IllegalStateException if called while drawing is
 	 * active (e.g. in-between a begin-end pair).
 	 *
-	 * @param value Whether this canvas should change to fullscreen.
+//	 * @param value Whether this canvas should change to fullscreen.
 	 * @param desktop 	 Whether to use the current desktop resolution
 	 */	 
 	public void setFullscreen(boolean fullscreen, boolean desktop) {
@@ -290,8 +313,12 @@ public class GameCanvas {
 	}
 
 	/** Activates the ExtendViewport for drawing to canvas */
-	public void applyViewport() {
-		extendView.apply(true);
+	public void applyViewport(boolean centered) {
+		viewport.apply(centered);
+	}
+
+	public Viewport getViewport() {
+		return viewport;
 	}
 
 	/**
@@ -301,8 +328,15 @@ public class GameCanvas {
 	 * weird scaling issues.
 	 */
 	 public void resize() {
-		spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, getWidth(), getHeight());
-		 extendView.update(getWidth(), getHeight(), true);
+		 width = getWidth();
+		 height = getHeight();
+		 spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
+		 viewport.update(width, height, true);
+
+		 if (getWidth() != 0 && getHeight() != 0) {
+			 mainFrameBuffer.dispose();
+			 mainFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
+		 }
 	}
 	
 	/**
@@ -347,7 +381,7 @@ public class GameCanvas {
 		}
 		blend = state;
 	}
-	
+
 	/**
 	 * Clear the screen, so we can start a new animation frame
 	 */
@@ -399,8 +433,78 @@ public class GameCanvas {
 	 */
 	public void begin() {
 		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
+//		vfxManager.update(Gdx.graphics.getDeltaTime());
 		spriteBatch.begin();
+		viewport.apply();
 		active = DrawPass.STANDARD;
+	}
+
+	/**
+	 * Begins the spritebatch and framebuffer, and clears the frame buffer.
+	 */
+	public void beginFrameBuffer(){
+		begin();
+		mainFrameBuffer.begin();
+		ScreenUtils.clear(Color.BLACK);
+	}
+
+	/**
+	 * Flushes the sprite batch and ends the frame buffer.
+	 */
+	public void endFrameBuffer() {
+		spriteBatch.flush();
+		mainFrameBuffer.end();
+	}
+
+	/**
+	 * Sets the spritebatch to use a specified shader.
+	 *
+	 * @param shader   Shader to use.
+	 */
+	public void setShader(ShaderProgram shader) { spriteBatch.setShader(shader); }
+
+
+	/**
+	 * Sets the spritebatch to use the spiritmode portal effect shader.
+	 *
+	 * @param diameter    diameter of the portal effect in uv coordinates
+	 * @param thickness   thickness (in unspecified units) of the fading part of the portal
+	 * @param bgColor     color of the solid part of the portal
+	 * @param edgeColor   color of the fading part of the portal
+	 * @param time        time since shader was initially applied
+	 */
+	public void setSpiritModeShader(float diameter, float thickness, Color bgColor, Color edgeColor, float time) {
+		spriteBatch.setShader(spiritModeShader);
+		spiritModeShader.setUniformf("u_radius", diameter);
+		spiritModeShader.setUniformf("u_thickness", thickness);
+		spiritModeShader.setUniformf("u_bgColor", bgColor);
+		spiritModeShader.setUniformf("u_edgeColor", edgeColor);
+		spiritModeShader.setUniformf("u_time", time);
+	}
+
+	/**
+	 * Sets the spritebatch to use the greyscale shader.
+	 *
+	 * @param greyScale  The amount of greyscale to apply: 0 is none, 1 is full.
+	 */
+	public void setGreyscaleShader(float greyScale) {
+		spriteBatch.setShader(greyscaleShader);
+		greyscaleShader.setUniformf("u_greyscale", greyScale);
+	}
+
+	/**
+	 * Projects a vector in world units into pixel units, then returns the ratio of its position with respect to
+	 * the screen dimensions. This is specifically used by the shockwave shader effect to get the position of the
+	 * shockwave center.
+	 *
+	 * @param vec  Vector to project
+	 * @return     Ratio of projected vector to screen dimensions
+	 */
+	public Vector2 projectRatio(Vector2 vec) {
+		Vector3 proj3 = camera.getCamera().project(new Vector3(vec.x, vec.y, 0),
+				viewport.getScreenX(), viewport.getScreenY(),
+				viewport.getScreenWidth(), viewport.getScreenHeight());
+		return vec.set(proj3.x/getWidth(), proj3.y/getHeight());
 	}
 
 	/**
@@ -411,9 +515,45 @@ public class GameCanvas {
 		active = DrawPass.INACTIVE;
 	}
 
+	/**
+	 * Flushes the spritebatch.
+	 */
+	public void flush() { spriteBatch.flush(); }
+
 	//////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////// DRAWING MODES ///////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////
+
+
+	/**
+	 * Draws the lights from a rayhandler into the framebuffer.
+	 *
+	 * @param rayHandler    box2dlights rayhandler
+	 */
+	public void drawLightsToBuffer(RayHandler rayHandler) {
+		//TODO: try with changing blend state instead of ending batch
+		// 5/15 adding all of these applyViewports breaks debug again for some reason
+		spriteBatch.end();
+		rayHandler.prepareRender();
+		mainFrameBuffer.begin();
+		rayHandler.renderOnly();
+		mainFrameBuffer.end();
+		spriteBatch.begin();
+	}
+
+	/**
+	 * Draws the captured framebuffer into the main canvas.
+	 */
+	public void drawFrameBuffer() {
+		spriteBatch.setColor(Color.WHITE);
+		setBlendState(BlendState.ALPHA_BLEND);
+		spriteBatch.setProjectionMatrix(FBO_PROJECTION);
+		spriteBatch.draw(mainFrameBuffer.getColorBufferTexture(), 0, 0, 1, 1, 0, 0, 1, 1);
+		spriteBatch.flush(); //this is problem line for debug...
+		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
+		setBlendState(BlendState.NO_PREMULT);
+		applyViewport(false);
+	}
 
 	/**
 	 * Draws the texture at the given position.
@@ -462,7 +602,7 @@ public class GameCanvas {
 		
 		// Unlike Lab 1, we can shortcut without a master drawing method
     		spriteBatch.setColor(tint);
-		spriteBatch.draw(image, x + camera.centerLevelTranslation().x,  y + camera.centerLevelTranslation().y, width, height);
+		spriteBatch.draw(image, x,  y, width, height);
 	}
 	
 	/**
@@ -580,10 +720,8 @@ public class GameCanvas {
 			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
 			return;
 		}
-		x = x + camera.centerLevelTranslation().x;
-		y = y + camera.centerLevelTranslation().y;
 		// Unlike Lab 1, we can shortcut without a master drawing method
-    		spriteBatch.setColor(Color.WHITE);
+		spriteBatch.setColor(Color.WHITE);
 		spriteBatch.draw(region, x,  y);
 	}
 
@@ -677,8 +815,6 @@ public class GameCanvas {
 			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
 			return;
 		}
-		x = x + camera.centerLevelTranslation().x;
-		y = y + camera.centerLevelTranslation().y;
 
 		// BUG: The draw command for texture regions does not work properly.
 		// There is a workaround, but it will break if the bug is fixed.
@@ -849,8 +985,6 @@ public class GameCanvas {
 			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
 			return;
 		}
-		x = x + camera.centerLevelTranslation().x;
-		y = y + camera.centerLevelTranslation().y;
 		TextureRegion bounds = region.getRegion();
 		spriteBatch.setColor(tint);
 		spriteBatch.draw(region, x, y, ox, oy, 
@@ -985,7 +1119,7 @@ public class GameCanvas {
 	 * <br><br>
 	 * Nothing is flushed to the graphics card until the method end() is called.
 	 */
-	public void beginDebug() {
+	public void  beginDebug() {
 		debugRender.setProjectionMatrix(camera.getCamera().combined);
 		debugRender.begin(ShapeRenderer.ShapeType.Filled);
 		debugRender.setColor(Color.RED);
@@ -1194,9 +1328,9 @@ public class GameCanvas {
 			Gdx.app.error("GameCanvas", "Cannot draw without active begin", new IllegalStateException());
 			return;
 		}
-		float xTranslate = camera.centerLevelTranslation().x;
-		float yTranslate = camera.centerLevelTranslation().y;
-		Path2 path = pathFactory.makeLine(xTranslate, yTranslate, (p2.x-p1.x)*sx+xTranslate, (p2.y-p1.y)*sy+yTranslate);
+//		float xTranslate = camera.centerLevelTranslation().x;
+//		float yTranslate = camera.centerLevelTranslation().y;
+		Path2 path = pathFactory.makeLine(0, 0, (p2.x-p1.x)*sx+0, (p2.y-p1.y)*sy+0);
 		extruder.set(path);
 		extruder.calculate(thickness);
 		spriteBatch.setColor(color);
@@ -1254,7 +1388,7 @@ public class GameCanvas {
 		extruder.set(splinePath);
 		extruder.calculate(thickness);
 		spriteBatch.setColor(color);
-		spriteBatch.draw(extruder.getPolygon().makePolyRegion(region), camera.centerLevelTranslation().x, camera.centerLevelTranslation().y);
+		spriteBatch.draw(extruder.getPolygon().makePolyRegion(region), 0, 0);
 	}
 
 	private float[] getPoints(Array<Vector2> points, float sx, float sy){

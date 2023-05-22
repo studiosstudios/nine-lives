@@ -1,22 +1,35 @@
 package edu.cornell.gdiac.game.stage;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable;
+import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.game.Save;
 
 public class MainMenuStage extends StageWrapper{
+    protected AssetDirectory animations;
+    private AnimatedActor catActor;
     private Actor playButtonActor;
     private Actor levelSelectActor;
     private Actor settingsActor;
     private Actor exitButtonActor;
-    private Actor playCatpawActor;
-    private Actor levelCatpawActor;
-    private Actor settingsCatpawActor;
-    private Actor exitCatpawActor;
     private int playButtonState;
+    private AnimationDrawable animation;
     private int levelSelectState;
+
     private int settingsState;
     private int exitButtonState;
 
@@ -34,44 +47,51 @@ public class MainMenuStage extends StageWrapper{
     public boolean isSettings() { return settingsState == 2; }
     public boolean isExit() { return exitButtonState == 2; }
 
-    public MainMenuStage(AssetDirectory internal, boolean createActors) {
-        super(internal, createActors);
+    public MainMenuStage(String internal, boolean createActors) {
+        super(internal, createActors, false);
     }
-
     /**
      *
      */
     @Override
     public void createActors() {
+        animations = new AssetDirectory("jsons/ui-animations.json");
+        animations.loadAssets();
+        animations.finishLoading();
+        Animation<TextureRegion> anim = new Animation<>(0.75f, TextureRegion.split(animations.getEntry("main-menu-cat-anim", Texture.class),1024,1024)[0]);
+        anim.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+        animation = new AnimationDrawable(anim);
         Actor backgroundActor = addActor(internal.getEntry("background", Texture.class), 0,0);
         backgroundActor.setScale(0.5f);
-//        addActor(internal.getEntry("mainMenuCat", Texture.class),-50,-65);
-        playButtonActor = addActor(internal.getEntry("playGame", Texture.class),buttonX+15+250, buttonY+25);
-        playButtonActor.setScale(0.5f);
-        levelSelectActor = addActor(internal.getEntry("levelSelect", Texture.class),buttonX+15+250-18, buttonY-25);
+        catActor = new AnimatedActor(animation);
+        addActor(catActor);
+        catActor.setScale(0.5f);
+        catActor.setPosition(15,15);
+        if (Save.getStarted()) {
+            playButtonActor = addActor(internal.getEntry("continue-game", Texture.class),buttonX+215-19-50, buttonY);
+            playButtonActor.setScale(0.5f);
+        } else {
+            playButtonActor = addActor(internal.getEntry("play-game", Texture.class),buttonX+215, buttonY);
+            playButtonActor.setScale(0.5f);
+        }
+        levelSelectActor = addActor(internal.getEntry("level-select", Texture.class),buttonX+215-19, buttonY-50-10);
         levelSelectActor.setScale(0.5f);
-        settingsActor = addActor(internal.getEntry("settings", Texture.class),buttonX+15+250+29, buttonY-75-16);
+        settingsActor = addActor(internal.getEntry("settings", Texture.class),buttonX+215+28, buttonY-100-20);
         settingsActor.setScale(0.5f);
-        exitButtonActor = addActor(internal.getEntry("exit", Texture.class),buttonX+15+250+6, buttonY-75-16-50);
+        exitButtonActor = addActor(internal.getEntry("exit", Texture.class),buttonX+215+6.5f, buttonY-150-30);
         exitButtonActor.setScale(0.5f);
 
-        playCatpawActor = addActor(internal.getEntry("catpaw", Texture.class), buttonX+30, buttonY+25);
-        playCatpawActor.setScale(0.5f);
-        playCatpawActor.setVisible(false);
-        levelCatpawActor = addActor(internal.getEntry("catpaw", Texture.class), buttonX+30, buttonY-25-4);
-        levelCatpawActor.setScale(0.5f);
-        levelCatpawActor.setVisible(false);
-        settingsCatpawActor = addActor(internal.getEntry("catpaw", Texture.class), buttonX+30, buttonY-75-12);
-        settingsCatpawActor.setScale(0.5f);
-        settingsCatpawActor.setVisible(false);
-        exitCatpawActor = addActor(internal.getEntry("catpaw", Texture.class), buttonX+30, buttonY-75-16-50);
-        exitCatpawActor.setScale(0.5f);
-        exitCatpawActor.setVisible(false);
+        playButtonActor.addListener(createHoverListener(playButtonActor));
+        levelSelectActor.addListener(createHoverListener(levelSelectActor));
+        settingsActor.addListener(createHoverListener(settingsActor));
+        exitButtonActor.addListener(createHoverListener(exitButtonActor));
+    }
 
-        playButtonActor.addListener(createCatpawListener(playButtonActor, playCatpawActor));
-        levelSelectActor.addListener(createCatpawListener(levelSelectActor,levelCatpawActor));
-        settingsActor.addListener(createCatpawListener(settingsActor,settingsCatpawActor));
-        exitButtonActor.addListener(createCatpawListener(exitButtonActor,exitCatpawActor));
+    @Override
+    public void update(float delta) {
+        super.update(delta);
+        catActor.act(delta);
+//        addActor(animation.getKeyFrame(time).getTexture(),15,15);
     }
 
     /**

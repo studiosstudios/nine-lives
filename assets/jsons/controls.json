@@ -1,0 +1,54 @@
+{
+  "up": {
+    "key": "UP",
+    "disableWhenPan": false
+  },
+  "down": {
+    "key": "DOWN",
+    "disableWhenPan": false
+  },
+  "left": {
+    "key": "LEFT",
+    "disableWhenPan": false
+  },
+  "right": {
+    "key": "RIGHT",
+    "disableWhenPan": false
+  },
+  "jump": {
+    "key": "C",
+    "disableWhenPan": true
+  },
+  "dash": {
+    "key": "X",
+    "disableWhenPan": true
+  },
+  "climb": {
+    "key": "Z",
+    "disableWhenPan": true
+  },
+  "switch": {
+    "key": "SHIFT_LEFT",
+    "disableWhenPan": true
+  },
+  "cancel": {
+    "key": "SPACE",
+    "disableWhenPan": true
+  },
+  "undo": {
+    "key": "U",
+    "disableWhenPan": true
+  },
+  "exit": {
+    "key": "ESCAPE",
+    "disableWhenPan": false
+  },
+  "meow": {
+    "key": "M",
+    "disableWhenPan": true
+  },
+  "pan": {
+    "key": "TAB",
+    "disableWhenPan": false
+  }
+}

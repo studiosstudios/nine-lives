@@ -2,11 +2,10 @@ package edu.cornell.gdiac.game.object;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.GameCanvas;
@@ -17,29 +16,22 @@ import java.util.Random;
 
 public class SpiritRegion extends BoxObstacle {
 
+    /** Base color without greyscale */
+    private final Color baseColor = new Color();
     /** Color of spirit region particles */
     private Color particleColor = new Color();
     /** Color of spirit region background */
     private Color regionColor = new Color();
     /** The frames of the spirit animation */
-    private TextureRegion[][] spriteFrames;
-    /** How long the flame has been animating */
-    private float animationTime;
-    /** Filmstrip of spirit animation */
-    private Animation<TextureRegion>[] animations;
-    /** Texture image for the region */
     private Texture regionTexture;
-    /** float offsets for randomizing animation frames */
-    private float[] timeOffsets;
-    /** List of angles to rotate texture */
-    private final int[] listAngles = {0, 90, 180, 270};
-
     /** Vector2 position of bottom left corner of spirit region */
     private Vector2 pos;
     /** width of spirit region */
     private float width;
     /** height of spirit region */
     private float height;
+    private float greyScaleTarget;
+    private float greyscale;
 
     /** PARTICLE VARS */
 
@@ -66,11 +58,10 @@ public class SpiritRegion extends BoxObstacle {
     private ParticlePool memory;
     /** Simple field to slow down the allocation of photons */
     private int cooldown = 0;
-
     private Random random;
+    private boolean hideBackground;
 
-
-    public String getColorString(){ return regionColor.toString().substring(0, 6); }
+    public String getColorString(){ return baseColor.toString().substring(0, 6); }
 
     /**
      * Creates a new SpiritRegion Model.
@@ -82,17 +73,20 @@ public class SpiritRegion extends BoxObstacle {
      */
     public SpiritRegion(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
         super((float) properties.get("width"), (float) properties.get("height"));
-        this.photonTexture = tMap.get("spirit_photon").getTexture();
-        this.regionTexture = tMap.get("spirit_region").getTexture();
+        this.photonTexture = tMap.get("spirit-photon").getTexture();
+        this.regionTexture = tMap.get("spirit-region").getTexture();
+        hideBackground = false;
 
-        particleColor.set((Color) properties.get("color", Color.RED));
+        baseColor.set((Color) properties.get("color", Color.RED));
+
+        particleColor.set(baseColor);
         particleColor.a = PARTICLE_OPACITY_INACTIVE;
 
-        regionColor.set((Color) properties.get("color", Color.RED));
+        regionColor.set(baseColor);
         regionColor.a = REGION_OPACITY_INACTIVE;
 
         setTextureScale(textureScale);
-        setTexture(tMap.get("spirit_region"));
+        setTexture(tMap.get("spirit-region"));
         setDrawScale(scale);
         setTextureScale(textureScale);
         setSensor(true);
@@ -117,6 +111,13 @@ public class SpiritRegion extends BoxObstacle {
             float high = item.getTop() * drawScale.y - PARTICLE_SIZE;
             item.setY(random.nextFloat()*(high-low)+low);
         }
+
+        if (properties.get("hideBkg") != null) {
+            hideBackground = (boolean) properties.get("hideBkg");
+            particleColor.a = PARTICLE_OPACITY_ACTIVE;
+        }
+
+
     }
 
     private Particle addParticle(){
@@ -176,6 +177,20 @@ public class SpiritRegion extends BoxObstacle {
      * @param val true if spirit region is less opaque, false if more opaque
      */
     public void setSpiritRegionColorOpacity(boolean val) {
+        if (Math.abs(greyScaleTarget - greyscale) < 0.01f) {
+            greyscale = greyScaleTarget;
+        } else {
+            greyscale += (greyScaleTarget - greyscale) * 0.15f;
+        }
+
+        if (greyscale > 0) {
+            float greyColor = greyColor(baseColor);
+            particleColor.set(baseColor.r * (1-greyscale) + greyColor * greyscale,
+                    baseColor.g * (1-greyscale) + greyColor * greyscale,
+                    baseColor.b * (1-greyscale) + greyColor * greyscale, baseColor.a);
+            regionColor.set(particleColor.r, particleColor.g, particleColor.b, regionColor.a);
+        }
+
         if (val) {
             particleColor.a += (PARTICLE_OPACITY_ACTIVE - particleColor.a)*0.07;
             regionColor.a += (REGION_OPACITY_ACTIVE - regionColor.a)*0.07;
@@ -184,6 +199,8 @@ public class SpiritRegion extends BoxObstacle {
             regionColor.a += (REGION_OPACITY_INACTIVE - regionColor.a)*0.07;
         }
     }
+
+    public void setGreyscale(float greyscale){ greyScaleTarget = greyscale; }
 
     /**
      * Updates the status of the particles.
@@ -237,8 +254,10 @@ public class SpiritRegion extends BoxObstacle {
 //        }
 
         // Spirit Region Background
-        canvas.draw(regionTexture, regionColor, (pos.x - width/2)*drawScale.x, (pos.y-height/2)*drawScale.y,
-                width*drawScale.x, height*drawScale.y);
+        if (!hideBackground) {
+            canvas.draw(regionTexture, regionColor, (pos.x - width/2)*drawScale.x, (pos.y-height/2)*drawScale.y,
+                    width*drawScale.x, height*drawScale.y);
+        }
 
         // Draw particles
 //        float bot = pos.y* drawScale.y ;
@@ -260,6 +279,9 @@ public class SpiritRegion extends BoxObstacle {
             float x = item.getX();
             c.a = c.a * (float) (Math.max(Math.pow(y-bot, ySharpness) * Math.pow(top-y, ySharpness)/Math.pow((top-bot)/2, 2*ySharpness), 0));
             c.a = c.a * (float) (Math.max(Math.pow(x-left, xSharpness) * Math.pow(right-x, xSharpness)/Math.pow((right-left)/2, 2*xSharpness), 0));
+            if (hideBackground) {
+                c.a = c.a * 2;
+            }
             canvas.draw(photonTexture, c, x - (width/2f)*drawScale.x,
                       y - (height/2f)*drawScale.y, PARTICLE_SIZE, PARTICLE_SIZE);
         }

@@ -17,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.utils.ObjectMap;
 import edu.cornell.gdiac.game.*;  // For GameCanvas
+import edu.cornell.gdiac.game.object.Flamethrower;
 
 /**
  * Box-shaped model to support collisions.
@@ -33,7 +34,7 @@ public class BoxObstacle extends SimpleObstacle {
 	/** A cache value for the fixture (for resizing) */
 	private Fixture geometry;
 	/** Cache of the polygon vertices (for resizing) */
-	private float[] vertices;
+	public float[] vertices;
 	
 	/** 
 	 * Returns the dimensions of this box
@@ -87,9 +88,20 @@ public class BoxObstacle extends SimpleObstacle {
 	 * @param markDirty  If the fixture should be recreated
 	 */
 	public void setDimension(float width, float height, boolean markDirty) {
+		setDimension(width, height, 0, 0, markDirty);
+	}
+
+	/**
+	 * Sets the dimensions of this box
+	 *
+	 * @param width   The width of this box
+	 * @param height  The height of this box
+	 * @param markDirty  If the fixture should be recreated
+	 */
+	public void setDimension(float width, float height, float x, float y, boolean markDirty) {
+		resize(width, height, x, y);
 		dimension.set(width, height);
 		markDirty(markDirty);
-		resize(width, height);
 		if (!markDirty) { ((PolygonShape) geometry.getShape()).set(vertices); }
 	}
 
@@ -166,22 +178,35 @@ public class BoxObstacle extends SimpleObstacle {
 		geometry = null;
 		
 		// Initialize
-		resize(width, height);	
+		resize(width, height, 0, 0);
 	}
 	
 	/**
 	 * Reset the polygon vertices in the shape to match the dimension.
 	 */
-	private void resize(float width, float height) {
+	private void resize(float width, float height, float x, float y) {
 		// Make the box with the center in the center
-		vertices[0] = -width/2.0f;
-		vertices[1] = -height/2.0f;
-		vertices[2] = -width/2.0f;
-		vertices[3] =  height/2.0f;
-		vertices[4] =  width/2.0f;
-		vertices[5] =  height/2.0f;
-		vertices[6] =  width/2.0f;
-		vertices[7] = -height/2.0f;
+		if (x == 0 && y == 0) {
+			vertices[0] = -width / 2.0f;
+			vertices[1] = -height / 2.0f;
+			vertices[2] = -width / 2.0f;
+			vertices[3] = height / 2.0f;
+			vertices[4] = width / 2.0f;
+			vertices[5] = height / 2.0f;
+			vertices[6] = width / 2.0f;
+			vertices[7] = -height / 2.0f;
+		} else {
+			float sx = width/dimension.x;
+			float sy = height/dimension.y;
+			vertices[0] += (sx - 1) * (vertices[0] - x);
+			vertices[1] += (sy - 1) * (vertices[1] - y);
+			vertices[2] += (sx - 1) * (vertices[2] - x);
+			vertices[3] += (sy - 1) * (vertices[3] - y);
+			vertices[4] += (sx - 1) * (vertices[4] - x);
+			vertices[5] += (sy - 1) * (vertices[5] - y);
+			vertices[6] += (sx - 1) * (vertices[6] - x);
+			vertices[7] += (sy - 1) * (vertices[7] - y);
+		}
 		shape.set(vertices);
 	}
 
@@ -224,9 +249,9 @@ public class BoxObstacle extends SimpleObstacle {
 	 * @param canvas Drawing context
 	 */
 	public void drawDebug(GameCanvas canvas) {
-		float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
-		float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
-		canvas.drawPhysics(shape,Color.YELLOW,getX()-xTranslate,getY()-yTranslate,getAngle(),drawScale.x,drawScale.y);
+//		float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+//		float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+		canvas.drawPhysics(shape,Color.YELLOW,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
 	}
 
 	public ObjectMap<String, Object> storeState(){

@@ -1,0 +1,9 @@
+{
+  "textures": {
+    "bg-credits": "ui/credits/bg-credits.png",
+    "credits-cat-walking-anim": "ui/credits/walk.png",
+    "credits-cat-rolling-anim": "ui/credits/roll.png",
+    "credits-cat-sleeping-anim": "ui/credits/sleep.png",
+    "credits-roll": "ui/credits/credits-roll.png"
+  }
+}

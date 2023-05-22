@@ -44,7 +44,9 @@ public class Spikes extends BoxObstacle implements Activatable {
     private final float x;
     /** initial y position */
     private final float y;
-
+    private static HashMap<Integer, Integer> gidMap = new HashMap<>();
+    private static TextureRegion[][] labTileset;
+    private static TextureRegion[][] forestTileset;
 
     /**
      * Creates a new Spikes object.
@@ -53,18 +55,27 @@ public class Spikes extends BoxObstacle implements Activatable {
      * @param tMap           Texture map for loading textures
      * @param scale          Draw scale for drawing
      * @param textureScale   Texture scale for rescaling texture
+     * @param biome          biome
      */
-    public Spikes(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale){
-        super(tMap.get("spikes").getRegionWidth()/scale.x*textureScale.x,
-                tMap.get("spikes").getRegionHeight()/scale.y*textureScale.y);
-
+    public Spikes(ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale, String biome){
+        super(1, 1);
         setBodyType(properties.containsKey("attachName") ? BodyDef.BodyType.DynamicBody : BodyDef.BodyType.StaticBody);
         setSensor(true);
         setFixedRotation(true);
         setName("spikes");
         setDrawScale(scale);
         setTextureScale(textureScale);
-        setTexture(tMap.get("spikes"));
+        if (labTileset == null) {
+            labTileset = tMap.get("spikes").split(tMap.get("spikes").getTexture(),(int) (scale.x/textureScale.x), (int) (scale.y/textureScale.y));
+        }
+        if (forestTileset == null) {
+            forestTileset = tMap.get("forest-spikes").split(tMap.get("forest-spikes").getTexture(),(int) (scale.x/textureScale.x), (int) (scale.y/textureScale.y));
+        }
+        if (biome.equals("metal")) {
+            setTexture(labTileset[0][gidMap.get(properties.get("gid"))]);
+        } else {
+            setTexture(forestTileset[0][gidMap.get(properties.get("gid"))]);
+        }
         setFriction(objectConstants.getFloat("friction"));
         fixtureShapes = new Array<>();
 
@@ -216,12 +227,12 @@ public class Spikes extends BoxObstacle implements Activatable {
      */
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
-        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
-        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
+//        float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
+//        float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
         if (activated) {
 //            System.out.println(drawScale);
             for (PolygonShape shape : fixtureShapes) {
-                canvas.drawPhysics(shape, Color.RED, getX() - xTranslate, getY() - yTranslate,
+                canvas.drawPhysics(shape, Color.RED, getX(), getY(),
                         getAngle(), drawScale.x, drawScale.y);
             }
         }
@@ -252,7 +263,13 @@ public class Spikes extends BoxObstacle implements Activatable {
      * Sets the shared constants for all instances of this class
      * @param constants JSON storing the shared constants.
      */
-    public static void setConstants(JsonValue constants) { objectConstants = constants; }
+    public static void setConstants(JsonValue constants) {
+        objectConstants = constants;
+        gidMap.put(7, 0);
+        gidMap.put(10, 1);
+        gidMap.put(11, 3);
+        gidMap.put(12, 2);
+    }
     public float getXPos(){
         return getX();
     }

@@ -605,6 +605,7 @@ public class Cat extends CapsuleObstacle implements Movable {
                 objectConstants.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
         setRestitution(objectConstants.getFloat("restitution", 0));
         setFixedRotation(true);
+        setSleepingAllowed(false);
         maxSpeed = objectConstants.getFloat("maxSpeed", 0);
         horizontalDamping = objectConstants.getFloat("horizontalDamping", 0);
         force = objectConstants.getFloat("force", 0);

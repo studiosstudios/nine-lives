@@ -138,6 +138,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
     @Override
     public void activated(World world){
         flame.setActive(true);
+        flame.markDirty(true);
         getLight().setActive(true);
         flame.setPosition(flameBase.getX()+flameOffset.x, flameBase.getY()+flameOffset.y);
         createJoints(world);
@@ -210,6 +211,8 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
 
         /** The shape of the hitbox that will kill the player */
         private PolygonShape sensorShape;
+        /** Fixture of hitbox that will kill player */
+        private Fixture sensorFixture;
         /** The frames of the flame animation */
         private TextureRegion[][] spriteFrames;
         /** How long the flame has been animating */
@@ -249,6 +252,12 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
             if (!super.activatePhysics(world)) {
                 return false;
             }
+            return true;
+        }
+
+        @Override
+        public void createFixtures(){
+            super.createFixtures();
             body.getFixtureList().get(0).setUserData("");
             FixtureDef sensorDef = new FixtureDef();
             sensorDef.density = 0;
@@ -257,9 +266,17 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
             sensorShape.set(objectConstants.get("sensor_shape").asFloatArray());
             sensorDef.shape = sensorShape;
 
-            Fixture sensorFixture = body.createFixture( sensorDef );
+            sensorFixture = body.createFixture( sensorDef );
             sensorFixture.setUserData(flameSensorName);
-            return true;
+        }
+
+        @Override
+        public void releaseFixtures(){
+            super.releaseFixtures();
+            if (sensorFixture != null) {
+                body.destroyFixture(sensorFixture);
+                sensorFixture = null;
+            }
         }
 
         @Override

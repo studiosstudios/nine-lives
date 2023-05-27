@@ -165,6 +165,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
         this.dashTimer = dashTimer;
         //create centre sensor (for fixing to spikes)
 
+        setSleepingAllowed(false);
         setName("deadBody");
     }
 

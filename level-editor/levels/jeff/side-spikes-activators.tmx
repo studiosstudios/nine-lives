@@ -411,12 +411,6 @@
   <object id="308" gid="12" x="39936" y="19456" width="1024" height="1024" rotation="90"/>
   <object id="309" gid="12" x="39936" y="20480" width="1024" height="1024" rotation="90"/>
   <object id="310" gid="12" x="39936" y="21504" width="1024" height="1024" rotation="90"/>
-  <object id="311" gid="12" x="34816" y="26624" width="1024" height="1024" rotation="180"/>
-  <object id="312" gid="12" x="35840" y="26624" width="1024" height="1024" rotation="180"/>
-  <object id="313" gid="12" x="36864" y="26624" width="1024" height="1024" rotation="180"/>
-  <object id="314" gid="12" x="37888" y="26624" width="1024" height="1024" rotation="180"/>
-  <object id="315" gid="10" x="38912" y="26624" width="1024" height="1024" rotation="180"/>
-  <object id="316" gid="11" x="33792" y="26624" width="1024" height="1024" rotation="180"/>
   <object id="317" gid="12" x="39936" y="23552" width="1024" height="1024" rotation="90"/>
   <object id="318" gid="10" x="39936" y="18432" width="1024" height="1024" rotation="90"/>
   <object id="319" gid="11" x="39936" y="24576" width="1024" height="1024" rotation="90"/>

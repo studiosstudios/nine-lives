@@ -1093,7 +1093,7 @@
          "propertytype":"biome",
          "type":"string",
          "value":"metal"
-        },
+        }, 
         {
          "name":"canSwitch",
          "type":"bool",

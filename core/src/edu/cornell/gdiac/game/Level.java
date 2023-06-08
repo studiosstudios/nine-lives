@@ -10,7 +10,6 @@ import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.game.object.*;
 
 import edu.cornell.gdiac.game.obstacle.*;
-import edu.cornell.gdiac.util.Direction;
 import edu.cornell.gdiac.util.PooledList;
 
 import java.util.HashMap;
@@ -43,18 +42,7 @@ public class Level {
 
     /** Reference to the goal object */
     private Goal goal;
-
-    /** Tiles of level */
-    protected Tiles tiles;
-    /** Climbables of level */
-    protected Tiles climbables;
-    /** Windows of level */
-    protected  Tiles windows;
-    /** Lab Background of level */
-    protected  Tiles labBkg;
-    /** Leaves of level */
-    protected  Tiles leaves;
-    protected Tiles forestTiles;
+    private ObjectMap<String, Tiles> tilesMap = new ObjectMap<>();
     /** All the objects in the world. */
     protected PooledList<Obstacle> objects  = new PooledList<>();
     /** Queue for adding objects */
@@ -534,45 +522,25 @@ public class Level {
         levelStates = new Array<>();
 
         JsonValue layers = tiledMap.get("layers");
-        JsonValue climbableData = null;
-        JsonValue windowData = null;
-        JsonValue leafData = null;
-        JsonValue tileData = null;
-        JsonValue labBkgData = null;
-        JsonValue forestTileData = null;
-
         tileSize = tiledMap.getInt("tilewidth");
         int levelWidth = tiledMap.getInt("width");
         int levelHeight = tiledMap.getInt("height");
         bounds.set(xOffset, yOffset, levelWidth, levelHeight);
 
         Array<JsonValue> obstacleData = new Array<>();
+        Array<JsonValue> tileData = new Array<>();
         for (JsonValue layer : layers) {
             if (!layer.getString("type").equals("tilelayer")) {
                 obstacleData.add(layer);
-                if (layer.getString("name").equals("exits")){
+                if (layer.getString("name").equals("exits")) {
                     loadExitPositions(layer, tileSize, levelHeight);
                 }
-            }
-            else if (layer.getString("name").equals("climbables")) {
-                climbableData = layer;
-            }
-            else if (layer.getString("name").equals("windows")) {
-                windowData = layer;
-            }
-            else if (layer.getString("name").equals("background")) {
-                labBkgData = layer;
-            }
-            else if (layer.getString("name").equals("forestLeaves")) {
-                leafData = layer;
-            }
-            else if (layer.getString("name").equals("forestWalls") && biome.equals("forest") ||
-                    layer.getString("name").equals("metalWalls") && biome.equals("metal")) {
-                tileData = layer;
-            } else if (layer.getString("name").equals("forestWalls") && biome.equals("metal")){
-                forestTileData = layer;
+            } else {
+                tileData.add(layer);
             }
         }
+
+        //update bounds based on exit position
         if (next != null) {
             if (next) {
                 bounds.y += prevExitY - returnY;
@@ -582,91 +550,8 @@ public class Level {
             }
         }
 
+        populateTiles(tiledMap.get("tilesets"), tileData, levelWidth, levelHeight);
         populateObstacles(obstacleData, tileSize, levelHeight, next == null);
-
-        TextureRegion tileset = new TextureRegion();
-        TextureRegion tileset_climbable = new TextureRegion();
-
-        int fID = 1;
-        int fID_climbable = 1;
-        int fID_window = 1;
-        int fID_leaves = 1;
-        int fID_bkg = 1;
-        int fID_forestTiles = 1;
-        if (biome.equals("metal")) {
-            tileset = textureRegionAssetMap.get("metal-tileset");
-            for (JsonValue tilesetData : tiledMap.get("tilesets")){
-                if (tilesetData.getString("source").endsWith("metal-walls.tsx")){
-                    fID = tilesetData.getInt("firstgid");
-                }
-                else if (tilesetData.getString("source").endsWith("climbables.tsx")){
-                    fID_climbable = tilesetData.getInt("firstgid");
-                }
-                else if (tilesetData.getString("source").endsWith("windows.tsx")){
-                    fID_window = tilesetData.getInt("firstgid");
-                }
-                else if (tilesetData.getString("source").endsWith("lab-bkg.tsx")){
-                    fID_bkg = tilesetData.getInt("firstgid");
-                }
-                else if (tilesetData.getString("source").endsWith("forestLeaves.tsx")){
-                    fID_leaves = tilesetData.getInt("firstgid");
-                }
-                else if (tilesetData.getString("source").endsWith("forest-walls.tsx")){
-                    fID_forestTiles = tilesetData.getInt("firstgid");
-                }
-            }
-        }
-        else if (biome.equals("forest")) {
-            // TODO: change this in future
-            tileset = textureRegionAssetMap.get("forest-tileset");
-            for (JsonValue tilesetData : tiledMap.get("tilesets")){
-                if (tilesetData.getString("source").endsWith("forest-walls.tsx")){
-                    fID = tilesetData.getInt("firstgid");
-                }
-                else if (tilesetData.getString("source").endsWith("climbables.tsx")){
-                    fID_climbable = tilesetData.getInt("firstgid");
-                }
-                else if (tilesetData.getString("source").endsWith("windows.tsx")){
-                    fID_window = tilesetData.getInt("firstgid");
-                }
-                else if (tilesetData.getString("source").endsWith("lab-bkg.tsx")){
-                    fID_bkg = tilesetData.getInt("firstgid");
-                }
-                else if (tilesetData.getString("source").endsWith("forestLeaves.tsx")){
-                    fID_leaves = tilesetData.getInt("firstgid");
-                }
-            }
-        }
-
-        tiles = new Tiles(tileData, 128, levelWidth, levelHeight,
-                    tileset, bounds, fID, new Vector2(1/4f, 1/4f));
-
-        if (climbableData != null) {
-            climbables = new Tiles(climbableData, 128, levelWidth, levelHeight,
-                    biome.equals("metal") ? textureRegionAssetMap.get("climbable-tileset") : textureRegionAssetMap.get("forest-climbable-tileset"),
-                    bounds, fID_climbable, new Vector2(1/4f, 1/4f));
-        }
-
-        if (windowData != null) {
-            windows = new Tiles(windowData, 128, levelWidth, levelHeight,
-                    textureRegionAssetMap.get("windows-tileset"), bounds, fID_window, new Vector2(1/4f, 1/4f));
-        }
-
-        if (labBkgData != null) {
-            labBkg = new Tiles(labBkgData, 512, levelWidth, levelHeight,
-                    textureRegionAssetMap.get("lab-bkg-tileset"), bounds, fID_bkg, new Vector2(1/4f, 1/4f));
-        }
-
-        if (leafData != null) {
-            leaves = new Tiles(leafData, 128, levelWidth, levelHeight,
-                    textureRegionAssetMap.get("forestLeaves-tileset"), bounds, fID_leaves, new Vector2(1/4f, 1/4f));
-        }
-
-        if (forestTileData != null) {
-            System.out.println(fID_forestTiles);
-            forestTiles = new Tiles(forestTileData, 128, levelWidth, levelHeight,
-                    textureRegionAssetMap.get("forest-tileset"), bounds, fID_forestTiles, new Vector2(1/4f, 1/4f));
-        }
 
         //make joints
         for (Obstacle obj : objectJoints.keys()) {
@@ -685,6 +570,57 @@ public class Level {
     }
 
     /**
+     * Creates the Tiles objects for this level based on tile layers.
+     *
+     * @param tilesetData    JSON data for tilesets (needed for first ids)
+     * @param tileLayers     Array of tile layer JSONS
+     * @param levelWidth     Width of level in game units
+     * @param levelHeight    Height of level in game units
+     */
+    private void populateTiles(JsonValue tilesetData, Array<JsonValue> tileLayers, int levelWidth, int levelHeight){
+
+        //this could be removed if we had consistency in naming but unfortunately that's not the case
+        ObjectMap<String, Integer> fIDMap = new ObjectMap<>();
+        ObjectMap<String, String> assetNameMap = new ObjectMap<>();
+
+
+        for (JsonValue tilesetJV : tilesetData){
+            if (tilesetJV.getString("source").endsWith("metal-walls.tsx")){
+                fIDMap.put("metalWalls", tilesetJV.getInt("firstgid"));
+            }
+            else if (tilesetJV.getString("source").endsWith("climbables.tsx")){
+                fIDMap.put("climbables", tilesetJV.getInt("firstgid"));
+            }
+            else if (tilesetJV.getString("source").endsWith("windows.tsx")){
+                fIDMap.put("windows", tilesetJV.getInt("firstgid"));
+            }
+            else if (tilesetJV.getString("source").endsWith("lab-bkg.tsx")){
+                fIDMap.put("background", tilesetJV.getInt("firstgid"));
+            }
+            else if (tilesetJV.getString("source").endsWith("forestLeaves.tsx")){
+                fIDMap.put("forestLeaves", tilesetJV.getInt("firstgid"));
+            }
+            else if (tilesetJV.getString("source").endsWith("forest-walls.tsx")){
+                fIDMap.put("forestWalls", tilesetJV.getInt("firstgid"));
+            }
+        }
+
+        assetNameMap.put("metalWalls", "metal-tileset");
+        assetNameMap.put("forestWalls", "forest-tileset");
+        assetNameMap.put("climbables", biome.equals("metal") ? "climbable-tileset" : "forest-climbable-tileset");
+        assetNameMap.put("windows", "windows-tileset");
+        assetNameMap.put("background", "lab-bkg-tileset");
+        assetNameMap.put("forestLeaves", "forestLeaves-tileset");
+
+        for (JsonValue tileLayer : tileLayers){
+            String name = tileLayer.getString("name");
+            Tiles tiles = new Tiles(tileLayer, name.equals("background") ? 512 : 128, 128, levelWidth, levelHeight,
+                    textureRegionAssetMap.get(assetNameMap.get(name)), bounds, fIDMap.get(name), new Vector2(1/4f, 1/4f));
+            tilesMap.put(name, tiles);
+        }
+    }
+
+    /**
      * Populates this level with all the obstacles defined in a Tiled JSON.
      *
      * @param data           Array of Tiled JSON layers
@@ -692,7 +628,7 @@ public class Level {
      * @param tileSize       Size of each tile in the Tiled JSON
      * @param populateCat    True if we want to populate the cat
      */
-    public void populateObstacles(Array<JsonValue> data, int tileSize, int levelHeight, boolean populateCat) {
+    private void populateObstacles(Array<JsonValue> data, int tileSize, int levelHeight, boolean populateCat) {
         for (JsonValue obstacleData : data) {
             String name = obstacleData.getString("name");
             if (name.equals("wallsPoly")) {
@@ -1163,13 +1099,9 @@ public class Level {
         objectJoints.clear();
         decorations.clear();
         boxes.clear();
+        tilesMap.clear();
         numLives = maxLives;
-        tiles = null;
         currCheckpoint = null;
-        climbables = null;
-        windows = null;
-        labBkg = null;
-        leaves = null;
         goal = null;
         setComplete(false);
         setFailure(false);
@@ -1316,10 +1248,7 @@ public class Level {
      * @param greyscale   amount of greyscale to apply (0-1)
      */
     public void draw(GameCanvas canvas, boolean drawCat, float greyscale) {
-
-        if (labBkg != null) {
-            labBkg.draw(canvas);
-        }
+        if (tilesMap.containsKey("background")) tilesMap.get("background").draw(canvas);
 
         for (Decoration d : decorations) { d.draw(canvas); }
 
@@ -1340,11 +1269,9 @@ public class Level {
             }
         }
 
-        if (biome != null && biome.equals("metal")) {
-            if (tiles != null) tiles.draw(canvas);
-        }
+        if (tilesMap.containsKey("metalWalls")) tilesMap.get("metalWalls").draw(canvas);
 
-        if (climbables != null && biome.equals("metal")) climbables.draw(canvas);
+        if (tilesMap.containsKey("climbables") && biome.equals("metal")) tilesMap.get("climbables").draw(canvas);
 
         for (Activator a : activators) {
             a.draw(canvas);
@@ -1400,20 +1327,13 @@ public class Level {
             goal.draw(canvas);
         }
 
-        if (biome != null && biome.equals("forest")) {
-            if (tiles != null) tiles.draw(canvas);
-            if (climbables != null) climbables.draw(canvas);
-        }
+        if (tilesMap.containsKey("forestWalls")) tilesMap.get("forestWalls").draw(canvas);
 
-        if (forestTiles != null) forestTiles.draw(canvas);
+        if (tilesMap.containsKey("climbables") && biome.equals("forest")) tilesMap.get("climbables").draw(canvas);
 
-        if (windows != null) {
-            windows.draw(canvas);
-        }
+        if (tilesMap.containsKey("windows")) tilesMap.get("windows").draw(canvas);
 
-        if (leaves != null) {
-            leaves.draw(canvas);
-        }
+        if (tilesMap.containsKey("forestLeaves")) tilesMap.get("forestLeaves").draw(canvas);
 
         if (greyscale > 0) {canvas.setShader(null);}
 

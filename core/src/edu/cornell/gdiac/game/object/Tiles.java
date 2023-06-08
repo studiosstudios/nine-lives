@@ -10,23 +10,40 @@ import edu.cornell.gdiac.game.GameCanvas;
 
 import java.util.Arrays;
 
+/**
+ * Game representation of a tile layer in Tiled. Only functionality is a draw method.
+ */
 public class Tiles {
     private TextureRegion[] tileset;
     private int[] levelTiles;
     private int levelWidth;
     private int levelHeight;
     private float tileSize;
+    private int tileSpacing;
     private Vector2 textureScale;
     private int fid;
-
     private Vector2 offset = new Vector2();
 
-    public Tiles(JsonValue data, int tileSize, int levelWidth, int levelHeight, TextureRegion tileset, Rectangle bounds, int fid, Vector2 textureScale) {
+    /**
+     * Creates a new Tiles object.`
+     *
+     * @param data              JSON of tile layer
+     * @param tileSize          Size of tiles in pixels in tileset
+     * @param tileSpacing       Distance between tiles in pixels when drawing
+     * @param levelWidth        Width of level in game units
+     * @param levelHeight       Height of level in game units
+     * @param tileset           Tileset for tiles to draw from
+     * @param bounds            Rectangle representing bounds of level for drawing into world
+     * @param fid               ID of first tile in Tiled JSON
+     * @param textureScale      Amount to scale drawing by
+     */
+    public Tiles(JsonValue data, int tileSize, int tileSpacing, int levelWidth, int levelHeight, TextureRegion tileset, Rectangle bounds, int fid, Vector2 textureScale) {
 
         levelTiles = data.get("data").asIntArray();
         this.levelWidth = levelWidth;
         this.levelHeight = levelHeight;
         this.tileSize = tileSize;
+        this.tileSpacing = tileSpacing;
         this.textureScale = textureScale;
         this.fid = fid;
         this.offset.set(bounds.x, bounds.y);
@@ -50,6 +67,11 @@ public class Tiles {
 
     }
 
+    /**
+     * Draws tiles to canvas.
+     *
+     * @param canvas  Canvas to draw to
+     */
     public void draw(GameCanvas canvas){
         int i = 0;
         for (float y = levelHeight - 1; y >= 0; y--){
@@ -59,10 +81,10 @@ public class Tiles {
                         TextureRegion tileTexture = tileset[levelTiles[i] - fid];
                         if (tileSize == 512) {
                             canvas.draw(tileTexture, Color.WHITE, 0, 0, (x + offset.x) * 128 * textureScale.x,
-                                    (y + offset.y) * 128 * textureScale.y, 0, textureScale.x, textureScale.y);
+                                    (y + offset.y) * tileSpacing * textureScale.y, 0, textureScale.x, textureScale.y);
                         } else {
                             canvas.draw(tileTexture, Color.WHITE, 0, 0, (x + offset.x) * tileSize * textureScale.x,
-                                    (y + offset.y) * tileSize * textureScale.y, 0, textureScale.x, textureScale.y);
+                                    (y + offset.y) * tileSpacing * textureScale.y, 0, textureScale.x, textureScale.y);
                         }
                     }
                 } catch (ArrayIndexOutOfBoundsException e) {

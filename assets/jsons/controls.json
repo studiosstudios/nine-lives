@@ -50,5 +50,21 @@
   "pan": {
     "key": "TAB",
     "disableWhenPan": false
+  },
+  "debug": {
+    "key": "B",
+    "disableWhenPan": false
+  },
+  "reset": {
+    "key": "R",
+    "disableWhenPan": false
+  },
+  "next": {
+    "key": "N",
+    "disableWhenPan": false
+  },
+  "previous": {
+    "key": "P",
+    "disableWhenPan": false
   }
 }

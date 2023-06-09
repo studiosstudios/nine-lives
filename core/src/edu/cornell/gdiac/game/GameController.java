@@ -685,9 +685,9 @@ public class GameController implements Screen {
         InputController input = InputController.getInstance();
         input.readInput();
         // Toggle debug
-//        if (input.didDebug()) {
-//            debug = !debug;
-//        }
+        if (input.didDebug()) {
+            debug = !debug;
+        }
 
         if (!currLevel.isFailure() && currLevel.getDied()) {
             flashColor.set(0, 0, 0, 1);
@@ -719,16 +719,14 @@ public class GameController implements Screen {
             pause();
             prevLevel();
             return false;
-//        }  else if (input.didNext() && levelNum < numLevels) {
-//            pause();
-////            nextLevel();
-//            init(levelNum + 1);
-//            return false;
-//        }  else if (input.didPrev() && levelNum > 1) {
-//            pause();
-////            prevLevel();
-//            init(levelNum - 1);
-//            return false;
+        }  else if (input.didNext() && levelNum < numLevels) {
+            pause();
+            init(levelNum + 1);
+            return false;
+        }  else if (input.didPrev() && levelNum > 1) {
+            pause();
+            init(levelNum - 1);
+            return false;
         }
         return true;
     }

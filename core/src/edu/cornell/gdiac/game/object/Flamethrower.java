@@ -73,10 +73,9 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
 
 
 
-        flameOffset = new Vector2(objectConstants.get("flame_offset").getFloat(0)*(float)Math.cos(angle)-
-                objectConstants.get("flame_offset").getFloat(1)*(float)Math.sin(angle),
-                objectConstants.get("flame_offset").getFloat(1)*(float)Math.cos(angle)-
-                        objectConstants.get("flame_offset").getFloat(0)*(float)Math.sin(angle));
+        flameOffset = new Vector2(objectConstants.get("flame_offset").getFloat(0),
+                objectConstants.get("flame_offset").getFloat(1));
+        Direction.rotateVector(flameOffset, dir);
         flame = new Flame(flameTexture, drawScale, flameBase.getPosition(), flameBase.getAngle(),textureScale);
         flameBase.setBodyType(properties.containsKey("attachName") ? BodyDef.BodyType.DynamicBody : BodyDef.BodyType.StaticBody);
         flame.setBodyType(flameBase.getBodyType());
@@ -245,6 +244,8 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
             setX(pos.x + flameOffset.x);
             setY(pos.y + flameOffset.y);
 
+            origin.set(objectConstants.get("flame_origin").getFloat(0), objectConstants.get("flame_origin").getFloat(1));
+
         }
 
         /** Creates hitbox sensor. The hitbox is smaller than the texture itself. */
@@ -282,8 +283,6 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
         @Override
         public void drawDebug(GameCanvas canvas) {
             super.drawDebug(canvas);
-//            float xTranslate = (canvas.getCamera().getX()-canvas.getWidth()/2)/drawScale.x;
-//            float yTranslate = (canvas.getCamera().getY()-canvas.getHeight()/2)/drawScale.y;
             canvas.drawPhysics(sensorShape,Color.RED,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
         }
 
@@ -291,8 +290,7 @@ public class Flamethrower extends ComplexObstacle implements Activatable {
         public void draw(GameCanvas canvas){
             if (isActive()){
                 animationTime += Gdx.graphics.getDeltaTime();
-                setTexture(animation.getKeyFrame(animationTime));
-                super.draw(canvas);
+                canvas.draw(animation.getKeyFrame(animationTime), Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), textureScale.x,textureScale.y);
             }
         }
 

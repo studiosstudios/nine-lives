@@ -172,8 +172,7 @@ public class Activator extends PolygonObstacle {
         } else {
             animationTime = Math.min(totalAnimationTime, animationTime + Gdx.graphics.getDeltaTime());
         }
-
-        if (type == Type.SWITCH) { System.out.println("delta time: " + Gdx.graphics.getDeltaTime() + " animation time: " + animationTime);}
+        
         float x = (getX() - 0.5f)*drawScale.x;
 
         if (Math.round(Math.toDegrees(getAngle())) == 180) {

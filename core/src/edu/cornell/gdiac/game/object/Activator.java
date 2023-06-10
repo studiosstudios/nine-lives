@@ -18,10 +18,9 @@ import edu.cornell.gdiac.util.Direction;
 import java.util.HashMap;
 
 /**
- * An abstract class that represents objects that can be pressed and activate other objects. The exact behaviour of
- * how an activator becomes active must be implemented by the inheritor.
+ * Represents objects that can be pressed and activate other objects. Can be a button or a switch.
  */
-public abstract class Activator extends PolygonObstacle {
+public class Activator extends PolygonObstacle {
     /** Constants that are shared between all instances of this class */
     protected static JsonValue objectConstants;
     /** Filmstrip */
@@ -34,6 +33,7 @@ public abstract class Activator extends PolygonObstacle {
     private TextureRegion[][] spriteFrames;
     /** How long the activator has been animating */
     private float animationTime;
+    private float totalAnimationTime;
     /** Shape of the sensor that presses this activator */
     private Texture topTexture;
     private TextureRegion bottomTexture;
@@ -49,6 +49,11 @@ public abstract class Activator extends PolygonObstacle {
     private Direction dir;
     private String biome;
     private boolean prevPressed;
+    public Type type;
+    public enum Type {
+        BUTTON,
+        SWITCH
+    }
 
     /**
      * @return true if the activator is currently activating
@@ -72,10 +77,23 @@ public abstract class Activator extends PolygonObstacle {
     public void removePress() { numPressing--; }
 
     /**
-     * Updates the active state of this activator. This is called every game loop, and is the
-     * primary method to specify for inheritors.
+     * Updates the active state of this activator. This is called every game loop.
      */
-    public abstract void updateActivated();
+    public void updateActivated(){
+        switch (type){
+            case BUTTON:
+                /** For a button, active = isPressed() */
+                activating = isPressed();
+                break;
+            case SWITCH:
+                /** For a switch, active is toggled every time button is pressed */
+                if (isPressed() && !prevPressed) {
+                    activating = !activating;
+                }
+                prevPressed = isPressed();
+                break;
+        }
+    }
 
     /**
      * Creates a new Activator object.
@@ -85,25 +103,37 @@ public abstract class Activator extends PolygonObstacle {
      * @param scale          Draw scale for drawing
      * @param textureScale   Texture scale for rescaling texture
      */
-    public Activator(ObjectMap<String, Object> properties, String texture_name, String base_name, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale, String biome, boolean resize){
+    public Activator(Type type, ObjectMap<String, Object> properties, HashMap<String, TextureRegion> tMap, Vector2 scale, Vector2 textureScale, String biome){
         super(objectConstants.get("body_shape").asFloatArray());
-        topTexture = tMap.get(texture_name).getTexture();
-        spriteFrames = TextureRegion.split(topTexture, 256,256);
+        this.type = type;
         this.biome = biome;
         setTextureScale(textureScale);
+        switch (type) {
+            case SWITCH:
+                topTexture = tMap.get(biome + "-switch-top").getTexture();
+                bottomTexture = tMap.getOrDefault(biome + "-switch-base", null);
+                break;
+            case BUTTON:
+                topTexture = tMap.get(biome + "-button-top").getTexture();
+                bottomTexture = tMap.getOrDefault(biome + "-button-base", null);
+                break;
+        }
+        spriteFrames = TextureRegion.split(topTexture, 256,256);
 
-        //i am so sorry for how i am doing this
+        //this is because of inconsistencies in button and switch tileset - blame sabrina and tanya
         if (biome.equals("forest")) {
-            if (resize) {
-                setTextureScale(textureScale.x / 2f, textureScale.y / 2f);
-                origin.set(-128, -128);
-            } else {
-                origin.set(0, -8);
+            switch (type) {
+                case BUTTON:
+                    setTextureScale(textureScale.x / 2f, textureScale.y / 2f);
+                    origin.set(-128, -128);
+                break;
+                case SWITCH:
+                    origin.set(0, -8);
+                break;
             }
         }
-        bottomTexture = tMap.get(base_name);
         setRestitution(0);
-        float totalAnimationTime = 0.2f;
+        totalAnimationTime = 0.2f;
         animation = new Animation<>(totalAnimationTime/spriteFrames[0].length, spriteFrames[0]);
         setBodyType(properties.get("attachName", "").equals("") ? BodyDef.BodyType.StaticBody : BodyDef.BodyType.DynamicBody);
         animation.setPlayMode(Animation.PlayMode.REVERSED);
@@ -120,8 +150,6 @@ public abstract class Activator extends PolygonObstacle {
         setFixedRotation(true);
 
         id = (String) properties.get("id");
-//        setX((float) properties.get("x")+objectConstants.get("offset").getFloat(0));
-//        setY((float) properties.get("y")+objectConstants.get("offset").getFloat(1));
         color.set((Color) properties.get("color", Color.RED));
         pan = (boolean) properties.get("shouldPan", false);
         activating = false;
@@ -139,27 +167,20 @@ public abstract class Activator extends PolygonObstacle {
 
     @Override
     public void draw(GameCanvas canvas){
-        TextureRegion currentFrame;
-        if (prevPressed ^ isPressed()) animationTime = 0;
-        prevPressed = isPressed();
-        if(isPressed()){
-            animation.setPlayMode(Animation.PlayMode.NORMAL);
-            animationTime += Gdx.graphics.getDeltaTime();
-            currentFrame = animation.getKeyFrame(animationTime);
+        if( isActivating() ) {
+            animationTime = Math.max(0, animationTime - Gdx.graphics.getDeltaTime());
+        } else {
+            animationTime = Math.min(totalAnimationTime, animationTime + Gdx.graphics.getDeltaTime());
         }
-        else {
-            animation.setPlayMode(Animation.PlayMode.REVERSED);
-            animationTime += Gdx.graphics.getDeltaTime();
-            currentFrame = animation.getKeyFrame(animationTime);
-        }
+
+        if (type == Type.SWITCH) { System.out.println("delta time: " + Gdx.graphics.getDeltaTime() + " animation time: " + animationTime);}
         float x = (getX() - 0.5f)*drawScale.x;
 
-//        System.out.println();
         if (Math.round(Math.toDegrees(getAngle())) == 180) {
             x = x + drawScale.x;
         }
 
-        canvas.draw(currentFrame, color, origin.x, origin.y, x, getY()*drawScale.y, getAngle(), textureScale.x,textureScale.y);
+        canvas.draw(animation.getKeyFrame(animationTime), color, origin.x, origin.y, x, getY()*drawScale.y, getAngle(), textureScale.x,textureScale.y);
         if (biome.equals("metal")) canvas.draw(bottomTexture, Color.WHITE, origin.x, origin.y, x, (getY())*drawScale.y, getAngle(), textureScale.x, textureScale.y);
     }
 
@@ -225,11 +246,13 @@ public abstract class Activator extends PolygonObstacle {
     public ObjectMap<String, Object> storeState(){
         ObjectMap<String, Object> stateMap = super.storeState();
         stateMap.put("activating", activating);
+        stateMap.put("prevPressed", prevPressed);
         return stateMap;
     }
 
     public void loadState(ObjectMap<String, Object> stateMap) {
         super.loadState(stateMap);
         activating = (boolean) stateMap.get("activating");
+        prevPressed = (boolean) stateMap.get("prevPressed");
     }
 }

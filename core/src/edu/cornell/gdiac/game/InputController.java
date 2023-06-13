@@ -64,8 +64,6 @@ public class InputController {
 	private JsonValue controlsJSON;
 	/** Disables all controls **/
 	private boolean disableAll;
-	/** If debug controls are enabled */
-	public static final boolean DEBUG = true;
 
 	/**
 	 * Sets the keybindings from a JSON. The JSON must be a single object consisting only of string-string pairs, where
@@ -211,7 +209,7 @@ public class InputController {
 	 *
 	 * @return true if the dash button was pressed.
 	 */
-	public boolean didNext() { return DEBUG && isClicked("next");}
+	public boolean didNext() { return isClicked("next");}
 
 	/**
 	 * Returns true if the dash button was pressed.
@@ -221,7 +219,7 @@ public class InputController {
 	 *
 	 * @return true if the dash button was pressed.
 	 */
-	public boolean didPrev() { return DEBUG && isClicked("previous");}
+	public boolean didPrev() { return isClicked("previous");}
 
 	/**
 	 * Returns true if the dash button was pressed.
@@ -245,14 +243,14 @@ public class InputController {
 	 *
 	 * @return true if the reset button was pressed.
 	 */
-	public boolean didReset() { return DEBUG && isClicked("reset"); }
+	public boolean didReset() { return isClicked("reset"); }
 	
 	/**
 	 * Returns true if the player wants to go toggle the debug mode.
 	 *
 	 * @return true if the player wants to go toggle the debug mode.
 	 */
-	public boolean didDebug() { return DEBUG && isClicked("debug"); }
+	public boolean didDebug() { return isClicked("debug"); }
 
 	/**
 	 * Returns true if player wants to pan the map

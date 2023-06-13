@@ -29,6 +29,9 @@ public class NineLives extends Game implements ScreenListener {
 	private boolean quickLaunchFromTiled;
 	private String filepath;
 
+	/** If debug mode is enabled */
+	private final boolean debug = true;
+
 	/**
 	 * Creates a new game from the configuration settings.
 	 *
@@ -112,9 +115,9 @@ public class NineLives extends Game implements ScreenListener {
 	private void startGame(int numLevels, int startLevel){
 		directory = menu.getAssets();
 		if (quickLaunchFromTiled) {
-			controller = new GameController(filepath, audioController);
+			controller = new GameController(filepath, debug, audioController);
 		} else {
-			controller = new GameController(numLevels, audioController);
+			controller = new GameController(numLevels, debug, audioController);
 		}
 		controller.gatherAssets(directory);
 		controller.setCanvas(canvas);

@@ -43,6 +43,8 @@ public class GameController implements Screen {
     public static final int WORLD_VELOC = 6;
     /** Number of position iterations for the constraint solvers */
     public static final int WORLD_POSIT = 2;
+    /** Whether debug mode is enabled */
+    private final boolean debugEnabled;
     /** Whether debug mode is active */
     private boolean debug;
     /** The default sound volume */
@@ -289,8 +291,8 @@ public class GameController implements Screen {
      * with the Box2D coordinates.  The bounds are in terms of the Box2d
      * world, not the screen.
      */
-    protected GameController(int numLevels, AudioController audioController) {
-        this(new Vector2(0,DEFAULT_GRAVITY), new Vector2(DEFAULT_SCALE,DEFAULT_SCALE), numLevels, audioController);
+    protected GameController(int numLevels, boolean debugEnabled, AudioController audioController) {
+        this(new Vector2(0,DEFAULT_GRAVITY), new Vector2(DEFAULT_SCALE,DEFAULT_SCALE), numLevels, debugEnabled, audioController);
     }
 
     /**
@@ -300,8 +302,8 @@ public class GameController implements Screen {
      * with the Box2D coordinates.  The bounds are in terms of the Box2d
      * world, not the screen.
      */
-    protected GameController(String filepath, AudioController audioController) {
-        this(new Vector2(0,DEFAULT_GRAVITY), new Vector2(DEFAULT_SCALE,DEFAULT_SCALE), 1, audioController);
+    protected GameController(String filepath, boolean debugEnabled, AudioController audioController) {
+        this(new Vector2(0,DEFAULT_GRAVITY), new Vector2(DEFAULT_SCALE,DEFAULT_SCALE), 1, debugEnabled, audioController);
         JsonReader json = new JsonReader();
         quickLaunchLevel = json.parse(Gdx.files.internal(filepath));
     }
@@ -313,9 +315,10 @@ public class GameController implements Screen {
      * with the Box2D coordinates.  The bounds are in terms of the Box2D
      * world, not the screen.
      */
-    protected GameController(Vector2 gravity, Vector2 scale, int numLevels, AudioController audioController) {
+    protected GameController(Vector2 gravity, Vector2 scale, int numLevels, boolean debugEnabled, AudioController audioController) {
         this.audioController = audioController;
         this.scale = scale;
+        this.debugEnabled = debugEnabled;
         gameFinished = false;
         debug = false;
         setRet(false);
@@ -534,8 +537,10 @@ public class GameController implements Screen {
         //Set controls
         InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
 
-//		InputController.getInstance().writeTo("debug-input/recent.txt");
-//		InputController.getInstance().readFrom("debug-input/recent.txt");
+        if (debugEnabled) {
+//            InputController.getInstance().writeTo("debug-input/flying-body.txt");
+//            InputController.getInstance().readFrom("debug-input/flying-body.txt");
+        }
     }
 
     public void updateControls() {
@@ -685,7 +690,7 @@ public class GameController implements Screen {
         InputController input = InputController.getInstance();
         input.readInput();
         // Toggle debug
-        if (input.didDebug()) {
+        if (debugEnabled && input.didDebug()) {
             debug = !debug;
         }
 
@@ -708,7 +713,7 @@ public class GameController implements Screen {
             spiritModeTicks = 0;
         }
 
-        if (currLevel.isFailure()) {
+        if (currLevel.isFailure() || (input.didReset() && debugEnabled)) {
             if (currLevel.isFailure()) flashColor.set(1, 0, 0, 1);
             reset();
         } else if (currLevel.isComplete() && levelNum < numLevels) {
@@ -719,11 +724,11 @@ public class GameController implements Screen {
             pause();
             prevLevel();
             return false;
-        }  else if (input.didNext() && levelNum < numLevels) {
+        }  else if (debugEnabled && input.didNext() && levelNum < numLevels) {
             pause();
             init(levelNum + 1);
             return false;
-        }  else if (input.didPrev() && levelNum > 1) {
+        }  else if (debugEnabled && input.didPrev() && levelNum > 1) {
             pause();
             init(levelNum - 1);
             return false;
@@ -946,14 +951,16 @@ public class GameController implements Screen {
     @Override
     public void render(float delta) {
         //FOR DEBUGGING
-		delta = 1/60f;
-		if (Gdx.input.isKeyPressed(Input.Keys.F)){
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-			}
-		}
+        if (debugEnabled) {
+            delta = 1 / 60f;
+            if (Gdx.input.isKeyPressed(Input.Keys.F)) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
         if (!paused && preUpdate(delta)) {
             update(delta); // This is the one that must be defined.
             postUpdate(delta);

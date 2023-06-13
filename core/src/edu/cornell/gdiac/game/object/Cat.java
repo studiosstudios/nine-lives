@@ -545,6 +545,13 @@ public class Cat extends CapsuleObstacle implements Movable {
         }
     }
 
+    /**
+     * @return  the velocity vector that a dead body should have if the cat dies at this frame
+     */
+    public Vector2 getDeadbodySwitchVelocity(){
+        return state == State.DASHING ? velocityCache.set(getLinearVelocity().x, maxSpeed) : getLinearVelocity();
+    }
+
     //endregion
     /*/////*/
 

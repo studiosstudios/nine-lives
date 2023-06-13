@@ -1380,7 +1380,7 @@ public class Level {
         else{
             deadBody = new DeadBody(textureRegionAssetMap.get("corpse"),textureRegionAssetMap.get("corpse-burnt"), scale, cat.getPosition(), textureScaleCache, cat.getDashTimer());
         }
-        deadBody.setLinearVelocity(cat.getLinearVelocity());
+        deadBody.setLinearVelocity(cat.getDeadbodySwitchVelocity());
         deadBody.setFacingRight(cat.isFacingRight());
         queueObject(deadBody);
         deadBodyArray.add(deadBody);

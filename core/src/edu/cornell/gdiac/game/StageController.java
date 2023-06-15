@@ -329,7 +329,7 @@ public class StageController implements Screen {
 //				listener.exitScreen(this, 0);
 				} else if (mainMenuStage.isSettings()) {
 					audioController.playSoundEffect("menu-select");
-					mainMenuStage.setSettingsState(0);
+					mainMenuStage.reset();
 					settingsStage = new SettingsStage("jsons/settings-stage.json", true);
 					settingsStage.setAudioController(this.audioController);
 					changeStage(settingsStage);
@@ -338,7 +338,7 @@ public class StageController implements Screen {
 					mainMenuStage = null;
 				} else if (mainMenuStage.isLevelSelect()) {
 					audioController.playSoundEffect("menu-select");
-					mainMenuStage.setLevelSelectState(0);
+					mainMenuStage.reset();
 					levelSelectStage = new LevelSelectStage("jsons/level-select-stage.json", true, 32);
 //					levelSelectStage.setNumLevels(numLevels);
 					changeStage(levelSelectStage);

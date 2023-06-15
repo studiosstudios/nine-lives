@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -22,37 +23,21 @@ import edu.cornell.gdiac.game.Save;
 public class MainMenuStage extends StageWrapper{
     protected AssetDirectory animations;
     private AnimatedActor catActor;
-    private Actor playButtonActor;
-    private Actor levelSelectActor;
-    private Actor settingsActor;
-    private Actor exitButtonActor;
-    private int playButtonState;
+    private UIButton playButtonActor;
+    private UIButton levelSelectActor;
+    private UIButton settingsActor;
+    private UIButton exitButtonActor;
+    private UIButton[] buttons;
     private AnimationDrawable animation;
-    private int levelSelectState;
-
-    private int settingsState;
-    private int exitButtonState;
-
-    public int getPlayButtonState() { return playButtonState; }
-    public void setPlayButtonState(int state) { playButtonState = state; }
-    public int getLevelSelectState() { return levelSelectState; }
-    public void setLevelSelectState(int state) { levelSelectState = state; }
-    public int getSettingsState() { return settingsState; }
-    public void setSettingsState(int state) { settingsState = state; }
-    public int getExitButtonState() { return exitButtonState; }
-    public void setExitButtonState(int state) { exitButtonState = state; }
-
-    public boolean isPlay() { return playButtonState == 2; }
-    public boolean isLevelSelect() { return levelSelectState == 2; }
-    public boolean isSettings() { return settingsState == 2; }
-    public boolean isExit() { return exitButtonState == 2; }
+    public boolean isPlay() { return playButtonActor.isClicked(); }
+    public boolean isLevelSelect() { return levelSelectActor.isClicked(); }
+    public boolean isSettings() { return settingsActor.isClicked(); }
+    public boolean isExit() { return exitButtonActor.isClicked(); }
 
     public MainMenuStage(String internal, boolean createActors) {
         super(internal, createActors, false);
     }
-    /**
-     *
-     */
+
     @Override
     public void createActors() {
         animations = new AssetDirectory("jsons/ui-animations.json");
@@ -67,31 +52,34 @@ public class MainMenuStage extends StageWrapper{
         addActor(catActor);
         catActor.setScale(0.5f);
         catActor.setPosition(15,15);
-        if (Save.getStarted()) {
-            playButtonActor = addActor(internal.getEntry("continue-game", Texture.class),buttonX+215-19-50, buttonY);
-            playButtonActor.setScale(0.5f);
+        if (!Save.getStarted()) {
+            playButtonActor = new UIButton(internal.getEntry("continue-game", Texture.class),buttonX+215-19-50-111, buttonY-27, 0.5f, 0.62f, 0.57f);
         } else {
-            playButtonActor = addActor(internal.getEntry("play-game", Texture.class),buttonX+215, buttonY);
-            playButtonActor.setScale(0.5f);
+            playButtonActor = new UIButton(internal.getEntry("play-game", Texture.class),buttonX+215-77, buttonY-27, 0.5f, 0.62f, 0.57f);
         }
-        levelSelectActor = addActor(internal.getEntry("level-select", Texture.class),buttonX+215-19, buttonY-50-10);
-        levelSelectActor.setScale(0.5f);
-        settingsActor = addActor(internal.getEntry("settings", Texture.class),buttonX+215+28, buttonY-100-20);
-        settingsActor.setScale(0.5f);
-        exitButtonActor = addActor(internal.getEntry("exit", Texture.class),buttonX+215+6.5f, buttonY-150-30);
-        exitButtonActor.setScale(0.5f);
+        levelSelectActor = new UIButton(internal.getEntry("level-select", Texture.class),buttonX+215-19-86, buttonY-50-10-27, 0.5f, 0.62f, 0.57f);
+        settingsActor = new UIButton(internal.getEntry("settings", Texture.class), buttonX+215+28-62, buttonY-100-20-27, 0.5f, 0.62f, 0.57f);
+        exitButtonActor = new UIButton(internal.getEntry("exit", Texture.class),buttonX+215+6.5f-73, buttonY-150-30-27, 0.5f, 0.62f, 0.57f);
 
-        playButtonActor.addListener(createHoverListener(playButtonActor));
-        levelSelectActor.addListener(createHoverListener(levelSelectActor));
-        settingsActor.addListener(createHoverListener(settingsActor));
-        exitButtonActor.addListener(createHoverListener(exitButtonActor));
+        buttons = new UIButton[]{playButtonActor, levelSelectActor, settingsActor, exitButtonActor};
+        for (UIButton b : buttons) {
+            addButton(b);
+        }
+    }
+
+    public void reset() {
+        for (UIButton b : buttons) {
+            b.reset();
+        }
     }
 
     @Override
     public void update(float delta) {
         super.update(delta);
+        for (UIButton b : buttons){
+            b.update(delta);
+        }
         catActor.act(delta);
-//        addActor(animation.getKeyFrame(time).getTexture(),15,15);
     }
 
     /**
@@ -105,18 +93,10 @@ public class MainMenuStage extends StageWrapper{
     @Override
     public boolean listenerTouchDown(InputEvent event, float x, float y, int pointer, int button) {
         Actor actor = event.getListenerActor();
-        if (actor == playButtonActor) {
-            playButtonState = 1;
-            playButtonActor.setColor(Color.LIGHT_GRAY);
-        } else if (actor == levelSelectActor) {
-            levelSelectState = 1;
-            levelSelectActor.setColor(Color.LIGHT_GRAY);
-        } else if (actor == settingsActor) {
-            settingsState = 1;
-            settingsActor.setColor(Color.LIGHT_GRAY);
-        } else if (actor == exitButtonActor) {
-            exitButtonState = 1;
-            exitButtonActor.setColor(Color.LIGHT_GRAY);
+        for (UIButton b : buttons) {
+            if (actor == b) {
+                b.touchDown();
+            }
         }
         return true;
     }
@@ -130,18 +110,10 @@ public class MainMenuStage extends StageWrapper{
      */
     @Override
     public void listenerTouchUp(InputEvent event, float x, float y, int pointer, int button) {
-        if (playButtonState == 1) {
-            playButtonState = 2;
-            playButtonActor.setColor(Color.WHITE);
-        } else if (levelSelectState == 1) {
-            levelSelectState = 2;
-            levelSelectActor.setColor(Color.WHITE);
-        } else if (settingsState == 1) {
-            settingsState = 2;
-            settingsActor.setColor(Color.WHITE);
-        } else if (exitButtonState == 1) {
-            exitButtonState = 2;
-            exitButtonActor.setColor(Color.WHITE);
+        for (UIButton b : buttons) {
+            if (b.getState() == UIButton.State.CLICKED) {
+                b.touchUp();
+            }
         }
     }
 }

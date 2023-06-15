@@ -8,11 +8,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.*;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
@@ -156,6 +153,12 @@ public abstract class StageWrapper extends Stage {
         return actor;
     }
 
+    public void addButton(UIButton button) {
+        button.addListener(createUIButtonListener(button));
+        button.addListener(new Listener());
+        super.addActor(button);
+    }
+
     public void update(float delta) {}
 
     abstract public void createActors();
@@ -166,9 +169,14 @@ public abstract class StageWrapper extends Stage {
 
     class Listener extends InputListener {
         @Override
-        public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) { return listenerTouchDown(event,x,y,pointer,button); }
+        public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+            return listenerTouchDown(event,x,y,pointer,button);
+        }
+
         @Override
-        public void touchUp(InputEvent event, float x, float y, int pointer, int button) { listenerTouchUp(event,x,y,pointer,button); }
+        public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+            listenerTouchUp(event,x,y,pointer,button);
+        }
     }
 
     public InputListener createHoverListener(Actor actor) {
@@ -183,6 +191,19 @@ public abstract class StageWrapper extends Stage {
             }
         };
     }
+    public InputListener createUIButtonListener(UIButton button) {
+        return new InputListener() {
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                button.enter();
+            }
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                button.exit();
+            }
+        };
+    }
+
     class AnimatedActor extends Image {
         private final AnimationDrawable drawable;
 

@@ -13,6 +13,7 @@ import edu.cornell.gdiac.game.obstacle.*;
 import edu.cornell.gdiac.util.PooledList;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Represents a single level in our game
@@ -51,6 +52,8 @@ public class Level {
     protected PooledList<JointDef> jointQueue = new PooledList<>();
     /** Whether we have completed this level */
     private boolean complete;
+    /** Whether we want to return to the previous level */
+    private boolean shouldReturn;
     /** Whether we have failed at this world (and need a reset) */
     private boolean failed;
     /** Whether we have died */
@@ -294,6 +297,15 @@ public class Level {
     }
 
     /**
+     * Returns true if we want to go back to the previous level.
+     * <br><br>
+     * @return true if we want to go back.
+     */
+    public boolean isReturn() {
+        return shouldReturn;
+    }
+
+    /**
      * Returns true if the level is failed.
      * <br><br>
      * If true, the level will reset after a countdown
@@ -386,7 +398,7 @@ public class Level {
      * @param scale Drawing scale
      * @param numLives Number of lives
      */
-    public Level(World world, Vector2 scale, int numLives, RayHandler rayHandler) {
+    public Level(World world, Vector2 scale, int numLives, RayHandler rayHandler, SpiritLine spiritLine, Array<DeadBody> dbArray) {
         this.world  = world;
         this.bounds = new Rectangle();
         this.scale = scale;
@@ -394,12 +406,12 @@ public class Level {
         this.rayHandler = rayHandler;
         maxLives = numLives;
         complete = false;
+        shouldReturn = false;
         failed = false;
         died = false;
 
         activators = new Array<>();
         activatables = new Array<>();
-        deadBodyArray = new Array<>();
         lasers = new Array<>();
         mobArray = new Array<>();
         spiritRegionArray = new Array<>();
@@ -407,7 +419,8 @@ public class Level {
         boxes = new Array<>();
         activationRelations = new HashMap<>();
         spiritMode = false;
-        spiritLine = new SpiritLine(Color.WHITE, Color.WHITE, scale);
+        this.spiritLine = spiritLine;
+        deadBodyArray = dbArray;
     }
 
     /**
@@ -422,6 +435,15 @@ public class Level {
     }
 
     /**
+     * Sets whether we want to return to previous level.
+     * <br><br>
+     * @param value whether we want to return to previous level.
+     */
+    public void setReturn(boolean value) {
+        shouldReturn = value;
+    }
+
+    /**
      * Sets goal active to be some value
      * @param val to set active
      */
@@ -430,7 +452,7 @@ public class Level {
     }
 
     /**
-     * Updates active checkpoints and cat respawning positionc
+     * Updates active checkpoints and cat respawning position
      *
      * @param c The most recent checkpoint the cat has come in contact with
      */
@@ -445,12 +467,26 @@ public class Level {
         if (shouldSave) saveState();
     }
 
-    public void resetCheckpoints(){
-        if(currCheckpoint != null){
-            currCheckpoint.setCurrent(false, true);
+    /**
+     * Ensures objects array is consistent with dead body array.
+     */
+    public void syncDeadBodyObjects(int relativeLevel){
+
+        //remove all exisiting dead bodies from objects array
+        Iterator<PooledList<Obstacle>.Entry> iterator = objects.entryIterator();
+        while (iterator.hasNext()) {
+            PooledList<Obstacle>.Entry entry = iterator.next();
+            Obstacle obs = entry.getValue();
+            if (obs instanceof DeadBody){
+                entry.remove();
+            }
         }
-        currCheckpoint = null;
-        respawnPos = startRespawnPos;
+
+        //add all dead bodies into objects array
+        for (DeadBody db : deadBodyArray){
+            db.changeRelativeLevel(relativeLevel);
+            objects.add(db);
+        }
     }
 
     private void loadExitPositions(JsonValue data, int tileSize, int levelHeight){
@@ -1088,7 +1124,6 @@ public class Level {
         joints.clear();
         activators.clear();
         lasers.clear();
-        deadBodyArray.clear();
         activatables.clear();
         mobArray.clear();
         spiritRegionArray.clear();
@@ -1101,6 +1136,7 @@ public class Level {
         currCheckpoint = null;
         goal = null;
         setComplete(false);
+        setReturn(false);
         setFailure(false);
     }
 

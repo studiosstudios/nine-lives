@@ -47,12 +47,8 @@ public class GameController implements Screen {
     private final boolean debugEnabled;
     /** Whether debug mode is active */
     private boolean debug;
-    /** The default sound volume */
-    private float volume;
     /** JSON representing the level */
     private JsonValue levelJV;
-    /** Whether to return to previous level */
-    private boolean ret;
     /** Reference to the game canvas */
     protected GameCanvas canvas;
     /** The maximum number of lives in the game */
@@ -201,22 +197,6 @@ public class GameController implements Screen {
     }
 
     /**
-     * Returns true if returning to prev level
-     *
-     * @return true if returning to previous level
-     */
-    public boolean isRet() { return ret; }
-
-    /**
-     * Sets whether to return to the previous level
-     *
-     * @param value to set ret to
-     */
-    public void setRet(boolean value){
-        ret = value;
-    }
-
-    /**
      * Gets the JSON for the currently active level
      * @return JSON for currently active level
      */
@@ -321,14 +301,16 @@ public class GameController implements Screen {
         this.debugEnabled = debugEnabled;
         gameFinished = false;
         debug = false;
-        setRet(false);
         world = new World(gravity, true);
 
         this.numLevels = numLevels;
         levelNum = 1;
         levels = new Level[3];
+
+        SpiritLine spiritLine = new SpiritLine(Color.WHITE, Color.WHITE, scale);
+        Array<DeadBody> dbArray = new Array<>();
         for (int i = 0; i < 3; i++){
-            levels[i] = new Level(world, scale, MAX_NUM_LIVES, rayHandler);
+            levels[i] = new Level(world, scale, MAX_NUM_LIVES, rayHandler, spiritLine, dbArray);
         }
         currLevelIndex = 1;
 
@@ -361,12 +343,11 @@ public class GameController implements Screen {
      * The current level is set to the next level<br>
      * The next level is loaded in<br>
      */
-    public void nextLevel(){
+    private void nextLevel(){
         levelNum++;
         Save.setProgress(levelNum);
         prevJV = getJSON();
         setJSON(nextJV);
-        setRet(false);
 
         currLevelIndex = (currLevelIndex + 1) % 3;
         currLevel.setComplete(false);
@@ -374,6 +355,8 @@ public class GameController implements Screen {
 //        respawn();
         currLevel.setCat(prevLevel.getCat());
         currLevel.updateCheckpoints(prevLevel.getCheckpoint(), true); //because checkpoints and exits lie on the same position
+        currLevel.setNumLives(prevLevel.getNumLives());
+        currLevel.syncDeadBodyObjects(-1);
         prevLevel.removeCat();
 
         nextLevel.dispose();
@@ -395,11 +378,11 @@ public class GameController implements Screen {
      * The current level is set to the previous level<br>
      * The previous level is loaded in<br>
      */
-    public void prevLevel(){
+    private void prevLevel(){
         levelNum--;
         nextJV = getJSON();
         setJSON(prevJV);
-        setRet(false);
+        currLevel.setReturn(false);
         if (levelNum > 1) {
             prevJV = tiledJSON(levelNum - 1);
         }
@@ -407,6 +390,9 @@ public class GameController implements Screen {
         setLevels();
 
         currLevel.setCat(nextLevel.getCat());
+        currLevel.updateCheckpoints(nextLevel.getCheckpoint(), true);
+        currLevel.setNumLives(nextLevel.getNumLives());
+        currLevel.syncDeadBodyObjects(1);
         nextLevel.removeCat();
 
         prevLevel.dispose();
@@ -538,8 +524,8 @@ public class GameController implements Screen {
         InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
 
         if (debugEnabled) {
-//            InputController.getInstance().writeTo("debug-input/flying-body.txt");
-//            InputController.getInstance().readFrom("debug-input/flying-body.txt");
+//            InputController.getInstance().writeTo("debug-input/switch-to-diff-level.txt");
+            InputController.getInstance().readFrom("debug-input/switch-to-diff-level.txt");
         }
     }
 
@@ -603,8 +589,7 @@ public class GameController implements Screen {
         nextLevel.setRayHandler(rayHandler);
         world.setContactListener(collisionController);
         world.setContactFilter(collisionController);
-        collisionController.setReturn(false);
-        setRet(false);
+        currLevel.getdeadBodyArray().clear();
 
         levelJV = tiledJSON(levelNum);
         currLevel.populateTiled(levelJV, levelNum);
@@ -720,7 +705,7 @@ public class GameController implements Screen {
             pause();
             nextLevel();
             return false;
-        } else if (isRet() && levelNum > 1) {
+        } else if (currLevel.isReturn() && levelNum > 1) {
             pause();
             prevLevel();
             return false;
@@ -753,9 +738,6 @@ public class GameController implements Screen {
             gameFinished = true;
         }
 
-        if (collisionController.getReturn()) {
-            setRet(true);
-        }
         actionController.update(dt);
 
         currLevel.getSpiritLine().setOuterColor(spiritModeColor);
@@ -964,6 +946,7 @@ public class GameController implements Screen {
         if (!paused && preUpdate(delta)) {
             update(delta); // This is the one that must be defined.
             postUpdate(delta);
+            assert currLevel.getNumLives() == 9 - currLevel.getdeadBodyArray().size;
         }
         else {
             updateCamera();
@@ -1092,7 +1075,7 @@ public class GameController implements Screen {
         if (effectSize > 0) { canvas.setGreyscaleShader(effectSize); }
         canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2f, canvas.getCamera().getY()  - canvas.getHeight()/2f, canvas.getWidth(), canvas.getHeight());
 
-        if (drawAdjacentLevels) { //TODO: only draw when necessary
+        if (true) { //TODO: only draw when necessary
             prevLevel.draw(canvas, false, effectSize);
             nextLevel.draw(canvas, false, effectSize);
         }
@@ -1157,8 +1140,6 @@ public class GameController implements Screen {
 
         if (state.checkpoint != null) {
             currLevel.updateCheckpoints(state.checkpoint, false);
-        } else {
-            currLevel.resetCheckpoints();
         }
         if (currLevel.getCheckpoint() != null) {
             respawn(cameraMovement);

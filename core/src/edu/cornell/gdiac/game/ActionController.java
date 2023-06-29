@@ -173,12 +173,19 @@ public class ActionController {
             //switch body
             DeadBody body = level.getNextBody();
             if (body != null && body.isSwitchable()){
-//                if (body != null && body.isSwitchable() && body.inSameSpiritRegion(cat.getSpiritRegions())){
                 level.spawnDeadBody();
                 cat.setPosition(body.getSwitchPosition());
                 cat.setLinearVelocity(body.getLinearVelocity());
                 cat.setFacingRight(body.isFacingRight());
                 cat.setDashTimer(body.getDashTimer());
+                if (body.getRelativeLevel() == 1) {
+                    //switching into body in next level
+                    level.setComplete(true);
+                } else if (body.getRelativeLevel() == -1) {
+                    //switching into bodu in prev level
+                    level.setReturn(true);
+                }
+                
                 level.removeDeadBody(body);
             } else {
                 cat.failedSwitch();

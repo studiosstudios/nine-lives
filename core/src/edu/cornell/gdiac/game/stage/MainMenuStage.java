@@ -52,7 +52,7 @@ public class MainMenuStage extends StageWrapper{
         addActor(catActor);
         catActor.setScale(0.5f);
         catActor.setPosition(15,15);
-        if (!Save.getStarted()) {
+        if (Save.getStarted()) {
             playButtonActor = new UIButton(internal.getEntry("continue-game", Texture.class),buttonX+215-19-50-111, buttonY-27, 0.5f, 0.62f, 0.57f);
         } else {
             playButtonActor = new UIButton(internal.getEntry("play-game", Texture.class),buttonX+215-77, buttonY-27, 0.5f, 0.62f, 0.57f);

@@ -13,8 +13,6 @@ public class CollisionController implements ContactListener, ContactFilter {
     private Level level;
     /** The ActionController */
     private ActionController actionController;
-    /** Whether should return to previous level */
-    private boolean shouldReturn;
     /** Whether the player just progressed to a new level */
     private boolean didChange;
 
@@ -29,7 +27,6 @@ public class CollisionController implements ContactListener, ContactFilter {
      */
     public CollisionController(ActionController actionController){
         this.actionController = actionController;
-        shouldReturn = false;
         didChange = false;
         gameFinished = false;
     }
@@ -39,26 +36,9 @@ public class CollisionController implements ContactListener, ContactFilter {
      *
      * @param level The Level model to be set to level
      */
-    public void setLevel(Level level){
-        this.level = level;
-        shouldReturn = false;
-    }
-
-    /**
-     * Returns whether to return to previous level
-     *
-     * @return shouldReturn
-     */
-    public boolean getReturn() { return shouldReturn; }
+    public void setLevel(Level level){ this.level = level; }
 
     public boolean isGameFinished() { return gameFinished; }
-
-    /**
-     * Sets whether to return to previous level
-     *
-     * @param value given to shouldReturn
-     */
-    public void setReturn(boolean value) { shouldReturn = value; }
 
     /**
      * Sets if the player just progressed to the next level. This makes this controller ignore the first collision of a
@@ -124,7 +104,7 @@ public class CollisionController implements ContactListener, ContactFilter {
 
                     // Check for win condition
                     if (bd2 == level.getGoalExit() && !didChange) level.setComplete(true);
-                    if (bd2 == level.getReturnExit() && !didChange) setReturn(true);
+                    if (bd2 == level.getReturnExit() && !didChange) level.setReturn(true);
 
                     if (bd2 instanceof Spikes && fd2.equals(Spikes.pointyName) && fd1.equals(Cat.bodyName)) {
                         actionController.die(true);
@@ -193,6 +173,10 @@ public class CollisionController implements ContactListener, ContactFilter {
                     } else if (fd1.equals(DeadBody.centerSensorName) && !fix2.isSensor() && bd2 != level.getCat()) {
                         //dead body has been squished D:
 //                        level.removeDeadBody(db);
+                    } else if (bd2 == level.getGoalExit()) {
+                        db.setRelativeLevel(1);
+                    } else if (bd2 == level.getReturnExit()) {
+                        db.setRelativeLevel(-1);
                     }
                 }
 

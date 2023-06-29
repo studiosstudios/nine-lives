@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.game.GameCanvas;
 import edu.cornell.gdiac.game.obstacle.CapsuleObstacle;
+import sun.font.CoreMetrics;
 
 import java.util.HashMap;
 
@@ -54,6 +55,10 @@ public class DeadBody extends CapsuleObstacle implements Movable {
     private Array<Shape> sensorShapes;
     /** Set of joints that are attached to this object */
     private ObjectSet<Joint> joints = new ObjectSet<>();
+    /** 0 if this dead body is in the same level as the cat, -1 if in previous level, 1 if in next level */
+    private int relativeLevel;
+
+    private Color color = new Color(Color.WHITE);
 
     /**
      * Returns ow hard the brakes are applied to get a dead body to stop moving
@@ -118,6 +123,12 @@ public class DeadBody extends CapsuleObstacle implements Movable {
             setBurning(false);
         }
     }
+    public int getRelativeLevel() { return relativeLevel; }
+    public void setRelativeLevel(int relativeLevel) { this.relativeLevel = relativeLevel; }
+
+    public void changeRelativeLevel(int diff) {
+        relativeLevel += diff;
+    }
 
     public DeadBody(TextureRegion texture, TextureRegion burnTexture, Vector2 scale, Vector2 position, Vector2 textureScale) {
         this(texture, burnTexture, scale, position, textureScale, 0);
@@ -167,6 +178,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
 
         setSleepingAllowed(false);
         setName("deadBody");
+        relativeLevel = 0;
     }
 
     public int getDashTimer() { return dashTimer; }
@@ -333,7 +345,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
      */
     public void draw(GameCanvas canvas) {
         float effect = faceRight ? 1.0f : -1.0f;
-        Color color = new Color(1, 1, 1, 1f - ((float)burnTicks)/((float)totalBurnTicks));
+        color.a = 1f - ((float)burnTicks)/((float)totalBurnTicks);
         float textureX = getX() + drawOffset.x;
         float textureY = getY() + drawOffset.y;
         if(burning){
@@ -410,4 +422,10 @@ public class DeadBody extends CapsuleObstacle implements Movable {
         dashTimer = (int) stateMap.get("dashTimer");
         joints.clear();
     }
+
+    @Override
+    public void pause() {}
+
+    @Override
+    public void unpause() {}
 }

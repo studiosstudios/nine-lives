@@ -525,7 +525,7 @@ public class GameController implements Screen {
 
         if (debugEnabled) {
 //            InputController.getInstance().writeTo("debug-input/switch-to-diff-level.txt");
-            InputController.getInstance().readFrom("debug-input/switch-to-diff-level.txt");
+//            InputController.getInstance().readFrom("debug-input/switch-to-diff-level.txt");
         }
     }
 

@@ -77,6 +77,7 @@ public class Level {
     private final Array<Mob> mobArray;
     private Checkpoint currCheckpoint;
     private final Array<Laser> lasers;
+    private final Array<NoveLight> lightsArray;
     private final Array<SpiritRegion> spiritRegionArray;
     /**
      * Camera regions we are currently in contact with
@@ -417,6 +418,7 @@ public class Level {
         spiritRegionArray = new Array<>();
         cameraRegions = new Array<>();
         boxes = new Array<>();
+        lightsArray = new Array<>();
         activationRelations = new HashMap<>();
         spiritMode = false;
         this.spiritLine = spiritLine;
@@ -956,6 +958,7 @@ public class Level {
         for (JsonValue objJV : objects) {
             readProperties(objJV, tileSize, levelHeight);
             NoveLight light = new NoveLight(propertiesMap, textureRegionAssetMap, scale, textureScaleCache);
+            lightsArray.add(light);
             loadTiledActivatable(light);
         }
     }
@@ -1132,6 +1135,7 @@ public class Level {
         decorations.clear();
         boxes.clear();
         tilesMap.clear();
+        lightsArray.clear();
         numLives = maxLives;
         currCheckpoint = null;
         goal = null;
@@ -1283,6 +1287,8 @@ public class Level {
     public void draw(GameCanvas canvas, boolean drawCat, float greyscale) {
         if (tilesMap.containsKey("background")) tilesMap.get("background").draw(canvas);
 
+        for (NoveLight l : lightsArray) { l.draw(canvas); }
+
         for (Decoration d : decorations) { d.draw(canvas); }
 
         if (goal != null && goal.isFinal()) {
@@ -1297,7 +1303,8 @@ public class Level {
         for(Obstacle obj : objects) {
             obj.setLightGreyscale(greyscale);
             if (obj != cat && !(obj instanceof DeadBody) && !(obj instanceof SpiritRegion)
-                    && !(obj instanceof Wall && !(obj instanceof Platform)) && !(obj instanceof Activator) ) {
+                    && !(obj instanceof Wall && !(obj instanceof Platform)) && !(obj instanceof Activator) &&
+                    !(obj instanceof NoveLight)) {
                 obj.draw(canvas);
             }
         }

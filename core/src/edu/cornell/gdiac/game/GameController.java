@@ -1075,9 +1075,10 @@ public class GameController implements Screen {
         if (effectSize > 0) { canvas.setGreyscaleShader(effectSize); }
         canvas.draw(background, Color.WHITE, canvas.getCamera().getX() - canvas.getWidth()/2f, canvas.getCamera().getY()  - canvas.getHeight()/2f, canvas.getWidth(), canvas.getHeight());
 
-        if (true) { //TODO: only draw when necessary
+        if (drawAdjacentLevels) { //TODO: only draw when necessary
             prevLevel.draw(canvas, false, effectSize);
             nextLevel.draw(canvas, false, effectSize);
+            if (effectSize > 0) { canvas.setGreyscaleShader(effectSize); }
         }
         currLevel.draw(canvas, gameState != GameState.RESPAWN, effectSize);
 

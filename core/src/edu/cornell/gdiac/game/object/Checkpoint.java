@@ -17,8 +17,6 @@ import java.util.HashMap;
 
 public class Checkpoint extends BoxObstacle
 {
-    /** The origin position of the checkpoint */
-    protected Vector2 origin;
     /** Whether this checkpoint is active or not */
     private boolean current;
     /** The sensor shape for this checkpoint */
@@ -53,7 +51,7 @@ public class Checkpoint extends BoxObstacle
     private boolean activated;
     /** Number of fixtures touching this checkpoint */
     private int numTouching;
-//    private boolean active;
+    private Color color = new Color(Color.WHITE);
 
     /**
      * Creates a new Checkpoint object.
@@ -200,12 +198,16 @@ public class Checkpoint extends BoxObstacle
     }
 
     public void drawBase(GameCanvas canvas) {
-       if (current) {
-           setTexture(baseTexture);
+        if (current) {
+            setTexture(baseTexture);
+            color.a = Math.max(1 - animationTime/activationAnimation.getAnimationDuration() * 2f, 0);
+            canvas.draw(activeBaseTexture,color, origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),textureScale.x,textureScale.y);
+            color.a = 1 - color.a;
+            canvas.draw(baseTexture,color, origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),textureScale.x,textureScale.y);
         } else {
-           setTexture(activeBaseTexture);
-       }
-        super.draw(canvas);
+            setTexture(activeBaseTexture);
+            super.draw(canvas);
+        }
     }
 
     @Override
@@ -216,12 +218,14 @@ public class Checkpoint extends BoxObstacle
                 setTexture(animation.getKeyFrame(animationTime));
                 animation.setPlayMode(Animation.PlayMode.LOOP);
             } else {
-                setTexture(activationAnimation.getKeyFrame(animationTime));
-                    activationAnimation.setPlayMode(Animation.PlayMode.NORMAL);
                 if (activationAnimation.isAnimationFinished(animationTime)) {
                     setTexture(animation.getKeyFrame(animationTime));
                     animation.setPlayMode(Animation.PlayMode.LOOP);
                     activated = true;
+                } else {
+                    setTexture(activationAnimation.getKeyFrame(animationTime));
+                    activationAnimation.setPlayMode(Animation.PlayMode.NORMAL);
+                    origin.set(64, 128);
                 }
             }
         } else {

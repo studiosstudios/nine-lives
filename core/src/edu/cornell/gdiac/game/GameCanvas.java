@@ -52,7 +52,9 @@ public class GameCanvas {
 		/** Color values are added together, causing a white-out effect */
 		ADDITIVE,
 		/** Color values are draw on top of one another with no transparency support */
-		OPAQUE
+		OPAQUE,
+		/** Blend state for masking */
+		MASKING
 	}	
 
 	public static final float STANDARD_WIDTH = 1024f;
@@ -107,6 +109,7 @@ public class GameCanvas {
 	protected ShaderProgram spiritModeShader;
 	protected ShaderProgram greyscaleShader;
 	private FrameBuffer mainFrameBuffer;
+	private FrameBuffer spiritLineFrameBuffer;
 	private final Matrix4 FBO_PROJECTION = new Matrix4().setToOrtho2D(0,0,1,1);
 
 	/**
@@ -149,6 +152,7 @@ public class GameCanvas {
 				Gdx.files.internal("shaders/greyscale.frag").readString());
 
 		mainFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
+		spiritLineFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
 
 		setBlendState(BlendState.NO_PREMULT);
 
@@ -165,8 +169,10 @@ public class GameCanvas {
 		spriteBatch = null;
 		debugRender.dispose();
 		mainFrameBuffer.dispose();
+		spiritLineFrameBuffer.dispose();
 		spiritModeShader.dispose();
 		greyscaleShader.dispose();
+		spiritLineFrameBuffer = null;
 		greyscaleShader = null;
 		spiritModeShader = null;
 		debugRender = null;
@@ -250,7 +256,7 @@ public class GameCanvas {
 
 	/**
 	 * Changes the width and height of this canvas
-ef	 * <br><br>
+	 * <br><br>
 	 * This method raises an IllegalStateException if called while drawing is
 	 * active (e.g. in-between a begin-end pair).
 	 *
@@ -336,6 +342,8 @@ ef	 * <br><br>
 		 if (getWidth() != 0 && getHeight() != 0) {
 			 mainFrameBuffer.dispose();
 			 mainFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
+			 spiritLineFrameBuffer.dispose();
+			 spiritLineFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
 		 }
 	}
 	
@@ -378,9 +386,16 @@ ef	 * <br><br>
 		case OPAQUE:
 			spriteBatch.setBlendFunction(GL20.GL_ONE,GL20.GL_ZERO);
 			break;
+		case MASKING:
+			spriteBatch.setBlendFunction(GL20.GL_ZERO, GL20.GL_ONE_MINUS_SRC_ALPHA);
+			break;
 		}
 		blend = state;
 	}
+
+	public FrameBuffer getMainFrameBuffer() { return mainFrameBuffer; }
+
+	public FrameBuffer getSpiritLineFrameBuffer() { return spiritLineFrameBuffer; }
 
 	/**
 	 * Clear the screen, so we can start a new animation frame
@@ -425,7 +440,7 @@ ef	 * <br><br>
 		spriteBatch.begin();
 		active = DrawPass.STANDARD;
 	}
-    
+
 	/**
 	 * Start a standard drawing sequence.
 	 * <br><br>
@@ -433,27 +448,24 @@ ef	 * <br><br>
 	 */
 	public void begin() {
 		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
-//		vfxManager.update(Gdx.graphics.getDeltaTime());
 		spriteBatch.begin();
-		viewport.apply();
 		active = DrawPass.STANDARD;
 	}
 
 	/**
 	 * Begins the spritebatch and framebuffer, and clears the frame buffer.
 	 */
-	public void beginFrameBuffer(){
-		begin();
-		mainFrameBuffer.begin();
-		ScreenUtils.clear(Color.BLACK);
+	public void beginFrameBuffer(FrameBuffer fb){
+		fb.begin();
+		ScreenUtils.clear(Color.CLEAR);
 	}
 
 	/**
 	 * Flushes the sprite batch and ends the frame buffer.
 	 */
-	public void endFrameBuffer() {
+	public void endFrameBuffer(FrameBuffer fb) {
 		spriteBatch.flush();
-		mainFrameBuffer.end();
+		fb.end();
 	}
 
 	/**
@@ -542,17 +554,15 @@ ef	 * <br><br>
 	}
 
 	/**
-	 * Draws the captured framebuffer into the main canvas.
+	 * Draws the captured framebuffer into the canvas.
 	 */
-	public void drawFrameBuffer() {
+	public void drawFrameBuffer(FrameBuffer fb) {
 		spriteBatch.setColor(Color.WHITE);
-		setBlendState(BlendState.ALPHA_BLEND);
 		spriteBatch.setProjectionMatrix(FBO_PROJECTION);
-		spriteBatch.draw(mainFrameBuffer.getColorBufferTexture(), 0, 0, 1, 1, 0, 0, 1, 1);
+		spriteBatch.draw(fb.getColorBufferTexture(), 0, 0, 1, 1, 0, 0, 1, 1);
 		spriteBatch.flush(); //this is problem line for debug...
 		spriteBatch.setProjectionMatrix(camera.getCamera().combined);
 		setBlendState(BlendState.NO_PREMULT);
-		applyViewport(false);
 	}
 
 	/**

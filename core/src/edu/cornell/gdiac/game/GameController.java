@@ -524,8 +524,8 @@ public class GameController implements Screen {
         InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
 
         if (debugEnabled) {
-//            InputController.getInstance().writeTo("debug-input/switch-to-diff-level.txt");
-//            InputController.getInstance().readFrom("debug-input/switch-to-diff-level.txt");
+//            InputController.getInstance().writeTo("debug-input/spiritline-showing.txt");
+            InputController.getInstance().readFrom("debug-input/spiritline-showing.txt");
         }
     }
 
@@ -1064,8 +1064,32 @@ public class GameController implements Screen {
     public void draw(float dt) {
 
         canvas.clear();
-        canvas.beginFrameBuffer();
-        canvas.applyViewport(false);
+        canvas.begin();
+
+        if (effectSize > 0) {
+            //draw spiritline into framebuffer to apply masking
+            canvas.beginFrameBuffer(canvas.getSpiritLineFrameBuffer());
+
+            Gdx.gl.glColorMask(true, true, true, true);
+            canvas.setBlendState(GameCanvas.BlendState.NO_PREMULT);
+            currLevel.getSpiritLine().draw(canvas);
+            canvas.flush();
+
+            Gdx.gl.glColorMask(false, false, false,                         true);
+            canvas.setBlendState(GameCanvas.BlendState.MASKING);
+            currLevel.getCat().drawMask(canvas);
+            canvas.spriteBatch.setColor(Color.WHITE);
+            if (currLevel.getNextBody() != null) currLevel.getNextBody().drawMask(canvas);
+
+            canvas.spriteBatch.flush();
+            canvas.getSpiritLineFrameBuffer().end();
+
+            canvas.setBlendState(GameCanvas.BlendState.NO_PREMULT);
+            Gdx.gl.glColorMask(true, true, true, true);
+        }
+
+        //draw everything else into main framebuffer
+        canvas.beginFrameBuffer(canvas.getMainFrameBuffer());
         if (currLevel.getBiome() != null && currLevel.getBiome().equals("metal")) {
             background = textureRegionAssetMap.get("bg-lab").getTexture();
         } else {
@@ -1082,13 +1106,18 @@ public class GameController implements Screen {
         }
         currLevel.draw(canvas, gameState != GameState.RESPAWN, effectSize);
 
-        canvas.endFrameBuffer();
+        if (effectSize > 0) canvas.drawFrameBuffer(canvas.getSpiritLineFrameBuffer());
 
-        if (effectSize > 0) {
+        canvas.endFrameBuffer(canvas.getMainFrameBuffer());
+
+        //draw main frame buffer to screen
+        if (effectSize > 0) { //apply spirit mode shader if necessary
             canvas.setSpiritModeShader(1.8f - 0.525f * effectSize, 0.3f,
                     spiritModeColor, spiritModeColor, spiritModeTicks/60f);
         }
-        canvas.drawFrameBuffer(); //applyViewport within here
+        canvas.applyViewport(false);
+        canvas.setBlendState(GameCanvas.BlendState.ALPHA_BLEND);
+        canvas.drawFrameBuffer(canvas.getMainFrameBuffer());
 
         if (effectSize > 0) canvas.setShader(null);
         canvas.drawRectangle(canvas.getCamera().getX() - canvas.getWidth()/2f, canvas.getCamera().getY()  - canvas.getHeight()/2f, canvas.getWidth(), canvas.getHeight(), flashColor, 1, 1);
@@ -1097,6 +1126,7 @@ public class GameController implements Screen {
 
         if (debug) {
             canvas.beginDebug();
+            canvas.applyViewport(false);
             if (levelNum > 1) prevLevel.drawDebug(canvas);
             currLevel.drawDebug(canvas);
             if (levelNum < numLevels) nextLevel.drawDebug(canvas);

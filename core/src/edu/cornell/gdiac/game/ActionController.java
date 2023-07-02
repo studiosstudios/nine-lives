@@ -155,6 +155,7 @@ public class ActionController {
         InputController ic = InputController.getInstance();
         Cat cat = level.getCat();
 
+        if (level.canSwitch && ic.holdSwitch()) level.findNextBody();
         updateSpiritLine(dt, level.canSwitch && ic.holdSwitch() && !ic.didSwitch());
 
         for (SpiritRegion sr : level.getSpiritRegionArray()) {

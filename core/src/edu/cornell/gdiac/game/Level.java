@@ -453,6 +453,8 @@ public class Level {
         goal.setActive(val);
     }
 
+    public DeadBody getNextBody() { return nextBody; }
+
     /**
      * Updates active checkpoints and cat respawning position
      *
@@ -1376,8 +1378,6 @@ public class Level {
         if (tilesMap.containsKey("forestLeaves")) tilesMap.get("forestLeaves").draw(canvas);
 
         if (greyscale > 0) {canvas.setShader(null);}
-
-        spiritLine.draw(canvas);
     }
 
     /**
@@ -1451,11 +1451,11 @@ public class Level {
     }
 
     /**
-     * Gets the next dead body to switch into. Currently selects the closest valid body.
+     * Gets the next dead body to switch into. Currently selects the closest body.
      *
      * @return Dead body to switch into, null if there are none.
      */
-    public DeadBody getNextBody(){
+    public DeadBody findNextBody(){
         float minDist = Float.MAX_VALUE;
         DeadBody nextdb = null;
         for (DeadBody db : deadBodyArray){

@@ -24,7 +24,6 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.game.*;
-import edu.cornell.gdiac.game.Camera;
 import edu.cornell.gdiac.game.obstacle.*;
 import java.util.HashSet;
 import java.util.Random;
@@ -942,6 +941,22 @@ public class Cat extends CapsuleObstacle implements Movable {
             failColor.a = 0.5f - Math.abs(failedSwitchTicks-FAILED_SWITCH_TICKS/2)/ FAILED_SWITCH_TICKS;
             canvas.draw(currentFrame, failColor, origin.x, origin.y, x + xOffset, y, 0, directionFactor*(64f/currentFrame.getRegionWidth()),(64f/currentFrame.getRegionWidth()));
         }
+
+        canvas.draw(currentFrame, Color.WHITE, origin.x, origin.y, x, y, 0, directionFactor*(64f/currentFrame.getRegionWidth()), 64f/currentFrame.getRegionHeight());
+    }
+
+    /**
+     * Draws just the cat without dash shadows or the failing switch animation. Does not update animation frame. This
+     * is used only for masking out part of the spirit line.
+     *
+     * @param canvas Drawing context
+     */
+    public void drawMask(GameCanvas canvas) {
+        float directionFactor = getDirectionFactor();
+        float x = getTextureCenterX();
+        float y = getTextureCenterY() + 3; // Slight offset to prevent Cali from being in the ground
+
+        if (isClimbing()) y = y - 10;
 
         canvas.draw(currentFrame, Color.WHITE, origin.x, origin.y, x, y, 0, directionFactor*(64f/currentFrame.getRegionWidth()), 64f/currentFrame.getRegionHeight());
     }

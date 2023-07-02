@@ -362,6 +362,27 @@ public class DeadBody extends CapsuleObstacle implements Movable {
     }
 
     /**
+     * Draws just body without changing alpha or updating animation time. This is used only for masking out part of
+     * the spirit line.
+     *
+     * @param canvas Drawing context
+     */
+    public void drawMask(GameCanvas canvas){
+        float effect = faceRight ? 1.0f : -1.0f;
+        float textureX = getX() + drawOffset.x;
+        float textureY = getY() + drawOffset.y;
+        if(burning){
+            TextureRegion frame = animation.getKeyFrame(time);
+            float x = textureX * drawScale.x;
+            float y = textureY * drawScale.y;
+            canvas.draw(frame, Color.WHITE, origin.x, origin.y,  x,y, getAngle(), -effect * textureScale.x, textureScale.y);
+        }
+        else{
+            canvas.draw(texture, Color.WHITE, origin.x, origin.y, textureX * drawScale.x, textureY * drawScale.y, getAngle(), effect * textureScale.x, textureScale.y);
+        }
+    }
+
+    /**
      * Draws the outline of the physics body.
      * <p>
      * This method can be helpful for understanding issues with collisions.

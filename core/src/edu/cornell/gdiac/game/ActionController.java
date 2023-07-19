@@ -16,7 +16,6 @@ import edu.cornell.gdiac.game.obstacle.Obstacle;
 import edu.cornell.gdiac.util.Direction;
 import edu.cornell.gdiac.util.PooledList;
 
-import java.util.HashMap;
 import java.util.Iterator;
 
 /**
@@ -163,13 +162,6 @@ public class ActionController {
             sr.update();
         }
 
-        if (level.getSpiritParticles().size != 0 && level.getdeadBodyArray().size == 0) {
-            combiningLives = true;
-            moveSpirits();
-        } else {
-            combiningLives = false;
-        }
-
         if (level.canSwitch && ic.didSwitch()) {
             //switch body
             DeadBody body = level.getNextBody();
@@ -217,11 +209,8 @@ public class ActionController {
         //Prepare dead bodies for raycasting
         for (DeadBody d: level.getdeadBodyArray()){
             d.setTouchingLaser(false);
-            if (level.bounds.y - d.getY() > 10) {
+            if (d.getRelativeLevel() == 0 && level.bounds.y - d.getY() > 10) {
                 level.removeDeadBody(d);
-            }
-            if (d.isRemoved()){
-                level.getdeadBodyArray().removeValue(d, true);
             }
         }
 
@@ -260,11 +249,10 @@ public class ActionController {
             mob.applyForce();
         }
 
-//        // combing lives
-//        if (combiningLives) {
-//            System.out.println("combining lives");
-//            ic.setDisableAll(true);
-//        }
+        if (combiningLives) {
+            moveCat(1.2f * level.getGoal().getFacingDirection(), 1.2f * level.getGoal().getFacingDirection());
+            moveSpirits();
+        }
 
     }
 
@@ -328,6 +316,7 @@ public class ActionController {
             Obstacle obj = entry.getValue();
             if (obj.isRemoved()) {
                 obj.deactivatePhysics(level.getWorld());
+                if (obj instanceof DeadBody) level.getdeadBodyArray().removeValue((DeadBody) obj, true);
                 entry.remove();
             } else {
                 // Note that update is called last!
@@ -525,22 +514,22 @@ public class ActionController {
      * Main function called when cat reaches goal object.
      * Spirit particles are spawned at dead bodies and dead bodies are removed.
      */
-    public void recombineLives() {
+    public void beginRecombining() {
         if (level.getNumLives() != level.getMaxLives() && level.getdeadBodyArray().size == 0) {
             level.resetLives();
             return;
         }
 
-        if (level.getSpiritParticles().size == 0) {
-            while (level.getdeadBodyArray().size != 0) {
-                for (DeadBody body: level.getdeadBodyArray()) {
-                    Particle spirit = new Particle();
-                    spirit.setX(body.getX());
-                    spirit.setY(body.getY());
-                    level.addSpiritParticle(spirit);
-                    //TODO: smooth remove of dead bodies
-                    level.removeDeadBody(body);
-                }
+        if (!combiningLives) {
+            combiningLives = true;
+            for (DeadBody body: level.getdeadBodyArray()) {
+                Particle spirit = level.addSpiritParticle();
+                spirit.setX(body.getX());
+                spirit.setY(body.getY());
+                spirit.setColor(1, 1, 1, 0);
+                //TODO: smooth remove of dead bodies
+                body.beginRecombination();
+                body.setSpirit(spirit);
             }
         }
     }
@@ -548,21 +537,37 @@ public class ActionController {
     /**
      * Moves the spirit particles.
      * The particles go towards the Cat.
-     *
      */
-    public void moveSpirits() {
-        if (level.getSpiritParticles().size != 0) {
-            for (Particle spirit : level.getSpiritParticles()) {
-                float x = level.getCat().getX() - spirit.getX();
-                float y = level.getCat().getY() - spirit.getY();
-                float angle = (float) Math.atan((double)y/(double)x);
-                spirit.setAngle(angle, 0.2f);
-                spirit.move();
-                if (Math.abs(spirit.getX() - level.getCat().getX()) <= 1f &&
-                    Math.abs(spirit.getY() - level.getCat().getY()) <= 1f) {
-                    level.getSpiritParticles().removeValue(spirit, true);
-                    level.setNumLives(level.getNumLives() + 1);
+    private void moveSpirits() {
+        combiningLives = false;
+        for (DeadBody db : level.getdeadBodyArray()) {
+            Particle spirit = db.getSpirit();
+            if (spirit != null) {
+                combiningLives = true;
+
+                if (spirit.isFadedIn() || (db.hasDisappeared() && spirit.getColor().a == 1)) {
+                    spirit.setFadedIn(true);
+                    float x = level.getCat().getX() - spirit.getX();
+                    float y = level.getCat().getY() - spirit.getY();
+                    float angle = (float) Math.atan2(y, x);
+                    float dist = (float) Math.sqrt(x * x + y * y);
+                    spirit.setAngle(angle, Math.min(0.3f, dist / 25));
+                    spirit.move();
+                    if (dist < 1) {
+                        spirit.setColor(1, 1, 1, dist);
+                    }
+                    if (Math.abs(spirit.getX() - level.getCat().getX()) <= 0.1f &&
+                            Math.abs(spirit.getY() - level.getCat().getY()) <= 0.1f) {
+                        level.setNumLives(level.getNumLives() + 1);
+                        level.getSpiritParticlePool().free(spirit);
+                        db.setSpirit(null);
+                    }
+                } else {
+                    spirit.setColor(1, 1, 1, Math.min(spirit.getColor().a + 0.01f, 1));
+                    spirit.setAngle((float) (Math.PI/2), 0.005f);
+                    spirit.move();
                 }
+
             }
         }
     }
@@ -573,9 +578,9 @@ public class ActionController {
      * @param dist to move horizontally
      * @param maxDist the maximum distance from the goal
      */
-    public void moveCat(float dist, float maxDist) {
+    private void moveCat(float dist, float maxDist) {
         Cat cat = level.getCat();
-        if (cat.getX() <= level.getGoal().getX() + maxDist) {
+        if (cat.getX() * Math.signum(maxDist) <= (level.getGoal().getX() + maxDist) * Math.signum(maxDist)) {
             cat.setHorizontalMovement(dist);
             cat.updateState();
             cat.applyForce();

@@ -1,6 +1,5 @@
 package edu.cornell.gdiac.game;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.game.object.*;
@@ -136,7 +135,8 @@ public class CollisionController implements ContactListener, ContactFilter {
                             gameFinished = true;
                         }
                         ((Goal) bd2).activate();
-                        actionController.recombineLives();
+                        ((Goal) bd2).setFacingDirection(-level.getCat().getDirectionFactor());
+                        actionController.beginRecombining();
                     }
                     if (bd2 instanceof CameraRegion){
                         Array<CameraRegion> cameraRegions = level.getCameraRegions();

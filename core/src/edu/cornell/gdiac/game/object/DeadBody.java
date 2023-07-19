@@ -57,8 +57,9 @@ public class DeadBody extends CapsuleObstacle implements Movable {
     private ObjectSet<Joint> joints = new ObjectSet<>();
     /** 0 if this dead body is in the same level as the cat, -1 if in previous level, 1 if in next level */
     private int relativeLevel;
-
     private Color color = new Color(Color.WHITE);
+    private boolean recombining;
+    private Particle spirit;
 
     /**
      * Returns ow hard the brakes are applied to get a dead body to stop moving
@@ -125,9 +126,20 @@ public class DeadBody extends CapsuleObstacle implements Movable {
     }
     public int getRelativeLevel() { return relativeLevel; }
     public void setRelativeLevel(int relativeLevel) { this.relativeLevel = relativeLevel; }
-
     public void changeRelativeLevel(int diff) {
         relativeLevel += diff;
+    }
+    public void setSpirit(Particle spirit) { this.spirit = spirit; }
+    public Particle getSpirit() { return spirit; }
+    public boolean hasDisappeared() { return burnTicks >= totalBurnTicks; }
+    public void beginRecombination() {
+        setGravityScale(0);
+        recombining = true;
+        setVX(0);
+        setVY(0);
+        for (Fixture fix : body.getFixtureList()) {
+            fix.setSensor(true);
+        }
     }
 
     public DeadBody(TextureRegion texture, TextureRegion burnTexture, Vector2 scale, Vector2 position, Vector2 textureScale) {
@@ -149,7 +161,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
         super(0, 0, objectConstants.getFloat("capsuleWidth"), objectConstants.getFloat("capsuleHeight"), Orientation.TOP);
 
         spriteFrames = TextureRegion.split(burnTexture.getTexture(), 256,256);
-        animation = new Animation<>(0.025f, spriteFrames[0]);
+        animation = new Animation<>(0.05f, spriteFrames[0]);
         time = 0f;
         setTexture(texture);
         setTextureScale(textureScale);
@@ -179,6 +191,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
         setSleepingAllowed(false);
         setName("deadBody");
         relativeLevel = 0;
+        recombining = false;
     }
 
     public int getDashTimer() { return dashTimer; }
@@ -287,9 +300,13 @@ public class DeadBody extends CapsuleObstacle implements Movable {
         super.update(dt);
         if (burning) {
             burnTicks++;
-            if (burnTicks >= totalBurnTicks){
-                markRemoved(true);
-            }
+        } else if (recombining) {
+            burnTicks += 4;
+        }
+
+        if (burnTicks >= totalBurnTicks){
+            markRemoved(burning);
+            burnTicks = totalBurnTicks;
         }
 
         if (groundFixtures.size > 0) dashTimer = 0;
@@ -348,9 +365,9 @@ public class DeadBody extends CapsuleObstacle implements Movable {
         color.a = 1f - ((float)burnTicks)/((float)totalBurnTicks);
         float textureX = getX() + drawOffset.x;
         float textureY = getY() + drawOffset.y;
-        if(burning){
+        if (burning){
             animation.setPlayMode(Animation.PlayMode.LOOP);
-            time += Gdx.graphics.getDeltaTime();
+            if (!recombining) time += Gdx.graphics.getDeltaTime();
             TextureRegion frame = animation.getKeyFrame(time);
             float x = textureX * drawScale.x;
             float y = textureY * drawScale.y;

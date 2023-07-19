@@ -118,6 +118,8 @@ public class Level {
     protected boolean canSwitch;
     protected boolean canDash;
 
+    private ParticlePool spiritParticlePool;
+
 
     /**
      * Returns the bounding rectangle for the physics world
@@ -199,12 +201,23 @@ public class Level {
      */
     public Array<Particle> getSpiritParticles() { return spiritParticles; }
 
+    public ParticlePool getSpiritParticlePool() { return spiritParticlePool; }
+
     /**
      * Adds a Particle to array of spirit particles
      *
-     * @param p the Particle to add
+     * @return p the added Particle
      */
-    public void addSpiritParticle(Particle p) { spiritParticles.add(p); }
+    public Particle addSpiritParticle() {
+        Particle item = spiritParticlePool.obtain();
+        item.setColor(Color.WHITE);
+        item.setDrawScale(scale);
+        item.setTexture(textureRegionAssetMap.get("spirit-photon").getTexture());
+        item.setWidth(20);
+        item.setHeight(20);
+        spiritParticles.add(item);
+        return item;
+    }
 
     /**
      * Returns the biome of the level
@@ -421,6 +434,7 @@ public class Level {
         lightsArray = new Array<>();
         activationRelations = new HashMap<>();
         spiritMode = false;
+        spiritParticlePool = new ParticlePool(9);
         this.spiritLine = spiritLine;
         deadBodyArray = dbArray;
     }
@@ -476,7 +490,7 @@ public class Level {
      */
     public void syncDeadBodyObjects(int relativeLevel){
 
-        //remove all exisiting dead bodies from objects array
+        //remove all existing dead bodies from objects array
         Iterator<PooledList<Obstacle>.Entry> iterator = objects.entryIterator();
         while (iterator.hasNext()) {
             PooledList<Obstacle>.Entry entry = iterator.next();
@@ -1328,18 +1342,12 @@ public class Level {
         String spiritRegionColor = "";
         if (cat != null)  spiritRegionColor = cat.getSpiritRegionColor().toString().substring(0, 6);
         for (SpiritRegion s : spiritRegionArray) {
-            if (greyscale > 0) {
-                if (!s.getColorString().equals(spiritRegionColor)) {
-                    s.setGreyscale(greyscale);
-                } else {
-                    s.setGreyscale(0);
-                }
+            if (greyscale > 0 && !s.getColorString().equals(spiritRegionColor)) {
+                s.setGreyscale(greyscale);
+            } else {
+                s.setGreyscale(0);
             }
             s.draw(canvas);
-        }
-
-        for (Particle spirit : spiritParticles) {
-            spirit.draw(canvas, textureRegionAssetMap.get("spirit-photon").getTexture(), new Vector2(32f, 32f), new Vector2(20f, 20f));
         }
 
         for (DeadBody db : deadBodyArray) {
@@ -1378,6 +1386,10 @@ public class Level {
         if (tilesMap.containsKey("forestLeaves")) tilesMap.get("forestLeaves").draw(canvas);
 
         if (greyscale > 0) {canvas.setShader(null);}
+
+        for (Particle spirit : spiritParticles) {
+            spirit.draw(canvas);
+        }
     }
 
     /**

@@ -63,6 +63,8 @@ public class Goal extends BoxObstacle
     private TextureRegion finalGoal;
     private boolean activated;
     private boolean isFinal;
+    /** 1 if cat was facing right when reaching goal, -1 otherwise*/
+    private int facingDirection;
 
     /**
      * Creates a new Door object.
@@ -168,6 +170,10 @@ public class Goal extends BoxObstacle
     }
 
     public boolean isFinal() { return isFinal; }
+
+    public int getFacingDirection() { return facingDirection; }
+
+    public void setFacingDirection(int facingDirection) { this.facingDirection = facingDirection; }
 
     public void activate() { activated = true; }
 

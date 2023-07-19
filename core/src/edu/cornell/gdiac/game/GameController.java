@@ -140,7 +140,8 @@ public class GameController implements Screen {
         PLAYER_PAN,
         PAN,
         RESPAWN,
-        LEVEL_SWITCH
+        LEVEL_SWITCH,
+        COMBINING_LIVES
     }
     /** State of gameplay used for camera */
     public static GameState gameState;
@@ -524,8 +525,8 @@ public class GameController implements Screen {
         InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
 
         if (debugEnabled) {
-//            InputController.getInstance().writeTo("debug-input/spiritline-showing.txt");
-            InputController.getInstance().readFrom("debug-input/spiritline-showing.txt");
+//            InputController.getInstance().writeTo("debug-input/spirit-particles-debug-3.txt");
+//            InputController.getInstance().readFrom("debug-input/spirit-particles-debug-3.txt");
         }
     }
 
@@ -742,7 +743,7 @@ public class GameController implements Screen {
 
         currLevel.getSpiritLine().setOuterColor(spiritModeColor);
         flashColor.a -= flashColor.a/10;
-        updateCamera();
+        updateState();
 
         hud.lives = currLevel.getNumLives();
         hud.updateLives();
@@ -813,7 +814,7 @@ public class GameController implements Screen {
     /**
      * Updates GameState and moves camera accordingly
      */
-    public void updateCamera(){
+    public void updateState(){
         Camera cam = canvas.getCamera();
         InputController input = InputController.getInstance();
 
@@ -851,6 +852,8 @@ public class GameController implements Screen {
             float y_pos = currLevel.getCat().getPosition().y*scale.y;
             if(justRespawned && !justReset) {
                 gameState = GameState.RESPAWN;
+            } else if (actionController.isCombiningLives()) {
+                gameState = GameState.COMBINING_LIVES;
             }
             else {
                 currLevel.getCat().setActive(true);
@@ -921,13 +924,11 @@ public class GameController implements Screen {
             }
         }
 
-        if (actionController.isCombiningLives()) {
-//            cam.setZoom(true, 0.9f);
-//            float x_pos = currLevel.getCat().getPosition().x*scale.x;
-//            float y_pos = currLevel.getCat().getPosition().y*scale.y;
-//            cam.updateCamera(x_pos, y_pos, true, cam.getGameplayBounds());
-            actionController.moveCat(1.2f, 1.2f);
+        if (gameState == GameState.COMBINING_LIVES) {
             input.setDisableAll(true);
+            if (!actionController.isCombiningLives()) {
+                gameState = GameState.PLAY;
+            }
         }
     }
     @Override
@@ -949,7 +950,7 @@ public class GameController implements Screen {
             assert currLevel.getNumLives() == 9 - currLevel.getdeadBodyArray().size;
         }
         else {
-            updateCamera();
+            updateState();
         }
 
         // Main game draw

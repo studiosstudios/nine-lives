@@ -107,8 +107,8 @@ public class SpiritRegion extends BoxObstacle {
         memory = new ParticlePool(capacity);
         for (int i = 0; i < capacity; i++){
             Particle item = addParticle();
-            float low = item.getBottom() * drawScale.y;
-            float high = item.getTop() * drawScale.y - PARTICLE_SIZE;
+            float low = item.getBottom() + PARTICLE_SIZE/drawScale.y/2 - height/2;
+            float high = item.getTop() + PARTICLE_SIZE/drawScale.y/2 - height/2;
             item.setY(random.nextFloat()*(high-low)+low);
         }
 
@@ -130,9 +130,9 @@ public class SpiritRegion extends BoxObstacle {
             float min_angle = (float) Math.PI/3;
             float max_angle = (float) (3*Math.PI/4);
             float rand_angle = min_angle + (max_angle - min_angle) * (float) Math.random();
+
             // Random pos within region
             // Cluster the y pos near the bottom to give more "floating up" feeling
-
             float minValueY = pos.y;
             float maxValueY = pos.y + height;
             float stdDev = height/5;
@@ -150,11 +150,19 @@ public class SpiritRegion extends BoxObstacle {
 
             float rand_x = pos.x + width * (float) Math.random();
 
-            item.setX(rand_x* drawScale.x);
-            item.setY(rand_bot* drawScale.y);
+            item.setX(rand_x - width/2);
+            item.setY(rand_bot - height/2);
 
-            item.setAngle(rand_angle);
+            item.setAngle(rand_angle, 0.12f/32);
             cooldown = PARTICLE_RESPAWN;
+
+            // Drawing parameters
+            item.setTexture(photonTexture);
+            item.setDrawScale(drawScale);
+            item.setWidth(PARTICLE_SIZE);
+            item.setHeight(PARTICLE_SIZE);
+            item.setColor(particleColor);
+
             // Add it to the set of objects
             particles.add(item);
         }
@@ -183,13 +191,11 @@ public class SpiritRegion extends BoxObstacle {
             greyscale += (greyScaleTarget - greyscale) * 0.15f;
         }
 
-        if (greyscale > 0) {
-            float greyColor = greyColor(baseColor);
-            particleColor.set(baseColor.r * (1-greyscale) + greyColor * greyscale,
-                    baseColor.g * (1-greyscale) + greyColor * greyscale,
-                    baseColor.b * (1-greyscale) + greyColor * greyscale, baseColor.a);
-            regionColor.set(particleColor.r, particleColor.g, particleColor.b, regionColor.a);
-        }
+        float greyColor = greyColor(baseColor);
+        particleColor.set(baseColor.r * (1-greyscale) + greyColor * greyscale,
+                baseColor.g * (1-greyscale) + greyColor * greyscale,
+                baseColor.b * (1-greyscale) + greyColor * greyscale, particleColor.a);
+        regionColor.set(particleColor.r, particleColor.g, particleColor.b, regionColor.a);
 
         if (val) {
             particleColor.a += (PARTICLE_OPACITY_ACTIVE - particleColor.a)*0.07;
@@ -213,8 +219,8 @@ public class SpiritRegion extends BoxObstacle {
         ObjectSet.ObjectSetIterator<Particle> iterator = particles.iterator();
         while (iterator.hasNext()) {
             Particle item = iterator.next();
-            if (item.getX() < pos.x* drawScale.x || item.getX() > (pos.x+width)* drawScale.x-5f ||
-                    item.getY() < item.getBottom()* drawScale.y || item.getY() > item.getTop()* drawScale.y - PARTICLE_SIZE) {
+            if (Math.abs(item.getX() - pos.x) > width/2 - PARTICLE_SIZE/drawScale.x/2 ||
+                    Math.abs(item.getY() - pos.y) > height/2 - PARTICLE_SIZE/drawScale.y/2) {
                 iterator.remove();
                 memory.free(item);
             }
@@ -243,7 +249,7 @@ public class SpiritRegion extends BoxObstacle {
      */
     @Override
     public void draw(GameCanvas canvas){
-
+        if (hideBackground) { return; }
 //        animationTime += Gdx.graphics.getDeltaTime();
 //
 //        //draw ghosties
@@ -254,36 +260,30 @@ public class SpiritRegion extends BoxObstacle {
 //        }
 
         // Spirit Region Background
-        if (!hideBackground) {
-            canvas.draw(regionTexture, regionColor, (pos.x - width/2)*drawScale.x, (pos.y-height/2)*drawScale.y,
-                    width*drawScale.x, height*drawScale.y);
-        }
+        canvas.draw(regionTexture, regionColor, (pos.x - width/2)*drawScale.x, (pos.y-height/2)*drawScale.y,
+                width*drawScale.x, height*drawScale.y);
 
         // Draw particles
 //        float bot = pos.y* drawScale.y ;
 //        float top = (pos.y+height)* drawScale.y-5f;
-        float left = pos.x* drawScale.x ;
-        float right = (pos.x+width)* drawScale.x-5f;
+        float left = pos.x - width/2f + PARTICLE_SIZE/drawScale.x/2f;
+        float right = pos.x + width/2f - PARTICLE_SIZE/drawScale.y/2f;
 
         //use these two parameters to tune how quickly particles fade in and out relative to borders - higher = slower
         float xSharpness = 0.5f;
         float ySharpness = 1f;
-
         for(Particle item : particles) {
             // Draw the object centered at x.
             // TODO: particles scaled very weirdly rn
-            float bot = item.getBottom()* drawScale.y ;
-            float top = item.getTop()* drawScale.y - PARTICLE_SIZE;
-            Color c = new Color(particleColor);
+            float bot = item.getBottom() - height/2f + PARTICLE_SIZE/drawScale.x/2f;
+            float top = item.getTop()  - height/2f - PARTICLE_SIZE/drawScale.x/2f;
             float y = item.getY();
             float x = item.getX();
-            c.a = c.a * (float) (Math.max(Math.pow(y-bot, ySharpness) * Math.pow(top-y, ySharpness)/Math.pow((top-bot)/2, 2*ySharpness), 0));
-            c.a = c.a * (float) (Math.max(Math.pow(x-left, xSharpness) * Math.pow(right-x, xSharpness)/Math.pow((right-left)/2, 2*xSharpness), 0));
-            if (hideBackground) {
-                c.a = c.a * 2;
-            }
-            canvas.draw(photonTexture, c, x - (width/2f)*drawScale.x,
-                      y - (height/2f)*drawScale.y, PARTICLE_SIZE, PARTICLE_SIZE);
+            float a = particleColor.a * (float) (Math.max(Math.pow(y-bot, ySharpness) * Math.pow(top-y, ySharpness)/Math.pow((top-bot)/2, 2*ySharpness), 0));
+            a = a * (float) (Math.max(Math.pow(x-left, xSharpness) * Math.pow(right-x, xSharpness)/Math.pow((right-left)/2, 2*xSharpness), 0));
+            item.setColor(particleColor.r, particleColor.g, particleColor.b, a);
+
+            item.draw(canvas);
         }
     }
 }

@@ -296,6 +296,13 @@ public class Cat extends CapsuleObstacle implements Movable {
         return state == State.JUMPING;
     }
 
+    /**
+     * Returns true if the cat is actively dashing.
+     *
+     * @return true if the cat is actively dashing.
+     */
+    public boolean isDashing() { return state == State.DASHING; }
+
     public void setDashPressed(boolean value) {
         dashPressed = value;
     }
@@ -542,13 +549,6 @@ public class Cat extends CapsuleObstacle implements Movable {
         } else {
             spiritRegions.put(color, spiritRegions.get(color) - 1);
         }
-    }
-
-    /**
-     * @return  the velocity vector that a dead body should have if the cat dies at this frame
-     */
-    public Vector2 getDeadbodySwitchVelocity(){
-        return state == State.DASHING ? velocityCache.set(getLinearVelocity().x, maxSpeed) : getLinearVelocity();
     }
 
     //endregion

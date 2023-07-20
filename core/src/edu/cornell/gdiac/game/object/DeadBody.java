@@ -58,8 +58,15 @@ public class DeadBody extends CapsuleObstacle implements Movable {
     /** 0 if this dead body is in the same level as the cat, -1 if in previous level, 1 if in next level */
     private int relativeLevel;
     private Color color = new Color(Color.WHITE);
+    /** If this dead body is currently animating the recombination. */
     private boolean recombining;
+    /** The spirit particle associated with this body during body recombination. This is objectively a weird way to do
+     * this, but it is easier than the alternative of storing a map in ActionController/Level. */
     private Particle spirit;
+    /** If this dead body is "dashing", i.e. if it is resolving the player's dash after death. */
+    private boolean isDashing;
+    /** Max vertical speed from dashing, same as maxSpeed in Cat */
+    private float maxSpeed;
 
     /**
      * Returns ow hard the brakes are applied to get a dead body to stop moving
@@ -143,7 +150,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
     }
 
     public DeadBody(TextureRegion texture, TextureRegion burnTexture, Vector2 scale, Vector2 position, Vector2 textureScale) {
-        this(texture, burnTexture, scale, position, textureScale, 0);
+        this(texture, burnTexture, scale, position, textureScale, 0, false);
     }
 
     /**
@@ -157,7 +164,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
      * @param scale         Draw scale.
      * @param position      Position
      */
-    public DeadBody(TextureRegion texture, TextureRegion burnTexture, Vector2 scale, Vector2 position, Vector2 textureScale, int dashTimer) {
+    public DeadBody(TextureRegion texture, TextureRegion burnTexture, Vector2 scale, Vector2 position, Vector2 textureScale, int dashTimer, boolean isDashing) {
         super(0, 0, objectConstants.getFloat("capsuleWidth"), objectConstants.getFloat("capsuleHeight"), Orientation.TOP);
 
         spriteFrames = TextureRegion.split(burnTexture.getTexture(), 256,256);
@@ -181,11 +188,13 @@ public class DeadBody extends CapsuleObstacle implements Movable {
         // Gameplay attributes
         setX(position.x+objectConstants.get("offset").getFloat(0));
         setY(position.y+objectConstants.get("offset").getFloat(1));
+        maxSpeed = objectConstants.getFloat("maxSpeed", 0);
         burnTicks = 0;
         burning = false;
         faceRight = true;
         spiritRegions = new ObjectMap<>();
         this.dashTimer = dashTimer;
+        this.isDashing = isDashing;
         //create centre sensor (for fixing to spikes)
 
         setSleepingAllowed(false);
@@ -309,11 +318,15 @@ public class DeadBody extends CapsuleObstacle implements Movable {
             burnTicks = totalBurnTicks;
         }
 
-        if (groundFixtures.size > 0) dashTimer = 0;
-
-
-        setRelativeVX(getRelativeVelocity().x/damping);
-
+        if (isDashing) {
+            if ( ++dashTimer >= 7) {
+                isDashing = false;
+                if (getRelativeVelocity().y > 0) setRelativeVY(maxSpeed);
+            }
+        } else {
+            setRelativeVX(getRelativeVelocity().x/damping);
+            if (groundFixtures.size > 0) dashTimer = 0;
+        }
     }
 
     /**
@@ -446,6 +459,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
         }
         stateMap.put("jointInfo", jointInfo);
         stateMap.put("dashTimer", dashTimer);
+        stateMap.put("isDashing", isDashing);
         return stateMap;
     }
 
@@ -458,6 +472,7 @@ public class DeadBody extends CapsuleObstacle implements Movable {
         burnTicks = (int) stateMap.get("burnTicks");
         faceRight = (boolean) stateMap.get("faceRight");
         dashTimer = (int) stateMap.get("dashTimer");
+        isDashing = (boolean) stateMap.get("isDashing");
         joints.clear();
     }
 

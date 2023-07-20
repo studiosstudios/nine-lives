@@ -1425,17 +1425,19 @@ public class Level {
     public void spawnDeadBody(){
         textureScaleCache.set(1/4f, 1/4f);
         double rand = Math.random();
-        DeadBody deadBody;
+        TextureRegion deadBodyTexture;
         if(rand <0.33){
-            deadBody = new DeadBody(textureRegionAssetMap.get("corpse2"),textureRegionAssetMap.get("corpse-burnt"), scale, cat.getPosition(), textureScaleCache,cat.getDashTimer());
+            deadBodyTexture = textureRegionAssetMap.get("corpse2");
         }
         else if(rand < 0.66){
-            deadBody = new DeadBody(textureRegionAssetMap.get("corpse3"),textureRegionAssetMap.get("corpse-burnt"), scale, cat.getPosition(), textureScaleCache, cat.getDashTimer());
+            deadBodyTexture = textureRegionAssetMap.get("corpse3");
         }
         else{
-            deadBody = new DeadBody(textureRegionAssetMap.get("corpse"),textureRegionAssetMap.get("corpse-burnt"), scale, cat.getPosition(), textureScaleCache, cat.getDashTimer());
+            deadBodyTexture = textureRegionAssetMap.get("corpse");
         }
-        deadBody.setLinearVelocity(cat.getDeadbodySwitchVelocity());
+        DeadBody deadBody = new DeadBody(deadBodyTexture,textureRegionAssetMap.get("corpse-burnt"), scale, cat.getPosition(),
+                textureScaleCache, cat.getDashTimer(), cat.isDashing());
+        deadBody.setLinearVelocity(cat.getLinearVelocity());
         deadBody.setFacingRight(cat.isFacingRight());
         queueObject(deadBody);
         deadBodyArray.add(deadBody);

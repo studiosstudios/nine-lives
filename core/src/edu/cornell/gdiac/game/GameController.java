@@ -525,8 +525,8 @@ public class GameController implements Screen {
         InputController.getInstance().setControls(directory.getEntry("controls", JsonValue.class));
 
         if (debugEnabled) {
-//            InputController.getInstance().writeTo("debug-input/spirit-particles-debug-3.txt");
-//            InputController.getInstance().readFrom("debug-input/spirit-particles-debug-3.txt");
+//            InputController.getInstance().writeTo("debug-input/dash-death-speed-debug.txt");
+//            InputController.getInstance().readFrom("debug-input/dash-death-speed-debug.txt");
         }
     }
 
